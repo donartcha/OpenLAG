@@ -449,6 +449,13 @@ export const DocumentationView: React.FC = () => {
                         </select>
                     </div>
                     <button
+                        onClick={() => window.print()}
+                        className="flex items-center justify-center p-1.5 ml-2 hover:bg-white/10 rounded transition-colors text-white/40 hover:text-white print-hidden"
+                        title="Print Native (System Print Dialog)"
+                    >
+                        <Printer size={16} />
+                    </button>
+                    <button
                         onClick={handleGeneratePdf}
                         disabled={isGeneratingPdf}
                         className="flex items-center justify-center p-1.5 ml-2 hover:bg-white/10 rounded transition-colors text-white/40 hover:text-white print-hidden disabled:opacity-50"
@@ -477,8 +484,8 @@ export const DocumentationView: React.FC = () => {
                             System Inventory
                             <ChevronRight size={10} className={`transition-transform ${showInventory ? 'rotate-90' : ''}`} />
                           </button>
-                          {(showInventory || true) && (
-                            <div className="flex gap-2 flex-wrap animate-in fade-in slide-in-from-left-2 duration-300">
+                          {showInventory && (
+                            <div className="flex gap-2 flex-wrap animate-in fade-in slide-in-from-top-2 duration-300">
                                 {systemVersions.map(sv => (
                                     <div key={sv.id} className="flex items-center gap-2 bg-white/5 border border-white/10 px-2 py-1 rounded text-[10px] tabular-nums">
                                         <span className="text-emerald-500 font-bold">{sv.component}</span>
