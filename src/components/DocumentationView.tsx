@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useStore } from '../store';
 import { Artifact, ArtifactType } from '../types';
-import { Layers, FileText, Server, FileCode2, ShieldCheck, Stethoscope, ChevronRight, Search, GitPullRequest, Repeat, Box, Rocket, Activity, Wrench, Trash2, AlertCircle } from 'lucide-react';
+import { Layers, FileText, Server, FileCode2, ShieldCheck, Stethoscope, ChevronRight, Search, GitPullRequest, Repeat, Box, Rocket, Activity, Wrench, Trash2, AlertCircle, Printer } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface GroupedArtifacts {
@@ -239,7 +239,7 @@ export const DocumentationView: React.FC = () => {
   return (
     <div className="h-full w-full bg-[#0a0a0a] flex overflow-hidden">
       {/* Sidebar */}
-      <div className={`shrink-0 bg-[#0c0c0c] border-r border-white/5 flex flex-col transition-all duration-300 ${isSidebarCollapsed ? 'w-12' : 'w-64'}`}>
+      <div className={`shrink-0 bg-[#0c0c0c] border-r border-white/5 flex flex-col transition-all duration-300 print-hidden ${isSidebarCollapsed ? 'w-12' : 'w-64'}`}>
          <div className="p-4 border-b border-white/5 sticky top-0 bg-[#0c0c0c]/90 backdrop-blur z-10 flex items-center justify-between">
            {!isSidebarCollapsed && <div className="text-[10px] uppercase tracking-widest text-emerald-500 font-bold">Lifecycle Phases</div>}
            <button 
@@ -316,7 +316,7 @@ export const DocumentationView: React.FC = () => {
 
       <div className="flex-1 overflow-y-auto relative flex flex-col group/doc">
           {/* Minimized Header Controls */}
-          <div className={`sticky top-0 z-30 transition-all duration-300 bg-[#0a0a0a]/80 backdrop-blur-md px-8 lg:px-16 border-b border-white/5 flex items-center justify-between ${isHeaderMinified ? 'py-2' : 'py-8 pt-12 pb-4'}`}>
+          <div className={`sticky top-0 z-30 transition-all duration-300 bg-[#0a0a0a]/80 backdrop-blur-md px-8 lg:px-16 border-b border-white/5 flex items-center justify-between print-hidden ${isHeaderMinified ? 'py-2' : 'py-8 pt-12 pb-4'}`}>
             <div className="flex items-center gap-4">
                <h1 className={`font-serif italic tracking-tight transition-all duration-300 ${isHeaderMinified ? 'text-lg' : 'text-3xl'}`}>
                {selectedSubType ? `${selectedSubType} Documentation` : selectedPhase ? phasesData.find(p => p.id === selectedPhase)?.title : 'System Documentation'}
@@ -396,27 +396,35 @@ export const DocumentationView: React.FC = () => {
                             ))}
                         </select>
                     </div>
+                    <button
+                        onClick={() => window.print()}
+                        className="flex items-center justify-center p-1.5 ml-2 hover:bg-white/10 rounded transition-colors text-white/40 hover:text-white"
+                        title="Export Document as PDF"
+                    >
+                        <Printer size={16} />
+                    </button>
                 </div>
             </div>
           </div>
           
           <div className="px-8 lg:px-16 pt-4 shrink-0">
-            {!isHeaderMinified && (
+            {(!isHeaderMinified || true) && (
               <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-12 mb-8 mt-2 animate-in fade-in slide-in-from-top-1 duration-300">
                   <div className="text-xs font-mono text-white/40">
-                      VERSION: <span className="text-emerald-400">{currentVersion?.name} ({currentVersionId})</span><br/>
+                      SYS DOMAIN: <span className="text-emerald-400 font-bold tracking-widest">{selectedSubType ? `${selectedSubType} Documentation` : selectedPhase ? phasesData.find(p => p.id === selectedPhase)?.title : 'System Documentation'}</span><br/>
+                      VERSION: <span className="text-white/80">{currentVersion?.name} ({currentVersionId})</span><br/>
                       DATE: {new Date().toISOString().split('T')[0]}
                   </div>
                   {systemVersions.length > 0 && (
                       <div className="flex flex-col gap-2">
                           <button 
                             onClick={() => setShowInventory(!showInventory)}
-                            className="text-[10px] uppercase tracking-widest text-white/20 font-bold flex items-center gap-2 hover:text-white/40 transition-colors"
+                            className="text-[10px] uppercase tracking-widest text-white/20 font-bold flex items-center gap-2 hover:text-white/40 transition-colors print-hidden"
                           >
                             System Inventory
                             <ChevronRight size={10} className={`transition-transform ${showInventory ? 'rotate-90' : ''}`} />
                           </button>
-                          {showInventory && (
+                          {(showInventory || true) && (
                             <div className="flex gap-2 flex-wrap animate-in fade-in slide-in-from-left-2 duration-300">
                                 {systemVersions.map(sv => (
                                     <div key={sv.id} className="flex items-center gap-2 bg-white/5 border border-white/10 px-2 py-1 rounded text-[10px] tabular-nums">

@@ -24,3 +24,49 @@
     scrollbar-color: #222 #0a0a0a;
   }
 }
+
+@media print {
+  @page {
+    size: auto;
+    margin: 15mm 10mm;
+  }
+  
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    background-color: white !important;
+    color: black !important;
+  }
+
+  /* Hide scrollbars and allow full height for printing */
+  html, body, #root, .h-full, .h-screen, .overflow-hidden, .overflow-y-auto, .flex-1 {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    position: static !important;
+  }
+
+  /* Adjust text colors for print readability */
+  h1, h2, h3, h4, p, span, div, td, th {
+    color: black !important;
+  }
+
+  /* Specific overrides to keep some styling but printable */
+  .border { border-color: #ccc !important; }
+  .border-b { border-bottom-color: #ccc !important; }
+  .border-l { border-left-color: #ccc !important; }
+  .bg-[#0c0c0c], .bg-[#111], .bg-white\/5, .bg-transparent {
+    background-color: transparent !important;
+  }
+
+  /* Prevent page breaks inside sections and artifacts */
+  section, tr, .group {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
+  /* Hide UI elements */
+  .print-hidden {
+    display: none !important;
+  }
+}
