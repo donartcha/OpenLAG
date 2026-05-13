@@ -4,7 +4,7 @@ import { Artifact, ArtifactType } from '../types';
 import { Layers, FileText, Server, FileCode2, ShieldCheck, Stethoscope, ChevronRight, Search, GitPullRequest, Repeat, Box, Rocket, Activity, Wrench, Trash2, AlertCircle, Printer, Download } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
+import { toCanvas } from 'html-to-image';
 
 interface GroupedArtifacts {
   REQUIREMENT: Artifact[];
@@ -57,13 +57,17 @@ export const DocumentationView: React.FC = () => {
       await new Promise(resolve => setTimeout(resolve, 100));
 
       const element = pdfContainerRef.current;
-      const canvas = await html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        logging: false,
+      const canvas = await toCanvas(element, {
+        pixelRatio: 2,
         backgroundColor: '#0a0a0a',
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight
+        width: element.scrollWidth,
+        height: element.scrollHeight,
+        style: {
+          transform: 'scale(1)',
+          transformOrigin: 'top left',
+          width: element.scrollWidth + 'px',
+          height: element.scrollHeight + 'px'
+        }
       });
 
       const imgData = canvas.toDataURL('image/png');
