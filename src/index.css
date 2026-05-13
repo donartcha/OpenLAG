@@ -48,7 +48,8 @@
     background-color: white !important;
   }
   
-  [class*="border"] {
+  [class*="border"],
+  [class*="divide"] > * {
     border-color: #aaa !important;
   }
 
