@@ -295,7 +295,7 @@ export const DocumentationView: React.FC = () => {
   const shouldShow = (hasItems: boolean) => !(isImpactFocusMode && selectedArtifactId && !hasItems);
 
   return (
-    <div className="h-full w-full bg-[#0a0a0a] flex overflow-hidden">
+    <div className="h-full w-full bg-[#0a0a0a] flex overflow-hidden print-block">
       {/* Sidebar */}
       <div className={`shrink-0 bg-[#0c0c0c] border-r border-white/5 flex flex-col transition-all duration-300 print-hidden ${isSidebarCollapsed ? 'w-12' : 'w-64'}`}>
          <div className="p-4 border-b border-white/5 sticky top-0 bg-[#0c0c0c]/90 backdrop-blur z-10 flex items-center justify-between">

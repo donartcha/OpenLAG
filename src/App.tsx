@@ -25,7 +25,7 @@ export default function App() {
   }, [initializeStore]);
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#0a0a0a] text-[#e0e0e0] font-sans selection:bg-emerald-500/30">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#0a0a0a] text-[#e0e0e0] font-sans selection:bg-emerald-500/30 print-block">
       {/* Sidebar Nav */}
       <nav className="w-16 flex flex-col items-center py-6 bg-[#0c0c0c] text-white/40 border-r border-white/10 shrink-0">
         <div className="w-8 h-8 bg-white flex items-center justify-center rounded-sm mb-8">

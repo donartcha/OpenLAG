@@ -28,7 +28,7 @@
 @media print {
   @page {
     size: auto;
-    margin: 15mm 10mm;
+    margin: 0; /* Setting 0 removes automatic browser headers/footers */
   }
   
   /* Force light theme for printing to save ink */
@@ -46,6 +46,7 @@
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     background-color: white !important;
+    padding: 20mm 15mm !important; /* Emulate page margins */
   }
   
   [class*="border"] {
@@ -53,11 +54,16 @@
   }
 
   /* Hide scrollbars and allow full height for printing */
-  html, body, #root, .h-full, .h-screen, .overflow-hidden, .overflow-y-auto, .flex-1 {
+  html, body, #root, .h-full, .h-screen, .overflow-hidden, .overflow-y-auto, .flex-1, .print-block {
     height: auto !important;
     min-height: auto !important;
     overflow: visible !important;
     position: static !important;
+  }
+  
+  /* Change specific flex containers to block to prevent print cutoff */
+  .print-block {
+    display: block !important;
   }
 
   /* Prevent page breaks inside sections and artifacts */
@@ -69,5 +75,47 @@
   /* Hide UI elements */
   .print-hidden {
     display: none !important;
+  }
+
+  /* Fix for Mermaid diagrams printing as black blocks */
+  .mermaid-wrapper svg rect,
+  .mermaid-wrapper svg circle,
+  .mermaid-wrapper svg ellipse,
+  .mermaid-wrapper svg polygon,
+  .mermaid-wrapper svg path {
+    fill: white !important;
+    stroke: #555 !important;
+    stroke-width: 1px !important;
+  }
+  
+  .mermaid-wrapper svg .edgePath path,
+  .mermaid-wrapper svg .flowchart-link {
+    fill: none !important;
+  }
+
+  /* Keep arrows filled */
+  .mermaid-wrapper svg [id*="arrow"] path,
+  .mermaid-wrapper svg marker path,
+  .mermaid-wrapper svg marker polygon {
+    fill: #555 !important;
+    stroke: none !important;
+  }
+
+  .mermaid-wrapper svg text,
+  .mermaid-wrapper svg tspan {
+    fill: black !important;
+    stroke: none !important;
+    color: black !important;
+  }
+  
+  .mermaid-wrapper svg .cluster rect {
+    fill: transparent !important;
+    stroke: #999 !important;
+    stroke-dasharray: 4 !important;
+  }
+  
+  .mermaid-wrapper svg .edgeLabel rect {
+    fill: white !important;
+    stroke: none !important;
   }
 }

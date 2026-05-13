@@ -43,7 +43,7 @@ const Mermaid = ({ chart }: { chart: string }) => {
     return () => { mounted = false; };
   }, [chart]);
 
-  return <div ref={containerRef} className="my-6 flex justify-center bg-transparent border border-white/5 p-6 rounded-lg overflow-auto w-full" />;
+  return <div ref={containerRef} className="my-6 flex justify-center bg-transparent border border-white/5 p-6 rounded-lg overflow-auto w-full mermaid-wrapper" />;
 };
 
 export const MarkdownRenderer = ({ content }: { content: string }) => {
