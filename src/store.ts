@@ -11,12 +11,19 @@ interface StoreState {
   selectedArtifactId: string | null;
   isLoading: boolean;
   
-  fetchVersions: () => Promise<void>;
-  fetchGraph: (versionId: string) => Promise<void>;
+  initializeStore: () => Promise<void>;
   setVersion: (versionId: string) => void;
   setView: (view: 'graph' | 'docs' | 'impact' | 'orphans' | 'guide') => void;
   setSelectedArtifact: (id: string | null) => void;
 }
+
+// Global variable to store fetched data
+let cachedData: {
+  versions: Version[];
+  systemVersions: SystemVersion[];
+  changes: Change[];
+  graphs: Record<string, GraphSnapshot>;
+} | null = null;
 
 export const useStore = create<StoreState>((set, get) => ({
   versions: [],
@@ -28,42 +35,39 @@ export const useStore = create<StoreState>((set, get) => ({
   selectedArtifactId: null,
   isLoading: false,
 
-  fetchVersions: async () => {
+  initializeStore: async () => {
+    if (cachedData) return;
+    
     set({ isLoading: true });
     try {
-      const res = await fetch('/api/state');
-      const data = await res.json();
-      set({ 
-        versions: data.versions, 
-        systemVersions: data.systemVersions || [],
-        changes: data.changes, 
-        isLoading: false 
-      });
-      if (data.versions.length > 0 && !get().currentVersionId) {
-        get().setVersion(data.versions[data.versions.length - 1].id);
+      const response = await fetch('/graph-data.json');
+      if (!response.ok) throw new Error("Failed to load graph data");
+      
+      cachedData = await response.json();
+      
+      if (cachedData) {
+        const { versions, systemVersions, changes } = cachedData;
+        set({ 
+          versions, 
+          systemVersions: systemVersions || [],
+          changes,
+          isLoading: false
+        });
+        
+        if (versions.length > 0 && !get().currentVersionId) {
+          get().setVersion(versions[versions.length - 1].id);
+        }
       }
     } catch (e) {
-      console.error(e);
-      set({ isLoading: false });
-    }
-  },
-
-  fetchGraph: async (versionId) => {
-    set({ isLoading: true });
-    try {
-      const res = await fetch(`/api/versions/${versionId}/graph`);
-      const graph = await res.json();
-      set({ graph, isLoading: false });
-    } catch (e) {
-      console.error(e);
+      console.error("ArchGraph Error: Could not fetch static data.", e);
       set({ isLoading: false });
     }
   },
 
   setVersion: (versionId) => {
-    if (get().currentVersionId === versionId) return;
-    set({ currentVersionId: versionId, selectedArtifactId: null });
-    get().fetchGraph(versionId);
+    if (!cachedData) return;
+    const graph = cachedData.graphs[versionId] || null;
+    set({ currentVersionId: versionId, selectedArtifactId: null, graph });
   },
 
   setView: (view) => set({ activeView: view }),

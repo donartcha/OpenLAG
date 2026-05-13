@@ -9,7 +9,7 @@ import { Network, FileText, GitPullRequest, Settings, Database, AlertCircle, Boo
 
 export default function App() {
   const { 
-    fetchVersions, 
+    initializeStore, 
     versions, 
     currentVersionId, 
     setVersion,
@@ -20,8 +20,8 @@ export default function App() {
   } = useStore();
 
   useEffect(() => {
-    fetchVersions();
-  }, [fetchVersions]);
+    initializeStore();
+  }, [initializeStore]);
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#0a0a0a] text-[#e0e0e0] font-sans selection:bg-emerald-500/30">
