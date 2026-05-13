@@ -69,7 +69,8 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
   
-  dagreGraph.setGraph({ rankdir: direction, align: 'UL', edgesep: 80, ranksep: 120, nodesep: 60 });
+  // Aumentar la separación para reducir cruces y dar espacio a las etiquetas
+  dagreGraph.setGraph({ rankdir: direction, align: 'UL', edgesep: 120, ranksep: 160, nodesep: 100 });
 
   nodes.forEach((node) => {
     dagreGraph.setNode(node.id, { width: NODE_WIDTH, height: NODE_HEIGHT });
@@ -207,7 +208,7 @@ const GraphFlow: React.FC = () => {
         sourceHandle: 's-bot',
         targetHandle: 't-top',
         label: r.type,
-        type: 'smoothstep',
+        type: 'default',
         animated: selectedArtifactId !== null && isConnectedToSelected,
         markerEnd: {
           type: MarkerType.ArrowClosed,
@@ -226,13 +227,13 @@ const GraphFlow: React.FC = () => {
           letterSpacing: '1px' 
         },
         labelBgStyle: { 
-          fill: isDimmed ? 'transparent' : '#151515', 
-          opacity: isDimmed ? 0 : 0.9, 
-          stroke: 'rgba(255,255,255,0.1)', 
+          fill: isDimmed ? 'transparent' : '#111111', 
+          opacity: isDimmed ? 0 : 1, 
+          stroke: isDimmed ? 'transparent' : 'rgba(255,255,255,0.1)', 
           strokeWidth: 1 
         },
         labelBgBorderRadius: 4,
-        labelBgPadding: [4, 2],
+        labelBgPadding: [8, 4],
       };
     });
 

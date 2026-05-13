@@ -141,9 +141,23 @@ export const DocumentationView: React.FC = () => {
 
   const phasesData = useMemo(() => {
     return PHASES.map(phase => {
-      const filteredArtifactsInPhase = phase.types.flatMap(type => 
+      let filteredArtifactsInPhase = phase.types.flatMap(type => 
         (filteredGroups[type as keyof typeof filteredGroups] || [])
       );
+
+      if (phase.id === 'dev') {
+        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.subType !== 'Review');
+      } else if (phase.id === 'review') {
+        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.subType === 'Review');
+      } else if (phase.id === 'ci') {
+        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.subType?.includes('CI') || a.subType === 'Pipeline');
+      } else if (phase.id === 'build') {
+        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.subType === 'Build' || a.subType === 'Package');
+      } else if (phase.id === 'maint') {
+        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.subType !== 'Retirement');
+      } else if (phase.id === 'retire') {
+        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.subType === 'Retirement');
+      }
       
       const subTypes = Array.from(new Set(filteredArtifactsInPhase.map(a => a.subType).filter(Boolean))) as string[];
       // We will also synthesize "COMPONENT" as a pseudo subtype for Design since we grouped DESIGN and COMPONENT together in phase 2,
@@ -207,6 +221,20 @@ export const DocumentationView: React.FC = () => {
           setSelectedSubType(subType);
       }
   };
+
+  const hasReqs = (filteredGroups.REQUIREMENT?.length || 0) + (filteredGroups.USE_CASE?.length || 0) > 0;
+  const hasDesign = (filteredGroups.DESIGN?.length || 0) + (filteredGroups.COMPONENT?.length || 0) > 0;
+  const hasDev = (filteredGroups.CODE_ENTITY || []).filter(c => c.subType !== 'Review').length > 0;
+  const hasReview = (filteredGroups.CODE_ENTITY || []).filter(c => c.subType === 'Review').length > 0;
+  const hasCI = (filteredGroups.INFRASTRUCTURE || []).filter(i => i.subType?.includes('CI') || i.subType === 'Pipeline').length > 0;
+  const hasTest = (filteredGroups.TEST?.length || 0) > 0;
+  const hasBuild = (filteredGroups.INFRASTRUCTURE || []).filter(i => i.subType === 'Build' || i.subType === 'Package').length > 0;
+  const hasDeploy = (filteredGroups.DEPLOYMENT?.length || 0) > 0;
+  const hasMonit = (filteredGroups.MONITORING?.length || 0) + (filteredGroups.INCIDENT?.length || 0) > 0;
+  const hasMaint = (filteredGroups.MAINTENANCE || []).filter(m => m.subType !== 'Retirement').length > 0;
+  const hasRet = (filteredGroups.MAINTENANCE || []).filter(m => m.subType === 'Retirement').length > 0;
+
+  const shouldShow = (hasItems: boolean) => !(isImpactFocusMode && selectedArtifactId && !hasItems);
 
   return (
     <div className="h-full w-full bg-[#0a0a0a] flex overflow-hidden">
@@ -406,7 +434,7 @@ export const DocumentationView: React.FC = () => {
           
           <div className="flex-1 overflow-y-auto px-8 lg:px-16 pb-12 custom-scrollbar">
         {/* 1. Requirements */}
-        {(!selectedPhase || selectedPhase === 'req') && (
+        {(!selectedPhase || selectedPhase === 'req') && shouldShow(hasReqs) && (
             <section className="mb-16">
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">1. Requirements / Analysis</h2>
                 {(filteredGroups.REQUIREMENT?.length === 0 && filteredGroups.USE_CASE?.length === 0) && <p className="italic text-white/40 text-xs">No requirements found in this version.</p>}
@@ -437,7 +465,7 @@ export const DocumentationView: React.FC = () => {
         )}
 
         {/* 2. Technical Design */}
-        {(!selectedPhase || selectedPhase === 'design') && (
+        {(!selectedPhase || selectedPhase === 'design') && shouldShow(hasDesign) && (
             <section className="mb-16">
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">2. Technical Design</h2>
                 {(filteredGroups.DESIGN?.length === 0 && (filteredGroups.COMPONENT?.length || 0) === 0) && <p className="italic text-white/40 text-xs text-center p-12 bg-white/5 border border-dashed border-white/10 rounded">No architectural design for this phase.</p>}
@@ -467,7 +495,7 @@ export const DocumentationView: React.FC = () => {
         )}
 
         {/* 3. Development */}
-        {(!selectedPhase || selectedPhase === 'dev') && (
+        {(!selectedPhase || selectedPhase === 'dev') && shouldShow(hasDev) && (
             <section className="mb-16">
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">3. Development</h2>
                 <div className="overflow-x-auto rounded border border-white/10">
@@ -516,7 +544,7 @@ export const DocumentationView: React.FC = () => {
         )}
 
         {/* 4. Code Review */}
-        {(!selectedPhase || selectedPhase === 'review') && (
+        {(!selectedPhase || selectedPhase === 'review') && shouldShow(hasReview) && (
             <section className="mb-16">
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">4. Code Review</h2>
                 {((filteredGroups.CODE_ENTITY || []).filter(c => c.subType === 'Review').length === 0) && <p className="italic text-white/40 text-xs text-center p-8 bg-white/5 border border-dashed border-white/10 rounded">No active reviews for this version.</p>}
@@ -540,7 +568,7 @@ export const DocumentationView: React.FC = () => {
         )}
 
         {/* 5. Continuous Integration */}
-        {(!selectedPhase || selectedPhase === 'ci') && (
+        {(!selectedPhase || selectedPhase === 'ci') && shouldShow(hasCI) && (
             <section className="mb-16">
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">5. Continuous Integration (CI)</h2>
                 {((filteredGroups.INFRASTRUCTURE || []).filter(i => i.subType?.includes('CI') || i.subType === 'Pipeline').length === 0) && <p className="italic text-white/40 text-xs p-12 bg-white/5 border border-dashed border-white/10 rounded text-center">No CI pipelines defined.</p>}
@@ -559,7 +587,7 @@ export const DocumentationView: React.FC = () => {
         )}
 
         {/* 6. Testing */}
-        {(!selectedPhase || selectedPhase === 'verif') && (
+        {(!selectedPhase || selectedPhase === 'verif') && shouldShow(hasTest) && (
             <section className="mb-16">
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">6. Verification & Quality</h2>
                 <div className="space-y-4">
@@ -589,7 +617,7 @@ export const DocumentationView: React.FC = () => {
         )}
 
         {/* 7. Build */}
-        {(!selectedPhase || selectedPhase === 'build') && (
+        {(!selectedPhase || selectedPhase === 'build') && shouldShow(hasBuild) && (
             <section className="mb-16">
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">7. Build & Packaging</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -608,7 +636,7 @@ export const DocumentationView: React.FC = () => {
         )}
 
         {/* 8. Deployment */}
-        {(!selectedPhase || selectedPhase === 'deploy') && (
+        {(!selectedPhase || selectedPhase === 'deploy') && shouldShow(hasDeploy) && (
             <section className="mb-16">
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">8. Deployment</h2>
                 <div className="space-y-6">
@@ -639,7 +667,7 @@ export const DocumentationView: React.FC = () => {
         )}
 
         {/* 9. Monitoring */}
-        {(!selectedPhase || selectedPhase === 'monitor') && (
+        {(!selectedPhase || selectedPhase === 'monitor') && shouldShow(hasMonit) && (
             <section className="mb-16">
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">9. Monitoring & Observability</h2>
                 <div className="grid grid-cols-1 gap-6">
@@ -685,7 +713,7 @@ export const DocumentationView: React.FC = () => {
         )}
 
         {/* 10. Maintenance */}
-        {(!selectedPhase || selectedPhase === 'maint') && (
+        {(!selectedPhase || selectedPhase === 'maint') && shouldShow(hasMaint) && (
             <section className="mb-16">
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">10. Maintenance / Refactoring</h2>
                 <div className="space-y-4">
@@ -704,7 +732,7 @@ export const DocumentationView: React.FC = () => {
         )}
 
         {/* 11. Retirement */}
-        {(!selectedPhase || selectedPhase === 'retire') && (
+        {(!selectedPhase || selectedPhase === 'retire') && shouldShow(hasRet) && (
             <section className="mb-16">
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">11. Retirement / Replacement</h2>
                 <div className="space-y-4">
