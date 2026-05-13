@@ -6,3 +6,5 @@ title: "User Registration Flow"
 version: v-1
 ---
 El sistema debe procesar el registro de nuevos usuarios validando duplicados y enviando confirmación por email.
+
+Puedes ver el diseño detallado en el documento [Diseño del Servicio de Registro](#des-reg-01).

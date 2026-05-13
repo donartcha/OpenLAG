@@ -5,6 +5,7 @@ import { DocumentationView } from './components/DocumentationView';
 import { ImpactView } from './components/ImpactView';
 import { OrphansView } from './components/OrphansView';
 import { GuideView } from './components/GuideView';
+import { SettingsView } from './components/SettingsView';
 import { Network, FileText, GitPullRequest, Settings, Database, AlertCircle, BookOpen } from 'lucide-react';
 
 export default function App() {
@@ -70,7 +71,11 @@ export default function App() {
         </div>
 
         <div className="mt-auto">
-          <button className="opacity-40 hover:text-white hover:opacity-100 transition-all">
+          <button 
+            onClick={() => setView('settings')}
+            className={`transition-all hover:text-white hover:opacity-100 ${activeView === 'settings' ? 'text-white opacity-100' : 'opacity-40'}`}
+            title="Settings"
+          >
             <Settings size={20} strokeWidth={1.5} />
           </button>
         </div>
@@ -149,6 +154,7 @@ export default function App() {
           {activeView === 'impact' && <ImpactView />}
           {activeView === 'orphans' && <OrphansView />}
           {activeView === 'guide' && <GuideView />}
+          {activeView === 'settings' && <SettingsView />}
         </main>
       </div>
     </div>

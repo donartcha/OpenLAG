@@ -96,7 +96,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 };
 
 const GraphFlow: React.FC = () => {
-  const { graph, selectedArtifactId, setSelectedArtifact, setView } = useStore();
+  const { graph, selectedArtifactId, setSelectedArtifact, setView, settings } = useStore();
   const { setCenter } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
 
@@ -142,16 +142,43 @@ const GraphFlow: React.FC = () => {
   useEffect(() => {
     if (!graph) return;
 
+    let connectedNodes = new Set<string>();
+    let connectedEdges = new Set<string>();
+
+    if (selectedArtifactId) {
+      connectedNodes.add(selectedArtifactId);
+      
+      let currentLevelNodes = new Set<string>([selectedArtifactId]);
+      
+      const maxDepth = settings.graphFocusDepth === 0 ? Infinity : settings.graphFocusDepth;
+      
+      for (let depth = 0; depth < maxDepth; depth++) {
+        let nextLevelNodes = new Set<string>();
+        let edgesToAdd = new Set<string>();
+        
+        graph.relations.forEach(r => {
+          if (currentLevelNodes.has(r.from) || currentLevelNodes.has(r.to)) {
+            edgesToAdd.add(r.id);
+            if (!connectedNodes.has(r.from)) nextLevelNodes.add(r.from);
+            if (!connectedNodes.has(r.to)) nextLevelNodes.add(r.to);
+          }
+        });
+        
+        if (nextLevelNodes.size === 0) break; // Optimization: stop if no new nodes
+        
+        nextLevelNodes.forEach(n => connectedNodes.add(n));
+        edgesToAdd.forEach(e => connectedEdges.add(e));
+        currentLevelNodes = nextLevelNodes;
+      }
+    }
+
     let initialNodes: Node[] = graph.artifacts.map((a) => {
       // Find connections for dimming logic
       const isSelected = selectedArtifactId === a.id;
       let isConnectedToSelected = false;
 
       if (selectedArtifactId) {
-        const connectedEdges = graph.relations.filter(
-          r => r.from === selectedArtifactId || r.to === selectedArtifactId
-        );
-        isConnectedToSelected = connectedEdges.some(r => r.from === a.id || r.to === a.id);
+        isConnectedToSelected = connectedNodes.has(a.id);
       }
 
       const isDimmed = selectedArtifactId !== null && !isSelected && !isConnectedToSelected;
@@ -167,7 +194,7 @@ const GraphFlow: React.FC = () => {
 
     let initialEdges: Edge[] = graph.relations.map((r) => {
       const isConnectedToSelected = selectedArtifactId 
-        ? (r.from === selectedArtifactId || r.to === selectedArtifactId)
+        ? connectedEdges.has(r.id)
         : true;
       
       const isDimmed = selectedArtifactId !== null && !isConnectedToSelected;
@@ -213,7 +240,7 @@ const GraphFlow: React.FC = () => {
     
     setNodes(layouted.nodes);
     setEdges(layouted.edges);
-  }, [graph, selectedArtifactId, setNodes, setEdges]);
+  }, [graph, selectedArtifactId, settings.graphFocusDepth, setNodes, setEdges, orphanIds]);
 
   const onNodeClick = useCallback((_: any, node: Node) => {
     setSelectedArtifact(node.id);

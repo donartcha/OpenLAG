@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useStore } from '../store';
 import { Artifact, ArtifactType } from '../types';
 import { Layers, FileText, Server, FileCode2, ShieldCheck, Stethoscope, ChevronRight, Search, GitPullRequest, Repeat, Box, Rocket, Activity, Wrench, Trash2, AlertCircle } from 'lucide-react';
@@ -34,7 +34,7 @@ const PHASES = [
 ];
 
 export const DocumentationView: React.FC = () => {
-  const { graph, currentVersionId, versions, systemVersions, selectedArtifactId, setSelectedArtifact } = useStore();
+  const { graph, currentVersionId, versions, systemVersions, selectedArtifactId, setSelectedArtifact, settings } = useStore();
   
   const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
   const [selectedSubType, setSelectedSubType] = useState<string | null>(null);
@@ -43,7 +43,7 @@ export const DocumentationView: React.FC = () => {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isHeaderMinified, setIsHeaderMinified] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
-  const [isImpactFocusMode, setIsImpactFocusMode] = useState(true);
+  const [isImpactFocusMode, setIsImpactFocusMode] = useState(settings.defaultDocsFocusMode);
 
   const orphanArtifactIds = useMemo(() => {
     if (!graph) return new Set<string>();
@@ -63,26 +63,29 @@ export const DocumentationView: React.FC = () => {
     if (!selectedArtifactId || !graph) return new Set<string>();
     
     const reachable = new Set<string>();
-    const queue = [selectedArtifactId];
     reachable.add(selectedArtifactId);
+    
+    let currentLevelNodes = new Set<string>([selectedArtifactId]);
+    const maxDepth = settings.docsFocusDepth === 0 ? Infinity : settings.docsFocusDepth;
 
-    while (queue.length > 0) {
-      const currentId = queue.shift()!;
-      
-      // Find all relations where currentId is involved
-      graph.relations.forEach(rel => {
-        if (rel.from === currentId && !reachable.has(rel.to)) {
-          reachable.add(rel.to);
-          queue.push(rel.to);
-        } else if (rel.to === currentId && !reachable.has(rel.from)) {
-          reachable.add(rel.from);
-          queue.push(rel.from);
-        }
-      });
+    for (let depth = 0; depth < maxDepth; depth++) {
+        let nextLevelNodes = new Set<string>();
+        
+        graph.relations.forEach(r => {
+            if (currentLevelNodes.has(r.from) || currentLevelNodes.has(r.to)) {
+                if (!reachable.has(r.from)) nextLevelNodes.add(r.from);
+                if (!reachable.has(r.to)) nextLevelNodes.add(r.to);
+            }
+        });
+        
+        if (nextLevelNodes.size === 0) break;
+        
+        nextLevelNodes.forEach(n => reachable.add(n));
+        currentLevelNodes = nextLevelNodes;
     }
     
     return reachable;
-  }, [selectedArtifactId, graph]);
+  }, [selectedArtifactId, graph, settings.docsFocusDepth]);
 
   const grouped = useMemo(() => {
     const groups: GroupedArtifacts = {
@@ -134,7 +137,7 @@ export const DocumentationView: React.FC = () => {
       MONITORING: applyFilters(grouped.MONITORING),
       MAINTENANCE: applyFilters(grouped.MAINTENANCE),
     };
-  }, [grouped, searchQuery, selectedArtifactId, reachableArtifactIds]);
+  }, [grouped, searchQuery, selectedArtifactId, reachableArtifactIds, isImpactFocusMode]);
 
   const phasesData = useMemo(() => {
     return PHASES.map(phase => {
@@ -161,6 +164,17 @@ export const DocumentationView: React.FC = () => {
       }
     });
   }, [filteredGroups]);
+
+  useEffect(() => {
+    if (selectedArtifactId) {
+      setTimeout(() => {
+        const el = document.getElementById(selectedArtifactId);
+        if (el) {
+          el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    }
+  }, [selectedArtifactId, filteredGroups]);
 
   if (!graph) return <div className="p-8">Loading documentation...</div>;
 
@@ -399,7 +413,7 @@ export const DocumentationView: React.FC = () => {
                 {[...(filteredGroups.REQUIREMENT || []), ...(filteredGroups.USE_CASE || [])]
                     .filter(req => !selectedSubType || req.subType === selectedSubType)
                     .map(req => (
-                  <div key={req.id} className="mb-6 bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-blue-500/50 hover:bg-white-[0.02] transition-colors relative group">
+                  <div key={req.id} id={req.id} className="mb-6 bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-blue-500/50 hover:bg-white-[0.02] transition-colors relative group">
                     <h3 className="font-serif text-lg text-white flex items-center gap-4 flex-wrap mb-4">
                       <button 
                         onClick={() => setSelectedArtifact(req.id)}
@@ -430,7 +444,7 @@ export const DocumentationView: React.FC = () => {
                 {(filteredGroups.DESIGN || [])
                     .filter(des => !selectedSubType || des.subType === selectedSubType)
                     .map(des => (
-                  <div key={des.id} className="mb-6 bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-purple-500/50 hover:bg-white-[0.02] transition-colors">
+                  <div key={des.id} id={des.id} className="mb-6 bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-purple-500/50 hover:bg-white-[0.02] transition-colors">
                     <h3 className="font-serif text-lg text-white mb-4 flex items-center gap-3">
                         <button 
                             onClick={() => setSelectedArtifact(des.id)}
@@ -470,7 +484,7 @@ export const DocumentationView: React.FC = () => {
                         .filter(code => code.subType !== 'Review')
                         .filter(code => !selectedSubType || code.subType === selectedSubType)
                         .map(code => (
-                        <tr key={code.id} className="bg-transparent hover:bg-white/[0.02] transition-colors group">
+                        <tr key={code.id} id={code.id} className="bg-transparent hover:bg-white/[0.02] transition-colors group">
                             <td className="p-4 font-mono">
                                 <button 
                                     onClick={() => setSelectedArtifact(code.id)}
@@ -508,7 +522,7 @@ export const DocumentationView: React.FC = () => {
                 {((filteredGroups.CODE_ENTITY || []).filter(c => c.subType === 'Review').length === 0) && <p className="italic text-white/40 text-xs text-center p-8 bg-white/5 border border-dashed border-white/10 rounded">No active reviews for this version.</p>}
                 <div className="grid grid-cols-1 gap-4">
                     {(filteredGroups.CODE_ENTITY || []).filter(c => c.subType === 'Review').map(rev => (
-                        <div key={rev.id} className="bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-emerald-500/50">
+                        <div key={rev.id} id={rev.id} className="bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-emerald-500/50">
                             <h3 className="font-serif text-lg text-white mb-2 flex items-center gap-3">
                                 <button 
                                     onClick={() => setSelectedArtifact(rev.id)}
@@ -532,7 +546,7 @@ export const DocumentationView: React.FC = () => {
                 {((filteredGroups.INFRASTRUCTURE || []).filter(i => i.subType?.includes('CI') || i.subType === 'Pipeline').length === 0) && <p className="italic text-white/40 text-xs p-12 bg-white/5 border border-dashed border-white/10 rounded text-center">No CI pipelines defined.</p>}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {(filteredGroups.INFRASTRUCTURE || []).filter(i => i.subType?.includes('CI') || i.subType === 'Pipeline').map(ci => (
-                        <div key={ci.id} className="bg-[#0c0c0c] border border-white/10 p-5 hover:bg-white/[0.03] transition-all">
+                        <div key={ci.id} id={ci.id} className="bg-[#0c0c0c] border border-white/10 p-5 hover:bg-white/[0.03] transition-all">
                             <h4 className="text-white font-bold mb-2 flex items-center gap-2">
                                 <Repeat size={14} className="text-emerald-400" />
                                 {ci.title}
@@ -550,7 +564,7 @@ export const DocumentationView: React.FC = () => {
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">6. Verification & Quality</h2>
                 <div className="space-y-4">
                 {(filteredGroups.TEST || []).map(test => (
-                    <div key={test.id} className="bg-[#0c0c0c] border border-white/10 p-5 border-l-[3px] border-l-rose-500/50">
+                    <div key={test.id} id={test.id} className="bg-[#0c0c0c] border border-white/10 p-5 border-l-[3px] border-l-rose-500/50">
                         <h3 className="font-serif text-[#e0e0e0] mb-2 flex items-center gap-3">
                             <button 
                                 onClick={() => setSelectedArtifact(test.id)}
@@ -580,7 +594,7 @@ export const DocumentationView: React.FC = () => {
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">7. Build & Packaging</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {(filteredGroups.INFRASTRUCTURE || []).filter(i => i.subType === 'Build' || i.subType === 'Package').map(b => (
-                        <div key={b.id} className="bg-[#0c0c0c] border border-white/10 p-5 border-l-[3px] border-l-amber-500/50">
+                        <div key={b.id} id={b.id} className="bg-[#0c0c0c] border border-white/10 p-5 border-l-[3px] border-l-amber-500/50">
                             <h4 className="text-white font-bold mb-2 flex items-center gap-2">
                                 <Box size={14} className="text-amber-400" />
                                 {b.title}
@@ -599,7 +613,7 @@ export const DocumentationView: React.FC = () => {
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">8. Deployment</h2>
                 <div className="space-y-6">
                     {(filteredGroups.DEPLOYMENT || []).map(d => (
-                        <div key={d.id} className="bg-[#0c0c0c] border border-white/10 p-6 rounded-sm border-l-[3px] border-l-sky-500/50">
+                        <div key={d.id} id={d.id} className="bg-[#0c0c0c] border border-white/10 p-6 rounded-sm border-l-[3px] border-l-sky-500/50">
                             <h3 className="text-xl font-serif italic text-white mb-4 flex items-center gap-3">
                                 <Rocket size={20} className="text-sky-400" />
                                 <button 
@@ -630,7 +644,7 @@ export const DocumentationView: React.FC = () => {
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">9. Monitoring & Observability</h2>
                 <div className="grid grid-cols-1 gap-6">
                     {(filteredGroups.MONITORING || []).map(m => (
-                        <div key={m.id} className="bg-black/40 border border-white/10 p-6 rounded relative overflow-hidden">
+                        <div key={m.id} id={m.id} className="bg-black/40 border border-white/10 p-6 rounded relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-4 opacity-5">
                                 <Activity size={80} />
                             </div>
@@ -658,7 +672,7 @@ export const DocumentationView: React.FC = () => {
                             <h4 className="text-[10px] uppercase tracking-widest text-red-500/60 font-bold mb-4">Historical Incidents (Feedback Loop)</h4>
                             <div className="space-y-3">
                                 {filteredGroups.INCIDENT.map(inc => (
-                                    <div key={inc.id} className="bg-red-500/5 border border-red-500/10 p-4 rounded text-xs">
+                                    <div key={inc.id} id={inc.id} className="bg-red-500/5 border border-red-500/10 p-4 rounded text-xs">
                                         <span className="font-bold text-red-400 mr-2">[{inc.id}]</span>
                                         <span className="text-white/80">{inc.title}</span>
                                     </div>
@@ -676,7 +690,7 @@ export const DocumentationView: React.FC = () => {
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">10. Maintenance / Refactoring</h2>
                 <div className="space-y-4">
                     {(filteredGroups.MAINTENANCE || []).filter(m => m.subType !== 'Retirement').map(m => (
-                        <div key={m.id} className="bg-[#0c0c0c] border border-white/10 p-5 border-l-[3px] border-l-indigo-500/50">
+                        <div key={m.id} id={m.id} className="bg-[#0c0c0c] border border-white/10 p-5 border-l-[3px] border-l-indigo-500/50">
                             <h3 className="text-white font-bold mb-2 flex items-center gap-2">
                                 <Wrench size={14} className="text-indigo-400" />
                                 {m.title}
@@ -695,7 +709,7 @@ export const DocumentationView: React.FC = () => {
                 <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">11. Retirement / Replacement</h2>
                 <div className="space-y-4">
                     {(filteredGroups.MAINTENANCE || []).filter(m => m.subType === 'Retirement').map(m => (
-                        <div key={m.id} className="bg-[#1a0a0a] border border-red-900/30 p-5 border-l-[3px] border-l-red-900">
+                        <div key={m.id} id={m.id} className="bg-[#1a0a0a] border border-red-900/30 p-5 border-l-[3px] border-l-red-900">
                             <h3 className="text-white/60 font-bold mb-2 flex items-center gap-2">
                                 <Trash2 size={14} className="text-red-900" />
                                 {m.title}

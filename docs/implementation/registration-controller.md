@@ -8,4 +8,4 @@ relations:
   - to: des-reg-01
     type: IMPLEMENTS
 ---
-Controlador que implementa el flujo de registro de usuarios.
+Controlador que implementa el flujo de registro de usuarios de acuerdo a las especificaciones en [Registration Service Design](#des-reg-01).

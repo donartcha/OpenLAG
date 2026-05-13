@@ -114,7 +114,7 @@
           "subType": "Architecture",
           "title": "Registration Service Design",
           "version": "v-1",
-          "description": "Diseño detallado del flujo de registro, incluyendo la integración con el servicio de correo y la base de datos de usuarios."
+          "description": "Diseño detallado del flujo de registro, incluyendo la integración con el servicio de correo y la base de datos de usuarios. Este diseño satisface el requerimiento [User Registration Flow](#req-func-1)."
         },
         {
           "id": "impl-api-1",
@@ -148,7 +148,7 @@
           "subType": "Controller",
           "title": "RegistrationController.ts",
           "version": "v-1",
-          "description": "Controlador que implementa el flujo de registro de usuarios."
+          "description": "Controlador que implementa el flujo de registro de usuarios de acuerdo a las especificaciones en [Registration Service Design](#des-reg-01)."
         },
         {
           "id": "impl-ui-button",
@@ -263,7 +263,7 @@
           "subType": "Functional",
           "title": "User Registration Flow",
           "version": "v-1",
-          "description": "El sistema debe procesar el registro de nuevos usuarios validando duplicados y enviando confirmación por email."
+          "description": "El sistema debe procesar el registro de nuevos usuarios validando duplicados y enviando confirmación por email.\n\nPuedes ver el diseño detallado en el documento [Diseño del Servicio de Registro](#des-reg-01)."
         },
         {
           "id": "ver-tst-1",
@@ -544,7 +544,7 @@
           "subType": "Architecture",
           "title": "Registration Service Design",
           "version": "v-1",
-          "description": "Diseño detallado del flujo de registro, incluyendo la integración con el servicio de correo y la base de datos de usuarios."
+          "description": "Diseño detallado del flujo de registro, incluyendo la integración con el servicio de correo y la base de datos de usuarios. Este diseño satisface el requerimiento [User Registration Flow](#req-func-1)."
         },
         {
           "id": "impl-api-1",
@@ -586,7 +586,7 @@
           "subType": "Controller",
           "title": "RegistrationController.ts",
           "version": "v-1",
-          "description": "Controlador que implementa el flujo de registro de usuarios."
+          "description": "Controlador que implementa el flujo de registro de usuarios de acuerdo a las especificaciones en [Registration Service Design](#des-reg-01)."
         },
         {
           "id": "impl-review-1",
@@ -731,7 +731,7 @@
           "subType": "Functional",
           "title": "User Registration Flow",
           "version": "v-1",
-          "description": "El sistema debe procesar el registro de nuevos usuarios validando duplicados y enviando confirmación por email."
+          "description": "El sistema debe procesar el registro de nuevos usuarios validando duplicados y enviando confirmación por email.\n\nPuedes ver el diseño detallado en el documento [Diseño del Servicio de Registro](#des-reg-01)."
         },
         {
           "id": "ver-tst-1",

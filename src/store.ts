@@ -1,20 +1,28 @@
 import { create } from 'zustand';
 import { Version, Change, GraphSnapshot, Artifact, Relation, SystemVersion } from './types';
 
+interface Settings {
+  graphFocusDepth: number;
+  docsFocusDepth: number;
+  defaultDocsFocusMode: boolean;
+}
+
 interface StoreState {
   versions: Version[];
   systemVersions: SystemVersion[];
   changes: Change[];
   currentVersionId: string | null;
   graph: GraphSnapshot | null;
-  activeView: 'graph' | 'docs' | 'impact' | 'orphans' | 'guide';
+  activeView: 'graph' | 'docs' | 'impact' | 'orphans' | 'guide' | 'settings';
   selectedArtifactId: string | null;
   isLoading: boolean;
+  settings: Settings;
   
   initializeStore: () => Promise<void>;
   setVersion: (versionId: string) => void;
-  setView: (view: 'graph' | 'docs' | 'impact' | 'orphans' | 'guide') => void;
+  setView: (view: 'graph' | 'docs' | 'impact' | 'orphans' | 'guide' | 'settings') => void;
   setSelectedArtifact: (id: string | null) => void;
+  updateSettings: (newSettings: Partial<Settings>) => void;
 }
 
 // Global variable to store fetched data
@@ -34,9 +42,14 @@ export const useStore = create<StoreState>((set, get) => ({
   activeView: 'graph',
   selectedArtifactId: null,
   isLoading: false,
+  settings: {
+    graphFocusDepth: 1,
+    docsFocusDepth: 1,
+    defaultDocsFocusMode: true,
+  },
+  updateSettings: (newSettings) => set((state) => ({ settings: { ...state.settings, ...newSettings } })),
 
   initializeStore: async () => {
-    if (cachedData) return;
     
     set({ isLoading: true });
     try {
