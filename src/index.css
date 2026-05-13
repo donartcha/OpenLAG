@@ -31,11 +31,25 @@
     margin: 15mm 10mm;
   }
   
+  /* Force light theme for printing to save ink */
+  *, *::before, *::after {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
   body {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     background-color: white !important;
-    color: black !important;
+  }
+  
+  [class*="border"] {
+    border-color: #aaa !important;
   }
 
   /* Hide scrollbars and allow full height for printing */
@@ -44,19 +58,6 @@
     min-height: auto !important;
     overflow: visible !important;
     position: static !important;
-  }
-
-  /* Adjust text colors for print readability */
-  h1, h2, h3, h4, p, span, div, td, th {
-    color: black !important;
-  }
-
-  /* Specific overrides to keep some styling but printable */
-  .border { border-color: #ccc !important; }
-  .border-b { border-bottom-color: #ccc !important; }
-  .border-l { border-left-color: #ccc !important; }
-  .bg-[#0c0c0c], .bg-[#111], .bg-white\/5, .bg-transparent {
-    background-color: transparent !important;
   }
 
   /* Prevent page breaks inside sections and artifacts */

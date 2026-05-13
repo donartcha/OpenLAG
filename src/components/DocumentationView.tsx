@@ -1,8 +1,10 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useStore } from '../store';
 import { Artifact, ArtifactType } from '../types';
-import { Layers, FileText, Server, FileCode2, ShieldCheck, Stethoscope, ChevronRight, Search, GitPullRequest, Repeat, Box, Rocket, Activity, Wrench, Trash2, AlertCircle, Printer } from 'lucide-react';
+import { Layers, FileText, Server, FileCode2, ShieldCheck, Stethoscope, ChevronRight, Search, GitPullRequest, Repeat, Box, Rocket, Activity, Wrench, Trash2, AlertCircle, Printer, Download } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
+import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 
 interface GroupedArtifacts {
   REQUIREMENT: Artifact[];
@@ -44,6 +46,52 @@ export const DocumentationView: React.FC = () => {
   const [isHeaderMinified, setIsHeaderMinified] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
   const [isImpactFocusMode, setIsImpactFocusMode] = useState(settings.defaultDocsFocusMode);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const pdfContainerRef = useRef<HTMLDivElement>(null);
+
+  const handleGeneratePdf = async () => {
+    if (!pdfContainerRef.current) return;
+    try {
+      setIsGeneratingPdf(true);
+      // Wait for React to render loading state if needed, though we block UI
+      await new Promise(resolve => setTimeout(resolve, 100));
+
+      const element = pdfContainerRef.current;
+      const canvas = await html2canvas(element, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: '#0a0a0a',
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight
+      });
+
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      
+      let heightLeft = pdfHeight;
+      let position = 0;
+
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft >= 0) {
+        position = heightLeft - pdfHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
+
+      pdf.save(`OpenLAG-Docs-${new Date().toISOString().split('T')[0]}.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    } finally {
+      setIsGeneratingPdf(false);
+    }
+  };
 
   const orphanArtifactIds = useMemo(() => {
     if (!graph) return new Set<string>();
@@ -314,7 +362,7 @@ export const DocumentationView: React.FC = () => {
          </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto relative flex flex-col group/doc">
+      <div ref={pdfContainerRef} className="flex-1 overflow-y-auto relative flex flex-col group/doc">
           {/* Minimized Header Controls */}
           <div className={`sticky top-0 z-30 transition-all duration-300 bg-[#0a0a0a]/80 backdrop-blur-md px-8 lg:px-16 border-b border-white/5 flex items-center justify-between print-hidden ${isHeaderMinified ? 'py-2' : 'py-8 pt-12 pb-4'}`}>
             <div className="flex items-center gap-4">
@@ -397,11 +445,12 @@ export const DocumentationView: React.FC = () => {
                         </select>
                     </div>
                     <button
-                        onClick={() => window.print()}
-                        className="flex items-center justify-center p-1.5 ml-2 hover:bg-white/10 rounded transition-colors text-white/40 hover:text-white"
+                        onClick={handleGeneratePdf}
+                        disabled={isGeneratingPdf}
+                        className="flex items-center justify-center p-1.5 ml-2 hover:bg-white/10 rounded transition-colors text-white/40 hover:text-white print-hidden disabled:opacity-50"
                         title="Export Document as PDF"
                     >
-                        <Printer size={16} />
+                        {isGeneratingPdf ? <Activity size={16} className="animate-spin text-emerald-400" /> : <Download size={16} />}
                     </button>
                 </div>
             </div>
