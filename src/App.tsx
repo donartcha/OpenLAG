@@ -3,7 +3,9 @@ import { useStore } from './store';
 import { GraphView } from './components/GraphView';
 import { DocumentationView } from './components/DocumentationView';
 import { ImpactView } from './components/ImpactView';
-import { Network, FileText, GitPullRequest, Settings, Database } from 'lucide-react';
+import { OrphansView } from './components/OrphansView';
+import { GuideView } from './components/GuideView';
+import { Network, FileText, GitPullRequest, Settings, Database, AlertCircle, BookOpen } from 'lucide-react';
 
 export default function App() {
   const { 
@@ -13,7 +15,8 @@ export default function App() {
     setVersion,
     activeView,
     setView,
-    isLoading
+    isLoading,
+    systemVersions
   } = useStore();
 
   useEffect(() => {
@@ -50,6 +53,20 @@ export default function App() {
           >
             <GitPullRequest size={20} strokeWidth={1.5} />
           </button>
+          <button 
+             onClick={() => setView('orphans')}
+             className={`transition-all hover:text-white hover:opacity-100 ${activeView === 'orphans' ? 'text-red-400 opacity-100' : 'opacity-40'}`}
+             title="Traceability Gaps (Orphans)"
+          >
+            <AlertCircle size={20} strokeWidth={1.5} />
+          </button>
+          <button 
+             onClick={() => setView('guide')}
+             className={`transition-all hover:text-white hover:opacity-100 ${activeView === 'guide' ? 'text-amber-400 opacity-100' : 'opacity-40'}`}
+             title="Usage Guide"
+          >
+            <BookOpen size={20} strokeWidth={1.5} />
+          </button>
         </div>
 
         <div className="mt-auto">
@@ -68,19 +85,54 @@ export default function App() {
             ArchGraph <span className="text-xs font-mono opacity-50 ml-2 not-italic">| Lifecycle Engine</span>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="flex flex-col items-end mr-2">
-              <span className="text-[10px] opacity-40 uppercase tracking-widest">System Version</span>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col items-end">
+                <span className="text-[10px] opacity-40 uppercase tracking-widest">Doc Snapshot</span>
+              </div>
+              <select 
+                value={currentVersionId || ''} 
+                onChange={(e) => setVersion(e.target.value)}
+                className="bg-[#0c0c0c] border border-white/20 text-xs font-mono text-emerald-400 rounded-sm px-3 py-1.5 outline-none cursor-pointer hover:bg-white/5 transition-colors focus:border-emerald-400"
+              >
+                {versions.map(v => (
+                  <option key={v.id} value={v.id}>{v.name} ({new Date(v.timestamp).toLocaleDateString()})</option>
+                ))}
+              </select>
             </div>
-            <select 
-              value={currentVersionId || ''} 
-              onChange={(e) => setVersion(e.target.value)}
-              className="bg-[#0c0c0c] border border-white/20 text-xs font-mono text-emerald-400 rounded-sm px-2 py-1 outline-none cursor-pointer hover:bg-white/5 transition-colors focus:border-emerald-400"
-            >
-              {versions.map(v => (
-                <option key={v.id} value={v.id}>{v.name} ({new Date(v.timestamp).toLocaleDateString()})</option>
-              ))}
-            </select>
+
+            <div className="h-6 w-[1px] bg-white/10" />
+
+            <div className="flex items-center gap-3 group relative">
+              <div className="p-2 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                <Database size={14} className="text-emerald-400" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[10px] opacity-40 uppercase tracking-widest leading-none">System State</span>
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-[10px] text-white/80 font-bold tracking-tight">
+                    {systemVersions.length} Components Active
+                  </span>
+                  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                </div>
+              </div>
+              
+              {/* Tooltip on hover */}
+              <div className="absolute top-full right-0 mt-2 w-64 bg-[#0f0f0f] border border-white/10 p-4 rounded-sm shadow-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                <div className="text-[9px] uppercase tracking-widest text-[#888] font-bold mb-3 border-b border-white/5 pb-2">Active Inventory</div>
+                <div className="space-y-2">
+                  {systemVersions.map(sv => (
+                    <div key={sv.id} className="flex justify-between items-center text-[10px]">
+                      <span className="text-white/60">{sv.component}</span>
+                      <span className="font-mono text-emerald-500/60">{sv.version}</span>
+                    </div>
+                  ))}
+                  {systemVersions.length === 0 && (
+                    <div className="text-white/20 italic">No system components logged.</div>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
         </header>
 
@@ -95,6 +147,8 @@ export default function App() {
           {activeView === 'graph' && <GraphView />}
           {activeView === 'docs' && <DocumentationView />}
           {activeView === 'impact' && <ImpactView />}
+          {activeView === 'orphans' && <OrphansView />}
+          {activeView === 'guide' && <GuideView />}
         </main>
       </div>
     </div>

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useStore } from '../store';
 import { Artifact, ArtifactType } from '../types';
-import { Layers, FileText, Server, FileCode2, ShieldCheck, Stethoscope, ChevronRight, Search } from 'lucide-react';
+import { Layers, FileText, Server, FileCode2, ShieldCheck, Stethoscope, ChevronRight, Search, GitPullRequest, Repeat, Box, Rocket, Activity, Wrench, Trash2, AlertCircle } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
 interface GroupedArtifacts {
@@ -13,33 +13,88 @@ interface GroupedArtifacts {
   TEST: Artifact[];
   DOCUMENTATION: Artifact[];
   INCIDENT: Artifact[];
+  INFRASTRUCTURE: Artifact[];
+  DEPLOYMENT: Artifact[];
+  MONITORING: Artifact[];
+  MAINTENANCE: Artifact[];
 }
 
 const PHASES = [
-  { id: 'req', title: 'Requirements & Specs', icon: FileText, types: ['REQUIREMENT'] },
-  { id: 'design', title: 'Design & Architecture', icon: Layers, types: ['DESIGN', 'COMPONENT'] },
-  { id: 'impl', title: 'Implementation', icon: FileCode2, types: ['CODE_ENTITY'] },
-  { id: 'verif', title: 'Verification & Testing', icon: ShieldCheck, types: ['TEST'] },
-  { id: 'docs', title: 'Docs & Evidences', icon: FileText, types: ['DOCUMENTATION'] },
-  { id: 'ops', title: 'Operations & Incidents', icon: Stethoscope, types: ['INCIDENT'] },
+  { id: 'req', title: 'Requirements / Analysis', icon: FileText, types: ['REQUIREMENT', 'USE_CASE'] },
+  { id: 'design', title: 'Technical Design', icon: Layers, types: ['DESIGN', 'COMPONENT'] },
+  { id: 'dev', title: 'Development', icon: FileCode2, types: ['CODE_ENTITY'] },
+  { id: 'review', title: 'Code Review', icon: GitPullRequest, types: ['CODE_ENTITY'] },
+  { id: 'ci', title: 'Continuous Integration', icon: Repeat, types: ['INFRASTRUCTURE'] },
+  { id: 'verif', title: 'Testing', icon: ShieldCheck, types: ['TEST'] },
+  { id: 'build', title: 'Build / Packaging', icon: Box, types: ['INFRASTRUCTURE'] },
+  { id: 'deploy', title: 'Deployment', icon: Rocket, types: ['DEPLOYMENT'] },
+  { id: 'monitor', title: 'Monitoring', icon: Activity, types: ['MONITORING', 'INCIDENT'] },
+  { id: 'maint', title: 'Maintenance / Refactoring', icon: Wrench, types: ['MAINTENANCE'] },
+  { id: 'retire', title: 'Retirement / Replacement', icon: Trash2, types: ['MAINTENANCE'] },
 ];
 
 export const DocumentationView: React.FC = () => {
-  const { graph, currentVersionId, versions } = useStore();
+  const { graph, currentVersionId, versions, systemVersions, selectedArtifactId, setSelectedArtifact } = useStore();
   
   const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
   const [selectedSubType, setSelectedSubType] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [graphFilterType, setGraphFilterType] = useState<string | 'ALL'>('ALL');
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isHeaderMinified, setIsHeaderMinified] = useState(false);
+  const [showInventory, setShowInventory] = useState(false);
+  const [isImpactFocusMode, setIsImpactFocusMode] = useState(true);
+
+  const orphanArtifactIds = useMemo(() => {
+    if (!graph) return new Set<string>();
+    const linked = new Set<string>();
+    graph.relations.forEach(rel => {
+      linked.add(rel.from);
+      linked.add(rel.to);
+    });
+    const orphans = new Set<string>();
+    graph.artifacts.forEach(art => {
+      if (!linked.has(art.id)) orphans.add(art.id);
+    });
+    return orphans;
+  }, [graph]);
+
+  const reachableArtifactIds = useMemo(() => {
+    if (!selectedArtifactId || !graph) return new Set<string>();
+    
+    const reachable = new Set<string>();
+    const queue = [selectedArtifactId];
+    reachable.add(selectedArtifactId);
+
+    while (queue.length > 0) {
+      const currentId = queue.shift()!;
+      
+      // Find all relations where currentId is involved
+      graph.relations.forEach(rel => {
+        if (rel.from === currentId && !reachable.has(rel.to)) {
+          reachable.add(rel.to);
+          queue.push(rel.to);
+        } else if (rel.to === currentId && !reachable.has(rel.from)) {
+          reachable.add(rel.from);
+          queue.push(rel.from);
+        }
+      });
+    }
+    
+    return reachable;
+  }, [selectedArtifactId, graph]);
 
   const grouped = useMemo(() => {
-    const groups = {
-      REQUIREMENT: [] as Artifact[], USE_CASE: [] as Artifact[], DESIGN: [] as Artifact[], COMPONENT: [] as Artifact[],
-      CODE_ENTITY: [] as Artifact[], TEST: [] as Artifact[], DOCUMENTATION: [] as Artifact[], INCIDENT: [] as Artifact[]
+    const groups: GroupedArtifacts = {
+      REQUIREMENT: [], USE_CASE: [], DESIGN: [], COMPONENT: [],
+      CODE_ENTITY: [], TEST: [], DOCUMENTATION: [], INCIDENT: [],
+      INFRASTRUCTURE: [], DEPLOYMENT: [], MONITORING: [], MAINTENANCE: []
     };
-    if (graph) {
+    if (graph && graph.artifacts) {
       graph.artifacts.forEach(a => {
-        if (groups[a.type as keyof typeof groups]) {
-          groups[a.type as keyof typeof groups].push(a);
+        const type = a.type as keyof GroupedArtifacts;
+        if (groups[type]) {
+          groups[type].push(a);
         }
       });
     }
@@ -47,37 +102,51 @@ export const DocumentationView: React.FC = () => {
   }, [graph]);
 
   const filteredGroups = useMemo(() => {
-    if (!searchQuery.trim()) return grouped;
-    const term = searchQuery.toLowerCase();
-    
-    const filterList = (list: Artifact[]) => 
-       list.filter(a => 
-           a.title.toLowerCase().includes(term) || 
-           a.description.toLowerCase().includes(term) ||
-           a.id.toLowerCase().includes(term) ||
-           (a.subType && a.subType.toLowerCase().includes(term))
-       );
-
-    return {
-      REQUIREMENT: filterList(grouped.REQUIREMENT),
-      USE_CASE: filterList(grouped.USE_CASE),
-      DESIGN: filterList(grouped.DESIGN),
-      COMPONENT: filterList(grouped.COMPONENT),
-      CODE_ENTITY: filterList(grouped.CODE_ENTITY),
-      TEST: filterList(grouped.TEST),
-      DOCUMENTATION: filterList(grouped.DOCUMENTATION),
-      INCIDENT: filterList(grouped.INCIDENT),
+    const filterBySearch = (list: Artifact[] = []) => {
+      if (!searchQuery.trim()) return list;
+      const term = searchQuery.toLowerCase();
+      return list.filter(a => 
+          a.title.toLowerCase().includes(term) || 
+          a.description.toLowerCase().includes(term) ||
+          a.id.toLowerCase().includes(term) ||
+          (a.subType && a.subType.toLowerCase().includes(term))
+      );
     };
-  }, [grouped, searchQuery]);
+
+    const filterByGraph = (list: Artifact[] = []) => {
+        if (!selectedArtifactId || !isImpactFocusMode) return list;
+        return list.filter(a => reachableArtifactIds.has(a.id));
+    };
+
+    const applyFilters = (list: Artifact[] = []) => filterByGraph(filterBySearch(list));
+    
+    return {
+      REQUIREMENT: applyFilters(grouped.REQUIREMENT),
+      USE_CASE: applyFilters(grouped.USE_CASE),
+      DESIGN: applyFilters(grouped.DESIGN),
+      COMPONENT: applyFilters(grouped.COMPONENT),
+      CODE_ENTITY: applyFilters(grouped.CODE_ENTITY),
+      TEST: applyFilters(grouped.TEST),
+      DOCUMENTATION: applyFilters(grouped.DOCUMENTATION),
+      INCIDENT: applyFilters(grouped.INCIDENT),
+      INFRASTRUCTURE: applyFilters(grouped.INFRASTRUCTURE),
+      DEPLOYMENT: applyFilters(grouped.DEPLOYMENT),
+      MONITORING: applyFilters(grouped.MONITORING),
+      MAINTENANCE: applyFilters(grouped.MAINTENANCE),
+    };
+  }, [grouped, searchQuery, selectedArtifactId, reachableArtifactIds]);
 
   const phasesData = useMemo(() => {
     return PHASES.map(phase => {
-      const artifactsInPhase = graph?.artifacts.filter(a => phase.types.includes(a.type as string)) || [];
-      const subTypes = Array.from(new Set(artifactsInPhase.map(a => a.subType).filter(Boolean))) as string[];
+      const filteredArtifactsInPhase = phase.types.flatMap(type => 
+        (filteredGroups[type as keyof typeof filteredGroups] || [])
+      );
+      
+      const subTypes = Array.from(new Set(filteredArtifactsInPhase.map(a => a.subType).filter(Boolean))) as string[];
       // We will also synthesize "COMPONENT" as a pseudo subtype for Design since we grouped DESIGN and COMPONENT together in phase 2,
       // but only if there are COMPONENT artifacts and they don't already have subTypes.
-      if (phase.id === 'design' && filteredGroups.COMPONENT.length > 0) {
-          const compSubTypes = Array.from(new Set(filteredGroups.COMPONENT.map(a => a.subType).filter(Boolean))) as string[];
+      if (phase.id === 'design' && (filteredGroups.COMPONENT || []).length > 0) {
+          const compSubTypes = Array.from(new Set((filteredGroups.COMPONENT || []).map(a => a.subType).filter(Boolean))) as string[];
           for (const s of compSubTypes) {
               if (!subTypes.includes(s)) subTypes.push(s);
           }
@@ -87,11 +156,11 @@ export const DocumentationView: React.FC = () => {
       }
       return {
          ...phase,
-         count: artifactsInPhase.length,
+         count: filteredArtifactsInPhase.length,
          subTypes,
       }
     });
-  }, [graph, grouped]);
+  }, [filteredGroups]);
 
   if (!graph) return <div className="p-8">Loading documentation...</div>;
 
@@ -128,24 +197,47 @@ export const DocumentationView: React.FC = () => {
   return (
     <div className="h-full w-full bg-[#0a0a0a] flex overflow-hidden">
       {/* Sidebar */}
-      <div className="w-64 shrink-0 bg-[#0c0c0c] border-r border-white/5 overflow-y-auto flex flex-col hidden md:flex">
-         <div className="p-6 pb-4 border-b border-white/5 sticky top-0 bg-[#0c0c0c]/90 backdrop-blur z-10">
-           <div className="text-[10px] uppercase tracking-widest text-emerald-500 font-bold mb-1">Lifecycle Phases</div>
-           <div className="text-xs text-white/40 font-mono">v {currentVersion?.name}</div>
+      <div className={`shrink-0 bg-[#0c0c0c] border-r border-white/5 flex flex-col transition-all duration-300 ${isSidebarCollapsed ? 'w-12' : 'w-64'}`}>
+         <div className="p-4 border-b border-white/5 sticky top-0 bg-[#0c0c0c]/90 backdrop-blur z-10 flex items-center justify-between">
+           {!isSidebarCollapsed && <div className="text-[10px] uppercase tracking-widest text-emerald-500 font-bold">Lifecycle Phases</div>}
+           <button 
+             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+             className="p-1 hover:bg-white/10 rounded transition-colors text-white/40 hover:text-white"
+           >
+             <ChevronRight className={`transition-transform duration-300 ${isSidebarCollapsed ? '' : 'rotate-180'}`} size={16} />
+           </button>
          </div>
-         <div className="p-4 space-y-1">
-            <button 
-                className={`w-full text-left px-4 py-2 text-xs font-semibold uppercase tracking-widest rounded transition-colors ${!selectedPhase ? 'bg-white/10 text-white' : 'text-white/40 hover:bg-white/5 hover:text-white/80'}`}
-                onClick={() => { setSelectedPhase(null); setSelectedSubType(null); }}
-            >
-                All Documentation
-            </button>
-            <div className="my-2 border-b border-white/5" />
+         
+         <div className={`p-4 space-y-1 overflow-y-auto custom-scrollbar flex-1 ${isSidebarCollapsed ? 'items-center px-2' : ''}`}>
+            {!isSidebarCollapsed && (
+              <button 
+                  className={`w-full text-left px-4 py-2 text-xs font-semibold uppercase tracking-widest rounded transition-colors mb-2 ${!selectedPhase ? 'bg-white/10 text-white' : 'text-white/40 hover:bg-white/5 hover:text-white/80'}`}
+                  onClick={() => { setSelectedPhase(null); setSelectedSubType(null); }}
+              >
+                  All Assets
+              </button>
+            )}
             
             {phasesData.map((phase, idx) => {
                 const Icon = phase.icon;
                 const isPhaseSelected = selectedPhase === phase.id;
                 
+                if (isSidebarCollapsed) {
+                   return (
+                     <button 
+                        key={phase.id}
+                        onClick={() => handlePhaseClick(phase.id)}
+                        className={`p-2 rounded transition-colors mb-1 group relative ${isPhaseSelected ? 'bg-emerald-500/10 text-emerald-400' : 'text-white/40 hover:bg-white/5'}`}
+                        title={phase.title}
+                     >
+                        <Icon size={18} />
+                        <div className="absolute left-full ml-2 px-2 py-1 bg-black border border-white/20 text-[10px] whitespace-nowrap rounded opacity-0 group-hover:opacity-100 pointer-events-none z-50">
+                          {phase.title} ({phase.count})
+                        </div>
+                     </button>
+                   )
+                }
+
                 return (
                     <div key={phase.id} className="flex flex-col mb-1">
                         <button 
@@ -180,47 +272,148 @@ export const DocumentationView: React.FC = () => {
          </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto relative flex flex-col">
-          <div className="p-8 pb-4 lg:px-16 lg:pt-12 shrink-0">
-            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-2 pb-4 border-b border-white/10">
-                <h1 className="text-3xl font-serif italic tracking-tight">
-                {selectedSubType ? `${selectedSubType} Documentation` : selectedPhase ? phasesData.find(p => p.id === selectedPhase)?.title : 'System Documentation'}
-                </h1>
-                <div className="relative w-full md:w-64">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Search size={14} className="text-white/40" />
+      <div className="flex-1 overflow-y-auto relative flex flex-col group/doc">
+          {/* Minimized Header Controls */}
+          <div className={`sticky top-0 z-30 transition-all duration-300 bg-[#0a0a0a]/80 backdrop-blur-md px-8 lg:px-16 border-b border-white/5 flex items-center justify-between ${isHeaderMinified ? 'py-2' : 'py-8 pt-12 pb-4'}`}>
+            <div className="flex items-center gap-4">
+               <h1 className={`font-serif italic tracking-tight transition-all duration-300 ${isHeaderMinified ? 'text-lg' : 'text-3xl'}`}>
+               {selectedSubType ? `${selectedSubType} Documentation` : selectedPhase ? phasesData.find(p => p.id === selectedPhase)?.title : 'System Documentation'}
+               </h1>
+               <div className="h-4 w-px bg-white/10" />
+               <button 
+                 onClick={() => setIsHeaderMinified(!isHeaderMinified)}
+                 className="p-1 hover:bg-white/10 rounded transition-colors text-white/20 hover:text-white/60"
+                 title={isHeaderMinified ? "Expand Header" : "Minimize Header"}
+               >
+                 <ChevronRight className={`transition-transform duration-300 ${isHeaderMinified ? 'rotate-90' : '-rotate-90'}`} size={14} />
+               </button>
+            </div>
+
+            <div className="flex flex-col md:flex-row gap-2 items-center">
+                {selectedArtifactId && (
+                    <div className="flex items-center gap-2 mr-4">
+                        <button 
+                            onClick={() => setIsImpactFocusMode(!isImpactFocusMode)}
+                            className={`flex items-center gap-2 px-3 py-1 rounded-sm border transition-all text-[10px] font-mono tracking-tight cursor-pointer ${isImpactFocusMode ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : 'bg-white/5 border-white/10 text-white/40 hover:text-white/60'}`}
+                        >
+                            <Activity size={12} className={isImpactFocusMode ? 'animate-pulse' : ''} />
+                            FOCUS: {isImpactFocusMode ? 'ON' : 'OFF'}
+                        </button>
+                        <div className="h-4 w-[1px] bg-white/10 mx-1" />
+                        <span className="text-[10px] text-white/40 font-mono italic">
+                             {selectedArtifactId}
+                        </span>
+                        <button 
+                            onClick={() => setSelectedArtifact(null)}
+                            className="p-1 text-white/20 hover:text-red-400 transition-colors"
+                            title="Clear Selection"
+                        >
+                            <Trash2 size={12} />
+                        </button>
                     </div>
-                    <input
-                        type="text"
-                        placeholder="Search documentation..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-[#111] border border-white/10 rounded-md py-2 pl-9 pr-3 text-xs text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-colors"
-                    />
+                )}
+                
+                <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+                    <div className="relative w-full md:w-40">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Search size={14} className="text-white/40" />
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Keywords..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-[#111] border border-white/10 rounded-md py-1.5 pl-8 pr-3 text-xs text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-colors"
+                        />
+                    </div>
+                    <div className="flex gap-1 border border-white/10 p-0.5 rounded-md bg-[#0a0a0a]">
+                        <select
+                            value={graphFilterType}
+                            onChange={(e) => setGraphFilterType(e.target.value)}
+                            className="bg-transparent border-none py-1 px-2 text-[9px] text-white/50 focus:outline-none cursor-pointer appearance-none uppercase tracking-wider"
+                        >
+                            <option value="ALL">All Types</option>
+                            {Object.keys(grouped).map(type => (
+                                <option key={type} value={type} className="bg-[#0c0c0c]">{type.replace('_', ' ')}</option>
+                            ))}
+                        </select>
+                        <div className="h-3 w-px bg-white/10 self-center mx-0.5"></div>
+                        <select
+                            value={selectedArtifactId || ''}
+                            onChange={(e) => setSelectedArtifact(e.target.value || null)}
+                            className="bg-transparent border-none py-1 px-2 text-[9px] text-emerald-400 focus:outline-none cursor-pointer appearance-none font-mono max-w-[120px]"
+                        >
+                            <option value="" className="text-white">Artifact...</option>
+                            {(graph?.artifacts || [])
+                                .filter(a => graphFilterType === 'ALL' || a.type === graphFilterType)
+                                .sort((a,b) => a.id.localeCompare(b.id))
+                                .map(a => (
+                                <option key={a.id} value={a.id} className="text-white bg-[#0c0c0c]">
+                                    {a.id}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </div>
             </div>
-            
-            {(!selectedPhase || !selectedSubType) && (
-                <div className="text-xs font-mono text-white/40 mb-8 mt-2">
-                    GENERATED FOR VERSION: <span className="text-emerald-400">{currentVersion?.name} ({currentVersionId})</span><br/>
-                    TIMESTAMP: {new Date().toISOString().split('T')[0]}
-                </div>
+          </div>
+          
+          <div className="px-8 lg:px-16 pt-4 shrink-0">
+            {!isHeaderMinified && (
+              <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-12 mb-8 mt-2 animate-in fade-in slide-in-from-top-1 duration-300">
+                  <div className="text-xs font-mono text-white/40">
+                      VERSION: <span className="text-emerald-400">{currentVersion?.name} ({currentVersionId})</span><br/>
+                      DATE: {new Date().toISOString().split('T')[0]}
+                  </div>
+                  {systemVersions.length > 0 && (
+                      <div className="flex flex-col gap-2">
+                          <button 
+                            onClick={() => setShowInventory(!showInventory)}
+                            className="text-[10px] uppercase tracking-widest text-white/20 font-bold flex items-center gap-2 hover:text-white/40 transition-colors"
+                          >
+                            System Inventory
+                            <ChevronRight size={10} className={`transition-transform ${showInventory ? 'rotate-90' : ''}`} />
+                          </button>
+                          {showInventory && (
+                            <div className="flex gap-2 flex-wrap animate-in fade-in slide-in-from-left-2 duration-300">
+                                {systemVersions.map(sv => (
+                                    <div key={sv.id} className="flex items-center gap-2 bg-white/5 border border-white/10 px-2 py-1 rounded text-[10px] tabular-nums">
+                                        <span className="text-emerald-500 font-bold">{sv.component}</span>
+                                        <span className="text-white/40 font-mono">{sv.version}</span>
+                                    </div>
+                                ))}
+                            </div>
+                          )}
+                      </div>
+                  )}
+              </div>
             )}
           </div>
           
-          <div className="flex-1 overflow-y-auto px-8 lg:px-16 pb-12">
+          <div className="flex-1 overflow-y-auto px-8 lg:px-16 pb-12 custom-scrollbar">
         {/* 1. Requirements */}
         {(!selectedPhase || selectedPhase === 'req') && (
             <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">1. Requirements & Specifications</h2>
-                {filteredGroups.REQUIREMENT.length === 0 && <p className="italic text-white/40 text-xs">No requirements found in this version.</p>}
-                {filteredGroups.REQUIREMENT
+                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">1. Requirements / Analysis</h2>
+                {(filteredGroups.REQUIREMENT?.length === 0 && filteredGroups.USE_CASE?.length === 0) && <p className="italic text-white/40 text-xs">No requirements found in this version.</p>}
+                {[...(filteredGroups.REQUIREMENT || []), ...(filteredGroups.USE_CASE || [])]
                     .filter(req => !selectedSubType || req.subType === selectedSubType)
                     .map(req => (
-                  <div key={req.id} className="mb-6 bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-blue-500/50 hover:bg-white-[0.02] transition-colors">
+                  <div key={req.id} className="mb-6 bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-blue-500/50 hover:bg-white-[0.02] transition-colors relative group">
                     <h3 className="font-serif text-lg text-white flex items-center gap-4 flex-wrap mb-4">
-                      <span className="text-[10px] font-mono bg-black text-blue-400 px-2 py-1 border border-white/5 uppercase tracking-widest">{req.id}</span>
+                      <button 
+                        onClick={() => setSelectedArtifact(req.id)}
+                        className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest hover:border-blue-500/50 transition-colors ${selectedArtifactId === req.id ? 'text-blue-400 border-blue-500/50' : 'text-white/40'}`}
+                      >
+                          {req.id}
+                      </button>
                       {req.subType && <span className="text-[10px] font-sans bg-blue-500/10 text-blue-300 px-2 py-1 border border-blue-500/20 uppercase tracking-widest">{req.subType}</span>}
+                      {orphanArtifactIds.has(req.id) && (
+                        <span className="text-[10px] bg-red-500/10 text-red-400 px-2 py-1 border border-red-500/20 uppercase tracking-widest flex items-center gap-1">
+                          <AlertCircle size={10} />
+                          Traceability Gap
+                        </span>
+                      )}
                       {req.title}
                     </h3>
                     <MarkdownRenderer content={req.description} />
@@ -229,170 +422,288 @@ export const DocumentationView: React.FC = () => {
             </section>
         )}
 
-        {/* 2. Design & Architecture */}
+        {/* 2. Technical Design */}
         {(!selectedPhase || selectedPhase === 'design') && (
             <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">2. Design & Architecture</h2>
-                {filteredGroups.DESIGN.length === 0 && filteredGroups.COMPONENT.length === 0 && <p className="italic text-white/40 text-xs">No design artifacts found.</p>}
-                
-                {filteredGroups.DESIGN
+                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">2. Technical Design</h2>
+                {(filteredGroups.DESIGN?.length === 0 && (filteredGroups.COMPONENT?.length || 0) === 0) && <p className="italic text-white/40 text-xs text-center p-12 bg-white/5 border border-dashed border-white/10 rounded">No architectural design for this phase.</p>}
+                {(filteredGroups.DESIGN || [])
                     .filter(des => !selectedSubType || des.subType === selectedSubType)
-                    .map(des => {
-                  const implementsIds = getRelations(des.id, 'to').filter(r => r.relation.type === 'DERIVES_FROM').map(r => r.artifact?.id);
-                  return (
-                    <div key={des.id} className="mb-6 bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-purple-500/50 hover:bg-white-[0.02] transition-colors">
-                      <h3 className="font-serif text-lg text-white flex gap-3 items-center mb-4">
+                    .map(des => (
+                  <div key={des.id} className="mb-6 bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-purple-500/50 hover:bg-white-[0.02] transition-colors">
+                    <h3 className="font-serif text-lg text-white mb-4 flex items-center gap-3">
+                        <button 
+                            onClick={() => setSelectedArtifact(des.id)}
+                            className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest hover:border-purple-500/50 transition-colors ${selectedArtifactId === des.id ? 'text-purple-400 border-purple-500/50' : 'text-white/40'}`}
+                        >
+                            {des.id}
+                        </button>
+                        {orphanArtifactIds.has(des.id) && (
+                            <span className="text-[8px] bg-red-500/10 text-red-400 px-1.5 py-0.5 border border-red-500/20 uppercase font-mono tracking-tighter flex items-center gap-1">
+                                <AlertCircle size={10} />
+                                Orphan
+                            </span>
+                        )}
                         {des.title}
-                        {des.subType && <span className="text-[9px] font-sans bg-purple-500/10 text-purple-300 px-2 py-0.5 border border-purple-500/20 uppercase tracking-widest">{des.subType}</span>}
-                      </h3>
-                      <MarkdownRenderer content={des.description} />
-                      {implementsIds.length > 0 && (
-                        <div className="mt-4 text-[10px] uppercase tracking-widest text-white/40 bg-black/50 p-2 border border-white/5 inline-block">
-                          <span className="font-semibold text-purple-400">Derives from:</span> <span className="font-mono ml-2 uppercase text-white/60">{implementsIds.join(', ')}</span>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-                
-                {(!selectedSubType || selectedSubType === 'Component') && filteredGroups.COMPONENT.length > 0 && (
-                    <>
-                        <h3 className="text-xs uppercase tracking-widest text-white/40 mt-12 mb-4 ml-1">Components</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        {filteredGroups.COMPONENT
-                            .filter(comp => !selectedSubType || selectedSubType === 'Component' || comp.subType === selectedSubType)
-                            .map(comp => (
-                            <div key={comp.id} className="bg-[#0c0c0c] border border-white/10 p-5 hover:bg-white/[0.03] transition-colors border-l-[3px] border-l-amber-500/50">
-                            <h4 className="font-serif text-[#e0e0e0] flex items-center gap-2 mb-3">
-                                {comp.title}
-                                {comp.subType && <span className="text-[8px] font-sans bg-amber-500/10 text-amber-300 px-1.5 py-0.5 border border-amber-500/20 uppercase tracking-widest">{comp.subType}</span>}
-                            </h4>
-                            <MarkdownRenderer content={comp.description} />
-                            </div>
-                        ))}
-                        </div>
-                    </>
-                )}
+                    </h3>
+                    <MarkdownRenderer content={des.description} />
+                  </div>
+                ))}
             </section>
         )}
 
-        {/* 3. Implementation */}
-        {(!selectedPhase || selectedPhase === 'impl') && (
+        {/* 3. Development */}
+        {(!selectedPhase || selectedPhase === 'dev') && (
             <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">3. Implementation Traceability</h2>
+                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">3. Development</h2>
                 <div className="overflow-x-auto rounded border border-white/10">
                 <table className="min-w-full border-collapse text-xs">
-                    <thead className="bg-[#0c0c0c] border-b border-white/10">
+                    <thead className="bg-[#0c0c0c] border-b border-white/10 text-white/40 uppercase tracking-[0.2em] text-[8px] font-bold">
                     <tr>
-                        <th className="p-3 text-left font-semibold text-white/60 uppercase tracking-widest text-[9px]">Code Entity</th>
-                        <th className="p-3 text-left font-semibold text-white/60 uppercase tracking-widest text-[9px] border-l border-white/5">Implements Component</th>
-                        <th className="p-3 text-left font-semibold text-white/60 uppercase tracking-widest text-[9px] border-l border-white/5">Description</th>
+                        <th className="p-4 text-left">Code Entity</th>
+                        <th className="p-4 text-left border-l border-white/5">Mapping</th>
+                        <th className="p-4 text-left border-l border-white/5 w-1/2">Logic Summary</th>
                     </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
-                    {filteredGroups.CODE_ENTITY
+                    {(filteredGroups.CODE_ENTITY || [])
+                        .filter(code => code.subType !== 'Review')
                         .filter(code => !selectedSubType || code.subType === selectedSubType)
-                        .map(code => {
-                        const comps = getRelations(code.id, 'from').filter(r => r.relation.type === 'IMPLEMENTS').map(r => r.artifact?.title).join(', ');
-                        return (
-                        <tr key={code.id} className="bg-transparent hover:bg-white/5 transition-colors">
-                            <td className="p-3 font-mono text-emerald-400">
-                            {code.title}
-                            {code.subType && <div className="text-[8px] font-sans text-emerald-500/50 uppercase tracking-widest mt-1">{code.subType}</div>}
+                        .map(code => (
+                        <tr key={code.id} className="bg-transparent hover:bg-white/[0.02] transition-colors group">
+                            <td className="p-4 font-mono">
+                                <button 
+                                    onClick={() => setSelectedArtifact(code.id)}
+                                    className={`text-left hover:text-emerald-300 transition-colors ${selectedArtifactId === code.id ? 'text-emerald-400' : 'text-emerald-500/70'}`}
+                                >
+                                    {code.title}
+                                </button>
+                                {orphanArtifactIds.has(code.id) && (
+                                    <div className="flex items-center gap-1 text-[8px] text-red-400 mt-0.5 font-bold uppercase tracking-tighter">
+                                        <AlertCircle size={8} />
+                                        Unlinked Entity
+                                    </div>
+                                )}
+                                <div className="text-[8px] text-white/20 mt-1 uppercase tracking-tighter">{code.id}</div>
                             </td>
-                            <td className="p-3 border-l border-white/5 text-amber-400/80 font-serif">{comps || '-'}</td>
-                            <td className="p-3 border-l border-white/5 text-[#e0e0e0]/60 leading-relaxed">
-                                <MarkdownRenderer content={code.description} />
-                            </td>
+                            <td className="p-4 border-l border-white/5 text-amber-400/80">{code.subType || '-'}</td>
+                            <td className="p-4 border-l border-white/5 text-white/60"><MarkdownRenderer content={code.description} /></td>
                         </tr>
-                        )
-                    })}
+                    ))}
+                    {((filteredGroups.CODE_ENTITY || []).filter(c => c.subType !== 'Review').length === 0) && (
+                        <tr>
+                            <td colSpan={3} className="p-12 text-center text-white/20 italic">No code entities documented for this version.</td>
+                        </tr>
+                    )}
                     </tbody>
                 </table>
                 </div>
             </section>
         )}
 
-        {/* 4. Verification */}
+        {/* 4. Code Review */}
+        {(!selectedPhase || selectedPhase === 'review') && (
+            <section className="mb-16">
+                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">4. Code Review</h2>
+                {((filteredGroups.CODE_ENTITY || []).filter(c => c.subType === 'Review').length === 0) && <p className="italic text-white/40 text-xs text-center p-8 bg-white/5 border border-dashed border-white/10 rounded">No active reviews for this version.</p>}
+                <div className="grid grid-cols-1 gap-4">
+                    {(filteredGroups.CODE_ENTITY || []).filter(c => c.subType === 'Review').map(rev => (
+                        <div key={rev.id} className="bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-emerald-500/50">
+                            <h3 className="font-serif text-lg text-white mb-2 flex items-center gap-3">
+                                <button 
+                                    onClick={() => setSelectedArtifact(rev.id)}
+                                    className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest hover:border-emerald-500/50 transition-colors ${selectedArtifactId === rev.id ? 'text-emerald-400 border-emerald-500/50' : 'text-white/40'}`}
+                                >
+                                    {rev.id}
+                                </button>
+                                {rev.title}
+                            </h3>
+                            <MarkdownRenderer content={rev.description} />
+                        </div>
+                    ))}
+                </div>
+            </section>
+        )}
+
+        {/* 5. Continuous Integration */}
+        {(!selectedPhase || selectedPhase === 'ci') && (
+            <section className="mb-16">
+                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">5. Continuous Integration (CI)</h2>
+                {((filteredGroups.INFRASTRUCTURE || []).filter(i => i.subType?.includes('CI') || i.subType === 'Pipeline').length === 0) && <p className="italic text-white/40 text-xs p-12 bg-white/5 border border-dashed border-white/10 rounded text-center">No CI pipelines defined.</p>}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {(filteredGroups.INFRASTRUCTURE || []).filter(i => i.subType?.includes('CI') || i.subType === 'Pipeline').map(ci => (
+                        <div key={ci.id} className="bg-[#0c0c0c] border border-white/10 p-5 hover:bg-white/[0.03] transition-all">
+                            <h4 className="text-white font-bold mb-2 flex items-center gap-2">
+                                <Repeat size={14} className="text-emerald-400" />
+                                {ci.title}
+                            </h4>
+                            <MarkdownRenderer content={ci.description} />
+                        </div>
+                    ))}
+                </div>
+            </section>
+        )}
+
+        {/* 6. Testing */}
         {(!selectedPhase || selectedPhase === 'verif') && (
             <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">4. Verification & Testing</h2>
+                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">6. Verification & Quality</h2>
                 <div className="space-y-4">
-                {filteredGroups.TEST
-                    .filter(test => !selectedSubType || test.subType === selectedSubType)
-                    .map(test => {
-                    const validates = getRelations(test.id, 'from').filter(r => r.relation.type === 'VALIDATES').map(r => r.artifact?.title).join(', ');
-                    return (
-                    <div key={test.id} className="bg-[#0c0c0c] border border-white/10 p-5 border-l-[3px] border-l-rose-500/50 hover:bg-white/[0.02] transition-colors">
-                        <h3 className="font-serif text-[#e0e0e0] flex items-center gap-3 mb-3">
-                        {test.title}
-                        {test.subType && <span className="text-[9px] font-sans bg-rose-500/10 text-rose-300 px-2 py-0.5 border border-rose-500/20 uppercase tracking-widest">{test.subType}</span>}
+                {(filteredGroups.TEST || []).map(test => (
+                    <div key={test.id} className="bg-[#0c0c0c] border border-white/10 p-5 border-l-[3px] border-l-rose-500/50">
+                        <h3 className="font-serif text-[#e0e0e0] mb-2 flex items-center gap-3">
+                            <button 
+                                onClick={() => setSelectedArtifact(test.id)}
+                                className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest hover:border-rose-500/50 transition-colors ${selectedArtifactId === test.id ? 'text-rose-400 border-rose-500/50' : 'text-white/40'}`}
+                            >
+                                {test.id}
+                            </button>
+                            {orphanArtifactIds.has(test.id) && (
+                                <span className="text-[10px] bg-red-500/10 text-red-400 px-2 py-1 border border-red-500/20 uppercase tracking-widest flex items-center gap-1">
+                                    <AlertCircle size={10} />
+                                    Gap
+                                </span>
+                            )}
+                            {test.title}
                         </h3>
                         <MarkdownRenderer content={test.description} />
-                        <div className="mt-4 text-[10px] uppercase tracking-widest text-white/40 bg-black/50 p-2 border border-white/5 inline-block">
-                        <span className="font-semibold text-rose-400">Validates:</span> <span className="font-serif capitalize text-white/60 ml-2">{validates || 'Unknown'}</span>
-                        </div>
-                    </div>
-                    );
-                })}
-                </div>
-            </section>
-        )}
-
-        {/* 5. Documentation */}
-        {(!selectedPhase || selectedPhase === 'docs') && (
-            <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">5. Documentation & Evidences</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filteredGroups.DOCUMENTATION.length === 0 && <p className="italic text-white/40 text-xs col-span-2">No documentation artifacts found.</p>}
-                {filteredGroups.DOCUMENTATION
-                    .filter(doc => !selectedSubType || doc.subType === selectedSubType)
-                    .map(doc => (
-                    <div key={doc.id} className="bg-[#0c0c0c] border border-white/10 p-5 hover:bg-white/[0.03] transition-colors border-l-[3px] border-l-slate-500/50">
-                    <h4 className="font-serif text-[#e0e0e0] flex items-center gap-2 mb-3">
-                        {doc.title}
-                        {doc.subType && <span className="text-[8px] font-sans bg-slate-500/10 text-slate-300 px-1.5 py-0.5 border border-slate-500/20 uppercase tracking-widest">{doc.subType}</span>}
-                    </h4>
-                    <MarkdownRenderer content={doc.description} />
                     </div>
                 ))}
+                {(filteredGroups.TEST || []).length === 0 && <p className="italic text-white/40 text-xs">No verification artifacts recorded.</p>}
                 </div>
             </section>
         )}
 
-        {/* 6. Operations */}
-        {(!selectedPhase || selectedPhase === 'ops') && (
+        {/* 7. Build */}
+        {(!selectedPhase || selectedPhase === 'build') && (
             <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">6. Operations & Incidents</h2>
-                <div className="space-y-4">
-                {filteredGroups.INCIDENT.length === 0 && <p className="italic text-white/40 text-xs">No incidents found.</p>}
-                {filteredGroups.INCIDENT
-                    .filter(inc => !selectedSubType || inc.subType === selectedSubType)
-                    .map(inc => {
-                    const affected = getRelations(inc.id, 'from').filter(r => r.relation.type === 'BREAKS').map(r => r.artifact?.title).join(', ');
-                    const fixedBy = getRelations(inc.id, 'to').filter(r => r.relation.type === 'FIXES').map(r => r.artifact?.title).join(', ');
-                    return (
-                    <div key={inc.id} className="bg-[#1a0a0a] border border-red-500/20 p-5 border-l-[3px] border-l-red-500/50 hover:bg-red-900/10 transition-colors">
-                        <h3 className="font-serif text-[#e0e0e0] flex items-center gap-3 mb-3">
-                        <span className="text-red-400">⚠️ {inc.title}</span>
-                        {inc.subType && <span className="text-[9px] font-sans bg-red-500/10 text-red-300 px-2 py-0.5 border border-red-500/20 uppercase tracking-widest">{inc.subType}</span>}
-                        </h3>
-                        <MarkdownRenderer content={inc.description} />
-                        <div className="flex gap-4 mt-4">
-                        {affected && (
-                            <div className="text-[10px] uppercase tracking-widest text-red-400/60 bg-red-950/30 p-2 border border-red-500/10 inline-block">
-                            <span className="font-semibold text-red-400">Breaks:</span> <span className="font-serif capitalize text-red-200/60 ml-2">{affected}</span>
-                            </div>
-                        )}
-                        {fixedBy && (
-                            <div className="text-[10px] uppercase tracking-widest text-emerald-400/60 bg-emerald-950/30 p-2 border border-emerald-500/10 inline-block">
-                            <span className="font-semibold text-emerald-400">Fixed By:</span> <span className="font-serif capitalize text-emerald-200/60 ml-2">{fixedBy}</span>
-                            </div>
-                        )}
+                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">7. Build & Packaging</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {(filteredGroups.INFRASTRUCTURE || []).filter(i => i.subType === 'Build' || i.subType === 'Package').map(b => (
+                        <div key={b.id} className="bg-[#0c0c0c] border border-white/10 p-5 border-l-[3px] border-l-amber-500/50">
+                            <h4 className="text-white font-bold mb-2 flex items-center gap-2">
+                                <Box size={14} className="text-amber-400" />
+                                {b.title}
+                            </h4>
+                            <MarkdownRenderer content={b.description} />
                         </div>
-                    </div>
-                    );
-                })}
+                    ))}
+                    {((filteredGroups.INFRASTRUCTURE || []).filter(i => i.subType === 'Build' || i.subType === 'Package').length === 0) && <p className="italic text-white/40 text-xs col-span-2">Build configurations are handled externally.</p>}
+                </div>
+            </section>
+        )}
+
+        {/* 8. Deployment */}
+        {(!selectedPhase || selectedPhase === 'deploy') && (
+            <section className="mb-16">
+                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">8. Deployment</h2>
+                <div className="space-y-6">
+                    {(filteredGroups.DEPLOYMENT || []).map(d => (
+                        <div key={d.id} className="bg-[#0c0c0c] border border-white/10 p-6 rounded-sm border-l-[3px] border-l-sky-500/50">
+                            <h3 className="text-xl font-serif italic text-white mb-4 flex items-center gap-3">
+                                <Rocket size={20} className="text-sky-400" />
+                                <button 
+                                    onClick={() => setSelectedArtifact(d.id)}
+                                    className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest hover:border-sky-500/50 transition-colors ${selectedArtifactId === d.id ? 'text-sky-400 border-sky-500/50' : 'text-white/40'}`}
+                                >
+                                    {d.id}
+                                </button>
+                                {orphanArtifactIds.has(d.id) && (
+                                    <span className="text-[10px] bg-red-500/10 text-red-400 px-2 py-1 border border-red-500/20 uppercase tracking-widest flex items-center gap-1">
+                                        <AlertCircle size={10} />
+                                        Unlinked
+                                    </span>
+                                )}
+                                {d.title}
+                            </h3>
+                            <MarkdownRenderer content={d.description} />
+                        </div>
+                    ))}
+                    {(filteredGroups.DEPLOYMENT || []).length === 0 && <p className="italic text-white/40 text-xs">No deployment records found.</p>}
+                </div>
+            </section>
+        )}
+
+        {/* 9. Monitoring */}
+        {(!selectedPhase || selectedPhase === 'monitor') && (
+            <section className="mb-16">
+                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">9. Monitoring & Observability</h2>
+                <div className="grid grid-cols-1 gap-6">
+                    {(filteredGroups.MONITORING || []).map(m => (
+                        <div key={m.id} className="bg-black/40 border border-white/10 p-6 rounded relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-4 opacity-5">
+                                <Activity size={80} />
+                            </div>
+                            <h3 className="text-white font-bold mb-3 flex items-center gap-2">
+                                <Activity size={16} className="text-red-400" />
+                                <button 
+                                    onClick={() => setSelectedArtifact(m.id)}
+                                    className={`text-[10px] font-mono bg-black/40 px-2 py-1 border border-white/5 uppercase tracking-widest hover:border-red-400/50 transition-colors ${selectedArtifactId === m.id ? 'text-red-400 border-red-500/50' : 'text-white/40'}`}
+                                >
+                                    {m.id}
+                                </button>
+                                {orphanArtifactIds.has(m.id) && (
+                                    <span className="text-[10px] bg-red-500/10 text-red-400 px-2 py-1 border border-red-500/20 uppercase tracking-widest flex items-center gap-1">
+                                        <AlertCircle size={10} />
+                                        Unlinked
+                                    </span>
+                                )}
+                                {m.title}
+                            </h3>
+                            <MarkdownRenderer content={m.description} />
+                        </div>
+                    ))}
+                    {(filteredGroups.INCIDENT || []).length > 0 && (
+                        <div className="mt-8">
+                            <h4 className="text-[10px] uppercase tracking-widest text-red-500/60 font-bold mb-4">Historical Incidents (Feedback Loop)</h4>
+                            <div className="space-y-3">
+                                {filteredGroups.INCIDENT.map(inc => (
+                                    <div key={inc.id} className="bg-red-500/5 border border-red-500/10 p-4 rounded text-xs">
+                                        <span className="font-bold text-red-400 mr-2">[{inc.id}]</span>
+                                        <span className="text-white/80">{inc.title}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </section>
+        )}
+
+        {/* 10. Maintenance */}
+        {(!selectedPhase || selectedPhase === 'maint') && (
+            <section className="mb-16">
+                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">10. Maintenance / Refactoring</h2>
+                <div className="space-y-4">
+                    {(filteredGroups.MAINTENANCE || []).filter(m => m.subType !== 'Retirement').map(m => (
+                        <div key={m.id} className="bg-[#0c0c0c] border border-white/10 p-5 border-l-[3px] border-l-indigo-500/50">
+                            <h3 className="text-white font-bold mb-2 flex items-center gap-2">
+                                <Wrench size={14} className="text-indigo-400" />
+                                {m.title}
+                            </h3>
+                            <MarkdownRenderer content={m.description} />
+                        </div>
+                    ))}
+                    {((filteredGroups.MAINTENANCE || []).filter(m => m.subType !== 'Retirement').length === 0) && <p className="italic text-white/40 text-xs">System is in active health. No maintenance tasks scheduled.</p>}
+                </div>
+            </section>
+        )}
+
+        {/* 11. Retirement */}
+        {(!selectedPhase || selectedPhase === 'retire') && (
+            <section className="mb-16">
+                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">11. Retirement / Replacement</h2>
+                <div className="space-y-4">
+                    {(filteredGroups.MAINTENANCE || []).filter(m => m.subType === 'Retirement').map(m => (
+                        <div key={m.id} className="bg-[#1a0a0a] border border-red-900/30 p-5 border-l-[3px] border-l-red-900">
+                            <h3 className="text-white/60 font-bold mb-2 flex items-center gap-2">
+                                <Trash2 size={14} className="text-red-900" />
+                                {m.title}
+                            </h3>
+                            <MarkdownRenderer content={m.description} />
+                        </div>
+                    ))}
+                    {((filteredGroups.MAINTENANCE || []).filter(m => m.subType === 'Retirement').length === 0) && <p className="italic text-white/40 text-xs">No retired components for this version.</p>}
                 </div>
             </section>
         )}

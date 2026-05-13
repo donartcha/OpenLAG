@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback, useEffect, useState } from 'react';
 import { ReactFlow, MiniMap, Controls, Background, useNodesState, useEdgesState, Node, Edge, MarkerType, Handle, Position, Panel, ReactFlowProvider, useReactFlow } from '@xyflow/react';
 import dagre from 'dagre';
-import { Search, X } from 'lucide-react';
+import { Search, X, AlertCircle } from 'lucide-react';
 import '@xyflow/react/dist/style.css';
 import { useStore } from '../store';
 import { ArtifactType } from '../types';
@@ -15,24 +15,37 @@ const typeColors: Record<ArtifactType, string> = {
   TEST: 'text-rose-400 border-rose-400',
   DOCUMENTATION: 'text-slate-400 border-slate-400',
   INCIDENT: 'text-red-400 border-red-400',
+  INFRASTRUCTURE: 'text-cyan-400 border-cyan-400',
+  DEPLOYMENT: 'text-sky-400 border-sky-400',
+  MONITORING: 'text-orange-400 border-orange-400',
+  MAINTENANCE: 'text-violet-400 border-violet-400',
 };
 
 const CustomNode = ({ data, selected }: any) => {
   const colorClass = typeColors[data.type as ArtifactType] || 'text-white/40 border-white/40';
   const isDimmed = data.dimmed;
+  const isOrphan = data.isOrphan;
 
   return (
     <div className={`p-4 shadow-xl border bg-[#151515] w-[260px] cursor-pointer transition-all duration-300
       ${selected ? 'ring-1 ring-white/50 border-white/50 z-10' : 'border-white/10 hover:border-white/30'} 
       ${isDimmed ? 'opacity-30 grayscale saturate-0' : 'opacity-100'}
+      ${isOrphan ? 'border-red-500/50' : 'border-white/10'}
       border-l-[3px]`}
-      style={{ borderLeftColor: 'currentColor' }}
+      style={{ borderLeftColor: isOrphan ? '#ef4444' : 'currentColor' }}
     >
       <Handle type="target" position={Position.Top} id="t-top" className={`w-2 h-2 rounded-none ${isDimmed ? 'opacity-0' : 'bg-emerald-500/50 border-0'}`} style={{ left: '30%' }} />
       <Handle type="source" position={Position.Top} id="s-top" className={`w-2 h-2 rounded-none ${isDimmed ? 'opacity-0' : 'bg-blue-500/50 border-0'}`} style={{ left: '70%' }} />
       <div className={`flex justify-between items-start mb-3 ${colorClass}`}>
         <div className="flex flex-col gap-0.5">
-          <span className="text-[9px] font-bold uppercase tracking-widest">{data.type}</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[9px] font-bold uppercase tracking-widest">{data.type}</span>
+            {isOrphan && (
+               <div className="text-red-500" title="Orphan Artifact (No relationships)">
+                 <AlertCircle size={10} />
+               </div>
+            )}
+          </div>
           {data.subType && <span className="text-[8px] font-sans uppercase tracking-wider opacity-60">{data.subType}</span>}
         </div>
         <span className="text-[10px] font-mono opacity-60 shrink-0 ml-2">{data.id}</span>
@@ -83,9 +96,23 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 };
 
 const GraphFlow: React.FC = () => {
-  const { graph, selectedArtifactId, setSelectedArtifact } = useStore();
+  const { graph, selectedArtifactId, setSelectedArtifact, setView } = useStore();
   const { setCenter } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
+
+  const orphanIds = useMemo(() => {
+    if (!graph) return new Set<string>();
+    const linked = new Set<string>();
+    graph.relations.forEach(rel => {
+      linked.add(rel.from);
+      linked.add(rel.to);
+    });
+    const orphans = new Set<string>();
+    graph.artifacts.forEach(art => {
+      if (!linked.has(art.id)) orphans.add(art.id);
+    });
+    return orphans;
+  }, [graph]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -128,12 +155,13 @@ const GraphFlow: React.FC = () => {
       }
 
       const isDimmed = selectedArtifactId !== null && !isSelected && !isConnectedToSelected;
+      const isOrphan = orphanIds.has(a.id);
 
       return {
         id: a.id,
         type: 'artifact',
         position: { x: 0, y: 0 },
-        data: { ...a, dimmed: isDimmed }
+        data: { ...a, dimmed: isDimmed, isOrphan }
       };
     });
 
@@ -239,6 +267,15 @@ const GraphFlow: React.FC = () => {
             
             {isDropdownOpen && (
               <div className="max-h-[50vh] overflow-y-auto flex flex-col mt-1 space-y-1 pr-1" style={{ scrollbarWidth: 'thin' }}>
+                {orphanIds.size > 0 && !searchTerm && (
+                   <button 
+                    onClick={() => setView('orphans')}
+                    className="flex items-center gap-2 p-2 bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] rounded mb-2 hover:bg-red-500/20 transition-all uppercase tracking-widest font-bold"
+                   >
+                     <AlertCircle size={14} />
+                     {orphanIds.size} Orphan Artifacts Found
+                   </button>
+                )}
                 {filteredArtifacts.length === 0 ? (
                   <div className="text-xs text-white/40 p-2 italic">No artifacts found.</div>
                 ) : (

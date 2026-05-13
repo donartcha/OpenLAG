@@ -1,6 +1,6 @@
 {
-  "name": "",
-  "description": "",
+  "name": "ArchGraph",
+  "description": "ArchGraph es un sistema de trazabilidad del ciclo de vida del software basado en grafos versionados, que conecta requisitos, diseño, implementación, pruebas y operación para generar y reconstruir automáticamente la documentación completa de cualquier sistema en cualquier punto de su evolución.",
   "requestFramePermissions": [],
   "majorCapabilities": []
 }

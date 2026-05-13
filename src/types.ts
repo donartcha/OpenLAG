@@ -1,12 +1,19 @@
-export type ArtifactType = 'REQUIREMENT' | 'USE_CASE' | 'DESIGN' | 'COMPONENT' | 'CODE_ENTITY' | 'TEST' | 'DOCUMENTATION' | 'INCIDENT';
+export type ArtifactType = 'REQUIREMENT' | 'USE_CASE' | 'DESIGN' | 'COMPONENT' | 'CODE_ENTITY' | 'TEST' | 'DOCUMENTATION' | 'INCIDENT' | 'INFRASTRUCTURE' | 'DEPLOYMENT' | 'MONITORING' | 'MAINTENANCE';
 export type RelationType = 'DERIVES_FROM' | 'IMPLEMENTS' | 'VALIDATES' | 'JUSTIFIES' | 'TESTS' | 'BREAKS' | 'FIXES' | 'REFINES';
-export type ChangeType = 'ERROR' | 'EVOLUTION' | 'REFACTOR' | 'ADAPTATION';
+export type ChangeType = 'ERROR' | 'FEATURE' | 'EVOLUTION' | 'REFACTOR' | 'ADAPTATION';
 
 export interface Version {
   id: string;
   timestamp: string;
   parentVersion: string | null;
   name: string;
+}
+
+export interface SystemVersion {
+  id: string;
+  component: string;
+  version: string;
+  releaseDate: string;
 }
 
 export interface Artifact {
@@ -16,6 +23,7 @@ export interface Artifact {
   title: string;
   description: string;
   version: string;
+  systemVersionId?: string;
 }
 
 export interface Relation {

@@ -1,24 +1,26 @@
 import { create } from 'zustand';
-import { Version, Change, GraphSnapshot, Artifact, Relation } from './types';
+import { Version, Change, GraphSnapshot, Artifact, Relation, SystemVersion } from './types';
 
 interface StoreState {
   versions: Version[];
+  systemVersions: SystemVersion[];
   changes: Change[];
   currentVersionId: string | null;
   graph: GraphSnapshot | null;
-  activeView: 'graph' | 'docs' | 'impact';
+  activeView: 'graph' | 'docs' | 'impact' | 'orphans' | 'guide';
   selectedArtifactId: string | null;
   isLoading: boolean;
   
   fetchVersions: () => Promise<void>;
   fetchGraph: (versionId: string) => Promise<void>;
   setVersion: (versionId: string) => void;
-  setView: (view: 'graph' | 'docs' | 'impact') => void;
+  setView: (view: 'graph' | 'docs' | 'impact' | 'orphans' | 'guide') => void;
   setSelectedArtifact: (id: string | null) => void;
 }
 
 export const useStore = create<StoreState>((set, get) => ({
   versions: [],
+  systemVersions: [],
   changes: [],
   currentVersionId: null,
   graph: null,
@@ -33,6 +35,7 @@ export const useStore = create<StoreState>((set, get) => ({
       const data = await res.json();
       set({ 
         versions: data.versions, 
+        systemVersions: data.systemVersions || [],
         changes: data.changes, 
         isLoading: false 
       });
