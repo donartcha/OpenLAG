@@ -87,7 +87,7 @@ function isDescendant(currentVersionId: string, artifactVersionId: string, versi
 }
 
 function generate() {
-  console.log("🚀 Starting ArchGraph Static Generation...");
+  console.log("🚀 Starting OpenLAG Static Generation...");
 
   const manifestPath = path.join(process.cwd(), 'docs', 'project-manifest.md');
   

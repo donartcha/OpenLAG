@@ -59,7 +59,7 @@ export const useStore = create<StoreState>((set, get) => ({
         }
       }
     } catch (e) {
-      console.error("ArchGraph Error: Could not fetch static data.", e);
+      console.error("OpenLAG Error: Could not fetch static data.", e);
       set({ isLoading: false });
     }
   },

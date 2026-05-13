@@ -82,7 +82,7 @@ export default function App() {
         {/* Top Header */}
         <header className="h-16 bg-[#0f0f0f] border-b border-white/10 flex items-center px-8 justify-between shrink-0 z-10">
           <div className="font-serif text-xl italic tracking-tight flex items-center gap-2">
-            ArchGraph <span className="text-xs font-mono opacity-50 ml-2 not-italic">| Lifecycle Engine</span>
+            OpenLAG <span className="text-xs font-mono opacity-50 ml-2 not-italic">| Lifecycle Engine</span>
           </div>
 
           <div className="flex items-center gap-6">

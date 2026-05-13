@@ -1,0 +1,975 @@
+{
+  "versions": [
+    {
+      "id": "v-1",
+      "name": "1.0.0",
+      "timestamp": "2026-05-06T12:00:00Z",
+      "parentVersion": null
+    },
+    {
+      "id": "v-2",
+      "name": "1.1.0",
+      "timestamp": "2026-05-13T12:00:00Z",
+      "parentVersion": "v-1"
+    }
+  ],
+  "systemVersions": [
+    {
+      "id": "sv-auth-1.0",
+      "component": "Auth-Service",
+      "version": "1.0.0",
+      "releaseDate": "2026-05-06"
+    },
+    {
+      "id": "sv-ui-lib-2.3",
+      "component": "Shared-UI-Lib",
+      "version": "2.3.1",
+      "releaseDate": "2026-04-15"
+    },
+    {
+      "id": "sv-notif-0.8",
+      "component": "Notification-Worker",
+      "version": "0.8.5-beta",
+      "releaseDate": "2026-05-10"
+    },
+    {
+      "id": "sv-db-pg-15",
+      "component": "PostgreSQL Engine",
+      "version": 15.4,
+      "releaseDate": "2023-08-10"
+    },
+    {
+      "id": "sv-mq-rb-3.12",
+      "component": "RabbitMQ Cluster",
+      "version": "3.12.0",
+      "releaseDate": "2024-01-20"
+    },
+    {
+      "id": "sv-cache-rd-7.2",
+      "component": "Redis Cache",
+      "version": "7.2.4",
+      "releaseDate": "2024-02-15"
+    },
+    {
+      "id": "sv-search-es-8.12",
+      "component": "Elasticsearch Node",
+      "version": "8.12.1",
+      "releaseDate": "2024-03-01"
+    }
+  ],
+  "graphs": {
+    "v-1": {
+      "artifacts": [
+        {
+          "id": "depl-auth-prod",
+          "type": "DEPLOYMENT",
+          "subType": "GitHub Actions",
+          "title": "Auth Service Production Deployment",
+          "version": "v-1",
+          "description": "Pipeline de despliegue automático para el servicio de autenticación en el entorno de producción."
+        },
+        {
+          "id": "depl-reg-01",
+          "type": "DEPLOYMENT",
+          "subType": "Kubernetes",
+          "title": "Reg-Service K8s Deployment",
+          "version": "v-1",
+          "description": "Archivo de despliegue de Kubernetes para el servicio de registro."
+        },
+        {
+          "id": "des-adr-1",
+          "type": "DOCUMENTATION",
+          "subType": "ADR",
+          "title": "ADR-001: Use Postgres",
+          "version": "v-1",
+          "description": "# ADR-001: Use Postgres\n## Contexto\nNecesitamos una base de datos para almacenar información de usuarios y transacciones con integridad relacional.\n\n## Decisión\nHemos decidido usar PostgreSQL en lugar de MongoDB.\n\n## Consecuencias\n* Propiedades ACID garantizadas.\n* Mayor facilidad para reportes complejos.\n\n```mermaid\ngraph TD\n  API[Auth API] --> DB[(PostgreSQL)]\n```"
+        },
+        {
+          "id": "des-arq-1",
+          "type": "DESIGN",
+          "subType": "Architecture",
+          "title": "Microservices Setup",
+          "version": "v-1",
+          "description": "Arquitectura basada en eventos usando RabbitMQ para la comunicación entre servicios.\n\n```mermaid\ngraph LR\n  Gateway --> Auth\n  Gateway --> Orders\n  Auth --> EventBus[RabbitMQ]\n  Orders --> EventBus\n```"
+        },
+        {
+          "id": "des-cmp-1",
+          "type": "DESIGN",
+          "subType": "Component Diagram",
+          "title": "Auth Subsystem C4",
+          "version": "v-1",
+          "description": "Diagrama C4 del subsistema de autenticación.\n\n```mermaid\nC4Context\n  Person(user, \"User\")\n  System(auth, \"Auth System\")\n  Rel(user, auth, \"Authenticates\")\n```"
+        },
+        {
+          "id": "des-con-1",
+          "type": "DOCUMENTATION",
+          "subType": "Service Contract",
+          "title": "User-Auth OpenAPI",
+          "version": "v-1",
+          "description": "Especificación OAS v3 para la API de Autenticación. Define los esquemas de entrada y salida para `/register` y `/login`."
+        },
+        {
+          "id": "des-reg-01",
+          "type": "DESIGN",
+          "subType": "Architecture",
+          "title": "Registration Service Design",
+          "version": "v-1",
+          "description": "Diseño detallado del flujo de registro, incluyendo la integración con el servicio de correo y la base de datos de usuarios."
+        },
+        {
+          "id": "impl-api-1",
+          "type": "CODE_ENTITY",
+          "subType": "API Route",
+          "title": "/api/v1/user/register",
+          "version": "v-1",
+          "description": "Implementación del endpoint de registro de usuarios. Utiliza Express y valida la entrada con Joi.\n\n```typescript\nrouter.post('/register', validate(UserSchema), async (req, res) => {\n  const user = await AuthService.register(req.body);\n  res.status(201).json(user);\n});\n```",
+          "systemVersionId": "sv-auth-1.0"
+        },
+        {
+          "id": "impl-ctr-1",
+          "type": "CODE_ENTITY",
+          "subType": "Controller",
+          "title": "AuthController.ts",
+          "version": "v-1",
+          "description": "Controlador encargado de orquestar la lógica de negocio de autenticación.\n1. Recibe el Request.\n2. Valida Reglas de Negocio (Edad).\n3. Invoca al Servicio."
+        },
+        {
+          "id": "impl-worker-notif",
+          "type": "CODE_ENTITY",
+          "subType": "Async Worker",
+          "title": "EmailDispatcher",
+          "version": "v-1",
+          "description": "Worker encargado de procesar la cola de correos electrónicos. Utiliza BullMQ para la gestión de colas.\n\n```typescript\nexport class EmailDispatcher {\n  async process(job: Job) {\n    const { to, subject, body } = job.data;\n    await mailer.send(to, subject, body);\n  }\n}\n```",
+          "systemVersionId": "sv-notif-0.8"
+        },
+        {
+          "id": "impl-reg-01",
+          "type": "CODE_ENTITY",
+          "subType": "Controller",
+          "title": "RegistrationController.ts",
+          "version": "v-1",
+          "description": "Controlador que implementa el flujo de registro de usuarios."
+        },
+        {
+          "id": "impl-ui-button",
+          "type": "CODE_ENTITY",
+          "subType": "Shared Component",
+          "title": "PrimaryButton.tsx",
+          "version": "v-1",
+          "description": "Componente de botón base utilizado en todo el frontend. Cumple con los estándares de accesibilidad WCAG 2.1.\n\n```tsx\nimport { Button } from '@archgraph/ui';\n\nexport const PrimaryButton = ({ children, ...props }) => (\n  <Button variant=\"primary\" {...props}>\n    {children}\n  </Button>\n);\n```",
+          "systemVersionId": "sv-ui-lib-2.3"
+        },
+        {
+          "id": "impl-dao-user",
+          "type": "CODE_ENTITY",
+          "subType": "DAO",
+          "title": "UserJdbcDAO.java",
+          "version": "v-1",
+          "description": "Pure DAO for basic CRUD operations of the User entity in the PostgreSQL database.",
+          "systemVersionId": "sv-db-pg-15"
+        },
+        {
+          "id": "impl-dto-user",
+          "type": "CODE_ENTITY",
+          "subType": "DTO",
+          "title": "UserRegistrationDTO.java",
+          "version": "v-1",
+          "description": "Object that encapsulates `email`, `password`, and `age` fields for input validation at the registration endpoint."
+        },
+        {
+          "id": "impl-cls-1",
+          "type": "CODE_ENTITY",
+          "subType": "Entity",
+          "title": "UserEntity.java",
+          "version": "v-1",
+          "description": "Domain entity representing a User in the system.\n\n```typescript\nexport class User {\n  id: string;\n  email: string;\n  passwordHash: string;\n}\n```"
+        },
+        {
+          "id": "impl-repo-1",
+          "type": "CODE_ENTITY",
+          "subType": "Repository",
+          "title": "UserRepository.java",
+          "version": "v-1",
+          "description": "Domain-oriented repository that manages User persistence logic. It abstracts the complexity of the DAO.",
+          "systemVersionId": "sv-db-pg-15"
+        },
+        {
+          "id": "ops-inc-1",
+          "type": "INCIDENT",
+          "subType": "Incident",
+          "title": "INC-1020: Auth Timeout",
+          "version": "v-1",
+          "description": "Se detectaron picos de latencia de hasta 10s en el endpoint `/api/v1/auth/login` durante la hora pico.\n\n## Análisis Raíz\nEl pool de conexiones a la base de datos se agota prematuramente bajo carga sostenida."
+        },
+        {
+          "id": "mon-auth-99",
+          "type": "MONITORING",
+          "subType": "Alert",
+          "title": "Auth Error Rate > 5%",
+          "version": "v-1",
+          "description": "Alerta configurada en Prometheus para detectar picos de error en el endpoint de registro."
+        },
+        {
+          "id": "mon-reg-01",
+          "type": "MONITORING",
+          "subType": "Dashboards",
+          "title": "Registration Success Rate",
+          "version": "v-1",
+          "description": "Dashboard de Grafana para monitorear el ratio de éxito de los registros."
+        },
+        {
+          "id": "ops-run-1",
+          "type": "DOCUMENTATION",
+          "subType": "Runbook",
+          "title": "DB Failover Runbook",
+          "version": "v-1",
+          "description": "Procedimiento detallado para realizar un failover manual de la base de datos de Auth en caso de que la replicación automática falle."
+        },
+        {
+          "id": "ops-dep-1",
+          "type": "COMPONENT",
+          "subType": "Deployment",
+          "title": "K8s Auth Deployment",
+          "version": "v-1",
+          "description": "Configuración de los archivos YAML de Kubernetes para el despliegue del servicio de Auth.\nIncluye HPA y Probes de salud."
+        },
+        {
+          "id": "req-br-1",
+          "type": "REQUIREMENT",
+          "subType": "Business Rule",
+          "title": "Age Restriction",
+          "version": "v-1",
+          "description": "Solo usuarios mayores de 18 años pueden registrarse en la plataforma para cumplir con las regulaciones de servicios financieros locales."
+        },
+        {
+          "id": "req-res-1",
+          "type": "REQUIREMENT",
+          "subType": "Constraint",
+          "title": "GDPR Compliance",
+          "version": "v-1",
+          "description": "Todos los datos personales deben ser cifrados en reposo y el sistema debe permitir el \"derecho al olvido\" (borrado físico de datos)."
+        },
+        {
+          "id": "req-nfunc-1",
+          "type": "REQUIREMENT",
+          "subType": "Non-Functional Requirement",
+          "title": "High Availability",
+          "version": "v-1",
+          "description": "El sistema debe tener un uptime garantizado del 99.9% (Tier 3). Se requiere redundancia geográfica y auto-escalado."
+        },
+        {
+          "id": "req-func-1",
+          "type": "REQUIREMENT",
+          "subType": "Functional",
+          "title": "User Registration Flow",
+          "version": "v-1",
+          "description": "El sistema debe procesar el registro de nuevos usuarios validando duplicados y enviando confirmación por email."
+        },
+        {
+          "id": "ver-tst-1",
+          "type": "TEST",
+          "subType": "Test Case",
+          "title": "Auth Regression Suite",
+          "version": "v-1",
+          "description": "Suite de pruebas unitarias e integración para el flujo de autenticación.\n\n## Cobertura\n* Registro exitoso.\n* Fallo por email duplicado.\n* Fallo por contraseña débil."
+        },
+        {
+          "id": "test-auth-01",
+          "type": "TEST",
+          "subType": "Integration Test",
+          "title": "AuthController Integration Test",
+          "version": "v-1",
+          "description": "Verifica que el controlador de autenticación maneja correctamente los casos de éxito y error, incluyendo la restricción de edad req-br-1."
+        },
+        {
+          "id": "test-reg-01",
+          "type": "TEST",
+          "subType": "Integration",
+          "title": "Registration Integration Test",
+          "version": "v-1",
+          "description": "Pruebas integradas para asegurar que el controlador de registro funciona con la DB."
+        },
+        {
+          "id": "ver-evi-1",
+          "type": "DOCUMENTATION",
+          "subType": "Evidence",
+          "title": "Security Audit Approval",
+          "version": "v-1",
+          "description": "Certificado de aprobación de la auditoría de seguridad externa (Pentest) realizada el 2026-05-01.\nNo se encontraron vulnerabilidades críticas ni altas."
+        },
+        {
+          "id": "ver-res-1",
+          "type": "DOCUMENTATION",
+          "subType": "Test Results",
+          "title": "Test Report v1.0",
+          "version": "v-1",
+          "description": "Resultado de la ejecución de pruebas en el pipeline de CI/CD.\n* Cobertura: 92%\n* Pruebas Unitarias: 154/154 OK\n* Pruebas de Integración: 42/42 OK"
+        }
+      ],
+      "relations": [
+        {
+          "id": "rel-depl-auth-prod-0",
+          "from": "depl-auth-prod",
+          "to": "impl-ctr-1",
+          "type": "DEPLOYS"
+        },
+        {
+          "id": "rel-depl-reg-01-0",
+          "from": "depl-reg-01",
+          "to": "impl-reg-01",
+          "type": "DEPLOYS"
+        },
+        {
+          "id": "rel-des-adr-1-0",
+          "from": "des-adr-1",
+          "to": "des-arq-1",
+          "type": "JUSTIFIES"
+        },
+        {
+          "id": "rel-des-arq-1-0",
+          "from": "des-arq-1",
+          "to": "req-br-1",
+          "type": "DERIVES_FROM"
+        },
+        {
+          "id": "rel-des-arq-1-1",
+          "from": "des-arq-1",
+          "to": "req-func-1",
+          "type": "DERIVES_FROM"
+        },
+        {
+          "id": "rel-des-cmp-1-0",
+          "from": "des-cmp-1",
+          "to": "req-func-1",
+          "type": "DERIVES_FROM"
+        },
+        {
+          "id": "rel-des-reg-01-0",
+          "from": "des-reg-01",
+          "to": "req-func-1",
+          "type": "DERIVES_FROM"
+        },
+        {
+          "id": "rel-impl-api-1-0",
+          "from": "impl-api-1",
+          "to": "req-func-1",
+          "type": "IMPLEMENTS"
+        },
+        {
+          "id": "rel-impl-ctr-1-0",
+          "from": "impl-ctr-1",
+          "to": "des-con-1",
+          "type": "IMPLEMENTS"
+        },
+        {
+          "id": "rel-impl-ctr-1-1",
+          "from": "impl-ctr-1",
+          "to": "impl-api-1",
+          "type": "IMPLEMENTS"
+        },
+        {
+          "id": "rel-impl-ctr-1-2",
+          "from": "impl-ctr-1",
+          "to": "req-br-1",
+          "type": "VALIDATES"
+        },
+        {
+          "id": "rel-impl-reg-01-0",
+          "from": "impl-reg-01",
+          "to": "des-reg-01",
+          "type": "IMPLEMENTS"
+        },
+        {
+          "id": "rel-impl-ui-button-0",
+          "from": "impl-ui-button",
+          "to": "des-cmp-1",
+          "type": "IMPLEMENTS"
+        },
+        {
+          "id": "rel-impl-dao-user-0",
+          "from": "impl-dao-user",
+          "to": "sv-db-pg-15",
+          "type": "USES"
+        },
+        {
+          "id": "rel-impl-dto-user-0",
+          "from": "impl-dto-user",
+          "to": "impl-api-1",
+          "type": "DEFINES"
+        },
+        {
+          "id": "rel-impl-repo-1-0",
+          "from": "impl-repo-1",
+          "to": "impl-cls-1",
+          "type": "USES"
+        },
+        {
+          "id": "rel-impl-repo-1-1",
+          "from": "impl-repo-1",
+          "to": "impl-dao-user",
+          "type": "USES"
+        },
+        {
+          "id": "rel-ops-inc-1-0",
+          "from": "ops-inc-1",
+          "to": "ops-dep-1",
+          "type": "BREAKS"
+        },
+        {
+          "id": "rel-mon-auth-99-0",
+          "from": "mon-auth-99",
+          "to": "impl-api-1",
+          "type": "MONITORS"
+        },
+        {
+          "id": "rel-mon-reg-01-0",
+          "from": "mon-reg-01",
+          "to": "impl-reg-01",
+          "type": "MONITORS"
+        },
+        {
+          "id": "rel-ops-run-1-0",
+          "from": "ops-run-1",
+          "to": "ops-inc-1",
+          "type": "REFINES"
+        },
+        {
+          "id": "rel-ops-dep-1-0",
+          "from": "ops-dep-1",
+          "to": "des-arq-1",
+          "type": "IMPLEMENTS"
+        },
+        {
+          "id": "rel-ver-tst-1-0",
+          "from": "ver-tst-1",
+          "to": "impl-ctr-1",
+          "type": "TESTS"
+        },
+        {
+          "id": "rel-test-auth-01-0",
+          "from": "test-auth-01",
+          "to": "impl-ctr-1",
+          "type": "TESTS"
+        },
+        {
+          "id": "rel-test-reg-01-0",
+          "from": "test-reg-01",
+          "to": "impl-reg-01",
+          "type": "TESTS"
+        },
+        {
+          "id": "rel-ver-res-1-0",
+          "from": "ver-res-1",
+          "to": "ver-tst-1",
+          "type": "REFINES"
+        }
+      ]
+    },
+    "v-2": {
+      "artifacts": [
+        {
+          "id": "build-pkg-1",
+          "type": "INFRASTRUCTURE",
+          "subType": "Package",
+          "title": "Docker Image Multi-Arch",
+          "version": "v-2",
+          "description": "Configuración de empaquetado para generar imágenes compatibles con x86 y ARM64.\nSe utiliza `buildx` para la compilación cruzada."
+        },
+        {
+          "id": "ci-pipeline-1",
+          "type": "INFRASTRUCTURE",
+          "subType": "CI/Pipeline",
+          "title": "GitHub Actions Workflow: Core Build",
+          "version": "v-2",
+          "description": "Pipeline automatizada que se dispara en cada Pull Request.\nIncluye:\n- Linting\n- Unit Tests\n- Security Scan (Snyk)"
+        },
+        {
+          "id": "depl-auth-prod",
+          "type": "DEPLOYMENT",
+          "subType": "GitHub Actions",
+          "title": "Auth Service Production Deployment",
+          "version": "v-1",
+          "description": "Pipeline de despliegue automático para el servicio de autenticación en el entorno de producción."
+        },
+        {
+          "id": "deploy-prod-1",
+          "type": "DEPLOYMENT",
+          "title": "Estrategia de Despliegue Blue-Green",
+          "version": "v-2",
+          "description": "Utilizamos despliegue Blue-Green para minimizar el downtime.\nActualmente el entorno **Green** es el activo ejecutando v1.1.0."
+        },
+        {
+          "id": "depl-reg-01",
+          "type": "DEPLOYMENT",
+          "subType": "Kubernetes",
+          "title": "Reg-Service K8s Deployment",
+          "version": "v-1",
+          "description": "Archivo de despliegue de Kubernetes para el servicio de registro."
+        },
+        {
+          "id": "des-adr-1",
+          "type": "DOCUMENTATION",
+          "subType": "ADR",
+          "title": "ADR-001: Use Postgres",
+          "version": "v-1",
+          "description": "# ADR-001: Use Postgres\n## Contexto\nNecesitamos una base de datos para almacenar información de usuarios y transacciones con integridad relacional.\n\n## Decisión\nHemos decidido usar PostgreSQL en lugar de MongoDB.\n\n## Consecuencias\n* Propiedades ACID garantizadas.\n* Mayor facilidad para reportes complejos.\n\n```mermaid\ngraph TD\n  API[Auth API] --> DB[(PostgreSQL)]\n```"
+        },
+        {
+          "id": "des-arq-1",
+          "type": "DESIGN",
+          "subType": "Architecture",
+          "title": "Microservices Setup",
+          "version": "v-1",
+          "description": "Arquitectura basada en eventos usando RabbitMQ para la comunicación entre servicios.\n\n```mermaid\ngraph LR\n  Gateway --> Auth\n  Gateway --> Orders\n  Auth --> EventBus[RabbitMQ]\n  Orders --> EventBus\n```"
+        },
+        {
+          "id": "des-cmp-1",
+          "type": "DESIGN",
+          "subType": "Component Diagram",
+          "title": "Auth Subsystem C4",
+          "version": "v-1",
+          "description": "Diagrama C4 del subsistema de autenticación.\n\n```mermaid\nC4Context\n  Person(user, \"User\")\n  System(auth, \"Auth System\")\n  Rel(user, auth, \"Authenticates\")\n```"
+        },
+        {
+          "id": "des-con-1",
+          "type": "DOCUMENTATION",
+          "subType": "Service Contract",
+          "title": "User-Auth OpenAPI",
+          "version": "v-1",
+          "description": "Especificación OAS v3 para la API de Autenticación. Define los esquemas de entrada y salida para `/register` y `/login`."
+        },
+        {
+          "id": "des-reg-01",
+          "type": "DESIGN",
+          "subType": "Architecture",
+          "title": "Registration Service Design",
+          "version": "v-1",
+          "description": "Diseño detallado del flujo de registro, incluyendo la integración con el servicio de correo y la base de datos de usuarios."
+        },
+        {
+          "id": "impl-api-1",
+          "type": "CODE_ENTITY",
+          "subType": "API Route",
+          "title": "/api/v1/user/register",
+          "version": "v-1",
+          "description": "Implementación del endpoint de registro de usuarios. Utiliza Express y valida la entrada con Joi.\n\n```typescript\nrouter.post('/register', validate(UserSchema), async (req, res) => {\n  const user = await AuthService.register(req.body);\n  res.status(201).json(user);\n});\n```",
+          "systemVersionId": "sv-auth-1.0"
+        },
+        {
+          "id": "impl-ctr-1",
+          "type": "CODE_ENTITY",
+          "subType": "Controller",
+          "title": "AuthController.ts",
+          "version": "v-1",
+          "description": "Controlador encargado de orquestar la lógica de negocio de autenticación.\n1. Recibe el Request.\n2. Valida Reglas de Negocio (Edad).\n3. Invoca al Servicio."
+        },
+        {
+          "id": "impl-worker-notif",
+          "type": "CODE_ENTITY",
+          "subType": "Async Worker",
+          "title": "EmailDispatcher",
+          "version": "v-1",
+          "description": "Worker encargado de procesar la cola de correos electrónicos. Utiliza BullMQ para la gestión de colas.\n\n```typescript\nexport class EmailDispatcher {\n  async process(job: Job) {\n    const { to, subject, body } = job.data;\n    await mailer.send(to, subject, body);\n  }\n}\n```",
+          "systemVersionId": "sv-notif-0.8"
+        },
+        {
+          "id": "ops-inc-fix-1",
+          "type": "CODE_ENTITY",
+          "subType": "Patch",
+          "title": "ConnectionPoolFix",
+          "version": "v-2",
+          "description": "Incremento del pool de conexiones de la base de datos de 10 a 50 para evitar timeouts bajo carga.\n\n## Cambios\n* Se modificó `datasource.ts`.\n* Se añadió monitoreo de pool en Prometheus."
+        },
+        {
+          "id": "impl-reg-01",
+          "type": "CODE_ENTITY",
+          "subType": "Controller",
+          "title": "RegistrationController.ts",
+          "version": "v-1",
+          "description": "Controlador que implementa el flujo de registro de usuarios."
+        },
+        {
+          "id": "impl-review-1",
+          "type": "CODE_ENTITY",
+          "subType": "Review",
+          "title": "Revisión de Seguridad: Auth Pool Logic",
+          "version": "v-2",
+          "description": "Se realizó una revisión exhaustiva del parche aplicado en `Auth Repository`. Se validó que los límites de hilos no excedan la capacidad de la base de datos PostgreSQL v15.4.\n\n**Resultado:** Aprobado con recomendaciones de monitorización de CPU."
+        },
+        {
+          "id": "impl-ui-button",
+          "type": "CODE_ENTITY",
+          "subType": "Shared Component",
+          "title": "PrimaryButton.tsx",
+          "version": "v-1",
+          "description": "Componente de botón base utilizado en todo el frontend. Cumple con los estándares de accesibilidad WCAG 2.1.\n\n```tsx\nimport { Button } from '@archgraph/ui';\n\nexport const PrimaryButton = ({ children, ...props }) => (\n  <Button variant=\"primary\" {...props}>\n    {children}\n  </Button>\n);\n```",
+          "systemVersionId": "sv-ui-lib-2.3"
+        },
+        {
+          "id": "impl-dao-user",
+          "type": "CODE_ENTITY",
+          "subType": "DAO",
+          "title": "UserJdbcDAO.java",
+          "version": "v-1",
+          "description": "Pure DAO for basic CRUD operations of the User entity in the PostgreSQL database.",
+          "systemVersionId": "sv-db-pg-15"
+        },
+        {
+          "id": "impl-dto-user",
+          "type": "CODE_ENTITY",
+          "subType": "DTO",
+          "title": "UserRegistrationDTO.java",
+          "version": "v-1",
+          "description": "Object that encapsulates `email`, `password`, and `age` fields for input validation at the registration endpoint."
+        },
+        {
+          "id": "impl-cls-1",
+          "type": "CODE_ENTITY",
+          "subType": "Entity",
+          "title": "UserEntity.java",
+          "version": "v-1",
+          "description": "Domain entity representing a User in the system.\n\n```typescript\nexport class User {\n  id: string;\n  email: string;\n  passwordHash: string;\n}\n```"
+        },
+        {
+          "id": "impl-repo-1",
+          "type": "CODE_ENTITY",
+          "subType": "Repository",
+          "title": "UserRepository.java",
+          "version": "v-1",
+          "description": "Domain-oriented repository that manages User persistence logic. It abstracts the complexity of the DAO.",
+          "systemVersionId": "sv-db-pg-15"
+        },
+        {
+          "id": "ops-inc-1",
+          "type": "INCIDENT",
+          "subType": "Incident",
+          "title": "INC-1020: Auth Timeout",
+          "version": "v-1",
+          "description": "Se detectaron picos de latencia de hasta 10s en el endpoint `/api/v1/auth/login` durante la hora pico.\n\n## Análisis Raíz\nEl pool de conexiones a la base de datos se agota prematuramente bajo carga sostenida."
+        },
+        {
+          "id": "maint-refactor-1",
+          "type": "MAINTENANCE",
+          "title": "Refactor de Deuda Técnica (V1 Legacy)",
+          "version": "v-2",
+          "description": "Limpieza de código muerto tras la migración a la nueva librería UI.\nSe eliminaron 42 archivos obsoletos."
+        },
+        {
+          "id": "retire-old-api-1",
+          "type": "MAINTENANCE",
+          "subType": "Retirement",
+          "title": "Depreciación de API v0.9 (Legacy)",
+          "version": "v-2",
+          "description": "Se ha marcado la API v0.9 como obsoleta. Se eliminará definitivamente en la próxima versión mayor.\nAviso enviado a todos los clientes."
+        },
+        {
+          "id": "mon-auth-99",
+          "type": "MONITORING",
+          "subType": "Alert",
+          "title": "Auth Error Rate > 5%",
+          "version": "v-1",
+          "description": "Alerta configurada en Prometheus para detectar picos de error en el endpoint de registro."
+        },
+        {
+          "id": "mon-reg-01",
+          "type": "MONITORING",
+          "subType": "Dashboards",
+          "title": "Registration Success Rate",
+          "version": "v-1",
+          "description": "Dashboard de Grafana para monitorear el ratio de éxito de los registros."
+        },
+        {
+          "id": "monitor-dashboard-1",
+          "type": "MONITORING",
+          "title": "Grafana Dashboard: API Health",
+          "version": "v-2",
+          "description": "Métricas clave monitorizadas:\n- Latencia (P99)\n- Tasa de errores 5xx\n- Uso de memoria por nodo"
+        },
+        {
+          "id": "ops-run-1",
+          "type": "DOCUMENTATION",
+          "subType": "Runbook",
+          "title": "DB Failover Runbook",
+          "version": "v-1",
+          "description": "Procedimiento detallado para realizar un failover manual de la base de datos de Auth en caso de que la replicación automática falle."
+        },
+        {
+          "id": "ops-dep-1",
+          "type": "COMPONENT",
+          "subType": "Deployment",
+          "title": "K8s Auth Deployment",
+          "version": "v-1",
+          "description": "Configuración de los archivos YAML de Kubernetes para el despliegue del servicio de Auth.\nIncluye HPA y Probes de salud."
+        },
+        {
+          "id": "req-br-1",
+          "type": "REQUIREMENT",
+          "subType": "Business Rule",
+          "title": "Age Restriction",
+          "version": "v-1",
+          "description": "Solo usuarios mayores de 18 años pueden registrarse en la plataforma para cumplir con las regulaciones de servicios financieros locales."
+        },
+        {
+          "id": "req-res-1",
+          "type": "REQUIREMENT",
+          "subType": "Constraint",
+          "title": "GDPR Compliance",
+          "version": "v-1",
+          "description": "Todos los datos personales deben ser cifrados en reposo y el sistema debe permitir el \"derecho al olvido\" (borrado físico de datos)."
+        },
+        {
+          "id": "req-nfunc-1",
+          "type": "REQUIREMENT",
+          "subType": "Non-Functional Requirement",
+          "title": "High Availability",
+          "version": "v-1",
+          "description": "El sistema debe tener un uptime garantizado del 99.9% (Tier 3). Se requiere redundancia geográfica y auto-escalado."
+        },
+        {
+          "id": "req-func-1",
+          "type": "REQUIREMENT",
+          "subType": "Functional",
+          "title": "User Registration Flow",
+          "version": "v-1",
+          "description": "El sistema debe procesar el registro de nuevos usuarios validando duplicados y enviando confirmación por email."
+        },
+        {
+          "id": "ver-tst-1",
+          "type": "TEST",
+          "subType": "Test Case",
+          "title": "Auth Regression Suite",
+          "version": "v-1",
+          "description": "Suite de pruebas unitarias e integración para el flujo de autenticación.\n\n## Cobertura\n* Registro exitoso.\n* Fallo por email duplicado.\n* Fallo por contraseña débil."
+        },
+        {
+          "id": "test-auth-01",
+          "type": "TEST",
+          "subType": "Integration Test",
+          "title": "AuthController Integration Test",
+          "version": "v-1",
+          "description": "Verifica que el controlador de autenticación maneja correctamente los casos de éxito y error, incluyendo la restricción de edad req-br-1."
+        },
+        {
+          "id": "test-reg-01",
+          "type": "TEST",
+          "subType": "Integration",
+          "title": "Registration Integration Test",
+          "version": "v-1",
+          "description": "Pruebas integradas para asegurar que el controlador de registro funciona con la DB."
+        },
+        {
+          "id": "ver-evi-1",
+          "type": "DOCUMENTATION",
+          "subType": "Evidence",
+          "title": "Security Audit Approval",
+          "version": "v-1",
+          "description": "Certificado de aprobación de la auditoría de seguridad externa (Pentest) realizada el 2026-05-01.\nNo se encontraron vulnerabilidades críticas ni altas."
+        },
+        {
+          "id": "ver-res-1",
+          "type": "DOCUMENTATION",
+          "subType": "Test Results",
+          "title": "Test Report v1.0",
+          "version": "v-1",
+          "description": "Resultado de la ejecución de pruebas en el pipeline de CI/CD.\n* Cobertura: 92%\n* Pruebas Unitarias: 154/154 OK\n* Pruebas de Integración: 42/42 OK"
+        }
+      ],
+      "relations": [
+        {
+          "id": "rel-depl-auth-prod-0",
+          "from": "depl-auth-prod",
+          "to": "impl-ctr-1",
+          "type": "DEPLOYS"
+        },
+        {
+          "id": "rel-depl-reg-01-0",
+          "from": "depl-reg-01",
+          "to": "impl-reg-01",
+          "type": "DEPLOYS"
+        },
+        {
+          "id": "rel-des-adr-1-0",
+          "from": "des-adr-1",
+          "to": "des-arq-1",
+          "type": "JUSTIFIES"
+        },
+        {
+          "id": "rel-des-arq-1-0",
+          "from": "des-arq-1",
+          "to": "req-br-1",
+          "type": "DERIVES_FROM"
+        },
+        {
+          "id": "rel-des-arq-1-1",
+          "from": "des-arq-1",
+          "to": "req-func-1",
+          "type": "DERIVES_FROM"
+        },
+        {
+          "id": "rel-des-cmp-1-0",
+          "from": "des-cmp-1",
+          "to": "req-func-1",
+          "type": "DERIVES_FROM"
+        },
+        {
+          "id": "rel-des-reg-01-0",
+          "from": "des-reg-01",
+          "to": "req-func-1",
+          "type": "DERIVES_FROM"
+        },
+        {
+          "id": "rel-impl-api-1-0",
+          "from": "impl-api-1",
+          "to": "req-func-1",
+          "type": "IMPLEMENTS"
+        },
+        {
+          "id": "rel-impl-ctr-1-0",
+          "from": "impl-ctr-1",
+          "to": "des-con-1",
+          "type": "IMPLEMENTS"
+        },
+        {
+          "id": "rel-impl-ctr-1-1",
+          "from": "impl-ctr-1",
+          "to": "impl-api-1",
+          "type": "IMPLEMENTS"
+        },
+        {
+          "id": "rel-impl-ctr-1-2",
+          "from": "impl-ctr-1",
+          "to": "req-br-1",
+          "type": "VALIDATES"
+        },
+        {
+          "id": "rel-ops-inc-fix-1-0",
+          "from": "ops-inc-fix-1",
+          "to": "ops-inc-1",
+          "type": "FIXES"
+        },
+        {
+          "id": "rel-ops-inc-fix-1-1",
+          "from": "ops-inc-fix-1",
+          "to": "impl-repo-1",
+          "type": "IMPLEMENTS"
+        },
+        {
+          "id": "rel-impl-reg-01-0",
+          "from": "impl-reg-01",
+          "to": "des-reg-01",
+          "type": "IMPLEMENTS"
+        },
+        {
+          "id": "rel-impl-ui-button-0",
+          "from": "impl-ui-button",
+          "to": "des-cmp-1",
+          "type": "IMPLEMENTS"
+        },
+        {
+          "id": "rel-impl-dao-user-0",
+          "from": "impl-dao-user",
+          "to": "sv-db-pg-15",
+          "type": "USES"
+        },
+        {
+          "id": "rel-impl-dto-user-0",
+          "from": "impl-dto-user",
+          "to": "impl-api-1",
+          "type": "DEFINES"
+        },
+        {
+          "id": "rel-impl-repo-1-0",
+          "from": "impl-repo-1",
+          "to": "impl-cls-1",
+          "type": "USES"
+        },
+        {
+          "id": "rel-impl-repo-1-1",
+          "from": "impl-repo-1",
+          "to": "impl-dao-user",
+          "type": "USES"
+        },
+        {
+          "id": "rel-ops-inc-1-0",
+          "from": "ops-inc-1",
+          "to": "ops-dep-1",
+          "type": "BREAKS"
+        },
+        {
+          "id": "rel-mon-auth-99-0",
+          "from": "mon-auth-99",
+          "to": "impl-api-1",
+          "type": "MONITORS"
+        },
+        {
+          "id": "rel-mon-reg-01-0",
+          "from": "mon-reg-01",
+          "to": "impl-reg-01",
+          "type": "MONITORS"
+        },
+        {
+          "id": "rel-ops-run-1-0",
+          "from": "ops-run-1",
+          "to": "ops-inc-1",
+          "type": "REFINES"
+        },
+        {
+          "id": "rel-ops-dep-1-0",
+          "from": "ops-dep-1",
+          "to": "des-arq-1",
+          "type": "IMPLEMENTS"
+        },
+        {
+          "id": "rel-ver-tst-1-0",
+          "from": "ver-tst-1",
+          "to": "impl-ctr-1",
+          "type": "TESTS"
+        },
+        {
+          "id": "rel-test-auth-01-0",
+          "from": "test-auth-01",
+          "to": "impl-ctr-1",
+          "type": "TESTS"
+        },
+        {
+          "id": "rel-test-reg-01-0",
+          "from": "test-reg-01",
+          "to": "impl-reg-01",
+          "type": "TESTS"
+        },
+        {
+          "id": "rel-ver-res-1-0",
+          "from": "ver-res-1",
+          "to": "ver-tst-1",
+          "type": "REFINES"
+        }
+      ]
+    }
+  },
+  "changes": [
+    {
+      "id": "ch-auth-pool",
+      "type": "ERROR",
+      "title": "Resolución de Timeouts en Auth API",
+      "description": "Se identificó que el pool de conexiones de la base de datos era insuficiente para el volumen de tráfico de v1.0.0.",
+      "affects": [
+        "impl-dao-user",
+        "sv-db-pg-15"
+      ],
+      "versionFrom": "v-1",
+      "versionTo": "v-2"
+    },
+    {
+      "id": "ch-ui-refactor",
+      "type": "FEATURE",
+      "title": "Refactor de Componentes UI Core",
+      "description": "Migración de los componentes de botón y layouts a la nueva librería compartida Shared-UI-Lib v2.3.1 para asegurar consistencia visual.",
+      "affects": [
+        "impl-ui-button",
+        "sv-ui-lib-2.3"
+      ],
+      "versionFrom": "v-1",
+      "versionTo": "v-2"
+    }
+  ]
+}

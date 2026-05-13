@@ -1,5 +1,5 @@
 ---
-project: ArchGraph Demo
+project: OpenLAG Demo
 ---
 
 # Project Manifest

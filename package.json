@@ -1,16 +1,16 @@
 {
-  "name": "react-example",
+  "name": "openlag",
   "private": true,
   "version": "0.1.0",
   "type": "module",
   "bin": {
-    "archgraph": "./bin/archgraph.js"
+    "openlag": "./bin/openlag.js"
   },
   "files": [
     "dist",
     "bin",
     "scripts",
-    "src/data/graph-data.json"
+    "public/graph-data.json"
   ],
   "scripts": {
     "dev": "tsx scripts/generate-static-data.ts && tsx server.ts",

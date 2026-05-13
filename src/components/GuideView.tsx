@@ -112,7 +112,7 @@ export const GuideView: React.FC = () => {
                         <div className="p-6 bg-black/40">
                             <pre className="text-[11px] font-mono leading-relaxed text-white/60 select-all">
 {`---
-project: ArchGraph Standard
+project: OpenLAG Standard
 ---
 
 # Project Manifest
@@ -408,9 +408,9 @@ Supports full Markdown.
                             </div>
 
                             <div className="p-4 bg-emerald-500/5 border border-emerald-500/10 rounded">
-                                <h4 className="text-xs font-bold text-emerald-400 mb-2">Pro-Tip: Markdown Links</h4>
+                                <h4 className="text-xs font-bold text-emerald-400 mb-2">Pro-Tip: Internal Links</h4>
                                 <p className="text-[10px] text-white/30 leading-relaxed">
-                                    You can use classic Markdown links <code className="text-emerald-300/30 font-mono">[Title](path/to/file.md)</code> within the description body to enable direct navigation between documentation files.
+                                    Navigate between artifacts by linking to their ID: <code className="text-emerald-300/30 font-mono">[See Req 1](#REQ-1)</code>. OpenLAG intercept these links to automatically handle navigation within the dashboard.
                                 </p>
                             </div>
                         </div>

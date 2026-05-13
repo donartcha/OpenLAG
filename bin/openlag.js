@@ -10,19 +10,19 @@ const command = args[0];
 
 const printHelp = () => {
   console.log(`
-  🛠️  ArchGraph CLI
+  🛠️  OpenLAG CLI
   
   Usage:
-    archgraph generate    - Generates static data from /docs
-    archgraph build       - Builds the static site (requires vite)
-    archgraph init        - Initializes a basic /docs structure
-    archgraph preview     - Starts a local preview server
+    openlag generate    - Generates static data from /docs
+    openlag build       - Builds the static site (requires vite)
+    openlag init        - Initializes a basic /docs structure
+    openlag preview     - Starts a local preview server
   `);
 };
 
 switch (command) {
   case 'generate':
-    console.log("🚀 Generating ArchGraph data...");
+    console.log("🚀 Generating OpenLAG data...");
     // Ejecutamos el script de generación que ya tenemos
     execSync('tsx scripts/generate-static-data.ts', { stdio: 'inherit' });
     break;

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import Markdown from 'react-markdown';
 import mermaid from 'mermaid';
+import { useStore } from '../store';
 
 mermaid.initialize({
   startOnLoad: false,
@@ -46,6 +47,8 @@ const Mermaid = ({ chart }: { chart: string }) => {
 };
 
 export const MarkdownRenderer = ({ content }: { content: string }) => {
+  const { setSelectedArtifact, setView } = useStore();
+
   return (
     <div className="markdown-body prose prose-invert prose-sm max-w-none text-[#e0e0e0]/80">
       <Markdown
@@ -88,6 +91,24 @@ export const MarkdownRenderer = ({ content }: { content: string }) => {
              return <h4 className="text-sm font-semibold text-white mt-3 mb-1" {...props}>{children}</h4>;
           },
           a({href, children, ...props}: any) {
+             const isInternal = href?.startsWith('#') || (!href?.startsWith('http') && !href?.startsWith('mailto') && !href?.startsWith('tel'));
+             
+             if (isInternal) {
+                const targetId = href.replace(/^#/, '');
+                return (
+                  <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setSelectedArtifact(targetId);
+                      setView('docs');
+                    }}
+                    className="text-emerald-400 hover:text-emerald-300 underline cursor-pointer font-medium p-0 bg-transparent border-0 inline"
+                  >
+                    {children}
+                  </button>
+                );
+             }
+
              return <a href={href} target="_blank" rel="noreferrer" className="text-blue-400 hover:text-blue-300 underline" {...props}>{children}</a>;
           }
         }}
