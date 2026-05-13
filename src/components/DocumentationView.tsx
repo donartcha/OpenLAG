@@ -62,6 +62,12 @@ export const DocumentationView: React.FC = () => {
         backgroundColor: '#0a0a0a',
         width: element.scrollWidth,
         height: element.scrollHeight,
+        filter: (node) => {
+          if (node instanceof HTMLElement && node.classList.contains('print-hidden')) {
+            return false;
+          }
+          return true;
+        },
         style: {
           transform: 'scale(1)',
           transformOrigin: 'top left',
@@ -366,7 +372,8 @@ export const DocumentationView: React.FC = () => {
          </div>
       </div>
 
-      <div ref={pdfContainerRef} className="flex-1 overflow-y-auto relative flex flex-col group/doc">
+      <div className="flex-1 overflow-y-auto relative flex flex-col group/doc">
+        <div ref={pdfContainerRef} className="flex flex-col w-full bg-[#0a0a0a] min-h-max">
           {/* Minimized Header Controls */}
           <div className={`sticky top-0 z-30 transition-all duration-300 bg-[#0a0a0a]/80 backdrop-blur-md px-8 lg:px-16 border-b border-white/5 flex items-center justify-between print-hidden ${isHeaderMinified ? 'py-2' : 'py-8 pt-12 pb-4'}`}>
             <div className="flex items-center gap-4">
@@ -817,6 +824,7 @@ export const DocumentationView: React.FC = () => {
                 </div>
             </section>
         )}
+        </div>
         </div>
       </div>
     </div>
