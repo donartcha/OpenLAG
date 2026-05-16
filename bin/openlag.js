@@ -17,6 +17,7 @@ const printHelp = () => {
     openlag build       - Builds the static site (requires vite)
     openlag init        - Initializes a basic /docs structure
     openlag preview     - Starts a local preview server
+    openlag lint        - Runs OpenLAG linter against /docs
   `);
 };
 
@@ -25,6 +26,17 @@ switch (command) {
     console.log("🚀 Generating OpenLAG data...");
     // Ejecutamos el script de generación que ya tenemos
     execSync('tsx scripts/generate-static-data.ts', { stdio: 'inherit' });
+    break;
+
+  case 'lint':
+    console.log("🔍 Linting OpenLAG architecture...");
+    // Forward all remaining args to the lint script
+    const lintArgs = args.slice(1).join(' ');
+    try {
+      execSync(`tsx scripts/lint-cli.ts ${lintArgs}`, { stdio: 'inherit' });
+    } catch (error) {
+      process.exit(1);
+    }
     break;
 
   case 'build':

@@ -18,7 +18,10 @@
     "build": "npm run generate && vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "lint:openlag": "openlag lint --profile develop",
+    "lint:openlag:feature": "openlag lint --profile feature",
+    "lint:openlag:release": "openlag lint --profile release"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
