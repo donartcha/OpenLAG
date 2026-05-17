@@ -22,8 +22,9 @@ program
   .description('Initialize a new OpenLAG project')
   .option('-n, --name <name>', 'Project name')
   .option('-d, --desc <description>', 'Project description')
+  .option('--all', 'Include optional synthetic relations')
   .action((options) => {
-    initProject(options.name, options.desc);
+    initProject(options.name, options.desc, options.all);
   });
 
 program

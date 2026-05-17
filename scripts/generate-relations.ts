@@ -2,36 +2,46 @@ import fs from 'fs';
 import path from 'path';
 import yaml from 'js-yaml';
 
-const relationsDir = path.join(process.cwd(), 'docs/contracts/relations');
+const relationsDir = path.join(process.cwd(), 'docs/relations');
 const outputFile = path.join(process.cwd(), 'src/core/generated/relation-definitions.ts');
 
 const files = fs.readdirSync(relationsDir);
-const relations: any = {};
+const relations: any[] = [];
 
 files.forEach(file => {
   if (file.endsWith('.yaml')) {
     const content = fs.readFileSync(path.join(relationsDir, file), 'utf-8');
     const parsed = yaml.load(content) as any;
-    relations[parsed.relation] = {
+    relations.push({
+      type: parsed.relation,
+      description: parsed.description,
       category: parsed.category,
-      strength: parsed.validation.severity === 'error' ? 'STRONG' : (parsed.validation.severity === 'warn' ? 'MEDIUM' : 'WEAK')
-    };
+      allowedFrom: parsed.allowedFrom || [],
+      allowedTo: parsed.allowedTo || [],
+      multiplicity: parsed.multiplicity || { from: 'many', to: 'many' },
+      validation: parsed.validation || { severity: 'error' },
+      strength: parsed.validation?.severity === 'error' ? 'STRONG' : (parsed.validation?.severity === 'warn' ? 'MEDIUM' : 'WEAK')
+    });
   }
 });
 
 const fileContent = `
-import { RelationType, RelationCategory, RelationStrength } from '../../types.js';
+// GENERATED FILE - DO NOT EDIT MANUALLY
+import { RelationCategory, RelationStrength } from '../../types.js';
+import { ArtifactType } from '../registry/ArtifactRegistry.js';
 
-export interface RelationSemanticDefinition {
+export interface RelationContract {
+  type: string;
+  description?: string;
   category: RelationCategory;
   strength: RelationStrength;
+  allowedFrom: ArtifactType[];
+  allowedTo: ArtifactType[];
+  multiplicity: { from: string; to: string };
+  validation: { severity: string };
 }
 
-export const RelationInferenceRules: Record<string, RelationSemanticDefinition> = ${JSON.stringify(relations, null, 2)};
-
-export function inferRelationSemantics(type: string): RelationSemanticDefinition | undefined {
-  return RelationInferenceRules[type];
-}
+export const GENERATED_RELATIONS: RelationContract[] = ${JSON.stringify(relations, null, 2)};
 `;
 
 if (!fs.existsSync(path.dirname(outputFile))) {
@@ -40,3 +50,4 @@ if (!fs.existsSync(path.dirname(outputFile))) {
 
 fs.writeFileSync(outputFile, fileContent);
 console.log('Relation definitions generated.');
+

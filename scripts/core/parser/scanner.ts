@@ -15,7 +15,7 @@ export function scanDocs(docsDir: string): RawDocument[] {
 
             if (stat.isDirectory()) {
                 traverse(fullPath);
-            } else if (item.endsWith('.md') && item !== 'project-manifest.md') {
+            } else if (item.endsWith('.md')) {
                 const content = fs.readFileSync(fullPath, 'utf-8');
                 documents.push({
                     file: fullPath,

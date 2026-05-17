@@ -1,8 +1,7 @@
 import { LintIssue, LintProfile } from './lint-types.js';
 import { OpenLagData, ParsedArtifact, ParsedRelation, ParseError } from '../core/parser.js';
-
-const VALID_ARTIFACT_TYPES = ['PROJECT', 'EPIC', 'FEATURE', 'REQUIREMENT', 'BUSINESS_RULE', 'USE_CASE', 'DESIGN', 'DECISION', 'CODE_ENTITY', 'TEST_CASE', 'CHANGE', 'BUG', 'RISK', 'GLOSSARY_TERM', 'COMPONENT', 'API', 'DATABASE_ENTITY', 'TEST', 'DOCUMENTATION', 'INCIDENT', 'INFRASTRUCTURE', 'DEPLOYMENT', 'MONITORING', 'MAINTENANCE'];
-const VALID_RELATION_TYPES = ['IMPLEMENTS', 'TESTS', 'DEPENDS_ON', 'DERIVES_FROM', 'RELATES_TO', 'IMPACTS', 'BLOCKS', 'FIXES', 'USES', 'DEFINES', 'VALIDATES', 'DOCUMENTS', 'REPLACES', 'JUSTIFIES', 'BREAKS', 'REFINES', 'DEPLOYS', 'MONITORS'];
+import { ArtifactRegistry } from '../../src/core/registry/ArtifactRegistry.js';
+import { RelationRegistry } from '../../src/core/registry/RelationRegistry.js';
 
 export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue[] {
   const issues: LintIssue[] = [];
@@ -53,7 +52,7 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
 
   // 3. Artifact type and minimal fields
   for (const artifact of data.artifacts) {
-    if (!VALID_ARTIFACT_TYPES.includes(artifact.type)) {
+    if (!ArtifactRegistry.isValid(artifact.type)) {
       addIssue('invalidArtifactType', `Invalid artifact type: ${artifact.type}`, artifact.file, artifact.id, artifact.status);
     }
     if (!artifact.type || !artifact.title) {
@@ -69,7 +68,7 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
   const reqsByTest = new Map<string, ParsedRelation[]>();
 
   for (const relation of data.relations) {
-    if (!VALID_RELATION_TYPES.includes(relation.type)) {
+    if (!RelationRegistry.isValid(relation.type)) {
        addIssue('invalidRelationType', `Invalid relation type: ${relation.type}`, relation.file, relation.from);
     }
     
@@ -142,7 +141,10 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
              if (targetArts && targetArts[0]) {
                  const targetStatus = targetArts[0].status;
                  if (targetStatus === 'draft' || targetStatus === 'in_progress') {
-                     addIssue('closedArtifactWithPendingRelations', `${artifact.id} is closed but links to ${targetStatus} artifact ${rel.to}`, artifact.file, artifact.id, artifact.status);
+                     // Check relation rules: RELATES_TO, DOCUMENTS, JUSTIFIES don't break closed state
+                     if (rel.type !== 'RELATES_TO' && rel.type !== 'DOCUMENTS' && rel.type !== 'JUSTIFIES') {
+                         addIssue('closedArtifactWithPendingRelations', `${artifact.id} is closed but links to ${targetStatus} artifact ${rel.to} via ${rel.type}`, artifact.file, artifact.id, artifact.status);
+                     }
                  }
              }
         }

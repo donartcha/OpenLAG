@@ -1,10 +1,11 @@
 import { scanDocs } from "./parser/scanner.js";
 import { ParsedArtifact, ParsedRelation, ParseError, OpenLagData, RawDocument } from "./parser/types.js";
-import { ArtifactType } from "../../src/types";
-import { inferRelationSemantics } from "../../src/core/semantic/relation-definitions.js";
+export type { ParsedArtifact, ParsedRelation, ParseError, OpenLagData, RawDocument };
+import { ArtifactType } from "../../src/types.js";
 import { ArtifactSchema } from "./parser/schemas.js";
 import { normalizeArtifact } from "./parser/normalizer.js";
 import { DiagnosticEngine, Severity } from "./parser/diagnostic.js";
+import { RelationRegistry } from "../../src/core/registry/RelationRegistry.js";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
@@ -20,31 +21,6 @@ export function parseOpenLagDocs(docsDir: string): OpenLagData {
     relations: [],
     errors: []
   };
-
-  const manifestPath = path.join(docsDir, 'project-manifest.md');
-  if (!fs.existsSync(manifestPath)) {
-    diag.add(manifestPath, "Manifest not found", Severity.CRITICAL);
-    state.errors = diag.getErrors();
-    return state;
-  }
-
-  const fileContent = fs.readFileSync(manifestPath, 'utf-8');
-  const { content } = matter(fileContent);
-
-  const parseYamlBlock = (header: string) => {
-    const regex = new RegExp(`## ${header}[\\s\\S]*?` + '```yaml' + `([\\s\\S]*?)` + '```');
-    const match = content.match(regex);
-    if (match && match[1]) {
-       return yaml.load(match[1]) as any[];
-    }
-    return [];
-  };
-
-  try {
-    state.versions = parseYamlBlock('Versions') || [];
-  } catch (e) {
-    diag.add(manifestPath, "Invalid YAML in Versions", Severity.CRITICAL);
-  }
 
   const documents = scanDocs(docsDir);
 
@@ -84,7 +60,14 @@ export function parseOpenLagDocs(docsDir: string): OpenLagData {
 
               const typeValue = artifact.type as ArtifactType;
 
-              if (typeValue === 'SYSTEM_VERSION') {
+              if (typeValue === 'VERSION') {
+                state.versions.push({
+                  id: artifact.id,
+                  name: String(parsed.name || ''),
+                  timestamp: String(parsed.timestamp || ''),
+                  parentVersion: parsed.parentVersion || null
+                });
+              } else if (typeValue === 'SYSTEM_VERSION') {
                 state.systemVersions.push({
                   id: artifact.id,
                   component: String(parsed.component || ''),
@@ -109,15 +92,19 @@ export function parseOpenLagDocs(docsDir: string): OpenLagData {
                 relArray.forEach((rel: any, idx: number) => {
                   const to = typeof rel === 'string' ? rel : (rel.to || rel.id || rel.ID);
                   if (to) {
-                     const relType = rel.type || (artifact.type === 'TEST' ? 'TESTS' : 'IMPLEMENTS');
-                     const semantics = inferRelationSemantics(relType);
+                     const relType = rel.type;
+                     if (!relType) {
+                         diag.add(fullPath, `Relation targeting ${to} missing 'type' in artifact ${artifact.id}`, Severity.WARNING);
+                         return; // Skip inference, strictly require type
+                     }
+                     const contract = RelationRegistry.getContract(relType);
                      state.relations.push({
                         id: `rel-${artifact.id}-${idx}`,
                         from: artifact.id,
                         to: String(to),
                         type: relType,
-                        category: semantics?.category,
-                        strength: semantics?.strength,
+                        category: contract?.category,
+                        strength: contract?.strength,
                         file: fullPath
                      });
                   }

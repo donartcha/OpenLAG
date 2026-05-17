@@ -30,6 +30,12 @@ export const LayerInferenceRules: Record<ArtifactType, ArtifactLayer> = {
   
   GLOSSARY_TERM: 'DOCUMENTATION',
   DOCUMENTATION: 'DOCUMENTATION',
+  VERSION: 'DOCUMENTATION',
+  LIBRARY: 'IMPLEMENTATION',
+  ENVIRONMENT: 'OPERATIONS',
+  CHECK: 'OPERATIONS',
+  PROCESS: 'OPERATIONS',
+  PIPELINE: 'OPERATIONS',
 };
 
 export function inferLayer(artifactType: ArtifactType): ArtifactLayer | undefined {

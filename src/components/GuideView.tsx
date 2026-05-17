@@ -43,13 +43,13 @@ export const GuideView: React.FC = () => {
             statusFlow: "Lifecycle Status Flow",
             statusFlowDesc: "Evolution of artifacts. The system tolerates missing relations in 'draft', but expects full traceability in 'closed'.",
             manifest: "Project Manifest",
-            manifestDesc: "The docs/project-manifest.md file controls the global timeline (Versions).",
+            manifestDesc: "The docs/versions/ directory controls the global timeline and component versions.",
             bestPractices: "Best Practices & ID Conventions",
             bestPracticesDesc: "IDs must be unique and stable (e.g. REQ-001, CODE-023). Prefix defines the logical type.",
             tutorialTitle: "Step-by-Step Tutorial",
             tutorialDesc: "Follow these steps to structure a complete project using the OpenLAG specification.",
             step1Title: "Step 1: The Project Manifest",
-            step1Desc: "Always start by creating the docs/project-manifest.md file to define global versions of the project.",
+            step1Desc: "Always start by defining global versions of the project inside docs/versions/versions.md.",
             step2Title: "Step 2: Business Requirements",
             step2Desc: "Create the Business Layer artifacts (e.g., REQ-001) defining what needs to be built.",
             step3Title: "Step 3: Architecture & Design",
@@ -57,7 +57,7 @@ export const GuideView: React.FC = () => {
             step4Title: "Step 4: Implementation & Operations",
             step4Desc: "Finally, define Code and Infra (e.g., CODE-001, INFRA-001) linking them back up the chain.",
             step5Title: "Step 5: System Versions",
-            step5Desc: "Document external libraries and components inside docs/system-versions/ using SYSTEM_VERSION artifacts.",
+            step5Desc: "Document external libraries and components inside docs/versions/components-versions.md using SYSTEM_VERSION artifacts.",
             step6Title: "Step 6: Changes & Tracking",
             step6Desc: "Add CHANGE type artifacts inside docs/changes/ to govern modifications, bugs, or major refactors affecting the graph.",
         },
@@ -97,13 +97,13 @@ export const GuideView: React.FC = () => {
             statusFlow: "Estados y Ciclo de Vida",
             statusFlowDesc: "En estado 'draft' se permiten huérfanos, pero en 'closed' se exige trazabilidad completa.",
             manifest: "Manifiesto del Proyecto",
-            manifestDesc: "El archivo docs/project-manifest.md define las versiones temporales globales.",
+            manifestDesc: "El directorio docs/versions/ define las versiones temporales globales y de componentes.",
             bestPractices: "Buenas Prácticas y Convención de IDs",
             bestPracticesDesc: "Los IDs deben ser únicos y estables (Ej: REQ-001). El prefijo define su tipo lógico de forma clara.",
             tutorialTitle: "Tutorial Paso a Paso",
             tutorialDesc: "Sigue estos pasos para estructurar un proyecto completo usando la especificación OpenLAG.",
             step1Title: "Paso 1: Manifiesto del Proyecto",
-            step1Desc: "Comienza siempre creando el archivo docs/project-manifest.md para definir versiones a nivel global del proyecto.",
+            step1Desc: "Comienza siempre definiendo versiones a nivel global del proyecto en docs/versions/versions.md.",
             step2Title: "Paso 2: Requisitos de Negocio",
             step2Desc: "Crea los artefactos de la Capa de Negocio (Ej. REQ-001) para definir qué se debe construir.",
             step3Title: "Paso 3: Arquitectura y Diseño",
@@ -111,7 +111,7 @@ export const GuideView: React.FC = () => {
             step4Title: "Paso 4: Implementación y Operaciones",
             step4Desc: "Finalmente, documenta Código e Infra (Ej. CODE-001, INFRA-001) trazando los enlaces hacia arriba.",
             step5Title: "Paso 5: Versiones de Sistemas",
-            step5Desc: "Documenta en docs/system-versions/ los componentes y librerías externas mediante artefactos de tipo SYSTEM_VERSION.",
+            step5Desc: "Documenta en docs/versions/components-versions.md los componentes y librerías externas mediante artefactos de tipo SYSTEM_VERSION.",
             step6Title: "Paso 6: Registro de Cambios",
             step6Desc: "Añade en docs/changes/ artefactos de tipo CHANGE para gobernar las modificaciones, errores o refactors mayores que afecten el grafo.",
         }
@@ -362,7 +362,7 @@ relations:
                         <div className="bg-[#0c0c0c] border border-white/5 rounded-lg overflow-hidden flex flex-col">
                             <div className="p-4 bg-white/[0.03] border-b border-white/5 flex items-center justify-between">
                                 <h4 className="text-sm font-bold text-white/80">{c.step1Title}</h4>
-                                <span className="text-[10px] font-mono text-white/40 italic">docs/project-manifest.md</span>
+                                <span className="text-[10px] font-mono text-white/40 italic">docs/versions/versions.md</span>
                             </div>
                             <div className="p-6">
                                 <p className="text-xs text-white/50 mb-4">{c.step1Desc}</p>
@@ -466,7 +466,7 @@ Implementation of the login endpoint...`}
                         <div className="bg-[#0c0c0c] border border-white/5 rounded-lg overflow-hidden flex flex-col">
                             <div className="p-4 bg-white/[0.03] border-b border-white/5 flex items-center justify-between">
                                 <h4 className="text-sm font-bold text-white/80">{c.step5Title}</h4>
-                                <span className="text-[10px] font-mono text-white/40 italic">docs/system-versions/sv-db-pg.md</span>
+                                <span className="text-[10px] font-mono text-white/40 italic">docs/versions/components-versions.md</span>
                             </div>
                             <div className="p-6">
                                 <p className="text-xs text-white/50 mb-4">{c.step5Desc}</p>

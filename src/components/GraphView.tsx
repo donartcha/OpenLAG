@@ -1,7 +1,7 @@
 import React, { useMemo, useCallback, useEffect, useState } from 'react';
 import { ReactFlow, MiniMap, Controls, Background, useNodesState, useEdgesState, Node, Edge, MarkerType, Handle, Position, Panel, ReactFlowProvider, useReactFlow } from '@xyflow/react';
 import dagre from 'dagre';
-import { Search, X, AlertCircle } from 'lucide-react';
+import { Search, X, AlertCircle, ChevronUp, ChevronDown } from 'lucide-react';
 import '@xyflow/react/dist/style.css';
 import { useStore } from '../store';
 import { ArtifactType } from '../types';
@@ -32,6 +32,12 @@ const typeColors: Record<ArtifactType, string> = {
   API: 'text-emerald-500 border-emerald-500',
   DATABASE_ENTITY: 'text-orange-500 border-orange-500',
   SYSTEM_VERSION: 'text-yellow-500 border-yellow-500',
+  VERSION: 'text-teal-500 border-teal-500',
+  LIBRARY: 'text-blue-400 border-blue-400',
+  ENVIRONMENT: 'text-indigo-400 border-indigo-400',
+  CHECK: 'text-red-400 border-red-400',
+  PROCESS: 'text-fuchsia-400 border-fuchsia-400',
+  PIPELINE: 'text-sky-400 border-sky-400',
 };
 
 const CustomNode = ({ data, selected }: any) => {
@@ -119,6 +125,62 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
   });
 
   return { nodes: newNodes, edges };
+};
+
+const Legend = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <Panel position="bottom-center" className="m-4 z-50">
+       <div className="bg-[#0c0c0c] border border-white/10 p-3 shadow-2xl rounded-md flex flex-col gap-2 w-48">
+          <div className="flex items-center justify-between cursor-pointer" onClick={() => setIsOpen(!isOpen)}>
+            <span className="text-[10px] uppercase font-bold tracking-widest text-white/50 hover:text-white transition-colors">Legend</span>
+            {isOpen ? <ChevronDown size={12} className="text-white/50" /> : <ChevronUp size={12} className="text-white/50" />}
+          </div>
+          
+          {isOpen && (
+            <div className="flex flex-col gap-3 pt-2 border-t border-white/10 max-h-[60vh] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
+              <div className="flex flex-col gap-1.5">
+                 <div className="text-[9px] uppercase font-bold text-white/30">Relation Strength</div>
+                 <div className="flex items-center gap-2">
+                   <div className="w-4 h-[2px] bg-[#f87171]"></div>
+                   <span className="text-[9px] text-white/70 font-mono">STRONG (Solid)</span>
+                 </div>
+                 <div className="flex items-center gap-2">
+                   <div className="w-4 h-[2px]" style={{ borderTop: '2px dashed #38bdf8' }}></div>
+                   <span className="text-[9px] text-white/70 font-mono">MEDIUM (Dashed)</span>
+                 </div>
+                 <div className="flex items-center gap-2">
+                   <div className="w-4 h-[1px]" style={{ borderTop: '2px dotted #94a3b8' }}></div>
+                   <span className="text-[9px] text-white/70 font-mono">WEAK (Dotted)</span>
+                 </div>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                 <div className="text-[9px] uppercase font-bold text-white/30">Node Connectors</div>
+                 <div className="flex items-center gap-2">
+                   <div className="w-2 h-2 rounded bg-blue-500/50"></div>
+                   <span className="text-[9px] text-white/70 font-mono">Outputs (Source)</span>
+                 </div>
+                 <div className="flex items-center gap-2">
+                   <div className="w-2 h-2 rounded bg-emerald-500/50"></div>
+                   <span className="text-[9px] text-white/70 font-mono">Inputs (Target)</span>
+                 </div>
+              </div>
+
+              <div className="flex flex-col gap-1.5">
+                 <div className="text-[9px] uppercase font-bold text-white/30">Artifact Types</div>
+                 {Object.entries(typeColors).map(([type, colorClass]) => (
+                   <div key={type} className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full border border-current bg-current ${colorClass.split(' ')[0]}`}></div>
+                      <span className={`text-[9px] font-mono ${colorClass.split(' ')[0]}`}>{type}</span>
+                   </div>
+                 ))}
+              </div>
+            </div>
+          )}
+       </div>
+    </Panel>
+  );
 };
 
 const GraphFlow: React.FC = () => {
@@ -255,9 +317,16 @@ const GraphFlow: React.FC = () => {
                             
       const isDimmed = isFilteredOut || (selectedArtifactId !== null && !isConnectedToSelected);
 
-      // Handle placement logic based on dagre TB layout
       const isWeak = r.strength === 'WEAK';
       const isStrong = r.strength === 'STRONG';
+
+      let edgeColor = '#38bdf8'; // MEDIUM (sky-400)
+      if (isStrong) edgeColor = '#f87171'; // STRONG (red-400)
+      if (isWeak) edgeColor = '#94a3b8'; // WEAK (slate-400)
+
+      if (isDimmed) {
+        edgeColor = 'rgba(255,255,255,0.05)';
+      }
 
       return {
         id: r.id,
@@ -270,12 +339,12 @@ const GraphFlow: React.FC = () => {
         animated: selectedArtifactId !== null && isConnectedToSelected,
         markerEnd: {
           type: MarkerType.ArrowClosed,
-          color: isDimmed ? 'rgba(255,255,255,0.05)' : (isWeak ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.4)')
+          color: edgeColor
         },
         style: { 
-          stroke: isDimmed ? 'rgba(255,255,255,0.05)' : (isConnectedToSelected && selectedArtifactId ? '#34d399' : (isWeak ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.4)')), 
-          strokeWidth: isDimmed ? 1 : (isConnectedToSelected && selectedArtifactId ? (isStrong ? 3 : 2) : (isStrong ? 2 : 1)), 
-          strokeDasharray: isWeak ? '2' : (isStrong ? '0' : '4'),
+          stroke: edgeColor, 
+          strokeWidth: isDimmed ? 1 : (selectedArtifactId && isConnectedToSelected ? (isStrong ? 3 : (isWeak ? 1.5 : 2.5)) : (isStrong ? 2 : (isWeak ? 1 : 1.5))), 
+          strokeDasharray: isWeak ? '2 4' : (isStrong ? '0' : '5'),
           transition: 'all 0.3s ease'
         },
         labelStyle: { 
@@ -328,6 +397,7 @@ const GraphFlow: React.FC = () => {
         minZoom={0.2}
         elevateNodesOnSelect={true}
       >
+        <Legend />
         <Panel position="top-left" className="m-4 z-50">
           <div className="bg-[#0c0c0c] border border-white/10 p-3 shadow-2xl w-80 flex flex-col gap-2 rounded-md transition-all">
             <div className="flex items-center gap-3 border-b border-white/5 pb-2">

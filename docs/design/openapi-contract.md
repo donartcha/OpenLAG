@@ -4,5 +4,8 @@ type: DOCUMENTATION
 subType: "Service Contract"
 title: "User-Auth OpenAPI"
 version: v-1
+relations:
+  - type: DOCUMENTS
+    to: api-auth
 ---
 Especificación OAS v3 para la API de Autenticación. Define los esquemas de entrada y salida para `/register` y `/login`.

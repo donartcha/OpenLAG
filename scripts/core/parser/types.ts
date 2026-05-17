@@ -1,4 +1,4 @@
-import { Artifact, ArtifactType, Relation, RelationType, Change, ChangeType, SystemVersion, Version } from "../../src/types";
+import { Artifact, ArtifactType, Relation, RelationType, Change, ChangeType, SystemVersion, Version } from "../../../src/types.js";
 
 export interface ParsedArtifact extends Artifact {
   file: string;

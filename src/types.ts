@@ -1,10 +1,12 @@
-export type ArtifactType = 'PROJECT' | 'EPIC' | 'FEATURE' | 'REQUIREMENT' | 'BUSINESS_RULE' | 'USE_CASE' | 'DESIGN' | 'DECISION' | 'CODE_ENTITY' | 'TEST_CASE' | 'CHANGE' | 'BUG' | 'RISK' | 'GLOSSARY_TERM' | 'COMPONENT' | 'API' | 'DATABASE_ENTITY' | 'TEST' | 'DOCUMENTATION' | 'INCIDENT' | 'INFRASTRUCTURE' | 'DEPLOYMENT' | 'MONITORING' | 'MAINTENANCE' | 'SYSTEM_VERSION';
-export type RelationType = 'IMPLEMENTS' | 'TESTS' | 'DEPENDS_ON' | 'DERIVES_FROM' | 'RELATES_TO' | 'IMPACTS' | 'BLOCKS' | 'FIXES' | 'USES' | 'DEFINES' | 'VALIDATES' | 'DOCUMENTS' | 'REPLACES' | 'JUSTIFIES' | 'BREAKS' | 'REFINES' | 'DEPLOYS' | 'MONITORS';
+import { ArtifactType } from './core/registry/ArtifactRegistry.js';
+
+export type { ArtifactType };
+export type RelationType = string;
 export type ChangeType = 'ERROR' | 'FEATURE' | 'EVOLUTION' | 'REFACTOR' | 'ADAPTATION';
 
 export type ArtifactLayer = 'BUSINESS' | 'ARCHITECTURE' | 'IMPLEMENTATION' | 'OPERATIONS' | 'DOCUMENTATION';
 export type RelationStrength = 'STRONG' | 'MEDIUM' | 'WEAK';
-export type RelationCategory = 'STRUCTURAL' | 'BEHAVIORAL' | 'OPERATIONAL' | 'SEMANTIC' | 'TRACEABILITY';
+export type RelationCategory = 'STRUCTURAL' | 'BEHAVIORAL' | 'OPERATIONAL' | 'SEMANTIC' | 'TRACEABILITY' | 'DEPENDENCY' | 'EVOLUTIONARY';
 
 export interface Ownership {
   owner?: string;

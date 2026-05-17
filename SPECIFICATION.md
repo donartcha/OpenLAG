@@ -78,24 +78,25 @@ El motor de OpenLAG soporta asignación de responsabilidad semántica (Ownership
 - `steward`: Responsable de gobernanza y calidad del artefacto.
 
 ### Relation Strength Model
-Las relaciones ahora definen un peso semántico para filtrar el ruido visual e impacto:
-- **Strong**: (Fuerte) Relación crítica y de acoplamiento directo (`IMPLEMENTS`, `TESTS`, `DEPENDS_ON`, `BLOCKS`, `BREAKS`, `DEFINES`, `VALIDATES`, `REPLACES`).
-- **Medium**: (Media) Relación descriptiva o de flujo (`DERIVES_FROM`, `USES`, `IMPACTS`, `JUSTIFIES`, `REFINES`, `MONITORS`).
+Las relaciones se catalogan según un peso semántico para filtrar el ruido visual e impacto:
+- **Strong**: (Fuerte) Relación crítica y de acoplamiento directo (`IMPLEMENTS`, `TESTS`, `DEPENDS_ON`, `BLOCKS`, `FIXES`, `DEFINES`, `VALIDATES`, `REPLACES`).
+- **Medium**: (Media) Relación descriptiva o de flujo (`DERIVES_FROM`, `USES`, `IMPACTS`, `JUSTIFIES`, `BREAKS`, `REFINES`, `DEPLOYS`, `MONITORS`).
 - **Weak**: (Débil) Relación laxa y estrictamente semántica (`RELATES_TO`, `DOCUMENTS`).
 
 ### Relation Category Model
-Las relaciones también se pueden agrupar por su propósito en el sistema:
-- **STRUCTURAL**: Relaciones que definen la estructura (ej. DEPENDS_ON, REFINES, IMPLEMENTS, REPLACES).
-- **BEHAVIORAL**: Relaciones que definen el comportamiento y el flujo (ej. USES, DEFINES).
-- **OPERATIONAL**: Relaciones que ocurren en tiempo de ejecución (ej. IMPACTS, MONITORS, DEPLOYS, BREAKS, BLOCKS).
-- **SEMANTIC**: Relaciones descriptivas o de abstracción (ej. DERIVES_FROM, RELATES_TO, DOCUMENTS, JUSTIFIES).
-- **TRACEABILITY**: Relaciones que definen validación y corrección (ej. TESTS, VALIDATES, FIXES).
+Las 18 relaciones oficiales de OpenLAG se agrupan por su propósito semántico en el sistema:
+- **TRACEABILITY**: Relaciones que definen validación y cobertura documental (`IMPLEMENTS`, `TESTS`, `VALIDATES`, `REFINES`, `FIXES`).
+- **STRUCTURAL**: Relaciones que definen la estructura y jerarquías (`DEPENDS_ON`, `USES`).
+- **BEHAVIORAL**: Relaciones que definen el comportamiento y el flujo en código (`DEFINES`, `BREAKS`).
+- **OPERATIONAL**: Relaciones que ocurren en infraestructura y tiempo de ejecución (`DEPLOYS`, `MONITORS`, `IMPACTS`, `BLOCKS`).
+- **SEMANTIC**: Relaciones descriptivas, de abstracción o históricas (`RELATES_TO`, `DOCUMENTS`, `REPLACES`, `JUSTIFIES`, `DERIVES_FROM`).
 
 ## 3. Estructura Oficial de Proyecto
 
 ```text
 docs/
- ├── project-manifest.md
+ ├── versions/
+ ├── relations/
  ├── requirements/
  ├── epics/
  ├── features/
@@ -109,25 +110,39 @@ docs/
  └── architecture/
 ```
 
-### project-manifest.md
-Es el manifiesto central del proyecto que controla el ciclo de vida. Define la línea temporal e iteraciones del grafo arquitectónico en formato YAML.
+### versions/
+El directorio `versions/` controla el ciclo de vida, agrupando los archivos definitorios del tiempo.
 
-1. **Versions**: Define las versiones (iteraciones temporales) globales del sistema (incluye identificador, nombre, fecha y la versión padre).
+#### versions.md
+Define la línea temporal global e iteraciones del sistema en formato YAML Frontmatter o múltiple bloque YAML. Los artefactos deben tener el `type: VERSION`. Define identificador (`id`), `name`, `timestamp` y la posible versión padre (`parentVersion`).
 
 Ejemplo de su estructura:
 
-```markdown
-## Versions
 ```yaml
-- id: v-1
-  name: 1.0.0
-  timestamp: "2026-05-06"
-  parentVersion: null
-```
+---
+id: v-1
+type: VERSION
+name: "1.0.0"
+timestamp: "2026-05-06"
+parentVersion: null
+---
 ```
 
-### system-versions/
-Directorio para artefactos que documentan versiones de componentes o librerías externas del sistema. Los artefactos aquí tienen el type `SYSTEM_VERSION` y contienen atributos como `component`, `version`, y `releaseDate`.
+#### components-versions.md
+Archivo para artefactos que documentan versiones de componentes o librerías externas del sistema. Los artefactos aquí tienen el type `SYSTEM_VERSION` y contienen atributos como `component`, `version`, y `releaseDate`.
+
+```yaml
+---
+id: sv-db-1
+type: SYSTEM_VERSION
+component: "PostgreSQL Database"
+version: "15.2"
+releaseDate: "2023-05-06"
+---
+```
+
+### relations/
+Directorio donde se definen formalmente las reglas y multiplicidades de las relaciones que rigen el grafo mediante archivos YAML individuales (ej: `IMPLEMENTS.yaml`, `USES.yaml`).
 
 ### changes/
 Directorio para artefactos que documentan cambios arquitectónicos, refactors importantes, o bug fixes estructurales. Los artefactos tienen el type `CHANGE`, atributos como `changeType`, `versionFrom`, `versionTo`, y una lista `affects` detallando a qué otros artefactos o versiones de sistema aplican los cambios.
@@ -237,47 +252,84 @@ No debería bloquear salvo inconsistencias críticas.
 
 ## 5. Formal Relation Contracts
 
-Las relaciones ahora se definen mediante un contrato explícito que garantiza la coherencia arquitectónica. Cada relación debe definir:
+Las relaciones se definen mediante contratos explícitos que garantizan la coherencia arquitectónica. Estos contratos se definen en archivos YAML individuales dentro de la carpeta `/docs/relations/`. 
 
-- nombre y descripción,
-- categorías,
-- tipos origen y destino válidos,
-- capas semánticas permitidas,
-- multiplicidad,
-- y severidad del lint.
+El diseño de las relaciones obedece a un modelo semántico coherente, mantenible y alineado con la filosofía Architecture as Code.
 
-### Estructura de Contrato de Relación (YAML)
+### Relation Support Levels
 
-```yaml
-relation: <NOMBRE_REL>
-description: "<descripción>"
-category: <CATEGORIA>
-allowedFrom: [<TYPE>, ...]
-allowedTo: [<TYPE>, ...]
-allowedLayers:
-  from: [<LAYER>, ...]
-  to: [<LAYER>, ...]
-multiplicity:
-  from: <one|many>
-  to: <one|many>
-validation:
-  severity: <error|warn|info>
-```
+El soporte de relaciones en OpenLAG se divide en niveles para gestionar la complejidad cognitiva y la flexibilidad evolutiva:
 
-### Relation Rules Matrix (Ejemplo formal)
+1. **Mandatory Core Relations:** Obligatorias. Forman la base mínima para rastrear el "por qué" de las cosas.
+2. **Official Optional Relations:** Opcionales. Útiles para modelar el "cómo" y el despliegue del software de forma estructurada. 
+3. **Custom Relations:** Definibles por el usuario para casos internos específicos, documentándolas en `/docs/relations/`.
 
-| From | Relation | To | Severity |
-| :--- | :--- | :--- | :--- |
-| **CODE_ENTITY** | `IMPLEMENTS` | **REQUIREMENT** | error |
-| **FEATURE** | `IMPLEMENTS` | **REQUIREMENT** | error |
-| **TEST_CASE** | `TESTS` | **FEATURE** | error |
-| **INCIDENT** | `IMPLEMENTS` | **API** | warning |
+### Mandatory Core Relations
+
+Estas relaciones son el subconjunto oficial y obligatorio de OpenLAG. Son las únicas generadas por defecto para favorecer la adopción.
+
+| Relation | Origin | Category | Default Strength | Purpose |
+|---|---|---|---|---|
+| IMPLEMENTS | Human | TRACEABILITY | STRONG | Conecta implementación con necesidad funcional/técnica. |
+| TESTS | Human | TRACEABILITY | STRONG | Conecta tests con comportamiento validado. |
+| REFINES | Human | TRACEABILITY | MEDIUM | Descompone artefactos en otros más concretos. |
+| FIXES | Human | TRACEABILITY | STRONG | Conecta correcciones con bugs. |
+| DOCUMENTS | Human | SEMANTIC | WEAK | Conecta documentación con el artefacto descrito. |
+| JUSTIFIES | Human | SEMANTIC | MEDIUM | Conecta decisiones con aquello que justifican. |
+
+### Official Optional Relations
+
+Estas relaciones describen principalmente la operatividad e infraestructura ("CÓMO" operan las cosas), en lugar de la justificación (el "POR QUÉ"). Pueden añadirse manualmente en `/docs/relations/` si el proyecto necesita este modelado.
+
+- **DEPENDS_ON**: Acoplamiento arquitectónico y de empaquetado. Idealmente inferido sintéticamente.
+- **USES**: Invocación o flujo en tiempo de ejecución.
+- **DEPLOYS**: Instanciación de componentes o release en infraestructura.
+- **MONITORS**: Relación de observabilidad.
+- **IMPACTS / BLOCKS / BREAKS**: Descripción de averías o impedimentos.
+- **REPLACES**: Útil para modelar evolución/histórico.
+- **DERIVES_FROM**: Relación genérica de evolución conceptual.
+- **VALIDATES**: Relación empírica/humana (QA Manual) a diferencia de TESTS.
+- **DEFINES**: Para entidades que instauran glosarios o normas.
+- **CALLS / IMPORTS**: Trazabilidad puramente a nivel de código de componentes.
+- **RELATES_TO**: (DISCOURAGED) Uso genérico altamente propenso a polución semántica. Requiere rationale si se emplea.
+
+### Default Init Behavior
+
+El comando de inicialización (`npx openlag init` o `npm run init` si está expuesto) genera **únicamente Mandatory Core Relations**.
+
+El objetivo es reducir la complejidad cognitiva para nuevos proyectos. Los equipos pueden incorporar `Official Optional Relations` progresivamente copiando las especificaciones según madure su modelo documental; evitando así agobiar a los equipos con más de 18 opciones desde el día uno.
+
+### Human Relations vs Synthetic Relations
+
+OpenLAG distingue conceptualmente el origen y la responsabilidad de las relaciones:
+
+**Human Relations (Manuales)**
+Relaciones que requieren de análisis, intención e intervención humana:
+- `IMPLEMENTS`, `TESTS`, `REFINES`, `FIXES`, `JUSTIFIES`, `DOCUMENTS`.
+Estas relaciones justifican *por qué* suceden las cosas en el ciclo de vida del software y conforman el set Mandatory Core.
+
+**Synthetic Relations (Inferidas automáticamente)**
+Relaciones estructurales u operativas que, idealmente, provienen de análisis de código o tooling externo (aunque pueden ser manuales de forma transitiva):
+- `DEPENDS_ON`, `CALLS`, `IMPORTS`, `USES`, `DEPLOYS`.
+Estas relaciones indican *cómo* operan las cosas. No se exige mantenerlas manualmente al inicio del proyecto.
+
+### Criterio Anti-Desperdicio & Gobernanza
+OpenLAG prohíbe las "relaciones dinámicas abiertas" para salvaguardar el grafo frente a la polución semántica (donde "related" se usa como excusa comodín y enrarece el entendimiento visual). Toda relación necesaria extra debe definirse mediante nuevos archivos `.yaml` en el directorio `/docs/relations/`. Estos pasarán escrutinio como reglas locales del grafo.
+
+La relación `RELATES_TO` se considera **DISCOURAGED**. Su uso excesivo o injustificado destruye el valor del grafo, convirtiéndolo en un enjambre incomprensible (polución semántica). Por defecto, no se genera al inicializar un proyecto.
+
+Para utilizar esta relación, el contrato debe ser explícitamente generado usando `npx openlag init --all` (o creado manualmente en `/docs/relations/RELATES_TO.yaml`). Cuando un desarrollador utilice esta relación en el Frontmatter de un artefacto Markdown, se recomienda justificarla estrictamente aportando contexto mediante un campo `rationale` o detallando la motivación de la conexión dentro del cuerpo del documento, demostrando que ninguna relación con mayor peso semántico (como `IMPLEMENTS`, `DEPENDS_ON`, o `USES`) encajaba en ese escenario particular.
 
 ### Tipos de Restricción
 - **VALID**: Relación estándar y correcta.
 - **ALLOWED**: Permitida, pero no recomendada.
 - **DISCOURAGED**: Mala práctica, generará `warn` en desarrollo, `error` en release.
 - **INVALID**: Prohibida, generará `error` inmediato.
+
+### Estructura de Artefactos vs Semántica
+Mientras las relaciones (reglas del grafo) se definen formalmente en `/docs/relations/*.yaml`, los **Artefactos (ArtifactTypes)** pertenecen al núcleo estático validado por OpenLAG (`ArtifactRegistry`).
+La documentación real del proyecto NUNCA debe comprimirse artificialmente en archivos YAML técnicos.
+Se exige que los artefactos persistan como **archivos Markdown legibles por humanos (`.md`)** distribuidos en directorios semánticos (`/requirements`, `/features`, `/design`, `/code`). Así, se mantiene la filosofía *Architecture as Code* legible directamente en repositorios de Git.
 
 ### Severidad por Perfil
 - **feature**: Solo `error` en reglas `INVALID`.
