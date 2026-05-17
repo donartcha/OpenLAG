@@ -430,60 +430,56 @@ Los artefactos pueden:
 
 ## 14. Integración CI/CD
 
-Ejemplo GitHub Actions:
+La CLI de OpenLAG está diseñada para integrarse en pipelines de integración continua.
+
+### Comando `check`
+El comando `openlag check` es el estándar recomendado para CI, ya que agrupa:
+1. Validación de tipos (TypeScript).
+2. Lint de código fuente (ESLint).
+3. Validación arquitectónica (OpenLAG Lint).
+
+### Ejemplo GitHub Actions:
 
 ```yaml
-name: OpenLAG Lint
+name: OpenLAG Guard
 
-on:
-  pull_request:
+on: [pull_request]
 
 jobs:
-  lint:
+  validate:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-
       - run: npm install
-      - run: npm run lint:openlag
+      - run: npx openlag check
 ```
 
 ### Uso recomendado
-- Validar PRs.
+- Validar PRs mediante `openlag check`.
 - Detectar drift documental.
-- Mostrar deuda progresiva.
-- Evitar inconsistencias estructurales.
+- Mostrar deuda progresiva de trazabilidad.
+- Evitar inconsistencias estructurales antes de merge.
 
-## 15. Roadmap Conceptual
+### 15. Roadmap Conceptual
 
-### Corto Plazo
-- parser robusto,
-- linting extensible,
-- generación estable,
-- tests.
+#### Fase 1: Núcleo y Tooling (Completado/En curso)
+- **Parser Robusto**: Extracción centralizada de datos Markdown y YAML.
+- **CLI Oficial**: Interfaz unificada (`openlag`) para manipulación y visualización.
+- **Linting Extensible**: Motor de validación con perfiles de severidad.
+- **Generación Estable**: Pipeline de datos optimizado para el portal.
 
-### Medio Plazo
-- backend opcional,
-- API de consultas,
-- métricas,
-- análisis temporal.
+#### Fase 2: Capacidades Avanzadas (Próximo paso)
+- **Capa de Extensibilidad**: Plugins para customizar reglas de linting y tipos de artefactos.
+- **API de Consultas**: Interfaz programática para extraer métricas del grafo.
+- **Análisis Temporal Profundo**: Comparativa automática entre versiones del grafo.
 
-### Largo Plazo
-- graph database,
-- visualización distribuida,
-- generación automática,
-- asistentes IA opcionales.
-
-### Separación Importante
-Las capacidades IA futuras:
-- NO forman parte del núcleo actual,
-- NO deben asumirse como implementadas,
-- y deben mantenerse desacopladas.
+#### Fase 3: Escalabilidad (Visión)
+- **Backend Opcional**: Persistencia en bases de datos de grafos para repositorios masivos.
+- **Asistentes IA**: Integración con modelos de lenguaje para sugerir trazabilidad y detectar inconsistencias.
+- **Generación Automática**: Puentes entre código real y documentación de arquitectura.
 
 ## 16. Filosofía Final
 
