@@ -8,6 +8,7 @@ export const ImpactView: React.FC = () => {
   const [selectedChangeId, setSelectedChangeId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<string | 'ALL'>('ALL');
+  const [filterStrength, setFilterStrength] = useState<'ALL' | 'STRONG' | 'MEDIUM' | 'WEAK' | 'IGNORE_WEAK'>('IGNORE_WEAK');
 
   // Initialize selectedId if not set
   useEffect(() => {
@@ -29,9 +30,20 @@ export const ImpactView: React.FC = () => {
 
   const affectedSystems = useMemo(() => {
     if (!selectedChange) return [];
+    
+    // Evaluate strength based on graph relations connected to this change
+    const isRelationValid = (sourceId: string, relId: string) => {
+      if (filterStrength === 'ALL') return true;
+      const rel = graph?.relations.find(r => r.from === sourceId && r.to === relId || r.to === sourceId && r.from === relId);
+      if (!rel) return true;
+      if (filterStrength === 'IGNORE_WEAK' && rel.strength === 'WEAK') return false;
+      if (filterStrength !== 'IGNORE_WEAK' && rel.strength !== filterStrength) return false;
+      return true;
+    };
+
     // Find systems affected directly or through artifacts
     const directlyAffected = (systemVersions || []).filter(sv => (selectedChange.affects || []).includes(sv.id));
-    const indirectIds = (selectedChange.affects || []).map(id => graph?.artifacts.find(a => a.id === id)?.systemVersionId).filter(Boolean);
+    const indirectIds = (selectedChange.affects || []).filter(id => isRelationValid(selectedChange.id, id)).map(id => graph?.artifacts.find(a => a.id === id)?.systemVersionId).filter(Boolean);
     const indirectlyAffected = (systemVersions || []).filter(sv => indirectIds.includes(sv.id));
     
     // Merge unique
@@ -42,7 +54,7 @@ export const ImpactView: React.FC = () => {
         }
         return acc;
     }, [] as typeof all);
-  }, [selectedChange, systemVersions, graph]);
+  }, [selectedChange, systemVersions, graph, filterStrength]);
 
   const phaseImpact = useMemo(() => {
     if (!selectedChange || !graph || !graph.artifacts) return {};
@@ -83,6 +95,19 @@ export const ImpactView: React.FC = () => {
                         className={`flex-1 text-[8px] font-bold py-1 border transition-all ${filterType === type ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400' : 'bg-transparent border-white/5 text-white/30 hover:border-white/20'}`}
                     >
                         {type}
+                    </button>
+                ))}
+            </div>
+
+            <div className="flex gap-1 pt-2 border-t border-white/5">
+                {['ALL', 'IGNORE_WEAK', 'STRONG'].map(strength => (
+                    <button
+                        key={strength}
+                        onClick={() => setFilterStrength(strength as any)}
+                        className={`flex-1 text-[8px] font-bold py-1 border transition-all ${filterStrength === strength ? 'bg-amber-500/20 border-amber-500/40 text-amber-400' : 'bg-transparent border-white/5 text-white/30 hover:border-white/20'}`}
+                        title={`Filter by Relation Strength: ${strength}`}
+                    >
+                        {strength === 'IGNORE_WEAK' ? 'NO WEAK' : strength}
                     </button>
                 ))}
             </div>
@@ -200,8 +225,15 @@ export const ImpactView: React.FC = () => {
                                                 <span className="font-mono text-[9px] text-emerald-500/50">{artifact.id}</span>
                                             </div>
                                             <div className="font-serif text-[#f0f0f0] text-base mb-3 group-hover:text-emerald-400 transition-colors">{artifact.title}</div>
-                                            <div className="text-[11px] text-[#e0e0e0]/40 leading-relaxed font-sans line-clamp-3">
-                                                {artifact.description}
+                                            <div className="flex flex-col gap-2">
+                                                <div className="flex gap-2 items-center mb-1">
+                                                    {artifact.layer && <span className="text-[8px] border border-emerald-500/20 text-emerald-500/60 font-mono px-1 rounded-sm uppercase">{artifact.layer}</span>}
+                                                    {artifact.ownership?.owner && <span className="text-[8px] text-blue-400 border border-blue-400/20 bg-blue-400/5 font-mono px-1 rounded-sm">OWNER: {artifact.ownership.owner}</span>}
+                                                    {artifact.ownership?.team && <span className="text-[8px] text-emerald-400 border border-emerald-400/20 bg-emerald-400/5 font-mono px-1 rounded-sm">TEAM: {artifact.ownership.team}</span>}
+                                                </div>
+                                                <div className="text-[11px] text-[#e0e0e0]/40 leading-relaxed font-sans line-clamp-3">
+                                                    {artifact.description}
+                                                </div>
                                             </div>
                                         </>
                                     ) : sys && (

@@ -5,6 +5,8 @@ subType: "Repository"
 title: "UserRepository.java"
 version: v-1
 systemVersionId: sv-db-pg-15
+ownership:
+  team: backend-team
 relations:
   - to: impl-cls-1
     type: USES

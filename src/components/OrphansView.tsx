@@ -106,17 +106,26 @@ export const OrphansView: React.FC = () => {
                                     </button>
                                 </div>
 
-                                <div className="flex items-center gap-2 mb-4">
+                                 <div className="flex items-center gap-2 mb-4">
                                    <div className="p-2 bg-red-500/5 rounded border border-red-500/10">
                                        <AlertCircle size={14} className="text-red-500/60" />
                                    </div>
-                                   <div className="flex flex-col">
-                                       <span className="text-[10px] font-bold text-red-400/80 uppercase tracking-widest leading-none">{art.type}</span>
+                                   <div className="flex flex-col gap-1">
+                                       <div className="flex items-center gap-2">
+                                           <span className="text-[10px] font-bold text-red-400/80 uppercase tracking-widest leading-none">{art.type}</span>
+                                           {art.layer && <span className="text-[8px] bg-red-500/10 border border-red-500/20 text-red-400/60 px-1 rounded-sm uppercase tracking-widest">{art.layer}</span>}
+                                       </div>
                                        <span className="text-[9px] font-mono text-white/20 mt-1 uppercase tracking-tighter italic leading-none">{art.id}</span>
                                    </div>
                                 </div>
 
                                 <h3 className="font-serif text-lg text-white mb-2 leading-tight">{art.title}</h3>
+                                {(art.ownership?.owner || art.ownership?.team) && (
+                                    <div className="flex gap-2 mb-2">
+                                        {art.ownership.owner && <span className="text-[9px] text-blue-400 border border-blue-400/20 bg-blue-400/5 px-1 rounded-sm font-mono">OWNER: {art.ownership.owner}</span>}
+                                        {art.ownership.team && <span className="text-[9px] text-emerald-400 border border-emerald-400/20 bg-emerald-400/5 px-1 rounded-sm font-mono">TEAM: {art.ownership.team}</span>}
+                                    </div>
+                                )}
                                 <p className="text-xs text-white/40 leading-relaxed line-clamp-3 mb-6 min-h-[48px]">
                                     {art.description}
                                 </p>

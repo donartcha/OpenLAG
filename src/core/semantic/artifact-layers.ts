@@ -1,0 +1,36 @@
+import { ArtifactType, ArtifactLayer } from '../../types.js';
+
+export const LayerInferenceRules: Record<ArtifactType, ArtifactLayer> = {
+  PROJECT: 'BUSINESS',
+  EPIC: 'BUSINESS',
+  FEATURE: 'BUSINESS',
+  REQUIREMENT: 'BUSINESS',
+  BUSINESS_RULE: 'BUSINESS',
+  USE_CASE: 'BUSINESS',
+  
+  DESIGN: 'ARCHITECTURE',
+  DECISION: 'ARCHITECTURE',
+  COMPONENT: 'ARCHITECTURE',
+  API: 'ARCHITECTURE',
+  
+  CODE_ENTITY: 'IMPLEMENTATION',
+  DATABASE_ENTITY: 'IMPLEMENTATION',
+  TEST_CASE: 'IMPLEMENTATION',
+  TEST: 'IMPLEMENTATION',
+  CHANGE: 'IMPLEMENTATION',
+  BUG: 'IMPLEMENTATION',
+  RISK: 'IMPLEMENTATION',
+  
+  INCIDENT: 'OPERATIONS',
+  INFRASTRUCTURE: 'OPERATIONS',
+  DEPLOYMENT: 'OPERATIONS',
+  MONITORING: 'OPERATIONS',
+  MAINTENANCE: 'OPERATIONS',
+  
+  GLOSSARY_TERM: 'DOCUMENTATION',
+  DOCUMENTATION: 'DOCUMENTATION',
+};
+
+export function inferLayer(artifactType: ArtifactType): ArtifactLayer | undefined {
+  return LayerInferenceRules[artifactType];
+}

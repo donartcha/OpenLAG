@@ -4,6 +4,17 @@ import { Artifact, ArtifactType } from '../types';
 import { Layers, FileText, Server, FileCode2, ShieldCheck, Stethoscope, ChevronRight, Search, GitPullRequest, Repeat, Box, Rocket, Activity, Wrench, Trash2, AlertCircle, Printer, Download } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
+const OwnershipBadge = ({ artifact }: { artifact: Artifact }) => {
+    if (!artifact.layer && !artifact.ownership?.owner && !artifact.ownership?.team) return null;
+    return (
+        <div className="flex gap-2 mb-3 mt-1 pointer-events-none">
+            {artifact.layer && <span className="text-[9px] text-purple-400 border border-purple-400/20 bg-purple-400/5 px-1.5 py-0.5 rounded-sm font-mono tracking-tighter">LAYER: {artifact.layer}</span>}
+            {artifact.ownership?.owner && <span className="text-[9px] text-blue-400 border border-blue-400/20 bg-blue-400/5 px-1.5 py-0.5 rounded-sm font-mono tracking-tighter">OWNER: {artifact.ownership?.owner}</span>}
+            {artifact.ownership?.team && <span className="text-[9px] text-emerald-400 border border-emerald-400/20 bg-emerald-400/5 px-1.5 py-0.5 rounded-sm font-mono tracking-tighter">TEAM: {artifact.ownership?.team}</span>}
+        </div>
+    );
+};
+
 interface GroupedArtifacts {
   REQUIREMENT: Artifact[];
   USE_CASE: Artifact[];
@@ -39,11 +50,22 @@ export const DocumentationView: React.FC = () => {
   const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
   const [selectedSubType, setSelectedSubType] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterLayer, setFilterLayer] = useState<string | 'ALL'>('ALL');
+  const [filterOwner, setFilterOwner] = useState<string | 'ALL'>('ALL');
+  const [filterTeam, setFilterTeam] = useState<string | 'ALL'>('ALL');
   const [graphFilterType, setGraphFilterType] = useState<string | 'ALL'>('ALL');
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isHeaderMinified, setIsHeaderMinified] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
   const [isImpactFocusMode, setIsImpactFocusMode] = useState(settings.defaultDocsFocusMode);
+
+  const filterOptions = useMemo(() => {
+     if (!graph || !graph.artifacts) return { layers: [], owners: [], teams: [] };
+     const layers = Array.from(new Set(graph.artifacts.map(a => a.layer).filter(Boolean))) as string[];
+     const owners = Array.from(new Set(graph.artifacts.map(a => a.ownership?.owner).filter(Boolean))) as string[];
+     const teams = Array.from(new Set(graph.artifacts.map(a => a.ownership?.team).filter(Boolean))) as string[];
+     return { layers, owners, teams };
+  }, [graph]);
 
   const orphanArtifactIds = useMemo(() => {
     if (!graph) return new Set<string>();
@@ -121,7 +143,16 @@ export const DocumentationView: React.FC = () => {
         return list.filter(a => reachableArtifactIds.has(a.id));
     };
 
-    const applyFilters = (list: Artifact[] = []) => filterByGraph(filterBySearch(list));
+    const filterByLayerAndOwnership = (list: Artifact[] = []) => {
+        return list.filter(a => {
+            if (filterLayer !== 'ALL' && a.layer !== filterLayer) return false;
+            if (filterOwner !== 'ALL' && a.ownership?.owner !== filterOwner) return false;
+            if (filterTeam !== 'ALL' && a.ownership?.team !== filterTeam) return false;
+            return true;
+        });
+    };
+
+    const applyFilters = (list: Artifact[] = []) => filterByGraph(filterByLayerAndOwnership(filterBySearch(list)));
     
     return {
       REQUIREMENT: applyFilters(grouped.REQUIREMENT),
@@ -137,7 +168,7 @@ export const DocumentationView: React.FC = () => {
       MONITORING: applyFilters(grouped.MONITORING),
       MAINTENANCE: applyFilters(grouped.MAINTENANCE),
     };
-  }, [grouped, searchQuery, selectedArtifactId, reachableArtifactIds, isImpactFocusMode]);
+  }, [grouped, searchQuery, selectedArtifactId, reachableArtifactIds, isImpactFocusMode, filterLayer, filterOwner, filterTeam]);
 
   const phasesData = useMemo(() => {
     return PHASES.map(phase => {
@@ -356,54 +387,91 @@ export const DocumentationView: React.FC = () => {
                     </div>
                 )}
                 
-                <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-                    <div className="relative w-full md:w-40">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <Search size={14} className="text-white/40" />
+                <div className="flex flex-col gap-2 w-full md:w-auto">
+                    <div className="flex flex-col md:flex-row gap-2">
+                        <div className="relative w-full md:w-40">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <Search size={14} className="text-white/40" />
+                            </div>
+                            <input
+                                type="text"
+                                placeholder="Keywords..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-[#111] border border-white/10 rounded-md py-1.5 pl-8 pr-3 text-xs text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-colors"
+                            />
                         </div>
-                        <input
-                            type="text"
-                            placeholder="Keywords..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-[#111] border border-white/10 rounded-md py-1.5 pl-8 pr-3 text-xs text-white focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-colors"
-                        />
-                    </div>
-                    <div className="flex gap-1 border border-white/10 p-0.5 rounded-md bg-[#0a0a0a]">
-                        <select
-                            value={graphFilterType}
-                            onChange={(e) => setGraphFilterType(e.target.value)}
-                            className="bg-transparent border-none py-1 px-2 text-[9px] text-white/50 focus:outline-none cursor-pointer appearance-none uppercase tracking-wider"
+                        <div className="flex gap-1 border border-white/10 p-0.5 rounded-md bg-[#0a0a0a]">
+                            <select
+                                value={graphFilterType}
+                                onChange={(e) => setGraphFilterType(e.target.value)}
+                                className="bg-transparent border-none py-1 px-2 text-[9px] text-white/50 focus:outline-none cursor-pointer appearance-none uppercase tracking-wider"
+                            >
+                                <option value="ALL">All Types</option>
+                                {Object.keys(grouped).map(type => (
+                                    <option key={type} value={type} className="bg-[#0c0c0c]">{type.replace('_', ' ')}</option>
+                                ))}
+                            </select>
+                            <div className="h-3 w-px bg-white/10 self-center mx-0.5"></div>
+                            <select
+                                value={selectedArtifactId || ''}
+                                onChange={(e) => setSelectedArtifact(e.target.value || null)}
+                                className="bg-transparent border-none py-1 px-2 text-[9px] text-emerald-400 focus:outline-none cursor-pointer appearance-none font-mono max-w-[120px]"
+                            >
+                                <option value="" className="text-white">Artifact...</option>
+                                {(graph?.artifacts || [])
+                                    .filter(a => graphFilterType === 'ALL' || a.type === graphFilterType)
+                                    .sort((a,b) => a.id.localeCompare(b.id))
+                                    .map(a => (
+                                    <option key={a.id} value={a.id} className="text-white bg-[#0c0c0c]">
+                                        {a.id}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                        <button
+                            onClick={() => window.print()}
+                            className="flex items-center justify-center p-1.5 ml-2 hover:bg-white/10 rounded transition-colors text-white/40 hover:text-white print-hidden"
+                            title="Print Native (System Print Dialog)"
                         >
-                            <option value="ALL">All Types</option>
-                            {Object.keys(grouped).map(type => (
-                                <option key={type} value={type} className="bg-[#0c0c0c]">{type.replace('_', ' ')}</option>
+                            <Printer size={16} />
+                        </button>
+                    </div>
+                    {/* Secondary Filters */}
+                    <div className="flex gap-1 border border-white/10 p-0.5 rounded-md bg-[#0a0a0a] self-end md:self-start w-full">
+                        <select
+                            value={filterLayer}
+                            onChange={(e) => setFilterLayer(e.target.value)}
+                            className="bg-transparent border-none py-1 px-2 text-[9px] text-white/50 focus:outline-none cursor-pointer appearance-none uppercase tracking-wider flex-1"
+                        >
+                            <option value="ALL">All Layers</option>
+                            {filterOptions.layers.map(layer => (
+                                <option key={layer} value={layer} className="bg-[#0c0c0c]">{layer}</option>
                             ))}
                         </select>
                         <div className="h-3 w-px bg-white/10 self-center mx-0.5"></div>
                         <select
-                            value={selectedArtifactId || ''}
-                            onChange={(e) => setSelectedArtifact(e.target.value || null)}
-                            className="bg-transparent border-none py-1 px-2 text-[9px] text-emerald-400 focus:outline-none cursor-pointer appearance-none font-mono max-w-[120px]"
+                            value={filterOwner}
+                            onChange={(e) => setFilterOwner(e.target.value)}
+                            className="bg-transparent border-none py-1 px-2 text-[9px] text-white/50 focus:outline-none cursor-pointer appearance-none uppercase tracking-wider flex-1"
                         >
-                            <option value="" className="text-white">Artifact...</option>
-                            {(graph?.artifacts || [])
-                                .filter(a => graphFilterType === 'ALL' || a.type === graphFilterType)
-                                .sort((a,b) => a.id.localeCompare(b.id))
-                                .map(a => (
-                                <option key={a.id} value={a.id} className="text-white bg-[#0c0c0c]">
-                                    {a.id}
-                                </option>
+                            <option value="ALL">All Owners</option>
+                            {filterOptions.owners.map(owner => (
+                                <option key={owner} value={owner} className="bg-[#0c0c0c]">{owner}</option>
+                            ))}
+                        </select>
+                        <div className="h-3 w-px bg-white/10 self-center mx-0.5"></div>
+                        <select
+                            value={filterTeam}
+                            onChange={(e) => setFilterTeam(e.target.value)}
+                            className="bg-transparent border-none py-1 px-2 text-[9px] text-white/50 focus:outline-none cursor-pointer appearance-none uppercase tracking-wider flex-1"
+                        >
+                            <option value="ALL">All Teams</option>
+                            {filterOptions.teams.map(team => (
+                                <option key={team} value={team} className="bg-[#0c0c0c]">{team}</option>
                             ))}
                         </select>
                     </div>
-                    <button
-                        onClick={() => window.print()}
-                        className="flex items-center justify-center p-1.5 ml-2 hover:bg-white/10 rounded transition-colors text-white/40 hover:text-white print-hidden"
-                        title="Print Native (System Print Dialog)"
-                    >
-                        <Printer size={16} />
-                    </button>
                 </div>
             </div>
           </div>
@@ -467,6 +535,7 @@ export const DocumentationView: React.FC = () => {
                       )}
                       {req.title}
                     </h3>
+                    <OwnershipBadge artifact={req} />
                     <MarkdownRenderer content={req.description} />
                   </div>
                 ))}
@@ -497,6 +566,7 @@ export const DocumentationView: React.FC = () => {
                         )}
                         {des.title}
                     </h3>
+                    <OwnershipBadge artifact={des} />
                     <MarkdownRenderer content={des.description} />
                   </div>
                 ))}
@@ -529,6 +599,7 @@ export const DocumentationView: React.FC = () => {
                                 >
                                     {code.title}
                                 </button>
+                                <OwnershipBadge artifact={code} />
                                 {orphanArtifactIds.has(code.id) && (
                                     <div className="flex items-center gap-1 text-[8px] text-red-400 mt-0.5 font-bold uppercase tracking-tighter">
                                         <AlertCircle size={8} />
@@ -617,6 +688,7 @@ export const DocumentationView: React.FC = () => {
                             )}
                             {test.title}
                         </h3>
+                        <OwnershipBadge artifact={test} />
                         <MarkdownRenderer content={test.description} />
                     </div>
                 ))}
@@ -636,6 +708,7 @@ export const DocumentationView: React.FC = () => {
                                 <Box size={14} className="text-amber-400" />
                                 {b.title}
                             </h4>
+                            <OwnershipBadge artifact={b} />
                             <MarkdownRenderer content={b.description} />
                         </div>
                     ))}
@@ -667,6 +740,7 @@ export const DocumentationView: React.FC = () => {
                                 )}
                                 {d.title}
                             </h3>
+                            <OwnershipBadge artifact={d} />
                             <MarkdownRenderer content={d.description} />
                         </div>
                     ))}
@@ -701,6 +775,7 @@ export const DocumentationView: React.FC = () => {
                                 )}
                                 {m.title}
                             </h3>
+                            <OwnershipBadge artifact={m} />
                             <MarkdownRenderer content={m.description} />
                         </div>
                     ))}
@@ -732,6 +807,7 @@ export const DocumentationView: React.FC = () => {
                                 <Wrench size={14} className="text-indigo-400" />
                                 {m.title}
                             </h3>
+                            <OwnershipBadge artifact={m} />
                             <MarkdownRenderer content={m.description} />
                         </div>
                     ))}
@@ -751,6 +827,7 @@ export const DocumentationView: React.FC = () => {
                                 <Trash2 size={14} className="text-red-900" />
                                 {m.title}
                             </h3>
+                            <OwnershipBadge artifact={m} />
                             <MarkdownRenderer content={m.description} />
                         </div>
                     ))}

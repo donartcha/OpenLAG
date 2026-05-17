@@ -13,6 +13,8 @@ export const defaultProfiles: Record<string, LintProfile> = {
     orphanArtifact: 'info',
     invalidRelationType: 'error',
     invalidArtifactType: 'error',
+    invalidLayerRelation: 'info',
+    missingOwnership: 'info',
   },
   develop: {
     duplicateId: 'error',
@@ -26,6 +28,8 @@ export const defaultProfiles: Record<string, LintProfile> = {
     orphanArtifact: 'warning',
     invalidRelationType: 'error',
     invalidArtifactType: 'error',
+    invalidLayerRelation: 'warning',
+    missingOwnership: 'warning',
   },
   release: {
     duplicateId: 'error',
@@ -39,5 +43,7 @@ export const defaultProfiles: Record<string, LintProfile> = {
     orphanArtifact: 'error',
     invalidRelationType: 'error',
     invalidArtifactType: 'error',
+    invalidLayerRelation: 'error',
+    missingOwnership: 'error',
   }
 };

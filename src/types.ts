@@ -2,6 +2,19 @@ export type ArtifactType = 'PROJECT' | 'EPIC' | 'FEATURE' | 'REQUIREMENT' | 'BUS
 export type RelationType = 'IMPLEMENTS' | 'TESTS' | 'DEPENDS_ON' | 'DERIVES_FROM' | 'RELATES_TO' | 'IMPACTS' | 'BLOCKS' | 'FIXES' | 'USES' | 'DEFINES' | 'VALIDATES' | 'DOCUMENTS' | 'REPLACES' | 'JUSTIFIES' | 'BREAKS' | 'REFINES' | 'DEPLOYS' | 'MONITORS';
 export type ChangeType = 'ERROR' | 'FEATURE' | 'EVOLUTION' | 'REFACTOR' | 'ADAPTATION';
 
+export type ArtifactLayer = 'BUSINESS' | 'ARCHITECTURE' | 'IMPLEMENTATION' | 'OPERATIONS' | 'DOCUMENTATION';
+export type RelationStrength = 'STRONG' | 'MEDIUM' | 'WEAK';
+export type RelationCategory = 'STRUCTURAL' | 'BEHAVIORAL' | 'OPERATIONAL' | 'SEMANTIC' | 'TRACEABILITY';
+
+export interface Ownership {
+  owner?: string;
+  team?: string;
+  domain?: string;
+  maintainers?: string[];
+  reviewers?: string[];
+  steward?: string;
+}
+
 export interface Version {
   id: string;
   timestamp: string;
@@ -24,6 +37,9 @@ export interface Artifact {
   description: string;
   version: string;
   systemVersionId?: string;
+  layer?: ArtifactLayer;
+  ownership?: Ownership;
+  status?: string;
 }
 
 export interface Relation {
@@ -31,6 +47,8 @@ export interface Relation {
   from: string;
   to: string;
   type: RelationType;
+  strength?: RelationStrength;
+  category?: RelationCategory;
 }
 
 export interface Change {

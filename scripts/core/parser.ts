@@ -3,6 +3,8 @@ import path from "path";
 import matter from "gray-matter";
 import yaml from "js-yaml";
 import { Artifact, ArtifactType, Relation, RelationType, Change, ChangeType, SystemVersion, Version } from "../../src/types";
+import { inferLayer } from "../../src/core/semantic/artifact-layers.js";
+import { inferRelationSemantics } from "../../src/core/semantic/relation-definitions.js";
 
 export interface ParsedArtifact extends Artifact {
   file: string;
@@ -121,6 +123,8 @@ export function parseOpenLagDocs(docsDir: string): OpenLagData {
               description: body,
               systemVersionId: parsed.systemVersionId || parsed.systemversionid,
               status: parsed.status,
+              layer: inferLayer(typeValue),
+              ownership: parsed.ownership || parsed.owner ? { owner: parsed.owner, ...parsed.ownership } : undefined,
               file: fullPath
             };
             state.artifacts.push(artifact);
@@ -131,11 +135,15 @@ export function parseOpenLagDocs(docsDir: string): OpenLagData {
               relArray.forEach((rel: any, idx: number) => {
                 const to = typeof rel === 'string' ? rel : (rel.to || rel.id || rel.ID);
                 if (to) {
+                   const relType = rel.type || (artifact.type === 'TEST' ? 'TESTS' : 'IMPLEMENTS');
+                   const semantics = inferRelationSemantics(relType);
                    state.relations.push({
                       id: `rel-${artifact.id}-${idx}`,
                       from: artifact.id,
                       to: String(to),
-                      type: rel.type || (artifact.type === 'TEST' ? 'TESTS' : 'IMPLEMENTS'),
+                      type: relType,
+                      category: semantics?.category,
+                      strength: semantics?.strength,
                       file: fullPath
                    });
                 }

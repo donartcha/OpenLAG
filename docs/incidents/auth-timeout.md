@@ -4,6 +4,8 @@ type: INCIDENT
 subType: Incident
 title: "INC-1020: Auth Timeout"
 version: v-1
+ownership:
+  team: sre-team
 relations:
   - to: ops-dep-1
     type: BREAKS

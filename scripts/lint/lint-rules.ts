@@ -146,6 +146,25 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
                  }
              }
         }
+        
+        if (!artifact.ownership || Object.keys(artifact.ownership).length === 0) {
+            addIssue('missingOwnership', `${artifact.id} is closed but has no ownership defined`, artifact.file, artifact.id, artifact.status);
+        }
+    }
+    
+    if (artifact.type === 'API' && (!artifact.ownership || Object.keys(artifact.ownership).length === 0)) {
+        addIssue('missingOwnership', `API ${artifact.id} should have ownership defined`, artifact.file, artifact.id, artifact.status);
+    }
+    
+    // Check layer semantics
+    if (artifact.layer === 'BUSINESS') {
+        const outgoing = data.relations.filter(r => r.from === artifact.id);
+        for (const rel of outgoing) {
+            const relSemantics = rel.category;
+            if (relSemantics === 'OPERATIONAL') {
+                addIssue('invalidLayerRelation', `Business layer artifact ${artifact.id} should not have OPERATIONAL relations (${rel.type})`, artifact.file, artifact.id, artifact.status);
+            }
+        }
     }
   }
 

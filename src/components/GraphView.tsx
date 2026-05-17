@@ -59,11 +59,16 @@ const CustomNode = ({ data, selected }: any) => {
             )}
           </div>
           {data.subType && <span className="text-[8px] font-sans uppercase tracking-wider opacity-60">{data.subType}</span>}
+          {data.layer && <span className="text-[7px] font-mono tracking-wider opacity-40">{data.layer}</span>}
         </div>
-        <span className="text-[10px] font-mono opacity-60 shrink-0 ml-2">{data.id}</span>
+        <span className="text-[10px] font-mono opacity-60 shrink-0 ml-2 border border-white/10 px-1">{data.id}</span>
       </div>
-      <div className="font-serif text-[#e0e0e0] text-sm mb-2">{data.title}</div>
-      <div className="text-[11px] leading-relaxed opacity-60 h-8 overflow-hidden text-ellipsis line-clamp-2">{data.description}</div>
+      <div className="font-serif text-[#e0e0e0] text-sm mb-2 leading-tight">{data.title}</div>
+      <div className="flex flex-col gap-1">
+          <div className="text-[11px] leading-relaxed opacity-60 h-8 overflow-hidden text-ellipsis line-clamp-2">{data.description}</div>
+          {data.ownership?.owner && <div className="text-[8px] text-emerald-500 font-mono">OWNER: {data.ownership.owner}</div>}
+          {data.ownership?.team && <div className="text-[8px] text-blue-400 font-mono">TEAM: {data.ownership.team}</div>}
+      </div>
       <Handle type="target" position={Position.Bottom} id="t-bot" className={`w-2 h-2 rounded-none ${isDimmed ? 'opacity-0' : 'bg-emerald-500/50 border-0'}`} style={{ left: '70%' }} />
       <Handle type="source" position={Position.Bottom} id="s-bot" className={`w-2 h-2 rounded-none ${isDimmed ? 'opacity-0' : 'bg-blue-500/50 border-0'}`} style={{ left: '30%' }} />
     </div>
@@ -85,16 +90,23 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
   dagreGraph.setGraph({ rankdir: direction, align: 'UL', edgesep: 120, ranksep: 160, nodesep: 100 });
 
   nodes.forEach((node) => {
-    dagreGraph.setNode(node.id, { width: NODE_WIDTH, height: NODE_HEIGHT });
+    if (!node.hidden) {
+        dagreGraph.setNode(node.id, { width: NODE_WIDTH, height: NODE_HEIGHT });
+    }
   });
 
   edges.forEach((edge) => {
-    dagreGraph.setEdge(edge.source, edge.target);
+    if (!edge.hidden) {
+        dagreGraph.setEdge(edge.source, edge.target);
+    }
   });
 
   dagre.layout(dagreGraph);
 
   const newNodes = nodes.map((node) => {
+    if (node.hidden) {
+        return { ...node, position: { x: 0, y: 0 } };
+    }
     const nodeWithPosition = dagreGraph.node(node.id);
     return {
       ...node,
@@ -129,18 +141,33 @@ const GraphFlow: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [filterLayer, setFilterLayer] = useState<string | 'ALL'>('ALL');
+  const [filterOwner, setFilterOwner] = useState<string | 'ALL'>('ALL');
+  const [filterTeam, setFilterTeam] = useState<string | 'ALL'>('ALL');
+
+  const filterOptions = useMemo(() => {
+     if (!graph || !graph.artifacts) return { layers: [], owners: [], teams: [] };
+     const layers = Array.from(new Set(graph.artifacts.map(a => a.layer).filter(Boolean))) as string[];
+     const owners = Array.from(new Set(graph.artifacts.map(a => a.ownership?.owner).filter(Boolean))) as string[];
+     const teams = Array.from(new Set(graph.artifacts.map(a => a.ownership?.team).filter(Boolean))) as string[];
+     return { layers, owners, teams };
+  }, [graph]);
 
   const filteredArtifacts = useMemo(() => {
     if (!graph) return [];
-    if (!searchTerm) return graph.artifacts;
-    const term = searchTerm.toLowerCase();
-    return graph.artifacts.filter(a => 
-      a.title.toLowerCase().includes(term) || 
-      a.type.toLowerCase().includes(term) ||
-      (a.subType && a.subType.toLowerCase().includes(term)) ||
-      a.id.toLowerCase().includes(term)
-    );
-  }, [graph, searchTerm]);
+    return graph.artifacts.filter(a => {
+        if (filterLayer !== 'ALL' && a.layer !== filterLayer) return false;
+        if (filterOwner !== 'ALL' && a.ownership?.owner !== filterOwner) return false;
+        if (filterTeam !== 'ALL' && a.ownership?.team !== filterTeam) return false;
+        if (!searchTerm) return true;
+        
+        const term = searchTerm.toLowerCase();
+        return a.title.toLowerCase().includes(term) || 
+          a.type.toLowerCase().includes(term) ||
+          (a.subType && a.subType.toLowerCase().includes(term)) ||
+          a.id.toLowerCase().includes(term);
+    });
+  }, [graph, searchTerm, filterLayer, filterOwner, filterTeam]);
 
   useEffect(() => {
     if (selectedArtifactId && nodes.length > 0) {
@@ -194,7 +221,11 @@ const GraphFlow: React.FC = () => {
         isConnectedToSelected = connectedNodes.has(a.id);
       }
 
-      const isDimmed = selectedArtifactId !== null && !isSelected && !isConnectedToSelected;
+      const isFilteredOut = (filterLayer !== 'ALL' && a.layer !== filterLayer) ||
+                            (filterOwner !== 'ALL' && a.ownership?.owner !== filterOwner) ||
+                            (filterTeam !== 'ALL' && a.ownership?.team !== filterTeam);
+
+      const isDimmed = isFilteredOut || (selectedArtifactId !== null && !isSelected && !isConnectedToSelected);
       const isOrphan = orphanIds.has(a.id);
 
       return {
@@ -206,36 +237,46 @@ const GraphFlow: React.FC = () => {
     });
 
     let initialEdges: Edge[] = graph.relations.map((r) => {
-      const isConnectedToSelected = selectedArtifactId 
-        ? connectedEdges.has(r.id)
-        : true;
+      let isConnectedToSelected = true;
+      if (selectedArtifactId) {
+          isConnectedToSelected = connectedEdges.has(r.id);
+      }
       
-      const isDimmed = selectedArtifactId !== null && !isConnectedToSelected;
+      const sourceNode = graph.artifacts.find(a => a.id === r.from);
+      const targetNode = graph.artifacts.find(a => a.id === r.to);
+      const isFilteredOut = (filterLayer !== 'ALL' && (sourceNode?.layer !== filterLayer || targetNode?.layer !== filterLayer)) ||
+                            (filterOwner !== 'ALL' && (sourceNode?.ownership?.owner !== filterOwner || targetNode?.ownership?.owner !== filterOwner)) ||
+                            (filterTeam !== 'ALL' && (sourceNode?.ownership?.team !== filterTeam || targetNode?.ownership?.team !== filterTeam));
+                            
+      const isDimmed = isFilteredOut || (selectedArtifactId !== null && !isConnectedToSelected);
 
       // Handle placement logic based on dagre TB layout
+      const isWeak = r.strength === 'WEAK';
+      const isStrong = r.strength === 'STRONG';
+
       return {
         id: r.id,
         source: r.from,
         target: r.to,
         sourceHandle: 's-bot',
         targetHandle: 't-top',
-        label: r.type,
+        label: r.category ? `${r.type} (${r.category})` : r.type,
         type: 'default',
         animated: selectedArtifactId !== null && isConnectedToSelected,
         markerEnd: {
           type: MarkerType.ArrowClosed,
-          color: isDimmed ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.4)'
+          color: isDimmed ? 'rgba(255,255,255,0.05)' : (isWeak ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.4)')
         },
         style: { 
-          stroke: isDimmed ? 'rgba(255,255,255,0.05)' : (isConnectedToSelected && selectedArtifactId ? '#34d399' : 'rgba(255,255,255,0.4)'), 
-          strokeWidth: isDimmed ? 1 : (isConnectedToSelected && selectedArtifactId ? 2 : 1.5), 
-          strokeDasharray: '4',
+          stroke: isDimmed ? 'rgba(255,255,255,0.05)' : (isConnectedToSelected && selectedArtifactId ? '#34d399' : (isWeak ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.4)')), 
+          strokeWidth: isDimmed ? 1 : (isConnectedToSelected && selectedArtifactId ? (isStrong ? 3 : 2) : (isStrong ? 2 : 1)), 
+          strokeDasharray: isWeak ? '2' : (isStrong ? '0' : '4'),
           transition: 'all 0.3s ease'
         },
         labelStyle: { 
           fill: isDimmed ? 'transparent' : 'rgba(255,255,255,0.8)', 
-          fontSize: 9, 
-          fontWeight: 700, 
+          fontSize: 8, 
+          fontWeight: isStrong ? 700 : 400, 
           letterSpacing: '1px' 
         },
         labelBgStyle: { 
@@ -253,7 +294,7 @@ const GraphFlow: React.FC = () => {
     
     setNodes(layouted.nodes);
     setEdges(layouted.edges);
-  }, [graph, selectedArtifactId, settings.graphFocusDepth, setNodes, setEdges, orphanIds]);
+  }, [graph, selectedArtifactId, settings.graphFocusDepth, setNodes, setEdges, orphanIds, filterLayer, filterOwner, filterTeam]);
 
   const onNodeClick = useCallback((_: any, node: Node) => {
     setSelectedArtifact(node.id);
@@ -342,6 +383,41 @@ const GraphFlow: React.FC = () => {
                 )}
               </div>
             )}
+            
+            <div className="flex gap-1 border border-white/5 p-0.5 rounded-md bg-[#111]">
+                <select
+                    value={filterLayer}
+                    onChange={(e) => setFilterLayer(e.target.value)}
+                    className="bg-transparent border-none py-1 px-1 text-[8px] text-white/50 focus:outline-none cursor-pointer appearance-none uppercase tracking-wider flex-1"
+                >
+                    <option value="ALL">Layer</option>
+                    {filterOptions.layers.map(layer => (
+                        <option key={layer} value={layer} className="bg-[#0c0c0c]">{layer}</option>
+                    ))}
+                </select>
+                <div className="h-3 w-px bg-white/10 self-center mx-0.5"></div>
+                <select
+                    value={filterOwner}
+                    onChange={(e) => setFilterOwner(e.target.value)}
+                    className="bg-transparent border-none py-1 px-1 text-[8px] text-white/50 focus:outline-none cursor-pointer appearance-none uppercase tracking-wider flex-1"
+                >
+                    <option value="ALL">Owner</option>
+                    {filterOptions.owners.map(owner => (
+                        <option key={owner} value={owner} className="bg-[#0c0c0c]">{owner}</option>
+                    ))}
+                </select>
+                <div className="h-3 w-px bg-white/10 self-center mx-0.5"></div>
+                <select
+                    value={filterTeam}
+                    onChange={(e) => setFilterTeam(e.target.value)}
+                    className="bg-transparent border-none py-1 px-1 text-[8px] text-white/50 focus:outline-none cursor-pointer appearance-none uppercase tracking-wider flex-1"
+                >
+                    <option value="ALL">Team</option>
+                    {filterOptions.teams.map(team => (
+                        <option key={team} value={team} className="bg-[#0c0c0c]">{team}</option>
+                    ))}
+                </select>
+            </div>
           </div>
         </Panel>
 

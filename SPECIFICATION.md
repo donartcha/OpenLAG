@@ -58,7 +58,32 @@ El grafo evoluciona junto al software.
 - El sistema debe tolerar incertidumbre y refactors.
 - El linting debe ayudar, no bloquear innecesariamente.
 
-## 2. Estructura Oficial de Proyecto
+## 2. Semantic Layer Model
+
+OpenLAG clasifica los artefactos en diferentes capas semánticas (Layers) para entender en qué nivel de abstracción operan y qué tipo de relaciones son válidas entre ellos.
+
+### Taxonomía de Capas
+1. **Business Layer**: Define qué se debe construir y por qué. (Propósito: Alinear negocio; Límites: No dicta implementación; Artefactos: `PROJECT`, `EPIC`, `FEATURE`, `REQUIREMENT`).
+2. **Architecture Layer**: Define el diseño y los límites técnicos del sistema. (Propósito: Diseño y restricciones; Artefactos: `DESIGN`, `DECISION`, `API`, `COMPONENT`).
+3. **Implementation Layer**: Modela el código, los tests y su trazabilidad. (Propósito: Código concreto; Artefactos: `CODE_ENTITY`, `TEST_CASE`, `DATABASE_ENTITY`, `CHANGE`, `BUG`).
+4. **Operations Layer**: Modela la infraestructura, el despliegue y la salud en tiempo de ejecución. (Propósito: Observabilidad y entrega; Artefactos: `INFRASTRUCTURE`, `DEPLOYMENT`, `MONITORING`, `INCIDENT`).
+5. **Documentation Layer**: Todo el conocimiento adicional transversal. (Propósito: Contexto; Artefactos: `GLOSSARY_TERM`, `DOCUMENTATION`).
+
+### Ownership Model
+El motor de OpenLAG soporta asignación de responsabilidad semántica (Ownership) con distintos roles:
+- `owner`: El principal responsable (persona).
+- `team`: El equipo propietario.
+- `maintainers`: Array de contribuidores activos.
+- `reviewers`: Array de validadores de negocio/técnicos.
+- `steward`: Responsable de gobernanza y calidad del artefacto.
+
+### Relation Strength Model
+Las relaciones ahora definen un peso semántico para filtrar el ruido visual e impacto:
+- **Strong**: (Fuerte) Relación crítica y de acoplamiento directo (`IMPLEMENTS`, `TESTS`, `DEPENDS_ON`, `BLOCKS`, `BREAKS`, `DEFINES`, `VALIDATES`, `REPLACES`).
+- **Medium**: (Media) Relación descriptiva o de flujo (`DERIVES_FROM`, `USES`, `IMPACTS`, `JUSTIFIES`, `REFINES`, `MONITORS`).
+- **Weak**: (Débil) Relación laxa y estrictamente semántica (`RELATES_TO`, `DOCUMENTS`).
+
+## 3. Estructura Oficial de Proyecto
 
 ```text
 docs/
@@ -201,7 +226,7 @@ No debería bloquear salvo inconsistencias críticas.
 - **DEPLOYS**: Indica que una infraestructura o pipeline despliega a otro componente.
 - **MONITORS**: Un elemento observa la telemetría, salud o estado de otro artefacto.
 
-## 6. Formato Oficial Markdown
+## 7. Formato Oficial Markdown
 
 ```yaml
 ---
@@ -210,7 +235,11 @@ type: REQUIREMENT
 status: draft
 title: Generar graph-data.json
 version: v1
-owner: dony
+ownership:
+  owner: dony
+  team: architecture
+  maintainers:
+    - backend-team
 tags:
   - parser
   - graph

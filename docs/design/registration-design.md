@@ -4,6 +4,9 @@ type: DESIGN
 subType: "Architecture"
 title: "Registration Service Design"
 version: v-1
+ownership:
+  team: architecture
+  steward: ssmith
 relations:
   - to: req-func-1
     type: DERIVES_FROM

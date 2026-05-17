@@ -4,6 +4,8 @@ type: MONITORING
 subType: "Dashboards"
 title: "Registration Success Rate"
 version: v-1
+ownership:
+  team: sre-team
 relations:
   - to: impl-reg-01
     type: MONITORS

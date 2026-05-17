@@ -32,6 +32,8 @@ export interface LintProfile {
   orphanArtifact: LintSeverity;
   invalidRelationType: LintSeverity;
   invalidArtifactType: LintSeverity;
+  invalidLayerRelation?: LintSeverity;
+  missingOwnership?: LintSeverity;
 }
 
 export interface LintConfig {
