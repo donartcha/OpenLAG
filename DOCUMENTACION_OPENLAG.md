@@ -105,27 +105,27 @@ La aplicación es cliente total (Static SPA), careciendo de capa de autenticaci�
 ### Diagrama de Arquitectura de OpenLAG
 ```mermaid
 graph TD
-    subgraph Data Layer [Source of Truth - Git / Local Storage]
-        MF(project-manifest.md)
-        DIR(docs/ Directorio Recursivo)
+    subgraph DataLayer [Source of Truth - Git / Local Storage]
+        MF("project-manifest.md")
+        DIR("docs/ Directorio Recursivo")
         MF -.-> DIR
     end
 
     subgraph Compiler [Local Build Engine / CLI]
-        CLI(openlag.js) --> GEN(generate-static-data.ts)
-        GEN -- Parsea YAML Blocks --> DIR
-        GEN -- Resuelve Aristas e Historico --> JSON(graph-data.json)
+        CLI("openlag.js") --> GEN("generate-static-data.ts")
+        GEN -- "Parsea YAML Blocks" --> DIR
+        GEN -- "Resuelve Aristas e Historico" --> JSON("graph-data.json")
     end
 
-    subgraph Client App [Frontend React - Vite SPA]
-        ZUS(Zustand Data Store) <== Fetch API == JSON
-        ZUS --> GR(GraphView)
-        ZUS --> DC(Documentation Engine)
-        ZUS --> IMP(Impact Analysis)
-        ZUS --> ORP(Orphan Tracking)
+    subgraph ClientApp [Frontend React - Vite SPA]
+        JSON == "Fetch API" ==> ZUS("Zustand Data Store")
+        ZUS --> GR("GraphView")
+        ZUS --> DC("Documentation Engine")
+        ZUS --> IMP("Impact Analysis")
+        ZUS --> ORP("Orphan Tracking")
     end
 
-    Client App -. "No API, Solo Lectura JSON" .-> JSON
+    ClientApp -. "No API, Solo Lectura JSON" .-> JSON
 ```
 
 ### Modelo Relacional Simplificado
@@ -152,33 +152,58 @@ erDiagram
     }
 ```
 
-## 19. Sistema de Linting (Architecture as Code Validator)
+## 20. Guía de Uso del Proyecto NPM
 
-**Propósito:**
-OpenLAG incluye un motor de validación (Linter CLI) que asegura la trazabilidad, coherencia y calidad de la documentación "Architecture as Code" sin penalizar el flujo de trabajo ágil. Fue diseñado para ser progresivo: permite huecos de información en artefactos recientes (`draft`, `in_progress`) y penaliza estrictamente las carencias en fases de `release`.
+Para utilizar **OpenLAG** en tu entorno local de desarrollo, el proyecto está configurado como un proyecto Node.js estándar.
 
-**Comandos y Casos de Uso:**
+### Requisitos Previos
+- Node.js instalado (v18 o superior recomendado)
+- `npm` (gestor de dependencias)
+
+### Comandos Principales
+
+Ejecuta estos comandos en la raíz del repositorio:
+
+1. **Instalar dependencias:**
+   ```bash
+   npm install
+   ```
+
+2. **Desarrollo (Modo "Live"):**
+   Este comando ejecuta el generador de grafos una vez y luego inicia el servidor de desarrollo Vite con HMR habilitado.
+   ```bash
+   npm run dev
+   ```
+
+3. **Generación Manual de Datos:**
+   Si has modificado archivos `.md` en `/docs` y quieres actualizar la visualización sin reiniciar todo el servidor:
+   ```bash
+   npm run generate
+   ```
+
+4. **Construcción (Producción):**
+   Genera los datos del grafo y compila la aplicación para despliegue estático en `dist/`.
+   ```bash
+   npm run build
+   ```
+
+5. **Linting y Validación:**
+   El proyecto ofrece distintos niveles de validación para la arquitectura como código:
+
+   - **Lint de TypeScript:**
+     ```bash
+     npm run lint
+     ```
+   - **Lint de OpenLAG (Arquitectónico):**
+     Tiene perfiles de severidad configurables:
+     ```bash
+     npm run lint:openlag           # Perfil 'develop' (por defecto)
+     npm run lint:openlag:feature   # Perfil relajado
+     npm run lint:openlag:release   # Perfil estricto
+     ```
+
+### Limpieza
+Para borrar los artefactos generados en la carpeta `dist/`:
 ```bash
-npm run lint:openlag           # Perfil 'develop' por defecto
-npm run lint:openlag:feature   # Perfil relajado
-npm run lint:openlag:release   # Perfil estricto
-
-# Ejecución manual en consola con reporte JSON:
-npx tsx scripts/lint-cli.ts --profile develop --json
+npm run clean
 ```
-
-**Perfiles de Severidad:**
-- **`feature`**: Relajado. Solo caen errores estructurales fuertes (esquemas rotos o IDs duplicados). Faltas de tests o implementación son alertas `info`.
-- **`develop`**: Intermedio. Penaliza con `warnings` requerimientos sin test o código huérfano.
-- **`release`**: Estricto. Exige trazabilidad completa y de ida y vuelta para todos los objetos marcando ausencias como `error`.
-
-**Diseño e Implementación:**
-1. **Separación Core-React**: La lógica de validación reside al 100% en `scripts/`, aislándola del frontend SPA en Vite. Garantiza ligereza de cómputo en integración continua (CI).
-2. **Parser Unificado**: Se rompió el monolito de `generate-static-data.ts`. Se extrajo la capa de lectura (ETL) a `scripts/core/parser.ts`. Ahora el motor de generación y el Linter consumen una misma verdad que recorre y normaliza los `.md`.
-3. **Máquina de Severidad Sensible a Estado**: El motor ajusta la severidad de las reglas dinámicamente si reconoce la propiedad `status:` del frontmatter. Los documentos en `status: draft` atenúan sus carencias estructurales.
-4. **API Agnóstica**: Retorna un objeto `LintReport` estructurado sin emitir logs de consola bloqueantes, permitiendo que otros módulos o pipelines consuman las validaciones directamente con `--json`.
-5. **Grafo Plano**: Las validaciones se ejecutan localmente mediante diccionarios y grafos planos indexados (estructuras `Map`), evitando árboles recursivos lentos y permitiendo validar el gran volumen documental en sub-milisegundos.
-
-**Limitaciones Conocidas del Linter:**
-- Actualmente no parsea el contenido _cuerpo Markdown_ interno (Markdown AST) de los documentos para ver referencias en línea; solo el bloque estructurado o YAML FrontMatter.
-- La extensión y configuración de roles desde `openlag.config.yml` asume configuración perfecta por parte del usuario (Deuda técnica: requiere estricto parseo usando `Zod`).
