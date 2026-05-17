@@ -9,6 +9,9 @@ relations:
     type: FIXES
   - to: impl-repo-1
     type: IMPLEMENTS
+ownership:
+  owner: pcaro
+  team: architecture
 ---
 Incremento del pool de conexiones de la base de datos de 10 a 50 para evitar timeouts bajo carga.
 

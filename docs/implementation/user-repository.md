@@ -1,11 +1,12 @@
 ---
 id: impl-repo-1
 type: CODE_ENTITY
-subType: "Repository"
-title: "UserRepository.java"
+subType: Repository
+title: UserRepository.java
 version: v-1
 systemVersionId: sv-db-pg-15
 ownership:
+  owner: pcaro
   team: backend-team
 relations:
   - to: impl-cls-1

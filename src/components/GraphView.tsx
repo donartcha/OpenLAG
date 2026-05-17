@@ -184,23 +184,23 @@ const Legend = () => {
 };
 
 const GraphFlow: React.FC = () => {
-  const { graph, selectedArtifactId, setSelectedArtifact, setView, settings, globalFilters, setGlobalFilter } = useStore();
+  const { fullGraph, currentSubgraph: graph, selectedArtifactId, setSelectedArtifact, setView, settings, globalFilters, setGlobalFilter } = useStore();
   const { setCenter } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
 
   const orphanIds = useMemo(() => {
-    if (!graph) return new Set<string>();
+    if (!fullGraph) return new Set<string>();
     const linked = new Set<string>();
-    graph.relations.forEach(rel => {
+    fullGraph.relations.forEach(rel => {
       linked.add(rel.from);
       linked.add(rel.to);
     });
     const orphans = new Set<string>();
-    graph.artifacts.forEach(art => {
+    fullGraph.artifacts.forEach(art => {
       if (!linked.has(art.id)) orphans.add(art.id);
     });
     return orphans;
-  }, [graph]);
+  }, [fullGraph]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -213,19 +213,18 @@ const GraphFlow: React.FC = () => {
   const setFilterTeam = (val: string) => setGlobalFilter('team', val);
 
   const filterOptions = useMemo(() => {
-     if (!graph || !graph.artifacts) return { layers: [], owners: [], teams: [] };
-     const layers = Array.from(new Set(graph.artifacts.map(a => a.layer).filter(Boolean))) as string[];
-     const owners = Array.from(new Set(graph.artifacts.map(a => a.ownership?.owner).filter(Boolean))) as string[];
-     const teams = Array.from(new Set(graph.artifacts.map(a => a.ownership?.team).filter(Boolean))) as string[];
+     if (!fullGraph || !fullGraph.artifacts) return { layers: [], owners: [], teams: [] };
+     const layers = Array.from(new Set(fullGraph.artifacts.map(a => a.layer).filter(Boolean))) as string[];
+     const owners = Array.from(new Set(fullGraph.artifacts.map(a => a.ownership?.owner).filter(Boolean))) as string[];
+     const teams = Array.from(new Set(fullGraph.artifacts.map(a => a.ownership?.team).filter(Boolean))) as string[];
      return { layers, owners, teams };
-  }, [graph]);
+  }, [fullGraph]);
 
   const filteredArtifacts = useMemo(() => {
     if (!graph) return [];
     return graph.artifacts.filter(a => {
-        if (filterLayer !== 'ALL' && a.layer !== filterLayer) return false;
-        if (filterOwner !== 'ALL' && a.ownership?.owner !== filterOwner) return false;
-        if (filterTeam !== 'ALL' && a.ownership?.team !== filterTeam) return false;
+        // layer/owner are already filtered by projectSubgraph in the query layer, 
+        // but we apply searchTerm here specifically.
         if (!searchTerm) return true;
         
         const term = searchTerm.toLowerCase();
@@ -234,7 +233,7 @@ const GraphFlow: React.FC = () => {
           (a.subType && a.subType.toLowerCase().includes(term)) ||
           a.id.toLowerCase().includes(term);
     });
-  }, [graph, searchTerm, filterLayer, filterOwner, filterTeam]);
+  }, [graph, searchTerm]);
 
   useEffect(() => {
     if (selectedArtifactId && nodes.length > 0) {

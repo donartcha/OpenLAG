@@ -4,6 +4,7 @@ type: MAINTENANCE
 title: Refactor de Deuda Técnica (V1 Legacy)
 version: v-2
 ownership:
+  owner: pcaro
   team: frontend-team
 relations:
   - to: ch-ui-refactor

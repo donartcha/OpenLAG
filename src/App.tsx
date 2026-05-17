@@ -57,7 +57,7 @@ export default function App() {
           <button 
              onClick={() => setView('orphans')}
              className={`transition-all hover:text-white hover:opacity-100 ${activeView === 'orphans' ? 'text-red-400 opacity-100' : 'opacity-40'}`}
-             title="Traceability Gaps (Orphans)"
+             title="Traceability GAPs"
           >
             <AlertCircle size={20} strokeWidth={1.5} />
           </button>

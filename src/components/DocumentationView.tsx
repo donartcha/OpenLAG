@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { useStore } from '../store';
 import { Artifact, ArtifactType } from '../types';
-import { Layers, FileText, Server, FileCode2, ShieldCheck, Stethoscope, ChevronRight, Search, GitPullRequest, Repeat, Box, Rocket, Activity, Wrench, Trash2, AlertCircle, Printer, Download } from 'lucide-react';
+import { Layers, FileText, Server, FileCode2, ShieldCheck, Stethoscope, ChevronRight, Search, GitPullRequest, Repeat, Box, Rocket, Activity, Wrench, Trash2, AlertCircle, Printer, Download, Milestone } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
 const OwnershipBadge = ({ artifact }: { artifact: Artifact }) => {
@@ -28,6 +28,8 @@ interface GroupedArtifacts {
   DEPLOYMENT: Artifact[];
   MONITORING: Artifact[];
   MAINTENANCE: Artifact[];
+  VERSION: Artifact[];
+  SYSTEM_VERSION: Artifact[];
 }
 
 const PHASES = [
@@ -42,10 +44,11 @@ const PHASES = [
   { id: 'monitor', title: 'Monitoring', icon: Activity, types: ['MONITORING', 'INCIDENT'] },
   { id: 'maint', title: 'Maintenance / Refactoring', icon: Wrench, types: ['MAINTENANCE'] },
   { id: 'retire', title: 'Retirement / Replacement', icon: Trash2, types: ['MAINTENANCE'] },
+  { id: 'versions', title: 'Releases & Versions', icon: Milestone, types: ['VERSION', 'SYSTEM_VERSION'] },
 ];
 
 export const DocumentationView: React.FC = () => {
-  const { graph, currentVersionId, versions, systemVersions, selectedArtifactId, setSelectedArtifact, settings, globalFilters, setGlobalFilter } = useStore();
+  const { fullGraph: graph, currentVersionId, versions, systemVersions, selectedArtifactId, setSelectedArtifact, settings, globalFilters, setGlobalFilter } = useStore();
   
   const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
   const [selectedSubType, setSelectedSubType] = useState<string | null>(null);
@@ -117,7 +120,8 @@ export const DocumentationView: React.FC = () => {
     const groups: GroupedArtifacts = {
       REQUIREMENT: [], USE_CASE: [], DESIGN: [], COMPONENT: [],
       CODE_ENTITY: [], TEST: [], DOCUMENTATION: [], INCIDENT: [],
-      INFRASTRUCTURE: [], DEPLOYMENT: [], MONITORING: [], MAINTENANCE: []
+      INFRASTRUCTURE: [], DEPLOYMENT: [], MONITORING: [], MAINTENANCE: [],
+      VERSION: [], SYSTEM_VERSION: []
     };
     if (graph && graph.artifacts) {
       graph.artifacts.forEach(a => {
@@ -171,6 +175,8 @@ export const DocumentationView: React.FC = () => {
       DEPLOYMENT: applyFilters(grouped.DEPLOYMENT),
       MONITORING: applyFilters(grouped.MONITORING),
       MAINTENANCE: applyFilters(grouped.MAINTENANCE),
+      VERSION: applyFilters(grouped.VERSION),
+      SYSTEM_VERSION: applyFilters(grouped.SYSTEM_VERSION),
     };
   }, [grouped, searchQuery, selectedArtifactId, reachableArtifactIds, isImpactFocusMode, filterLayer, filterOwner, filterTeam]);
 
@@ -268,6 +274,7 @@ export const DocumentationView: React.FC = () => {
   const hasMonit = (filteredGroups.MONITORING?.length || 0) + (filteredGroups.INCIDENT?.length || 0) > 0;
   const hasMaint = (filteredGroups.MAINTENANCE || []).filter(m => m.subType !== 'Retirement').length > 0;
   const hasRet = (filteredGroups.MAINTENANCE || []).filter(m => m.subType === 'Retirement').length > 0;
+  const hasVersions = (filteredGroups.VERSION?.length || 0) + (filteredGroups.SYSTEM_VERSION?.length || 0) > 0;
 
   const shouldShow = (hasItems: boolean) => !(isImpactFocusMode && selectedArtifactId && !hasItems);
 
@@ -850,6 +857,42 @@ export const DocumentationView: React.FC = () => {
                         </div>
                     ))}
                     {((filteredGroups.MAINTENANCE || []).filter(m => m.subType === 'Retirement').length === 0) && <p className="italic text-white/40 text-xs">No retired components for this version.</p>}
+                </div>
+            </section>
+        )}
+
+        {/* 12. Releases & Versions */}
+        {(!selectedPhase || selectedPhase === 'versions') && (
+            <section className="mb-16">
+                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">12. Releases & Versions</h2>
+                <div className="space-y-4">
+                    {[...(grouped.VERSION || []), ...(grouped.SYSTEM_VERSION || [])].map(v => (
+                        <div key={v.id} id={v.id} className="bg-[#0c0c0c] border border-white/10 p-5 border-l-[3px] border-l-emerald-500/50">
+                            <h3 className="font-serif text-lg text-white mb-2 flex items-center gap-3">
+                                <Milestone size={16} className="text-emerald-400" />
+                                <button 
+                                    onClick={() => setSelectedArtifact(v.id)}
+                                    className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest hover:border-emerald-500/50 transition-colors ${selectedArtifactId === v.id ? 'text-emerald-400 border-emerald-500/50' : 'text-white/40'}`}
+                                >
+                                    {v.id}
+                                </button>
+                                <span>{v.title}</span>
+                                {v.type === 'SYSTEM_VERSION' && (
+                                    <span className="ml-auto text-xs font-mono text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 rounded">
+                                        {v.component} v{v.version}
+                                    </span>
+                                )}
+                                {v.type === 'VERSION' && (
+                                    <span className="ml-auto text-xs font-mono text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 rounded">
+                                        v{v.version}
+                                    </span>
+                                )}
+                            </h3>
+                            <OwnershipBadge artifact={v} />
+                            <MarkdownRenderer content={v.description} />
+                        </div>
+                    ))}
+                    {([...(grouped.VERSION || []), ...(grouped.SYSTEM_VERSION || [])].length === 0) && <p className="italic text-white/40 text-xs">No version artifacts.</p>}
                 </div>
             </section>
         )}

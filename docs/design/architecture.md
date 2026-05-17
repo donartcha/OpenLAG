@@ -9,6 +9,9 @@ relations:
     type: DERIVES_FROM
   - to: req-func-1
     type: DERIVES_FROM
+ownership:
+  owner: pcaro
+  team: architecture
 ---
 Arquitectura basada en eventos usando RabbitMQ para la comunicación entre servicios.
 

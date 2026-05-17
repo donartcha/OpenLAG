@@ -1,10 +1,12 @@
 import { create } from 'zustand';
 import { Version, Change, GraphSnapshot, Artifact, Relation, SystemVersion } from './types';
+import { GraphIndex, buildGraphIndex, projectSubgraph, GraphQueryOptions, DEFAULT_NEIGHBORHOOD_DEPTH } from './core/graph/GraphQueryLayer';
 
 interface Settings {
   graphFocusDepth: number;
   docsFocusDepth: number;
   defaultDocsFocusMode: boolean;
+  showWeakRelations: boolean;
   language: 'EN' | 'ES';
 }
 
@@ -13,7 +15,9 @@ interface StoreState {
   systemVersions: SystemVersion[];
   changes: Change[];
   currentVersionId: string | null;
-  graph: GraphSnapshot | null;
+  fullGraph: GraphSnapshot | null;
+  graphIndex: GraphIndex | null;
+  currentSubgraph: GraphSnapshot | null;
   activeView: 'graph' | 'docs' | 'impact' | 'orphans' | 'guide' | 'settings';
   selectedArtifactId: string | null;
   isLoading: boolean;
@@ -30,6 +34,7 @@ interface StoreState {
   setSelectedArtifact: (id: string | null) => void;
   updateSettings: (newSettings: Partial<Settings>) => void;
   setGlobalFilter: (filterType: 'layer' | 'owner' | 'team', value: string) => void;
+  refreshSubgraph: () => void;
 }
 
 // Global variable to store fetched data
@@ -45,14 +50,17 @@ export const useStore = create<StoreState>((set, get) => ({
   systemVersions: [],
   changes: [],
   currentVersionId: null,
-  graph: null,
+  fullGraph: null,
+  graphIndex: null,
+  currentSubgraph: null,
   activeView: 'graph',
   selectedArtifactId: null,
   isLoading: false,
   settings: {
-    graphFocusDepth: 1,
+    graphFocusDepth: DEFAULT_NEIGHBORHOOD_DEPTH,
     docsFocusDepth: 1,
     defaultDocsFocusMode: true,
+    showWeakRelations: false,
     language: 'EN',
   },
   globalFilters: {
@@ -60,13 +68,36 @@ export const useStore = create<StoreState>((set, get) => ({
     owner: 'ALL',
     team: 'ALL',
   },
-  updateSettings: (newSettings) => set((state) => ({ settings: { ...state.settings, ...newSettings } })),
-  setGlobalFilter: (filterType, value) => set((state) => ({
-    globalFilters: {
-      ...state.globalFilters,
-      [filterType]: value
-    }
-  })),
+  updateSettings: (newSettings) => {
+    set((state) => ({ settings: { ...state.settings, ...newSettings } }));
+    get().refreshSubgraph();
+  },
+  setGlobalFilter: (filterType, value) => {
+    set((state) => ({
+      globalFilters: {
+        ...state.globalFilters,
+        [filterType]: value
+      }
+    }));
+    get().refreshSubgraph();
+  },
+  
+  refreshSubgraph: () => {
+    const { fullGraph, graphIndex, selectedArtifactId, settings, globalFilters } = get();
+    if (!fullGraph || !graphIndex) return;
+
+    const options: GraphQueryOptions = {
+        focusId: selectedArtifactId || undefined,
+        depth: settings.graphFocusDepth,
+        showWeakRelations: settings.showWeakRelations,
+        filterLayer: globalFilters.layer,
+        filterOwner: globalFilters.owner,
+        filterTeam: globalFilters.team
+    };
+
+    const subgraph = projectSubgraph(fullGraph, graphIndex, options);
+    set({ currentSubgraph: subgraph });
+  },
 
   initializeStore: async () => {
     
@@ -98,10 +129,18 @@ export const useStore = create<StoreState>((set, get) => ({
 
   setVersion: (versionId) => {
     if (!cachedData) return;
-    const graph = cachedData.graphs[versionId] || null;
-    set({ currentVersionId: versionId, selectedArtifactId: null, graph });
+    const fullGraph = cachedData.graphs[versionId] || null;
+    let graphIndex = null;
+    if (fullGraph) {
+       graphIndex = buildGraphIndex(fullGraph);
+    }
+    set({ currentVersionId: versionId, selectedArtifactId: null, fullGraph, graphIndex });
+    get().refreshSubgraph();
   },
 
   setView: (view) => set({ activeView: view }),
-  setSelectedArtifact: (id) => set({ selectedArtifactId: id })
+  setSelectedArtifact: (id) => {
+      set({ selectedArtifactId: id });
+      get().refreshSubgraph();
+  }
 }));

@@ -7,6 +7,9 @@ version: v-1
 relations:
   - to: impl-ctr-1
     type: TESTS
+ownership:
+  owner: pcaro
+  team: architecture
 ---
 Suite de pruebas unitarias e integración para el flujo de autenticación.
 

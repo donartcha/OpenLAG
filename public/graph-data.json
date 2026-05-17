@@ -3,13 +3,13 @@
     {
       "id": "v-1",
       "name": "1.0.0",
-      "timestamp": "2026-05-06T12:00:00Z",
+      "timestamp": "2026-05-06",
       "parentVersion": null
     },
     {
       "id": "v-2",
       "name": "1.1.0",
-      "timestamp": "2026-05-13T12:00:00Z",
+      "timestamp": "2026-05-13",
       "parentVersion": "v-1"
     }
   ],
@@ -21,16 +21,10 @@
       "releaseDate": "2026-05-06"
     },
     {
-      "id": "sv-ui-lib-2.3",
-      "component": "Shared-UI-Lib",
-      "version": "2.3.1",
-      "releaseDate": "2026-04-15"
-    },
-    {
-      "id": "sv-notif-0.8",
-      "component": "Notification-Worker",
-      "version": "0.8.5-beta",
-      "releaseDate": "2026-05-10"
+      "id": "sv-cache-rd-7.2",
+      "component": "Redis Cache",
+      "version": "7.2.4",
+      "releaseDate": "2024-02-15"
     },
     {
       "id": "sv-db-pg-15",
@@ -45,21 +39,42 @@
       "releaseDate": "2024-01-20"
     },
     {
-      "id": "sv-cache-rd-7.2",
-      "component": "Redis Cache",
-      "version": "7.2.4",
-      "releaseDate": "2024-02-15"
+      "id": "sv-notif-0.8",
+      "component": "Notification-Worker",
+      "version": "0.8.5-beta",
+      "releaseDate": "2026-05-10"
     },
     {
       "id": "sv-search-es-8.12",
       "component": "Elasticsearch Node",
       "version": "8.12.1",
       "releaseDate": "2024-03-01"
+    },
+    {
+      "id": "sv-ui-lib-2.3",
+      "component": "Shared-UI-Lib",
+      "version": "2.3.1",
+      "releaseDate": "2026-04-15"
     }
   ],
   "graphs": {
     "v-1": {
       "artifacts": [
+        {
+          "id": "arch-overview",
+          "type": "DOCUMENTATION",
+          "title": "Architecture Overview",
+          "version": "v-1",
+          "description": "# Architecture Overview\n\nThis document describes the high-level architecture of My OpenLAG Project.\n\n## Key Principles\n- Traceability first.\n- Documentation as Code.\n- Graph-based relationships.",
+          "status": "draft",
+          "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/architecture/architecture-overview.md",
+          "schemaVersion": "1.0.0"
+        },
         {
           "id": "ch-auth-pool",
           "type": "CHANGE",
@@ -67,6 +82,10 @@
           "version": "v-1",
           "description": "Se identificó que el pool de conexiones de la base de datos era insuficiente para el volumen de tráfico de v1.0.0.",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/changes/changes.md",
           "schemaVersion": "1.0.0"
         },
@@ -98,6 +117,10 @@
           "version": "v-1",
           "description": "Pipeline de despliegue automático para el servicio de autenticación en el entorno de producción.",
           "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/deployment/auth-deployment.md",
           "schemaVersion": "1.0.0"
         },
@@ -109,6 +132,10 @@
           "version": "v-1",
           "description": "Archivo de despliegue de Kubernetes para el servicio de registro.",
           "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/deployment/registration-k8s.md",
           "schemaVersion": "1.0.0"
         },
@@ -120,6 +147,10 @@
           "version": "v-1",
           "description": "# ADR-001: Use Postgres\n## Contexto\nNecesitamos una base de datos para almacenar información de usuarios y transacciones con integridad relacional.\n\n## Decisión\nHemos decidido usar PostgreSQL en lugar de MongoDB.\n\n## Consecuencias\n* Propiedades ACID garantizadas.\n* Mayor facilidad para reportes complejos.\n\n```mermaid\ngraph TD\n  API[Auth API] --> DB[(PostgreSQL)]\n```",
           "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/design/adr-001.md",
           "schemaVersion": "1.0.0"
         },
@@ -131,6 +162,10 @@
           "version": "v-1",
           "description": "Arquitectura basada en eventos usando RabbitMQ para la comunicación entre servicios.\n\n```mermaid\ngraph LR\n  Gateway --> Auth\n  Gateway --> Orders\n  Auth --> EventBus[RabbitMQ]\n  Orders --> EventBus\n```",
           "layer": "ARCHITECTURE",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/design/architecture.md",
           "schemaVersion": "1.0.0"
         },
@@ -142,6 +177,10 @@
           "version": "v-1",
           "description": "Diagrama C4 del subsistema de autenticación.\n\n```mermaid\nC4Context\n  Person(user, \"User\")\n  System(auth, \"Auth System\")\n  Rel(user, auth, \"Authenticates\")\n```",
           "layer": "ARCHITECTURE",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/design/auth-diagram.md",
           "schemaVersion": "1.0.0"
         },
@@ -153,6 +192,10 @@
           "version": "v-1",
           "description": "Especificación OAS v3 para la API de Autenticación. Define los esquemas de entrada y salida para `/register` y `/login`.",
           "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/design/openapi-contract.md",
           "schemaVersion": "1.0.0"
         },
@@ -165,6 +208,7 @@
           "description": "Diseño detallado del flujo de registro, incluyendo la integración con el servicio de correo y la base de datos de usuarios. Este diseño satisface el requerimiento [User Registration Flow](#req-func-1).",
           "layer": "ARCHITECTURE",
           "ownership": {
+            "owner": "pcaro",
             "team": "architecture",
             "steward": "ssmith"
           },
@@ -181,6 +225,7 @@
           "systemVersionId": "sv-auth-1.0",
           "layer": "ARCHITECTURE",
           "ownership": {
+            "owner": "pcaro",
             "team": "backend-team",
             "reviewers": [
               "security-team"
@@ -197,6 +242,10 @@
           "version": "v-1",
           "description": "Controlador encargado de orquestar la lógica de negocio de autenticación.\n1. Recibe el Request.\n2. Valida Reglas de Negocio (Edad).\n3. Invoca al Servicio.",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/implementation/auth-controller.md",
           "schemaVersion": "1.0.0"
         },
@@ -209,6 +258,10 @@
           "description": "Worker encargado de procesar la cola de correos electrónicos. Utiliza BullMQ para la gestión de colas.\n\n```typescript\nexport class EmailDispatcher {\n  async process(job: Job) {\n    const { to, subject, body } = job.data;\n    await mailer.send(to, subject, body);\n  }\n}\n```",
           "systemVersionId": "sv-notif-0.8",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/implementation/email-dispatcher.md",
           "schemaVersion": "1.0.0"
         },
@@ -220,6 +273,10 @@
           "version": "v-1",
           "description": "Controlador que implementa el flujo de registro de usuarios de acuerdo a las especificaciones en [Registration Service Design](#des-reg-01).",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/implementation/registration-controller.md",
           "schemaVersion": "1.0.0"
         },
@@ -263,6 +320,10 @@
           "version": "v-1",
           "description": "Object that encapsulates `email`, `password`, and `age` fields for input validation at the registration endpoint.",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/implementation/user-dto.md",
           "schemaVersion": "1.0.0"
         },
@@ -274,6 +335,10 @@
           "version": "v-1",
           "description": "Domain entity representing a User in the system.\n\n```typescript\nexport class User {\n  id: string;\n  email: string;\n  passwordHash: string;\n}\n```",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/implementation/user-entity.md",
           "schemaVersion": "1.0.0"
         },
@@ -287,6 +352,7 @@
           "systemVersionId": "sv-db-pg-15",
           "layer": "IMPLEMENTATION",
           "ownership": {
+            "owner": "pcaro",
             "team": "backend-team"
           },
           "file": "/app/applet/docs/implementation/user-repository.md",
@@ -301,6 +367,7 @@
           "description": "Se detectaron picos de latencia de hasta 10s en el endpoint `/api/v1/auth/login` durante la hora pico.\n\n## Análisis Raíz\nEl pool de conexiones a la base de datos se agota prematuramente bajo carga sostenida.",
           "layer": "OPERATIONS",
           "ownership": {
+            "owner": "pcaro",
             "team": "sre-team"
           },
           "file": "/app/applet/docs/incidents/auth-timeout.md",
@@ -314,6 +381,10 @@
           "version": "v-1",
           "description": "Alerta configurada en Prometheus para detectar picos de error en el endpoint de registro.",
           "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/monitoring/auth-alerts.md",
           "schemaVersion": "1.0.0"
         },
@@ -326,6 +397,7 @@
           "description": "Dashboard de Grafana para monitorear el ratio de éxito de los registros.",
           "layer": "OPERATIONS",
           "ownership": {
+            "owner": "pcaro",
             "team": "sre-team"
           },
           "file": "/app/applet/docs/monitoring/registration-dashboard.md",
@@ -339,6 +411,10 @@
           "version": "v-1",
           "description": "Procedimiento detallado para realizar un failover manual de la base de datos de Auth en caso de que la replicación automática falle.",
           "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/operations/db-failover.md",
           "schemaVersion": "1.0.0"
         },
@@ -351,6 +427,7 @@
           "description": "Configuración de los archivos YAML de Kubernetes para el despliegue del servicio de Auth.\nIncluye HPA y Probes de salud.",
           "layer": "OPERATIONS",
           "ownership": {
+            "owner": "pcaro",
             "team": "devops"
           },
           "file": "/app/applet/docs/operations/k8s-deployment.md",
@@ -364,6 +441,10 @@
           "version": "v-1",
           "description": "Solo usuarios mayores de 18 años pueden registrarse en la plataforma para cumplir con las regulaciones de servicios financieros locales.",
           "layer": "BUSINESS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/requirements/age-restriction.md",
           "schemaVersion": "1.0.0"
         },
@@ -375,6 +456,10 @@
           "version": "v-1",
           "description": "Todos los datos personales deben ser cifrados en reposo y el sistema debe permitir el \"derecho al olvido\" (borrado físico de datos).",
           "layer": "BUSINESS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/requirements/gdpr.md",
           "schemaVersion": "1.0.0"
         },
@@ -386,6 +471,10 @@
           "version": "v-1",
           "description": "El sistema debe tener un uptime garantizado del 99.9% (Tier 3). Se requiere redundancia geográfica y auto-escalado.",
           "layer": "BUSINESS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/requirements/high-availability.md",
           "schemaVersion": "1.0.0"
         },
@@ -412,6 +501,10 @@
           "version": "v-1",
           "description": "Suite de pruebas unitarias e integración para el flujo de autenticación.\n\n## Cobertura\n* Registro exitoso.\n* Fallo por email duplicado.\n* Fallo por contraseña débil.",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/testing/auth-regression.md",
           "schemaVersion": "1.0.0"
         },
@@ -423,6 +516,10 @@
           "version": "v-1",
           "description": "Verifica que el controlador de autenticación maneja correctamente los casos de éxito y error, incluyendo la restricción de edad req-br-1.",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/testing/auth-test.md",
           "schemaVersion": "1.0.0"
         },
@@ -435,6 +532,7 @@
           "description": "Pruebas integradas para asegurar que el controlador de registro funciona con la DB.",
           "layer": "IMPLEMENTATION",
           "ownership": {
+            "owner": "pcaro",
             "team": "qa-team"
           },
           "file": "/app/applet/docs/testing/registration-test.md",
@@ -448,6 +546,10 @@
           "version": "v-1",
           "description": "Certificado de aprobación de la auditoría de seguridad externa (Pentest) realizada el 2026-05-01.\nNo se encontraron vulnerabilidades críticas ni altas.",
           "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/testing/sec-audit.md",
           "schemaVersion": "1.0.0"
         },
@@ -459,11 +561,159 @@
           "version": "v-1",
           "description": "Resultado de la ejecución de pruebas en el pipeline de CI/CD.\n* Cobertura: 92%\n* Pruebas Unitarias: 154/154 OK\n* Pruebas de Integración: 42/42 OK",
           "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/testing/test-report.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "sv-auth-1.0",
+          "type": "SYSTEM_VERSION",
+          "title": "Auth Service System Version",
+          "version": "1.0.0",
+          "description": "",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/sv-auth-1.0.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "sv-cache-rd-7.2",
+          "type": "SYSTEM_VERSION",
+          "title": "Redis Cache System",
+          "version": "7.2.4",
+          "description": "",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/sv-cache-rd-7.2.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "sv-db-pg-15",
+          "type": "SYSTEM_VERSION",
+          "title": "PostgreSQL Database Engine",
+          "version": "15.4",
+          "description": "",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/sv-db-pg-15.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "sv-mq-rb-3.12",
+          "type": "SYSTEM_VERSION",
+          "title": "RabbitMQ Cluster Versions",
+          "version": "3.12.0",
+          "description": "",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/sv-mq-rb-3.12.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "sv-notif-0.8",
+          "type": "SYSTEM_VERSION",
+          "title": "Notification Worker Version Log",
+          "version": "0.8.5-beta",
+          "description": "",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/sv-notif-0.8.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "sv-search-es-8.12",
+          "type": "SYSTEM_VERSION",
+          "title": "Elasticsearch Nodes Version Tracker",
+          "version": "8.12.1",
+          "description": "",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/sv-search-es-8.12.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "sv-ui-lib-2.3",
+          "type": "SYSTEM_VERSION",
+          "title": "Shared UI Lib version tracking",
+          "version": "2.3.1",
+          "description": "",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/sv-ui-lib-2.3.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "v-1",
+          "type": "VERSION",
+          "title": "Project Release v1.0.0",
+          "version": "v-1",
+          "description": "",
+          "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/v-1.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "v-2",
+          "type": "VERSION",
+          "title": "Project Release v1.1.0",
+          "version": "v-1",
+          "description": "",
+          "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/v-2.md",
           "schemaVersion": "1.0.0"
         }
       ],
       "relations": [
+        {
+          "id": "rel-arch-overview-0",
+          "from": "arch-overview",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/architecture/architecture-overview.md"
+        },
+        {
+          "id": "rel-ch-auth-pool-0",
+          "from": "ch-auth-pool",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/changes/changes.md"
+        },
         {
           "id": "rel-depl-auth-prod-0",
           "from": "depl-auth-prod",
@@ -487,7 +737,7 @@
           "from": "des-adr-1",
           "to": "des-arq-1",
           "type": "JUSTIFIES",
-          "category": "TRACEABILITY",
+          "category": "SEMANTIC",
           "strength": "MEDIUM",
           "file": "/app/applet/docs/design/adr-001.md"
         },
@@ -496,8 +746,8 @@
           "from": "des-arq-1",
           "to": "req-br-1",
           "type": "DERIVES_FROM",
-          "category": "TRACEABILITY",
-          "strength": "MEDIUM",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
           "file": "/app/applet/docs/design/architecture.md"
         },
         {
@@ -505,8 +755,8 @@
           "from": "des-arq-1",
           "to": "req-func-1",
           "type": "DERIVES_FROM",
-          "category": "TRACEABILITY",
-          "strength": "MEDIUM",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
           "file": "/app/applet/docs/design/architecture.md"
         },
         {
@@ -514,17 +764,26 @@
           "from": "des-cmp-1",
           "to": "req-func-1",
           "type": "DERIVES_FROM",
-          "category": "TRACEABILITY",
-          "strength": "MEDIUM",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
           "file": "/app/applet/docs/design/auth-diagram.md"
+        },
+        {
+          "id": "rel-des-con-1-0",
+          "from": "des-con-1",
+          "to": "impl-api-1",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "/app/applet/docs/design/openapi-contract.md"
         },
         {
           "id": "rel-des-reg-01-0",
           "from": "des-reg-01",
           "to": "req-func-1",
           "type": "DERIVES_FROM",
-          "category": "TRACEABILITY",
-          "strength": "MEDIUM",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
           "file": "/app/applet/docs/design/registration-design.md"
         },
         {
@@ -541,7 +800,7 @@
           "from": "impl-api-1",
           "to": "des-reg-01",
           "type": "JUSTIFIES",
-          "category": "TRACEABILITY",
+          "category": "SEMANTIC",
           "strength": "MEDIUM",
           "file": "/app/applet/docs/implementation/auth-api.md"
         },
@@ -569,8 +828,17 @@
           "to": "req-br-1",
           "type": "VALIDATES",
           "category": "TRACEABILITY",
-          "strength": "STRONG",
+          "strength": "WEAK",
           "file": "/app/applet/docs/implementation/auth-controller.md"
+        },
+        {
+          "id": "rel-impl-worker-notif-0",
+          "from": "impl-worker-notif",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/implementation/email-dispatcher.md"
         },
         {
           "id": "rel-impl-reg-01-0",
@@ -595,8 +863,8 @@
           "from": "impl-dao-user",
           "to": "req-func-1",
           "type": "RELATES_TO",
-          "category": "TRACEABILITY",
-          "strength": "WEAK",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
           "file": "/app/applet/docs/implementation/user-dao.md"
         },
         {
@@ -613,16 +881,25 @@
           "from": "impl-dto-user",
           "to": "impl-api-1",
           "type": "DEFINES",
-          "category": "STRUCTURAL",
-          "strength": "STRONG",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
           "file": "/app/applet/docs/implementation/user-dto.md"
+        },
+        {
+          "id": "rel-impl-cls-1-0",
+          "from": "impl-cls-1",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/implementation/user-entity.md"
         },
         {
           "id": "rel-impl-repo-1-0",
           "from": "impl-repo-1",
           "to": "impl-cls-1",
           "type": "USES",
-          "category": "STRUCTURAL",
+          "category": "OPERATIONAL",
           "strength": "MEDIUM",
           "file": "/app/applet/docs/implementation/user-repository.md"
         },
@@ -631,7 +908,7 @@
           "from": "impl-repo-1",
           "to": "impl-dao-user",
           "type": "USES",
-          "category": "STRUCTURAL",
+          "category": "OPERATIONAL",
           "strength": "MEDIUM",
           "file": "/app/applet/docs/implementation/user-repository.md"
         },
@@ -640,7 +917,7 @@
           "from": "ops-inc-1",
           "to": "ops-dep-1",
           "type": "BREAKS",
-          "category": "BEHAVIORAL",
+          "category": "OPERATIONAL",
           "strength": "STRONG",
           "file": "/app/applet/docs/incidents/auth-timeout.md"
         },
@@ -650,7 +927,7 @@
           "to": "impl-api-1",
           "type": "MONITORS",
           "category": "OPERATIONAL",
-          "strength": "MEDIUM",
+          "strength": "WEAK",
           "file": "/app/applet/docs/monitoring/auth-alerts.md"
         },
         {
@@ -659,16 +936,16 @@
           "to": "impl-reg-01",
           "type": "MONITORS",
           "category": "OPERATIONAL",
-          "strength": "MEDIUM",
+          "strength": "WEAK",
           "file": "/app/applet/docs/monitoring/registration-dashboard.md"
         },
         {
           "id": "rel-ops-run-1-0",
           "from": "ops-run-1",
           "to": "ops-inc-1",
-          "type": "REFINES",
-          "category": "TRACEABILITY",
-          "strength": "MEDIUM",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
           "file": "/app/applet/docs/operations/db-failover.md"
         },
         {
@@ -690,12 +967,39 @@
           "file": "/app/applet/docs/operations/k8s-deployment.md"
         },
         {
+          "id": "rel-req-br-1-0",
+          "from": "req-br-1",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/requirements/age-restriction.md"
+        },
+        {
+          "id": "rel-req-res-1-0",
+          "from": "req-res-1",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/requirements/gdpr.md"
+        },
+        {
+          "id": "rel-req-nfunc-1-0",
+          "from": "req-nfunc-1",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/requirements/high-availability.md"
+        },
+        {
           "id": "rel-req-func-1-0",
           "from": "req-func-1",
           "to": "des-reg-01",
           "type": "RELATES_TO",
-          "category": "TRACEABILITY",
-          "strength": "WEAK",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
           "file": "/app/applet/docs/requirements/user-registration.md"
         },
         {
@@ -726,18 +1030,123 @@
           "file": "/app/applet/docs/testing/registration-test.md"
         },
         {
+          "id": "rel-ver-evi-1-0",
+          "from": "ver-evi-1",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/testing/sec-audit.md"
+        },
+        {
           "id": "rel-ver-res-1-0",
           "from": "ver-res-1",
           "to": "ver-tst-1",
-          "type": "REFINES",
-          "category": "TRACEABILITY",
-          "strength": "MEDIUM",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
           "file": "/app/applet/docs/testing/test-report.md"
+        },
+        {
+          "id": "rel-sv-auth-1.0-0",
+          "from": "sv-auth-1.0",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/versions/sv-auth-1.0.md"
+        },
+        {
+          "id": "rel-sv-cache-rd-7.2-0",
+          "from": "sv-cache-rd-7.2",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/versions/sv-cache-rd-7.2.md"
+        },
+        {
+          "id": "rel-sv-db-pg-15-0",
+          "from": "sv-db-pg-15",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/versions/sv-db-pg-15.md"
+        },
+        {
+          "id": "rel-sv-mq-rb-3.12-0",
+          "from": "sv-mq-rb-3.12",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/versions/sv-mq-rb-3.12.md"
+        },
+        {
+          "id": "rel-sv-notif-0.8-0",
+          "from": "sv-notif-0.8",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/versions/sv-notif-0.8.md"
+        },
+        {
+          "id": "rel-sv-search-es-8.12-0",
+          "from": "sv-search-es-8.12",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/versions/sv-search-es-8.12.md"
+        },
+        {
+          "id": "rel-sv-ui-lib-2.3-0",
+          "from": "sv-ui-lib-2.3",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/versions/sv-ui-lib-2.3.md"
+        },
+        {
+          "id": "rel-v-1-0",
+          "from": "v-1",
+          "to": "req-func-1",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "/app/applet/docs/versions/v-1.md"
+        },
+        {
+          "id": "rel-v-2-0",
+          "from": "v-2",
+          "to": "v-1",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/versions/v-2.md"
         }
       ]
     },
     "v-2": {
       "artifacts": [
+        {
+          "id": "arch-overview",
+          "type": "DOCUMENTATION",
+          "title": "Architecture Overview",
+          "version": "v-1",
+          "description": "# Architecture Overview\n\nThis document describes the high-level architecture of My OpenLAG Project.\n\n## Key Principles\n- Traceability first.\n- Documentation as Code.\n- Graph-based relationships.",
+          "status": "draft",
+          "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/architecture/architecture-overview.md",
+          "schemaVersion": "1.0.0"
+        },
         {
           "id": "ch-auth-pool",
           "type": "CHANGE",
@@ -745,6 +1154,10 @@
           "version": "v-1",
           "description": "Se identificó que el pool de conexiones de la base de datos era insuficiente para el volumen de tráfico de v1.0.0.",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/changes/changes.md",
           "schemaVersion": "1.0.0"
         },
@@ -776,6 +1189,10 @@
           "version": "v-2",
           "description": "Configuración de empaquetado para generar imágenes compatibles con x86 y ARM64.\nSe utiliza `buildx` para la compilación cruzada.",
           "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/ci/build.md",
           "schemaVersion": "1.0.0"
         },
@@ -787,6 +1204,10 @@
           "version": "v-2",
           "description": "Pipeline automatizada que se dispara en cada Pull Request.\nIncluye:\n- Linting\n- Unit Tests\n- Security Scan (Snyk)",
           "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/ci/pipeline.md",
           "schemaVersion": "1.0.0"
         },
@@ -798,6 +1219,10 @@
           "version": "v-1",
           "description": "Pipeline de despliegue automático para el servicio de autenticación en el entorno de producción.",
           "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/deployment/auth-deployment.md",
           "schemaVersion": "1.0.0"
         },
@@ -808,6 +1233,10 @@
           "version": "v-2",
           "description": "Utilizamos despliegue Blue-Green para minimizar el downtime.\nActualmente el entorno **Green** es el activo ejecutando v1.1.0.",
           "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/deployment/prod.md",
           "schemaVersion": "1.0.0"
         },
@@ -819,6 +1248,10 @@
           "version": "v-1",
           "description": "Archivo de despliegue de Kubernetes para el servicio de registro.",
           "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/deployment/registration-k8s.md",
           "schemaVersion": "1.0.0"
         },
@@ -830,6 +1263,10 @@
           "version": "v-1",
           "description": "# ADR-001: Use Postgres\n## Contexto\nNecesitamos una base de datos para almacenar información de usuarios y transacciones con integridad relacional.\n\n## Decisión\nHemos decidido usar PostgreSQL en lugar de MongoDB.\n\n## Consecuencias\n* Propiedades ACID garantizadas.\n* Mayor facilidad para reportes complejos.\n\n```mermaid\ngraph TD\n  API[Auth API] --> DB[(PostgreSQL)]\n```",
           "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/design/adr-001.md",
           "schemaVersion": "1.0.0"
         },
@@ -841,6 +1278,10 @@
           "version": "v-1",
           "description": "Arquitectura basada en eventos usando RabbitMQ para la comunicación entre servicios.\n\n```mermaid\ngraph LR\n  Gateway --> Auth\n  Gateway --> Orders\n  Auth --> EventBus[RabbitMQ]\n  Orders --> EventBus\n```",
           "layer": "ARCHITECTURE",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/design/architecture.md",
           "schemaVersion": "1.0.0"
         },
@@ -852,6 +1293,10 @@
           "version": "v-1",
           "description": "Diagrama C4 del subsistema de autenticación.\n\n```mermaid\nC4Context\n  Person(user, \"User\")\n  System(auth, \"Auth System\")\n  Rel(user, auth, \"Authenticates\")\n```",
           "layer": "ARCHITECTURE",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/design/auth-diagram.md",
           "schemaVersion": "1.0.0"
         },
@@ -863,6 +1308,10 @@
           "version": "v-1",
           "description": "Especificación OAS v3 para la API de Autenticación. Define los esquemas de entrada y salida para `/register` y `/login`.",
           "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/design/openapi-contract.md",
           "schemaVersion": "1.0.0"
         },
@@ -875,6 +1324,7 @@
           "description": "Diseño detallado del flujo de registro, incluyendo la integración con el servicio de correo y la base de datos de usuarios. Este diseño satisface el requerimiento [User Registration Flow](#req-func-1).",
           "layer": "ARCHITECTURE",
           "ownership": {
+            "owner": "pcaro",
             "team": "architecture",
             "steward": "ssmith"
           },
@@ -891,6 +1341,7 @@
           "systemVersionId": "sv-auth-1.0",
           "layer": "ARCHITECTURE",
           "ownership": {
+            "owner": "pcaro",
             "team": "backend-team",
             "reviewers": [
               "security-team"
@@ -907,6 +1358,10 @@
           "version": "v-1",
           "description": "Controlador encargado de orquestar la lógica de negocio de autenticación.\n1. Recibe el Request.\n2. Valida Reglas de Negocio (Edad).\n3. Invoca al Servicio.",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/implementation/auth-controller.md",
           "schemaVersion": "1.0.0"
         },
@@ -919,6 +1374,10 @@
           "description": "Worker encargado de procesar la cola de correos electrónicos. Utiliza BullMQ para la gestión de colas.\n\n```typescript\nexport class EmailDispatcher {\n  async process(job: Job) {\n    const { to, subject, body } = job.data;\n    await mailer.send(to, subject, body);\n  }\n}\n```",
           "systemVersionId": "sv-notif-0.8",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/implementation/email-dispatcher.md",
           "schemaVersion": "1.0.0"
         },
@@ -930,6 +1389,10 @@
           "version": "v-2",
           "description": "Incremento del pool de conexiones de la base de datos de 10 a 50 para evitar timeouts bajo carga.\n\n## Cambios\n* Se modificó `datasource.ts`.\n* Se añadió monitoreo de pool en Prometheus.",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/implementation/pool-fix.md",
           "schemaVersion": "1.0.0"
         },
@@ -941,6 +1404,10 @@
           "version": "v-1",
           "description": "Controlador que implementa el flujo de registro de usuarios de acuerdo a las especificaciones en [Registration Service Design](#des-reg-01).",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/implementation/registration-controller.md",
           "schemaVersion": "1.0.0"
         },
@@ -952,6 +1419,10 @@
           "version": "v-2",
           "description": "Se realizó una revisión exhaustiva del parche aplicado en `Auth Repository`. Se validó que los límites de hilos no excedan la capacidad de la base de datos PostgreSQL v15.4.\n\n**Resultado:** Aprobado con recomendaciones de monitorización de CPU.",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/implementation/review.md",
           "schemaVersion": "1.0.0"
         },
@@ -995,6 +1466,10 @@
           "version": "v-1",
           "description": "Object that encapsulates `email`, `password`, and `age` fields for input validation at the registration endpoint.",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/implementation/user-dto.md",
           "schemaVersion": "1.0.0"
         },
@@ -1006,6 +1481,10 @@
           "version": "v-1",
           "description": "Domain entity representing a User in the system.\n\n```typescript\nexport class User {\n  id: string;\n  email: string;\n  passwordHash: string;\n}\n```",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/implementation/user-entity.md",
           "schemaVersion": "1.0.0"
         },
@@ -1019,6 +1498,7 @@
           "systemVersionId": "sv-db-pg-15",
           "layer": "IMPLEMENTATION",
           "ownership": {
+            "owner": "pcaro",
             "team": "backend-team"
           },
           "file": "/app/applet/docs/implementation/user-repository.md",
@@ -1033,6 +1513,7 @@
           "description": "Se detectaron picos de latencia de hasta 10s en el endpoint `/api/v1/auth/login` durante la hora pico.\n\n## Análisis Raíz\nEl pool de conexiones a la base de datos se agota prematuramente bajo carga sostenida.",
           "layer": "OPERATIONS",
           "ownership": {
+            "owner": "pcaro",
             "team": "sre-team"
           },
           "file": "/app/applet/docs/incidents/auth-timeout.md",
@@ -1046,6 +1527,7 @@
           "description": "Limpieza de código muerto tras la migración a la nueva librería UI.\nSe eliminaron 42 archivos obsoletos.",
           "layer": "OPERATIONS",
           "ownership": {
+            "owner": "pcaro",
             "team": "frontend-team"
           },
           "file": "/app/applet/docs/maintenance/refactor.md",
@@ -1059,6 +1541,10 @@
           "version": "v-2",
           "description": "Se ha marcado la API v0.9 como obsoleta. Se eliminará definitivamente en la próxima versión mayor.\nAviso enviado a todos los clientes.",
           "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/maintenance/retire.md",
           "schemaVersion": "1.0.0"
         },
@@ -1070,6 +1556,10 @@
           "version": "v-1",
           "description": "Alerta configurada en Prometheus para detectar picos de error en el endpoint de registro.",
           "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/monitoring/auth-alerts.md",
           "schemaVersion": "1.0.0"
         },
@@ -1082,6 +1572,7 @@
           "description": "Dashboard de Grafana para monitorear el ratio de éxito de los registros.",
           "layer": "OPERATIONS",
           "ownership": {
+            "owner": "pcaro",
             "team": "sre-team"
           },
           "file": "/app/applet/docs/monitoring/registration-dashboard.md",
@@ -1094,6 +1585,10 @@
           "version": "v-2",
           "description": "Métricas clave monitorizadas:\n- Latencia (P99)\n- Tasa de errores 5xx\n- Uso de memoria por nodo",
           "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/monitoring/status.md",
           "schemaVersion": "1.0.0"
         },
@@ -1105,6 +1600,10 @@
           "version": "v-1",
           "description": "Procedimiento detallado para realizar un failover manual de la base de datos de Auth en caso de que la replicación automática falle.",
           "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/operations/db-failover.md",
           "schemaVersion": "1.0.0"
         },
@@ -1117,6 +1616,7 @@
           "description": "Configuración de los archivos YAML de Kubernetes para el despliegue del servicio de Auth.\nIncluye HPA y Probes de salud.",
           "layer": "OPERATIONS",
           "ownership": {
+            "owner": "pcaro",
             "team": "devops"
           },
           "file": "/app/applet/docs/operations/k8s-deployment.md",
@@ -1130,6 +1630,10 @@
           "version": "v-1",
           "description": "Solo usuarios mayores de 18 años pueden registrarse en la plataforma para cumplir con las regulaciones de servicios financieros locales.",
           "layer": "BUSINESS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/requirements/age-restriction.md",
           "schemaVersion": "1.0.0"
         },
@@ -1141,6 +1645,10 @@
           "version": "v-1",
           "description": "Todos los datos personales deben ser cifrados en reposo y el sistema debe permitir el \"derecho al olvido\" (borrado físico de datos).",
           "layer": "BUSINESS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/requirements/gdpr.md",
           "schemaVersion": "1.0.0"
         },
@@ -1152,6 +1660,10 @@
           "version": "v-1",
           "description": "El sistema debe tener un uptime garantizado del 99.9% (Tier 3). Se requiere redundancia geográfica y auto-escalado.",
           "layer": "BUSINESS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/requirements/high-availability.md",
           "schemaVersion": "1.0.0"
         },
@@ -1178,6 +1690,10 @@
           "version": "v-1",
           "description": "Suite de pruebas unitarias e integración para el flujo de autenticación.\n\n## Cobertura\n* Registro exitoso.\n* Fallo por email duplicado.\n* Fallo por contraseña débil.",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/testing/auth-regression.md",
           "schemaVersion": "1.0.0"
         },
@@ -1189,6 +1705,10 @@
           "version": "v-1",
           "description": "Verifica que el controlador de autenticación maneja correctamente los casos de éxito y error, incluyendo la restricción de edad req-br-1.",
           "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/testing/auth-test.md",
           "schemaVersion": "1.0.0"
         },
@@ -1201,6 +1721,7 @@
           "description": "Pruebas integradas para asegurar que el controlador de registro funciona con la DB.",
           "layer": "IMPLEMENTATION",
           "ownership": {
+            "owner": "pcaro",
             "team": "qa-team"
           },
           "file": "/app/applet/docs/testing/registration-test.md",
@@ -1214,6 +1735,10 @@
           "version": "v-1",
           "description": "Certificado de aprobación de la auditoría de seguridad externa (Pentest) realizada el 2026-05-01.\nNo se encontraron vulnerabilidades críticas ni altas.",
           "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/testing/sec-audit.md",
           "schemaVersion": "1.0.0"
         },
@@ -1225,11 +1750,177 @@
           "version": "v-1",
           "description": "Resultado de la ejecución de pruebas en el pipeline de CI/CD.\n* Cobertura: 92%\n* Pruebas Unitarias: 154/154 OK\n* Pruebas de Integración: 42/42 OK",
           "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
           "file": "/app/applet/docs/testing/test-report.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "sv-auth-1.0",
+          "type": "SYSTEM_VERSION",
+          "title": "Auth Service System Version",
+          "version": "1.0.0",
+          "description": "",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/sv-auth-1.0.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "sv-cache-rd-7.2",
+          "type": "SYSTEM_VERSION",
+          "title": "Redis Cache System",
+          "version": "7.2.4",
+          "description": "",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/sv-cache-rd-7.2.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "sv-db-pg-15",
+          "type": "SYSTEM_VERSION",
+          "title": "PostgreSQL Database Engine",
+          "version": "15.4",
+          "description": "",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/sv-db-pg-15.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "sv-mq-rb-3.12",
+          "type": "SYSTEM_VERSION",
+          "title": "RabbitMQ Cluster Versions",
+          "version": "3.12.0",
+          "description": "",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/sv-mq-rb-3.12.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "sv-notif-0.8",
+          "type": "SYSTEM_VERSION",
+          "title": "Notification Worker Version Log",
+          "version": "0.8.5-beta",
+          "description": "",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/sv-notif-0.8.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "sv-search-es-8.12",
+          "type": "SYSTEM_VERSION",
+          "title": "Elasticsearch Nodes Version Tracker",
+          "version": "8.12.1",
+          "description": "",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/sv-search-es-8.12.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "sv-ui-lib-2.3",
+          "type": "SYSTEM_VERSION",
+          "title": "Shared UI Lib version tracking",
+          "version": "2.3.1",
+          "description": "",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/sv-ui-lib-2.3.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "v-1",
+          "type": "VERSION",
+          "title": "Project Release v1.0.0",
+          "version": "v-1",
+          "description": "",
+          "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/v-1.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "v-2",
+          "type": "VERSION",
+          "title": "Project Release v1.1.0",
+          "version": "v-1",
+          "description": "",
+          "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "pcaro",
+            "team": "architecture"
+          },
+          "file": "/app/applet/docs/versions/v-2.md",
           "schemaVersion": "1.0.0"
         }
       ],
       "relations": [
+        {
+          "id": "rel-arch-overview-0",
+          "from": "arch-overview",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/architecture/architecture-overview.md"
+        },
+        {
+          "id": "rel-ch-auth-pool-0",
+          "from": "ch-auth-pool",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/changes/changes.md"
+        },
+        {
+          "id": "rel-build-pkg-1-0",
+          "from": "build-pkg-1",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/ci/build.md"
+        },
+        {
+          "id": "rel-ci-pipeline-1-0",
+          "from": "ci-pipeline-1",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/ci/pipeline.md"
+        },
         {
           "id": "rel-depl-auth-prod-0",
           "from": "depl-auth-prod",
@@ -1238,6 +1929,15 @@
           "category": "OPERATIONAL",
           "strength": "STRONG",
           "file": "/app/applet/docs/deployment/auth-deployment.md"
+        },
+        {
+          "id": "rel-deploy-prod-1-0",
+          "from": "deploy-prod-1",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/deployment/prod.md"
         },
         {
           "id": "rel-depl-reg-01-0",
@@ -1253,7 +1953,7 @@
           "from": "des-adr-1",
           "to": "des-arq-1",
           "type": "JUSTIFIES",
-          "category": "TRACEABILITY",
+          "category": "SEMANTIC",
           "strength": "MEDIUM",
           "file": "/app/applet/docs/design/adr-001.md"
         },
@@ -1262,8 +1962,8 @@
           "from": "des-arq-1",
           "to": "req-br-1",
           "type": "DERIVES_FROM",
-          "category": "TRACEABILITY",
-          "strength": "MEDIUM",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
           "file": "/app/applet/docs/design/architecture.md"
         },
         {
@@ -1271,8 +1971,8 @@
           "from": "des-arq-1",
           "to": "req-func-1",
           "type": "DERIVES_FROM",
-          "category": "TRACEABILITY",
-          "strength": "MEDIUM",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
           "file": "/app/applet/docs/design/architecture.md"
         },
         {
@@ -1280,17 +1980,26 @@
           "from": "des-cmp-1",
           "to": "req-func-1",
           "type": "DERIVES_FROM",
-          "category": "TRACEABILITY",
-          "strength": "MEDIUM",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
           "file": "/app/applet/docs/design/auth-diagram.md"
+        },
+        {
+          "id": "rel-des-con-1-0",
+          "from": "des-con-1",
+          "to": "impl-api-1",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "/app/applet/docs/design/openapi-contract.md"
         },
         {
           "id": "rel-des-reg-01-0",
           "from": "des-reg-01",
           "to": "req-func-1",
           "type": "DERIVES_FROM",
-          "category": "TRACEABILITY",
-          "strength": "MEDIUM",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
           "file": "/app/applet/docs/design/registration-design.md"
         },
         {
@@ -1307,7 +2016,7 @@
           "from": "impl-api-1",
           "to": "des-reg-01",
           "type": "JUSTIFIES",
-          "category": "TRACEABILITY",
+          "category": "SEMANTIC",
           "strength": "MEDIUM",
           "file": "/app/applet/docs/implementation/auth-api.md"
         },
@@ -1335,8 +2044,17 @@
           "to": "req-br-1",
           "type": "VALIDATES",
           "category": "TRACEABILITY",
-          "strength": "STRONG",
+          "strength": "WEAK",
           "file": "/app/applet/docs/implementation/auth-controller.md"
+        },
+        {
+          "id": "rel-impl-worker-notif-0",
+          "from": "impl-worker-notif",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/implementation/email-dispatcher.md"
         },
         {
           "id": "rel-ops-inc-fix-1-0",
@@ -1366,6 +2084,15 @@
           "file": "/app/applet/docs/implementation/registration-controller.md"
         },
         {
+          "id": "rel-impl-review-1-0",
+          "from": "impl-review-1",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/implementation/review.md"
+        },
+        {
           "id": "rel-impl-ui-button-0",
           "from": "impl-ui-button",
           "to": "des-cmp-1",
@@ -1379,8 +2106,8 @@
           "from": "impl-dao-user",
           "to": "req-func-1",
           "type": "RELATES_TO",
-          "category": "TRACEABILITY",
-          "strength": "WEAK",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
           "file": "/app/applet/docs/implementation/user-dao.md"
         },
         {
@@ -1397,16 +2124,25 @@
           "from": "impl-dto-user",
           "to": "impl-api-1",
           "type": "DEFINES",
-          "category": "STRUCTURAL",
-          "strength": "STRONG",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
           "file": "/app/applet/docs/implementation/user-dto.md"
+        },
+        {
+          "id": "rel-impl-cls-1-0",
+          "from": "impl-cls-1",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/implementation/user-entity.md"
         },
         {
           "id": "rel-impl-repo-1-0",
           "from": "impl-repo-1",
           "to": "impl-cls-1",
           "type": "USES",
-          "category": "STRUCTURAL",
+          "category": "OPERATIONAL",
           "strength": "MEDIUM",
           "file": "/app/applet/docs/implementation/user-repository.md"
         },
@@ -1415,7 +2151,7 @@
           "from": "impl-repo-1",
           "to": "impl-dao-user",
           "type": "USES",
-          "category": "STRUCTURAL",
+          "category": "OPERATIONAL",
           "strength": "MEDIUM",
           "file": "/app/applet/docs/implementation/user-repository.md"
         },
@@ -1424,7 +2160,7 @@
           "from": "ops-inc-1",
           "to": "ops-dep-1",
           "type": "BREAKS",
-          "category": "BEHAVIORAL",
+          "category": "OPERATIONAL",
           "strength": "STRONG",
           "file": "/app/applet/docs/incidents/auth-timeout.md"
         },
@@ -1433,9 +2169,18 @@
           "from": "maint-refactor-1",
           "to": "ch-ui-refactor",
           "type": "RELATES_TO",
-          "category": "TRACEABILITY",
-          "strength": "WEAK",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
           "file": "/app/applet/docs/maintenance/refactor.md"
+        },
+        {
+          "id": "rel-retire-old-api-1-0",
+          "from": "retire-old-api-1",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/maintenance/retire.md"
         },
         {
           "id": "rel-mon-auth-99-0",
@@ -1443,7 +2188,7 @@
           "to": "impl-api-1",
           "type": "MONITORS",
           "category": "OPERATIONAL",
-          "strength": "MEDIUM",
+          "strength": "WEAK",
           "file": "/app/applet/docs/monitoring/auth-alerts.md"
         },
         {
@@ -1452,16 +2197,25 @@
           "to": "impl-reg-01",
           "type": "MONITORS",
           "category": "OPERATIONAL",
-          "strength": "MEDIUM",
+          "strength": "WEAK",
           "file": "/app/applet/docs/monitoring/registration-dashboard.md"
+        },
+        {
+          "id": "rel-monitor-dashboard-1-0",
+          "from": "monitor-dashboard-1",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/monitoring/status.md"
         },
         {
           "id": "rel-ops-run-1-0",
           "from": "ops-run-1",
           "to": "ops-inc-1",
-          "type": "REFINES",
-          "category": "TRACEABILITY",
-          "strength": "MEDIUM",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
           "file": "/app/applet/docs/operations/db-failover.md"
         },
         {
@@ -1483,12 +2237,39 @@
           "file": "/app/applet/docs/operations/k8s-deployment.md"
         },
         {
+          "id": "rel-req-br-1-0",
+          "from": "req-br-1",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/requirements/age-restriction.md"
+        },
+        {
+          "id": "rel-req-res-1-0",
+          "from": "req-res-1",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/requirements/gdpr.md"
+        },
+        {
+          "id": "rel-req-nfunc-1-0",
+          "from": "req-nfunc-1",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/requirements/high-availability.md"
+        },
+        {
           "id": "rel-req-func-1-0",
           "from": "req-func-1",
           "to": "des-reg-01",
           "type": "RELATES_TO",
-          "category": "TRACEABILITY",
-          "strength": "WEAK",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
           "file": "/app/applet/docs/requirements/user-registration.md"
         },
         {
@@ -1519,13 +2300,103 @@
           "file": "/app/applet/docs/testing/registration-test.md"
         },
         {
+          "id": "rel-ver-evi-1-0",
+          "from": "ver-evi-1",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/testing/sec-audit.md"
+        },
+        {
           "id": "rel-ver-res-1-0",
           "from": "ver-res-1",
           "to": "ver-tst-1",
-          "type": "REFINES",
-          "category": "TRACEABILITY",
-          "strength": "MEDIUM",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
           "file": "/app/applet/docs/testing/test-report.md"
+        },
+        {
+          "id": "rel-sv-auth-1.0-0",
+          "from": "sv-auth-1.0",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/versions/sv-auth-1.0.md"
+        },
+        {
+          "id": "rel-sv-cache-rd-7.2-0",
+          "from": "sv-cache-rd-7.2",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/versions/sv-cache-rd-7.2.md"
+        },
+        {
+          "id": "rel-sv-db-pg-15-0",
+          "from": "sv-db-pg-15",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/versions/sv-db-pg-15.md"
+        },
+        {
+          "id": "rel-sv-mq-rb-3.12-0",
+          "from": "sv-mq-rb-3.12",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/versions/sv-mq-rb-3.12.md"
+        },
+        {
+          "id": "rel-sv-notif-0.8-0",
+          "from": "sv-notif-0.8",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/versions/sv-notif-0.8.md"
+        },
+        {
+          "id": "rel-sv-search-es-8.12-0",
+          "from": "sv-search-es-8.12",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/versions/sv-search-es-8.12.md"
+        },
+        {
+          "id": "rel-sv-ui-lib-2.3-0",
+          "from": "sv-ui-lib-2.3",
+          "to": "arch-overview",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/versions/sv-ui-lib-2.3.md"
+        },
+        {
+          "id": "rel-v-1-0",
+          "from": "v-1",
+          "to": "req-func-1",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "/app/applet/docs/versions/v-1.md"
+        },
+        {
+          "id": "rel-v-2-0",
+          "from": "v-2",
+          "to": "v-1",
+          "type": "RELATES_TO",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "/app/applet/docs/versions/v-2.md"
         }
       ]
     }

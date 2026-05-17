@@ -1,10 +1,11 @@
 ---
 id: des-reg-01
 type: DESIGN
-subType: "Architecture"
-title: "Registration Service Design"
+subType: Architecture
+title: Registration Service Design
 version: v-1
 ownership:
+  owner: pcaro
   team: architecture
   steward: ssmith
 relations:

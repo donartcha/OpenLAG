@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { useStore } from '../store';
 import { ArtifactType } from '../types';
-import { AlertCircle, Search, Trash2, ChevronRight, FileText, ExternalLink, ShieldAlert, AlertTriangle, Info } from 'lucide-react';
+import { AlertCircle, Search, Trash2, ChevronRight, FileText, ExternalLink, ShieldAlert, AlertTriangle, Info, Download } from 'lucide-react';
+import { generateGapsReport, downloadTextFile } from '../lib/reportUtils';
 
 export const OrphansView: React.FC = () => {
-    const { graph, setView, selectedArtifactId, setSelectedArtifact, globalFilters, setGlobalFilter } = useStore();
+    const { fullGraph: graph, setView, selectedArtifactId, setSelectedArtifact, globalFilters, setGlobalFilter } = useStore();
     const [searchQuery, setSearchQuery] = useState('');
     const [typeFilter, setTypeFilter] = useState<string | 'ALL'>('ALL');
     const [violationFilter, setViolationFilter] = useState<string | 'ALL'>('ALL');
@@ -108,6 +109,13 @@ export const OrphansView: React.FC = () => {
         setView('docs');
     };
 
+    const hasActiveFilters = searchQuery !== '' || typeFilter !== 'ALL' || violationFilter !== 'ALL' || filterLayer !== 'ALL' || filterOwner !== 'ALL' || filterTeam !== 'ALL' || selectedArtifactId !== null;
+
+    const handleGenerateReport = () => {
+        const reportContent = generateGapsReport(filteredGaps, hasActiveFilters);
+        downloadTextFile('openlag-gaps-report.md', reportContent);
+    };
+
     if (!graph) return <div className="p-8 text-white/50">Loading...</div>;
 
     const SeverityIcon = ({ severity }: { severity: string }) => {
@@ -134,7 +142,7 @@ export const OrphansView: React.FC = () => {
                 <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 mb-8">
                     <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
-                            <h1 className="text-3xl font-serif italic tracking-tight">Traceability Gaps</h1>
+                            <h1 className="text-3xl font-serif italic tracking-tight">Traceability GAPs</h1>
                             <div className="bg-red-500/20 border border-red-500/30 text-red-400 text-[10px] font-mono px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1.5 shadow-[0_0_15px_rgba(239,68,68,0.1)]">
                                 <AlertCircle size={12} />
                                 {filteredGaps.length} Violations Found
@@ -209,7 +217,7 @@ export const OrphansView: React.FC = () => {
                         </div>
                         
                         {/* Global Filters */}
-                        <div className="flex gap-1 w-full lg:w-auto">
+                        <div className="flex gap-1 w-full lg:w-auto items-center">
                             <select
                                 value={filterLayer}
                                 onChange={(e) => setFilterLayer(e.target.value)}
@@ -252,6 +260,15 @@ export const OrphansView: React.FC = () => {
                                     <option key={team} value={team} className="bg-[#0c0c0c] text-white font-normal">{team}</option>
                                 ))}
                             </select>
+                            
+                            <button
+                                onClick={handleGenerateReport}
+                                className="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/40 font-mono text-[9px] uppercase tracking-widest px-3 py-1 flex items-center gap-1.5 rounded-sm transition-all h-full"
+                                title="Download GAPs Report"
+                            >
+                                <Download size={12} />
+                                Generar reporte
+                            </button>
                         </div>
                     </div>
                 </div>

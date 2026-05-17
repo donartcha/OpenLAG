@@ -42,14 +42,14 @@ export const GuideView: React.FC = () => {
             frontmatterDesc: "Each artifact requires a YAML frontmatter. Mandatory fields: id, type, status, title.",
             statusFlow: "Lifecycle Status Flow",
             statusFlowDesc: "Evolution of artifacts. The system tolerates missing relations in 'draft', but expects full traceability in 'closed'.",
-            manifest: "Project Manifest",
-            manifestDesc: "The docs/versions/ directory controls the global timeline and component versions.",
+            versions: "Project & System Versions",
+            versionsDesc: "The docs/versions/ directory controls the global timeline and component versions.",
             bestPractices: "Best Practices & ID Conventions",
             bestPracticesDesc: "IDs must be unique and stable (e.g. REQ-001, CODE-023). Prefix defines the logical type.",
             tutorialTitle: "Step-by-Step Tutorial",
             tutorialDesc: "Follow these steps to structure a complete project using the OpenLAG specification.",
-            step1Title: "Step 1: The Project Manifest",
-            step1Desc: "Always start by defining global versions of the project inside docs/versions/versions.md.",
+            step1Title: "Step 1: The Global Versions",
+            step1Desc: "Always start by defining global versions of the project creating separate files inside docs/versions/ (e.g. docs/versions/v-1.md).",
             step2Title: "Step 2: Business Requirements",
             step2Desc: "Create the Business Layer artifacts (e.g., REQ-001) defining what needs to be built.",
             step3Title: "Step 3: Architecture & Design",
@@ -57,7 +57,7 @@ export const GuideView: React.FC = () => {
             step4Title: "Step 4: Implementation & Operations",
             step4Desc: "Finally, define Code and Infra (e.g., CODE-001, INFRA-001) linking them back up the chain.",
             step5Title: "Step 5: System Versions",
-            step5Desc: "Document external libraries and components inside docs/versions/components-versions.md using SYSTEM_VERSION artifacts.",
+            step5Desc: "Document external libraries and components in individual files inside docs/versions/ (e.g. sv-lib-1.md) using SYSTEM_VERSION artifacts.",
             step6Title: "Step 6: Changes & Tracking",
             step6Desc: "Add CHANGE type artifacts inside docs/changes/ to govern modifications, bugs, or major refactors affecting the graph.",
         },
@@ -96,14 +96,14 @@ export const GuideView: React.FC = () => {
             frontmatterDesc: "Cada artefacto requiere un YAML frontmatter. Campos obligatorios: id, type, status, title.",
             statusFlow: "Estados y Ciclo de Vida",
             statusFlowDesc: "En estado 'draft' se permiten huérfanos, pero en 'closed' se exige trazabilidad completa.",
-            manifest: "Manifiesto del Proyecto",
-            manifestDesc: "El directorio docs/versions/ define las versiones temporales globales y de componentes.",
+            versions: "Versiones del Sistema y Proyecto",
+            versionsDesc: "El directorio docs/versions/ define las versiones temporales globales y de componentes.",
             bestPractices: "Buenas Prácticas y Convención de IDs",
             bestPracticesDesc: "Los IDs deben ser únicos y estables (Ej: REQ-001). El prefijo define su tipo lógico de forma clara.",
             tutorialTitle: "Tutorial Paso a Paso",
             tutorialDesc: "Sigue estos pasos para estructurar un proyecto completo usando la especificación OpenLAG.",
-            step1Title: "Paso 1: Manifiesto del Proyecto",
-            step1Desc: "Comienza siempre definiendo versiones a nivel global del proyecto en docs/versions/versions.md.",
+            step1Title: "Paso 1: Versiones Globales",
+            step1Desc: "Comienza siempre definiendo versiones a nivel global del proyecto creando archivos separados en docs/versions/ (ej. docs/versions/v-1.md).",
             step2Title: "Paso 2: Requisitos de Negocio",
             step2Desc: "Crea los artefactos de la Capa de Negocio (Ej. REQ-001) para definir qué se debe construir.",
             step3Title: "Paso 3: Arquitectura y Diseño",
@@ -111,7 +111,7 @@ export const GuideView: React.FC = () => {
             step4Title: "Paso 4: Implementación y Operaciones",
             step4Desc: "Finalmente, documenta Código e Infra (Ej. CODE-001, INFRA-001) trazando los enlaces hacia arriba.",
             step5Title: "Paso 5: Versiones de Sistemas",
-            step5Desc: "Documenta en docs/versions/components-versions.md los componentes y librerías externas mediante artefactos de tipo SYSTEM_VERSION.",
+            step5Desc: "Documenta en archivos individuales dentro de docs/versions/ (ej. sv-lib-1.md) los componentes y librerías externas mediante artefactos de tipo SYSTEM_VERSION.",
             step6Title: "Paso 6: Registro de Cambios",
             step6Desc: "Añade en docs/changes/ artefactos de tipo CHANGE para gobernar las modificaciones, errores o refactors mayores que afecten el grafo.",
         }
@@ -362,20 +362,27 @@ relations:
                         <div className="bg-[#0c0c0c] border border-white/5 rounded-lg overflow-hidden flex flex-col">
                             <div className="p-4 bg-white/[0.03] border-b border-white/5 flex items-center justify-between">
                                 <h4 className="text-sm font-bold text-white/80">{c.step1Title}</h4>
-                                <span className="text-[10px] font-mono text-white/40 italic">docs/versions/versions.md</span>
+                                <span className="text-[10px] font-mono text-white/40 italic">docs/versions/v-1.md</span>
                             </div>
                             <div className="p-6">
                                 <p className="text-xs text-white/50 mb-4">{c.step1Desc}</p>
                                 <pre className="text-[11px] font-mono leading-relaxed text-white/60 bg-black/40 p-4 rounded border border-white/5 overflow-x-auto">
-{`# Project Manifest
-
-## Versions
-\`\`\`yaml
-- id: v1
-  name: 1.0.0
-  timestamp: "2024-01-01"
-  parentVersion: null
-\`\`\``}
+{`---
+id: v-1
+type: VERSION
+name: "1.0.0"
+timestamp: "2026-05-06"
+parentVersion: null
+layer: DOCUMENTATION
+title: "Project Release v1.0.0"
+description: "Initial stable release of the project architecture and features."
+ownership:
+  owner: pcaro
+  team: architecture
+relations:
+  - type: DOCUMENTS
+    to: req-func-1
+---`}
                                 </pre>
                             </div>
                         </div>
@@ -466,7 +473,7 @@ Implementation of the login endpoint...`}
                         <div className="bg-[#0c0c0c] border border-white/5 rounded-lg overflow-hidden flex flex-col">
                             <div className="p-4 bg-white/[0.03] border-b border-white/5 flex items-center justify-between">
                                 <h4 className="text-sm font-bold text-white/80">{c.step5Title}</h4>
-                                <span className="text-[10px] font-mono text-white/40 italic">docs/versions/components-versions.md</span>
+                                <span className="text-[10px] font-mono text-white/40 italic">docs/versions/sv-db-1.md</span>
                             </div>
                             <div className="p-6">
                                 <p className="text-xs text-white/50 mb-4">{c.step5Desc}</p>
@@ -477,6 +484,15 @@ type: SYSTEM_VERSION
 component: PostgreSQL Engine
 version: 15.4
 releaseDate: "2023-08-10"
+layer: OPERATIONS
+title: "PostgreSQL Database Engine"
+description: "Used for primary relational data storage."
+ownership:
+  owner: pcaro
+  team: architecture
+relations:
+  - type: RELATES_TO
+    to: arch-overview
 ---
 
 # PostgreSQL Engine

@@ -2,9 +2,10 @@
 id: ops-inc-1
 type: INCIDENT
 subType: Incident
-title: "INC-1020: Auth Timeout"
+title: 'INC-1020: Auth Timeout'
 version: v-1
 ownership:
+  owner: pcaro
   team: sre-team
 relations:
   - to: ops-dep-1

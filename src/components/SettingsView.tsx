@@ -58,9 +58,9 @@ export const SettingsView: React.FC = () => {
             <div className="space-y-4">
               <div className="flex justify-between items-start border-t border-white/5 pt-4">
                 <div>
-                  <h3 className="font-medium text-sm">Selection Focus Depth</h3>
+                  <h3 className="font-medium text-sm">Selection Focus Depth (Subgraph Exploration)</h3>
                   <p className="text-xs text-white/50 mt-1 max-w-sm">
-                    How many levels of relationships to highlight when an artifact is selected in the Graph.
+                    How many levels of relationships to project into the subgraph when an artifact is focused.
                   </p>
                 </div>
                 <select 
@@ -71,8 +71,26 @@ export const SettingsView: React.FC = () => {
                   <option value={1}>1 Level (Direct)</option>
                   <option value={2}>2 Levels</option>
                   <option value={3}>3 Levels</option>
-                  <option value={0}>Infinite (All Connected)</option>
                 </select>
+              </div>
+
+              <div className="flex justify-between items-start border-t border-white/5 pt-4">
+                <div>
+                  <h3 className="font-medium text-sm">Show Weak Relations</h3>
+                  <p className="text-xs text-white/50 mt-1 max-w-sm">
+                    Display semantic, generic, or weakly coupled relations (e.g., RELATES_TO, DOCUMENTS). Turn off to reduce noise and hubs.
+                  </p>
+                </div>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input 
+                    type="checkbox" 
+                    value="" 
+                    className="sr-only peer" 
+                    checked={settings.showWeakRelations}
+                    onChange={(e) => updateSettings({ showWeakRelations: e.target.checked })}
+                  />
+                  <div className="w-11 h-6 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-indigo-500"></div>
+                </label>
               </div>
             </div>
           </section>

@@ -1,10 +1,11 @@
 ---
 id: ops-dep-1
 type: DEPLOYMENT
-subType: "Deployment"
-title: "K8s Auth Deployment"
+subType: Deployment
+title: K8s Auth Deployment
 version: v-1
 ownership:
+  owner: pcaro
   team: devops
 relations:
   - to: des-arq-1

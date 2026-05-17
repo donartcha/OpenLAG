@@ -20,7 +20,7 @@ Resolver el riesgo clásico organizacional de tener "documentación muerta" o de
 ## 4. Estructura del Repositorio
 El repositorio presenta un patrón modular híbrido simplificado:
 - `/bin/openlag.js`: Punto de entrada (CLI) oficial que expone todos los comandos del sistema (`init`, `dev`, `generate`, `lint`, `build`, `check`).
-- `/docs/`: Directorio raíz de datos ("Source of truth"). Los requerimientos, arquitectura, tests y diseño del cliente residen aquí y se versionan. Especial relevancia tienen los archivos en `/docs/versions/` (como `versions.md` y `components-versions.md`).
+- `/docs/`: Directorio raíz de datos ("Source of truth"). Los requerimientos, arquitectura, tests y diseño del cliente residen aquí y se versionan. Especial relevancia tienen los archivos en `/docs/versions/` (donde cada artefacto `VERSION` y `SYSTEM_VERSION` se define en su propio archivo markdown independiente). Estos exigen validación estructural estricta incluyendo campos obligatorios como `layer`, `title`, `description`, `ownership` (owner, team) y `relations` explícitas, para evitar problemas de trazabilidad.
 - `/scripts/cli/`: Contiene la lógica de implementación de cada subcomando de la CLI.
 - `/scripts/core/`: Motores de procesamiento agnósticos (Parser, Graph Engine).
 - `/src/`: Base de código de la interfaz gráfica React / Vite.
@@ -98,12 +98,14 @@ La aplicación es cliente total (Static SPA), careciendo de capa de autenticaci�
 2. **Dependencias Abruptas o "Zombie" (P2):** Retirar `@google/genai` del manifest de dependencias, reduciendo vulnerabilidades o bien efectuar de inmediato la integración planificada para ellas (Generación Autómoma por Agentes).
 3. **Pérdida de Features (P3):** Reciente parche de rollback eliminó librerías PDF que siguen acopladas y presentes en NPM como `jspdf` y `html-to-image`; limpiar dichas dependencias.
 
-## 15. Riesgos Arquitectónicos (Escalabilidad en Producción)
-1. **Punto de Quiebre Memoria Cliente (OOM Frontend):** A nivel empresarial, el Grafo pasará rápidamente de 50 entidades a 10.000 entidades y 40.000 conectores. Descargar todo esto de golpe en `graph-data.json` a Memoria JS y representarlo con un SVG/Canvas matará en latencia y recursos a los navegadores que abran OpenLAG.
+## 15. Riesgos Arquitectónicos (Escalabilidad en Producción mitigada)
+1. **Punto de Quiebre Memoria Cliente (OOM Frontend):** A nivel empresarial, el Grafo pasará rápidamente de 50 entidades a 10.000 entidades y 40.000 conectores. Descargar todo esto de golpe en `graph-data.json` a Memoria JS y representarlo con un SVG/Canvas mataría los navegadores. **Mitigación implementada**: Se ha introducido `GraphQueryLayer` (Focus Mode, límites de profundidad configurables, filtrado lógico por semántica y agrupación progresiva) asegurando que el renderizado se acote y manipule únicamente lo esencial para el ecosistema, recortando el resto.
+2. **Generación Monolítica JSON**: Aunque la parte interactiva del portal visualiza *sub-grafos*, actualmente sigue existiendo un `graph-data.json` gigante y global descargado inicialmente por el Frontend. Si la red se ralentiza, el Time To Interactive será severo. (Fase futura: fragmentación estática de slices de red).
 
-## 16. Recomendaciones Técnicas (Mejoras Proactivas)
-1. **Sustituir parseo estricto MDX:** Implementar la lectura del YAML bajo validadores tipados como `Zod` o `Joi` asegurando de forma nativa que IDs inexistentes sean alertados.
-2. **Lazy Node Loading:** En componentes de XYFlow (Grafo Pizarras) integrar "Pagination nodes" cargables por demanda si rebasan +300 elementos.
+## 16. Recomendaciones Técnicas (Mejoras Proactivas aplicadas y futuras)
+1. **Validación Estricta y Semántica:** Ya mitigado en gran medida; El Lint OpenLAG nativo valida enlaces y advierte errores si target IDs no existen o existen inconsistencias de Relaciones.
+2. **Exploración por Subgrafos (Aplicado):** El grafo ha dejado de renderizar todo ciegamente, moviéndose a un modelo de "Proyección de Subgrafo", ocultando uniones estáticas (weak links como RELATES_TO) y requiriendo acción explícita mediante profundidad (Neighborhood exploration) o Focus Node selectivo, soportando *Trimming de Hubs* mayores a 150 nodos simultáneos.
+3. **Backend BFF Opcional (Futuro):** Ante mega-grafos donde los metadatos pesen más de 50MB, se requerirá abandonar el enfoque "solo archivos S3/GitHub" e instanciar un pequeño backend GraphQL de OpenLAG.
 3. **Backend Ligero Híbrido:** Reactivar la dependencia `express`, montando un micro-servidor en lugar de leer un Static JSON. Esto preparará a la App para inyectar Gemini (Agente Generativo) permitiendo requerir consultas o grafos al vuelo reduciendo la carga final.
 
 ## 17. Roadmap Propuesto (Madurez a 1 año)
@@ -117,7 +119,8 @@ La aplicación es cliente total (Static SPA), careciendo de capa de autenticaci�
 ```mermaid
 graph TD
     subgraph DataLayer [Source of Truth - Git / Local Storage]
-        MF("project-manifest.md")
+        MF("versions/versions.md")
+        MF("versions/components-versions.md")
         REL("docs/relations/*.yaml")
         DIR("docs/ Directorio Recursivo (*.md)")
         MF -.-> DIR

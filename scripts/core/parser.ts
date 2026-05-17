@@ -36,10 +36,13 @@ export function parseOpenLagDocs(docsDir: string): OpenLagData {
           if (section.length < 5) continue;
 
           let parsed: any;
+          let yamlCandidate = '';
           try {
-            const yamlCandidate = sections[i].split('\n')
+            yamlCandidate = sections[i].split('\n')
               .map(l => l.replace(/^##\s?/, ''))
-              .join('\n');
+              .join('\n')
+              .replace(/---$/, '')
+              .trim();
             
             parsed = yaml.load(yamlCandidate) as any;
           } catch (e) {

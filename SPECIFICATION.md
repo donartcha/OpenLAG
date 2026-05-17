@@ -113,8 +113,8 @@ docs/
 ### versions/
 El directorio `versions/` controla el ciclo de vida, agrupando los archivos definitorios del tiempo.
 
-#### versions.md
-Define la línea temporal global e iteraciones del sistema en formato YAML Frontmatter o múltiple bloque YAML. Los artefactos deben tener el `type: VERSION`. Define identificador (`id`), `name`, `timestamp` y la posible versión padre (`parentVersion`).
+#### Artefactos de Versión (VERSION)
+Se definen en archivos markdown individuales dentro de `docs/versions/` (por ejemplo, `v-1.md`). Define la línea temporal global e iteraciones del sistema. Los artefactos deben tener el `type: VERSION`. Además de sus campos específicos (`id`, `name`, `timestamp`, `parentVersion`), al requerirse trazabilidad y calidad estructural, **deben** especificar campos comunes como `layer`, `title`, `description`, `ownership` (mínimo `owner` y `team`), y `relations`.
 
 Ejemplo de su estructura:
 
@@ -125,11 +125,20 @@ type: VERSION
 name: "1.0.0"
 timestamp: "2026-05-06"
 parentVersion: null
+layer: DOCUMENTATION
+title: "Project Release v1.0.0"
+description: "Initial stable release of the project architecture and features."
+ownership:
+  owner: pcaro
+  team: architecture
+relations:
+  - type: DOCUMENTS
+    to: req-func-1
 ---
 ```
 
-#### components-versions.md
-Archivo para artefactos que documentan versiones de componentes o librerías externas del sistema. Los artefactos aquí tienen el type `SYSTEM_VERSION` y contienen atributos como `component`, `version`, y `releaseDate`.
+#### Artefactos de Componentes y Librerías (SYSTEM_VERSION)
+Archivo para artefactos en archivos separados dentro de `docs/versions/` (por ejemplo, `sv-db-1.md`) que documentan versiones de componentes o librerías externas del sistema. Los artefactos aquí tienen el type `SYSTEM_VERSION` y contienen atributos como `component`, `version`, y `releaseDate`. También deben incluir los campos comunes estructurales para evitar advertencias de *linters*.
 
 ```yaml
 ---
@@ -138,6 +147,15 @@ type: SYSTEM_VERSION
 component: "PostgreSQL Database"
 version: "15.2"
 releaseDate: "2023-05-06"
+layer: OPERATIONS
+title: "PostgreSQL Database Engine"
+description: "Primary relational data storage system."
+ownership:
+  owner: pcaro
+  team: architecture
+relations:
+  - type: RELATES_TO
+    to: arch-overview
 ---
 ```
 
@@ -490,23 +508,23 @@ Los artefactos pueden:
 - reemplazarse,
 - o desaparecer.
 
-## 13. Escalabilidad y Limitaciones
+## 13. Graph Scalability and Exploration Model
 
-### Limitaciones actuales
-- JSON global completo en frontend.
-- Carga total en memoria.
-- Grafos grandes degradan renderizado.
+OpenLAG está diseñado bajo el principio Offline-First y Static-by-Default (Architecture as Code puro alojable en S3, GitHub Pages o Netlify). Sin embargo, cuando los proyectos crecen sustancialmente, intentar visualizar todo el sistema de una sola vez no es cognitivamente útil y provoca severos problemas de rendimiento en el frontend.
 
-### Riesgos
-- OOM frontend.
-- Demasiadas relaciones.
-- SVG/Canvas complejos.
+Por ello, OpenLAG adopta las siguientes reglas de escalabilidad mediante un modelo de "Exploración de Subgrafos":
 
-### Evoluciones futuras posibles
-- backend opcional.
-- graph database.
-- lazy loading.
-- paginación de nodos.
+### Principios Fundamentales
+- **El Grafo Completo es Base de Conocimiento, NO Interfaz Obligatoria**: OpenLAG procesa, valida y almacena el total del `GraphState`, pero no promete ni intenta renderizarlo visualmente todo de golpe.
+- **Subgraph Projection & Focus Mode**: El usuario explora vistas proyectadas controladas (Subgrafos). Por defecto, la experiencia visual se basa en seleccionar un artefacto foco y expandir la vecindad a una profundidad configurada (`depth = 1` o `2`). Las sub-ramas no solicitadas se recortan agresivamente.
+- **Weak Relation Hiding**: Las relaciones difusas o semánticas (`RELATES_TO`, `DOCUMENTS`, u otras categorizadas como `WEAK`) aumentan el ruido introduciendo dependencias cruzadas sin impacto arquitectónico crítico. Estarán ocultas por defecto en la UI (se pueden activar explícitamente mediante filtros si se requiere análisis transversal de trazabilidad).
+- **Hub Collapsing (Umbrales de Tolerancia)**: Existen límites duros de visualización (`MAX_RENDER_NODES = 150`, `MAX_RENDER_EDGES = 300`). Si un subgrafo sobrepasa estos umbrales generados (por ejemplo un proyecto gigantesco con cientos de features apuntando a un único componente `Auth`), la visualización truncará de forma segura el grafo y alertará al usuario indicando el uso de un filtro de profundidad/Layer.
+- **Análisis por Slices Semánticos**: El Impact Engine ya no recorre visualmente todos los nodos, sino que realiza consultas controladas directamente sobre el índice estructural de GraphQL/TypeScript construido en memoria del navegador antes de renderizar la solución.
+
+### Evolución del Static Graph Data (`graph-data.json`)
+- **Fase 1 (Actual)**: `graph-data.json` único + **GraphQueryLayer en Frontend**. Todos los índices (`artifactsById`, `relationsBySource`) se computan en la memoria local estática para luego derivar los subgrafos que consume la UI.
+- **Fase 2 (Fragmentación Estática)**: Descomposición opcional mediante compilación del generador en fragmentos estáticos (`/slices/*.json` o `/versions/*.json`) para evitar descargas monolíticas.
+- **Fase 3 (Backend Opcional Futuro)**: Despliegue de un Engine/BFF transitorio solo utilizado cuando el modelo base sobrepasa groseramente los 10,000 artefactos con uso ultra-asíncrono, búsquedas vectoriales, roles y permisos, mutaciones interactivas sobre Graph DB. Permanecerá **100% opcional**; OpenLAG debe seguir funcionando sin Backend como premisa.
 
 ## 14. Integración CI/CD
 

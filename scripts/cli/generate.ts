@@ -44,10 +44,10 @@ export function generateData(docsDir: string, outputDir: string, silent = false)
 
   state.versions.forEach(v => {
     state.graphs[v.id] = {
-      artifacts: allArtifacts.filter(a => a.version === v.id || isDescendant(v.id, a.version, state.versions)),
+      artifacts: allArtifacts.filter(a => a.type === 'SYSTEM_VERSION' || a.type === 'VERSION' || a.version === v.id || isDescendant(v.id, a.version, state.versions)),
       relations: allRelations.filter(r => {
         const fromArt = allArtifacts.find(a => a.id === r.from);
-        return fromArt && (fromArt.version === v.id || isDescendant(v.id, fromArt.version, state.versions));
+        return fromArt && (fromArt.type === 'SYSTEM_VERSION' || fromArt.type === 'VERSION' || fromArt.version === v.id || isDescendant(v.id, fromArt.version, state.versions));
       })
     };
   });

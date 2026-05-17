@@ -4,7 +4,7 @@ import { Activity, ArrowRight, GitCommit, Search, ShieldAlert, Zap } from 'lucid
 import { Artifact } from '../types';
 
 export const ImpactView: React.FC = () => {
-  const { changes, versions, graph, systemVersions, globalFilters, setGlobalFilter } = useStore();
+  const { changes, versions, fullGraph: graph, systemVersions, globalFilters, setGlobalFilter } = useStore();
   const [selectedChangeId, setSelectedChangeId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<string | 'ALL'>('ALL');

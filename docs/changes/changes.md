@@ -3,9 +3,17 @@ id: ch-auth-pool
 type: CHANGE
 changeType: ERROR
 title: Resolución de Timeouts en Auth API
-affects: ["impl-dao-user", "sv-db-pg-15"]
-versionFrom: "v-1"
-versionTo: "v-2"
+affects:
+  - impl-dao-user
+  - sv-db-pg-15
+versionFrom: v-1
+versionTo: v-2
+ownership:
+  owner: pcaro
+  team: architecture
+relations:
+  - type: RELATES_TO
+    to: arch-overview
 ---
 Se identificó que el pool de conexiones de la base de datos era insuficiente para el volumen de tráfico de v1.0.0.
 

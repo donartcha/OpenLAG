@@ -1,10 +1,11 @@
 ---
 id: test-reg-01
 type: TEST_CASE
-subType: "Integration"
-title: "Registration Integration Test"
+subType: Integration
+title: Registration Integration Test
 version: v-1
 ownership:
+  owner: pcaro
   team: qa-team
 relations:
   - to: impl-reg-01

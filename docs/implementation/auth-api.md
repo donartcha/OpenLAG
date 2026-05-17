@@ -6,6 +6,7 @@ title: /api/v1/user/register
 version: v-1
 systemVersionId: sv-auth-1.0
 ownership:
+  owner: pcaro
   team: backend-team
   reviewers:
     - security-team
