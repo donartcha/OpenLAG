@@ -19,9 +19,10 @@ Resolver el riesgo clásico organizacional de tener "documentación muerta" o de
 
 ## 4. Estructura del Repositorio
 El repositorio presenta un patrón modular híbrido simplificado:
-- `/bin/openlag.js`: Punto de entrada (CLI) local que expone comandos de manipulación (`generate`, `init`, `build`).
+- `/bin/openlag.js`: Punto de entrada (CLI) oficial que expone todos los comandos del sistema (`init`, `dev`, `generate`, `lint`, `build`, `check`).
 - `/docs/`: Directorio raíz de datos ("Source of truth"). Los requerimientos, arquitectura, tests y diseño del cliente residen aquí y se versionan. Especial relevancia tiene el archivo core `/docs/project-manifest.md`.
-- `/scripts/generate-static-data.ts`: Micro-engine de persistencia. Componente hipercrítico que convierte la jerarquía física y los metadatos a la estructura normalizada final.
+- `/scripts/cli/`: Contiene la lógica de implementación de cada subcomando de la CLI.
+- `/scripts/core/`: Motores de procesamiento agnósticos (Parser, Graph Engine).
 - `/src/`: Base de código de la interfaz gráfica React / Vite.
   - `/src/store.ts`: Gestor de contexto y memoria de la aplicación (Zustand).
   - `/src/types.ts`: Esquemas estables (Contratos / DTOs de Grafo, Versión, Sistemas, Impactos).
@@ -79,7 +80,7 @@ La aplicación es cliente total (Static SPA), careciendo de capa de autenticaci�
 
 ## 13. Calidad del Código (Auditoría)
 - **Mantenibilidad & Modularidad:** Alta en FrontEnd. El desacople del estado (Zustand puro vs Componentes con inyección de hooks) es excelente y limpio. `types.ts` evita duplicaciones peligrosas en variables mágicas.
-- **Cohesión vs Acoplamiento (Pipeline):** El `generate-static-data.ts` del CLI posee *mala* legibilidad. Excesiva carga ciclomática, parseos rudimentarios por Expresiones Regulares sobre ficheros de texto (ej. Regex de Yaml block) propenso a roturas estructurales inesperadas en un gran repositorio.
+- **Cohesión vs Acoplamiento (Pipeline):** El motor de procesamiento (`scripts/core/parser.ts`) ha sido refactorizado para centralizar la lógica de extracción. Se recomienda seguir eliminando parseos manuales por Expresiones Regulares en favor de un parser Markdown robusto (AST) para evitar roturas estructurales inesperadas.
 - **Deuda y Robustez:** Fallos en `catch (e) { continue; }` para el procesamiento del data extractor son un "Smell code". Los errores de lectura deberían hacer abortar por prevención la compilación estática (Throw exception / Fail Fast).
 
 ## 14. Deuda Técnica (Lista Priorizada)
@@ -112,9 +113,10 @@ graph TD
     end
 
     subgraph Compiler [Local Build Engine / CLI]
-        CLI("openlag.js") --> GEN("generate-static-data.ts")
-        GEN -- "Parsea YAML Blocks" --> DIR
-        GEN -- "Resuelve Aristas e Historico" --> JSON("graph-data.json")
+        CLI("openlag.js") -- "Subcommands" --> SUBS("scripts/cli/*.ts")
+        SUBS -- "Core Logic" --> CORE("scripts/core/*.ts")
+        CORE -- "Parser Engine" --> DIR
+        CORE -- "Graph Assembly" --> JSON("graph-data.json")
     end
 
     subgraph ClientApp [Frontend React - Vite SPA]
@@ -164,7 +166,7 @@ npm run lint:openlag:feature   # Perfil relajado
 npm run lint:openlag:release   # Perfil estricto
 
 # Ejecución manual en consola con reporte JSON:
-npx tsx scripts/lint-cli.ts --profile develop --json
+npx openlag lint --profile develop --json
 ```
 
 **Perfiles de Severidad:**
@@ -191,9 +193,9 @@ Para utilizar **OpenLAG** en tu entorno local de desarrollo, el proyecto está c
 - Node.js instalado (v18 o superior recomendado)
 - `npm` (gestor de dependencias)
 
-### Comandos Principales
+### Comandos Principales (CLI)
 
-Ejecuta estos comandos en la raíz del repositorio:
+OpenLAG se gestiona a través de su propia CLI. Puedes ejecutar los comandos usando `npm run <command>` o directamente mediante `npx openlag <command>`.
 
 1. **Instalar dependencias:**
    ```bash
@@ -201,40 +203,47 @@ Ejecuta estos comandos en la raíz del repositorio:
    ```
 
 2. **Desarrollo (Modo "Live"):**
-   Este comando ejecuta el generador de grafos una vez y luego inicia el servidor de desarrollo Vite con HMR habilitado.
+   Inicia el visualizador con recarga en vivo de datos. Regenera automáticamente el grafo cuando detecta cambios en `/docs`.
    ```bash
    npm run dev
+   # o
+   npx openlag dev
    ```
 
 3. **Generación Manual de Datos:**
-   Si has modificado archivos `.md` en `/docs` y quieres actualizar la visualización sin reiniciar todo el servidor:
+   Si prefieres generar el JSON sin levantar el servidor o sincronizarlo manualmente:
    ```bash
    npm run generate
+   # o
+   npx openlag generate [--watch]
    ```
 
 4. **Construcción (Producción):**
    Genera los datos del grafo y compila la aplicación para despliegue estático en `dist/`.
    ```bash
    npm run build
+   # o
+   npx openlag build
    ```
 
 5. **Linting y Validación:**
-   El proyecto ofrece distintos niveles de validación para la arquitectura como código:
+   Evalúa la calidad de la documentación.
+   ```bash
+   npm run lint:openlag
+   # o
+   npx openlag lint --profile release --strict
+   ```
 
-   - **Lint de TypeScript:**
-     ```bash
-     npm run lint
-     ```
-   - **Lint de OpenLAG (Arquitectónico):**
-     Tiene perfiles de severidad configurables:
-     ```bash
-     npm run lint:openlag           # Perfil 'develop' (por defecto)
-     npm run lint:openlag:feature   # Perfil relajado
-     npm run lint:openlag:release   # Perfil estricto
-     ```
+6. **Chequeo Completo (CI/CD):**
+   Ejecuta typecheck, lint de código, tests y lint de arquitectura en un solo paso.
+   ```bash
+   npm run check
+   # o
+   npx openlag check
+   ```
 
 ### Limpieza
-Para borrar los artefactos generados en la carpeta `dist/`:
+Para borrar los artefactos generados en la carpeta `dist/` y el caché de datos:
 ```bash
 npm run clean
 ```

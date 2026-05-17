@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import yaml from "js-yaml";
+import chalk from 'chalk';
 import { parseOpenLagDocs } from "../core/parser.js";
 import { runLintRules } from "./lint-rules.js";
 import { defaultProfiles } from "./lint-profiles.js";
@@ -63,23 +64,22 @@ export function runLint(docsDir: string, configPath: string, profileName?: strin
 }
 
 export function printHumanReport(report: LintReport) {
-  console.log(`\nOpenLAG Lint Report`);
-  console.log(`Profile: ${report.profile}\n`);
+  console.log(`\n` + chalk.bold(`OpenLAG Lint Report`));
+  console.log(chalk.dim(`Profile: ${report.profile}\n`));
 
   if (report.issues.length === 0) {
-      console.log(`✅ No issues found!\n`);
+      console.log(chalk.green(`✅ No issues found!\n`));
   } else {
       for (const issue of report.issues) {
-          const sevColor = issue.severity === 'error' ? '\x1b[31m' : (issue.severity === 'warning' ? '\x1b[33m' : '\x1b[36m');
-          const reset = '\x1b[0m';
+          const sevColor = issue.severity === 'error' ? chalk.red : (issue.severity === 'warning' ? chalk.yellow : chalk.cyan);
           const severityLabel = issue.severity.toUpperCase().padEnd(7);
           const ruleLabel = issue.rule.padEnd(30);
-          console.log(`${sevColor}${severityLabel}${reset} ${ruleLabel} ${issue.message}`);
+          console.log(`${sevColor(severityLabel)} ${chalk.dim(ruleLabel)} ${issue.message}`);
       }
   }
 
-  console.log(`\nSummary:`);
-  console.log(`Errors: ${report.summary.errors}`);
-  console.log(`Warnings: ${report.summary.warnings}`);
-  console.log(`Info: ${report.summary.info}\n`);
+  console.log(`\n` + chalk.bold(`Summary:`));
+  console.log(chalk.red(`Errors:   ${report.summary.errors}`));
+  console.log(chalk.yellow(`Warnings: ${report.summary.warnings}`));
+  console.log(chalk.cyan(`Info:     ${report.summary.info}\n`));
 }

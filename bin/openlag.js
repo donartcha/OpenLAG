@@ -1,59 +1,95 @@
 #!/usr/bin/env node
+import { Command } from 'commander';
+import { generateData, watchData } from '../scripts/cli/generate.js';
+import { initProject } from '../scripts/cli/init.js';
+import { lintDocs } from '../scripts/cli/lint.js';
+import { runDevServer } from '../scripts/cli/dev.js';
+import { buildPortal } from '../scripts/cli/build.js';
 import { execSync } from 'child_process';
 import path from 'path';
 import fs from 'fs';
-import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const args = process.argv.slice(2);
-const command = args[0];
+const program = new Command();
 
-const printHelp = () => {
-  console.log(`
-  🛠️  OpenLAG CLI
-  
-  Usage:
-    openlag generate    - Generates static data from /docs
-    openlag build       - Builds the static site (requires vite)
-    openlag init        - Initializes a basic /docs structure
-    openlag preview     - Starts a local preview server
-    openlag lint        - Runs OpenLAG linter against /docs
-  `);
-};
+program
+  .name('openlag')
+  .description('Architecture as Code CLI tool')
+  .version('0.1.0');
 
-switch (command) {
-  case 'generate':
-    console.log("🚀 Generating OpenLAG data...");
-    // Ejecutamos el script de generación que ya tenemos
-    execSync('tsx scripts/generate-static-data.ts', { stdio: 'inherit' });
-    break;
+program
+  .command('init')
+  .description('Initialize a new OpenLAG project')
+  .option('-n, --name <name>', 'Project name')
+  .option('-d, --desc <description>', 'Project description')
+  .action((options) => {
+    initProject(options.name, options.desc);
+  });
 
-  case 'lint':
-    console.log("🔍 Linting OpenLAG architecture...");
-    // Forward all remaining args to the lint script
-    const lintArgs = args.slice(1).join(' ');
+program
+  .command('generate')
+  .description('Generate static graph data from markdown docs')
+  .option('-w, --watch', 'Watch mode')
+  .action((options) => {
+    const docsDir = path.join(process.cwd(), 'docs');
+    const outputDir = path.join(process.cwd(), 'public');
+    if (options.watch) {
+      watchData(docsDir, outputDir);
+    } else {
+      generateData(docsDir, outputDir);
+    }
+  });
+
+program
+  .command('dev')
+  .description('Start development server with live data refresh')
+  .action(() => {
+    runDevServer();
+  });
+
+program
+  .command('build')
+  .description('Build the OpenLAG portal for production')
+  .action(() => {
+    buildPortal();
+  });
+
+program
+  .command('lint')
+  .description('Validate architecture documentation')
+  .option('-p, --profile <profile>', 'Lint profile (develop, feature, release)', 'develop')
+  .option('--json', 'Output report in JSON format')
+  .option('--strict', 'Fail on warnings')
+  .action((options) => {
+    lintDocs(options.profile, options.json, options.strict);
+  });
+
+program
+  .command('preview')
+  .description('Preview the production build')
+  .action(() => {
+    execSync('npx vite preview', { stdio: 'inherit' });
+  });
+
+program
+  .command('check')
+  .description('Run all checks (typecheck, lint, tests, openlag lint)')
+  .action(() => {
+    console.log(chalk.blue('🔍 Running all checks...'));
     try {
-      execSync(`tsx scripts/lint-cli.ts ${lintArgs}`, { stdio: 'inherit' });
-    } catch (error) {
+      console.log(chalk.dim('\n1. Typecheck:'));
+      execSync('npm run typecheck', { stdio: 'inherit' });
+
+      console.log(chalk.dim('\n2. Lint (ESLint):'));
+      execSync('npm run lint', { stdio: 'inherit' });
+
+      console.log(chalk.dim('\n3. OpenLAG Lint:'));
+      lintDocs('develop');
+
+      console.log(chalk.green('\n✅ All checks passed!'));
+    } catch (e) {
+      console.error(chalk.red('\n❌ System check failed'));
       process.exit(1);
     }
-    break;
+  });
 
-  case 'build':
-    console.log("📦 Building static site...");
-    execSync('npm run build', { stdio: 'inherit' });
-    break;
-
-  case 'init':
-    console.log("📁 Initializing OpenLAG project...");
-    try {
-      execSync('tsx scripts/init-project.ts', { stdio: 'inherit' });
-    } catch (error) {
-      process.exit(1);
-    }
-    break;
-
-  default:
-    printHelp();
-    break;
-}
+program.parse();
