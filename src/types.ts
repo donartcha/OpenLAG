@@ -38,6 +38,8 @@ export interface Artifact {
   title: string;
   description: string;
   version: string;
+  component?: string;
+  releaseDate?: string;
   systemVersionId?: string;
   layer?: ArtifactLayer;
   ownership?: Ownership;

@@ -348,21 +348,28 @@ validation:
     console.log(chalk.green('✅ Created /docs/versions directory'));
   }
 
-  const versionsPath = path.join(versionsDir, 'versions.md');
-  if (!fs.existsSync(versionsPath)) {
+  const versionPath = path.join(versionsDir, 'v-1.0.0.md');
+  if (!fs.existsSync(versionPath)) {
     const versionsContent = `---
 id: v-1.0.0
 type: VERSION
 name: "Baseline"
 timestamp: "${new Date().toISOString().split('T')[0]}"
 parentVersion: null
+layer: DOCUMENTATION
+title: "Project Release v1.0.0"
+description: "Initial release"
+ownership:
+  owner: architecture
+  team: architecture
+relations: []
 ---
 `;
-    fs.writeFileSync(versionsPath, versionsContent);
-    console.log(chalk.green('✅ Created initial docs/versions/versions.md'));
+    fs.writeFileSync(versionPath, versionsContent);
+    console.log(chalk.green('✅ Created initial docs/versions/v-1.0.0.md'));
   }
 
-  const componentsVersionsPath = path.join(versionsDir, 'components-versions.md');
+  const componentsVersionsPath = path.join(versionsDir, 'sys-core-1.0.md');
   if (!fs.existsSync(componentsVersionsPath)) {
     const cvContent = `---
 id: sys-core-1.0
@@ -370,14 +377,27 @@ type: SYSTEM_VERSION
 component: "Core System"
 version: "1.0.0"
 releaseDate: "${new Date().toISOString().split('T')[0]}"
+layer: OPERATIONS
+title: "Core System v1.0"
+description: "Base framework."
+ownership:
+  owner: architecture
+  team: architecture
+relations: []
 ---
 `;
     fs.writeFileSync(componentsVersionsPath, cvContent);
-    console.log(chalk.green('✅ Created initial docs/versions/components-versions.md'));
+    console.log(chalk.green('✅ Created initial docs/versions/sys-core-1.0.md'));
   }
 
   // 4. Create a sample doc if empty
-  const sampleDocPath = path.join(docsDir, 'architecture-overview.md');
+  const architectureDir = path.join(docsDir, 'architecture');
+  if (!fs.existsSync(architectureDir)) {
+    fs.mkdirSync(architectureDir);
+    console.log(chalk.green('✅ Created /docs/architecture directory'));
+  }
+
+  const sampleDocPath = path.join(architectureDir, 'architecture-overview.md');
   if (!fs.existsSync(sampleDocPath)) {
     const sampleContent = `---
 id: arch-overview
@@ -397,11 +417,11 @@ This document describes the high-level architecture of ${name}.
 - Graph-based relationships.
 `;
     fs.writeFileSync(sampleDocPath, sampleContent);
-    console.log(chalk.green('✅ Created initial docs/architecture-overview.md'));
+    console.log(chalk.green('✅ Created initial docs/architecture/architecture-overview.md'));
   }
 
   console.log('\n' + chalk.cyan('🚀 Project initialized successfully!'));
   console.log('Next steps:');
   console.log('1. Edit ' + chalk.cyan('docs/') + ' to reflect your architecture.');
-  console.log('2. Run ' + chalk.cyan('npm run dev') + ' to see your portal.');
+  console.log('2. Run ' + chalk.cyan('openlag dev') + ' to see your portal.');
 }

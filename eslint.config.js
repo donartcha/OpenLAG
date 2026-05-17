@@ -5,7 +5,7 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: ['dist/**', 'node_modules/**', 'public/**'],
+    ignores: ['app/**', 'dist/**', 'node_modules/**', 'public/**'],
   },
   eslint.configs.recommended,
   {

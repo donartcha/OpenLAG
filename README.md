@@ -1,21 +1,82 @@
 # OpenLAG
 
-OpenLAG (Open Living Architecture Graph) is a graph-based software lifecycle traceability system that connects requirements, design, implementation, testing, and operations through versioned relationships, enabling the automatic generation and reconstruction of complete system documentation at any point in its evolution.
+OpenLAG is an Architecture as Code traceability graph generator.
 
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+It reads versioned architecture documentation from Markdown and YAML files, validates the relationships between artifacts, generates a static graph data file, and builds a portal for exploring the resulting traceability graph.
 
-## Run Locally
+## Install
 
-This contains everything you need to run your app locally.
+```bash
+npm install -g @donartcha/openlag
+```
 
-View your app in AI Studio: https://ai.studio/apps/2e4588ab-4cf4-4d5a-ad5b-3e5d94e293f1
+You can also run it without a global install:
 
-**Prerequisites:** Node.js
+```bash
+npx @donartcha/openlag init
+```
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Usage
+
+Initialize a project:
+
+```bash
+openlag init
+```
+
+Generate graph data:
+
+```bash
+openlag generate
+```
+
+Validate architecture documentation:
+
+```bash
+openlag lint
+```
+
+Build the static portal:
+
+```bash
+openlag build
+```
+
+Run generation and validation together:
+
+```bash
+openlag check
+```
+
+## Minimal Example
+
+```bash
+mkdir my-architecture
+cd my-architecture
+npx @donartcha/openlag init --name "My System"
+npx @donartcha/openlag generate
+npx @donartcha/openlag lint
+npx @donartcha/openlag build
+```
+
+OpenLAG creates a `docs/` directory with starter architecture documents and relation definitions. `openlag generate` writes `public/graph-data.json`, and `openlag build` writes the static portal to `dist/`.
+
+## Commands
+
+```text
+openlag init       Initialize docs and relation definitions
+openlag generate   Generate public/graph-data.json
+openlag lint       Validate documentation and relations
+openlag build      Build the static portal
+openlag check      Generate graph data and run OpenLAG lint
+openlag dev        Start the portal dev server
+openlag preview    Preview the production build
+```
+
+## Project Status
+
+OpenLAG is in early development. The first public NPM release is intended to establish the CLI workflow and package layout.
+
+## License
+
+MPL-2.0. See [LICENSE](LICENSE).

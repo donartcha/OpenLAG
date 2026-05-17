@@ -16,6 +16,8 @@ export function normalizeArtifact(parsed: any, fullPath: string, body: string): 
     version: String(p.version || p.Version || 'v-1'),
     description: body,
     systemVersionId: p.systemVersionId || p.systemversionid,
+    component: p.component,
+    releaseDate: p.releaseDate || p.timestamp,
     status: p.status,
     layer: inferLayer(typeValue),
     ownership: p.ownership || p.owner ? { owner: p.owner, ...p.ownership } : undefined,

@@ -1,24 +1,32 @@
 import { spawn } from 'child_process';
-import { watchData, generateData } from './generate.js';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
 import chalk from 'chalk';
 
+import { generateData, watchData } from './generate.js';
+import { resolveViteBin } from './vite-bin.js';
+
 export function runDevServer() {
-  const docsDir = path.join(process.cwd(), 'docs');
-  const outputDir = path.join(process.cwd(), 'public');
+  const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  const viteBin = resolveViteBin(import.meta.url);
+  const viteConfig = path.join(packageRoot, 'vite.config.ts');
+  const projectRoot = process.cwd();
+  const docsDir = path.join(projectRoot, 'docs');
+  const outputDir = path.join(projectRoot, 'public');
 
-  // 1. Initial generation
   generateData(docsDir, outputDir);
-
-  // 2. Start watcher
   watchData(docsDir, outputDir);
 
-  // 3. Start Vite
-  console.log(chalk.blue("✨ Starting View Layer (Vite)..."));
-  
-  const vite = spawn('npx', ['vite'], {
+  console.log(chalk.blue('Starting OpenLAG portal dev server...'));
+
+  const vite = spawn(process.execPath, [viteBin, '--config', viteConfig], {
+    cwd: packageRoot,
+    env: {
+      ...process.env,
+      OPENLAG_PROJECT_ROOT: projectRoot,
+    },
     stdio: 'inherit',
-    shell: true
   });
 
   vite.on('close', (code) => {

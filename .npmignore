@@ -1,0 +1,15 @@
+.env
+.env.*
+node_modules/
+coverage/
+.vscode/
+.idea/
+*.log
+.DS_Store
+docs/
+public/graph-data.json
+*.local
+tests/
+DOCUMENTACION_OPENLAG.md
+SPECIFICATION.md
+fix2.ts

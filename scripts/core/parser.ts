@@ -6,9 +6,6 @@ import { ArtifactSchema } from "./parser/schemas.js";
 import { normalizeArtifact } from "./parser/normalizer.js";
 import { DiagnosticEngine, Severity } from "./parser/diagnostic.js";
 import { RelationRegistry } from "../../src/core/registry/RelationRegistry.js";
-import fs from "fs";
-import path from "path";
-import matter from "gray-matter";
 import yaml from "js-yaml";
 
 export function parseOpenLagDocs(docsDir: string): OpenLagData {
@@ -36,9 +33,8 @@ export function parseOpenLagDocs(docsDir: string): OpenLagData {
           if (section.length < 5) continue;
 
           let parsed: any;
-          let yamlCandidate = '';
           try {
-            yamlCandidate = sections[i].split('\n')
+            const yamlCandidate = sections[i].split('\n')
               .map(l => l.replace(/^##\s?/, ''))
               .join('\n')
               .replace(/---$/, '')
