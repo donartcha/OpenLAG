@@ -35,7 +35,7 @@ El repositorio presenta un patrón modular híbrido simplificado:
 - **Estilado:** TailwindCSS v4 acoplado con `lucide-react` para iteración acelerada.
 - **Renderización Grafo:** Dependencias listadas sugieren soporte para renderizado usando `dagre` o `@xyflow/react` (React Flow) para posicionamiento matemático de jerarquías.
 - **Parseo de Texto:** `js-yaml` + `gray-matter` (Lectura robusta de descriptores MarkDown).
-- **Dependencias No Utilizadas (Deuda/Futuro):** `@google/genai` y `express` figuran listados, pero no están explícitamente acoplados a la generación de esta versión estática.
+- **Dependencias No Utilizadas (Deuda/Futuro):** `@google/genai` figura listada, pero no está explícitamente acoplada a la generación de esta versión estática.
 
 ## 6. Flujo de Ejecución
 
@@ -85,7 +85,7 @@ La aplicación es cliente total (Static SPA), careciendo de capa de autenticaci�
 
 ## 14. Deuda Técnica (Lista Priorizada)
 1. **Silenciado de Errores Críticos (P1):** Fallos al parsear los metadatos YAML ocultan pérdidas de datos transaccionales, se requiere implementación `throw new Error(...)` en el Script Builder.
-2. **Dependencias Abruptas o "Zombie" (P2):** Retirar `express`, `dotenv`, `@google/genai` del manifest de dependencias, reduciendo vulnerabilidades o bien efectuar de inmediato la integración planificada para ellas (Generación Autómoma por Agentes).
+2. **Dependencias Abruptas o "Zombie" (P2):** Retirar `@google/genai` del manifest de dependencias, reduciendo vulnerabilidades o bien efectuar de inmediato la integración planificada para ellas (Generación Autómoma por Agentes).
 3. **Pérdida de Features (P3):** Reciente parche de rollback eliminó librerías PDF que siguen acopladas y presentes en NPM como `jspdf` y `html-to-image`; limpiar dichas dependencias.
 
 ## 15. Riesgos Arquitectónicos (Escalabilidad en Producción)

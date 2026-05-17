@@ -8,6 +8,7 @@ import { buildPortal } from '../scripts/cli/build.js';
 import { execSync } from 'child_process';
 import path from 'path';
 import fs from 'fs';
+import chalk from 'chalk';
 
 const program = new Command();
 

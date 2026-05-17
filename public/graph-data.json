@@ -35,7 +35,7 @@
     {
       "id": "sv-db-pg-15",
       "component": "PostgreSQL Engine",
-      "version": 15.4,
+      "version": "15.4",
       "releaseDate": "2023-08-10"
     },
     {
@@ -61,6 +61,36 @@
     "v-1": {
       "artifacts": [
         {
+          "id": "ch-auth-pool",
+          "type": "CHANGE",
+          "title": "Resolución de Timeouts en Auth API",
+          "version": "v-1",
+          "description": "Se identificó que el pool de conexiones de la base de datos era insuficiente para el volumen de tráfico de v1.0.0.",
+          "layer": "IMPLEMENTATION",
+          "file": "/app/applet/docs/changes/changes.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "ch-ui-refactor",
+          "type": "CHANGE",
+          "title": "Refactor de Componentes UI Core",
+          "version": "v-1",
+          "description": "Migración de los componentes de botón y layouts a la nueva librería compartida Shared-UI-Lib v2.3.1 para asegurar consistencia visual.",
+          "layer": "IMPLEMENTATION",
+          "file": "/app/applet/docs/changes/changes.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "ch-compliance-update",
+          "type": "CHANGE",
+          "title": "Ajustes de Cumplimiento GDPR",
+          "version": "v-1",
+          "description": "Actualización de dependencias y refactorización del DAO para asegurar la anonimización de datos. Impacta relaciones de fuerza débil y media.",
+          "layer": "IMPLEMENTATION",
+          "file": "/app/applet/docs/changes/changes.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
           "id": "depl-auth-prod",
           "type": "DEPLOYMENT",
           "subType": "GitHub Actions",
@@ -68,7 +98,8 @@
           "version": "v-1",
           "description": "Pipeline de despliegue automático para el servicio de autenticación en el entorno de producción.",
           "layer": "OPERATIONS",
-          "file": "/app/applet/docs/deployment/auth-deployment.md"
+          "file": "/app/applet/docs/deployment/auth-deployment.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "depl-reg-01",
@@ -78,7 +109,8 @@
           "version": "v-1",
           "description": "Archivo de despliegue de Kubernetes para el servicio de registro.",
           "layer": "OPERATIONS",
-          "file": "/app/applet/docs/deployment/registration-k8s.md"
+          "file": "/app/applet/docs/deployment/registration-k8s.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "des-adr-1",
@@ -88,7 +120,8 @@
           "version": "v-1",
           "description": "# ADR-001: Use Postgres\n## Contexto\nNecesitamos una base de datos para almacenar información de usuarios y transacciones con integridad relacional.\n\n## Decisión\nHemos decidido usar PostgreSQL en lugar de MongoDB.\n\n## Consecuencias\n* Propiedades ACID garantizadas.\n* Mayor facilidad para reportes complejos.\n\n```mermaid\ngraph TD\n  API[Auth API] --> DB[(PostgreSQL)]\n```",
           "layer": "DOCUMENTATION",
-          "file": "/app/applet/docs/design/adr-001.md"
+          "file": "/app/applet/docs/design/adr-001.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "des-arq-1",
@@ -98,7 +131,8 @@
           "version": "v-1",
           "description": "Arquitectura basada en eventos usando RabbitMQ para la comunicación entre servicios.\n\n```mermaid\ngraph LR\n  Gateway --> Auth\n  Gateway --> Orders\n  Auth --> EventBus[RabbitMQ]\n  Orders --> EventBus\n```",
           "layer": "ARCHITECTURE",
-          "file": "/app/applet/docs/design/architecture.md"
+          "file": "/app/applet/docs/design/architecture.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "des-cmp-1",
@@ -108,7 +142,8 @@
           "version": "v-1",
           "description": "Diagrama C4 del subsistema de autenticación.\n\n```mermaid\nC4Context\n  Person(user, \"User\")\n  System(auth, \"Auth System\")\n  Rel(user, auth, \"Authenticates\")\n```",
           "layer": "ARCHITECTURE",
-          "file": "/app/applet/docs/design/auth-diagram.md"
+          "file": "/app/applet/docs/design/auth-diagram.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "des-con-1",
@@ -118,7 +153,8 @@
           "version": "v-1",
           "description": "Especificación OAS v3 para la API de Autenticación. Define los esquemas de entrada y salida para `/register` y `/login`.",
           "layer": "DOCUMENTATION",
-          "file": "/app/applet/docs/design/openapi-contract.md"
+          "file": "/app/applet/docs/design/openapi-contract.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "des-reg-01",
@@ -132,7 +168,8 @@
             "team": "architecture",
             "steward": "ssmith"
           },
-          "file": "/app/applet/docs/design/registration-design.md"
+          "file": "/app/applet/docs/design/registration-design.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-api-1",
@@ -149,7 +186,8 @@
               "security-team"
             ]
           },
-          "file": "/app/applet/docs/implementation/auth-api.md"
+          "file": "/app/applet/docs/implementation/auth-api.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-ctr-1",
@@ -159,7 +197,8 @@
           "version": "v-1",
           "description": "Controlador encargado de orquestar la lógica de negocio de autenticación.\n1. Recibe el Request.\n2. Valida Reglas de Negocio (Edad).\n3. Invoca al Servicio.",
           "layer": "IMPLEMENTATION",
-          "file": "/app/applet/docs/implementation/auth-controller.md"
+          "file": "/app/applet/docs/implementation/auth-controller.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-worker-notif",
@@ -170,7 +209,8 @@
           "description": "Worker encargado de procesar la cola de correos electrónicos. Utiliza BullMQ para la gestión de colas.\n\n```typescript\nexport class EmailDispatcher {\n  async process(job: Job) {\n    const { to, subject, body } = job.data;\n    await mailer.send(to, subject, body);\n  }\n}\n```",
           "systemVersionId": "sv-notif-0.8",
           "layer": "IMPLEMENTATION",
-          "file": "/app/applet/docs/implementation/email-dispatcher.md"
+          "file": "/app/applet/docs/implementation/email-dispatcher.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-reg-01",
@@ -180,7 +220,8 @@
           "version": "v-1",
           "description": "Controlador que implementa el flujo de registro de usuarios de acuerdo a las especificaciones en [Registration Service Design](#des-reg-01).",
           "layer": "IMPLEMENTATION",
-          "file": "/app/applet/docs/implementation/registration-controller.md"
+          "file": "/app/applet/docs/implementation/registration-controller.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-ui-button",
@@ -195,7 +236,8 @@
             "owner": "alice",
             "team": "frontend-team"
           },
-          "file": "/app/applet/docs/implementation/shared-button.md"
+          "file": "/app/applet/docs/implementation/shared-button.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-dao-user",
@@ -210,7 +252,8 @@
             "owner": "bob",
             "team": "backend-team"
           },
-          "file": "/app/applet/docs/implementation/user-dao.md"
+          "file": "/app/applet/docs/implementation/user-dao.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-dto-user",
@@ -220,7 +263,8 @@
           "version": "v-1",
           "description": "Object that encapsulates `email`, `password`, and `age` fields for input validation at the registration endpoint.",
           "layer": "IMPLEMENTATION",
-          "file": "/app/applet/docs/implementation/user-dto.md"
+          "file": "/app/applet/docs/implementation/user-dto.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-cls-1",
@@ -230,7 +274,8 @@
           "version": "v-1",
           "description": "Domain entity representing a User in the system.\n\n```typescript\nexport class User {\n  id: string;\n  email: string;\n  passwordHash: string;\n}\n```",
           "layer": "IMPLEMENTATION",
-          "file": "/app/applet/docs/implementation/user-entity.md"
+          "file": "/app/applet/docs/implementation/user-entity.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-repo-1",
@@ -244,7 +289,8 @@
           "ownership": {
             "team": "backend-team"
           },
-          "file": "/app/applet/docs/implementation/user-repository.md"
+          "file": "/app/applet/docs/implementation/user-repository.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "ops-inc-1",
@@ -257,7 +303,8 @@
           "ownership": {
             "team": "sre-team"
           },
-          "file": "/app/applet/docs/incidents/auth-timeout.md"
+          "file": "/app/applet/docs/incidents/auth-timeout.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "mon-auth-99",
@@ -267,7 +314,8 @@
           "version": "v-1",
           "description": "Alerta configurada en Prometheus para detectar picos de error en el endpoint de registro.",
           "layer": "OPERATIONS",
-          "file": "/app/applet/docs/monitoring/auth-alerts.md"
+          "file": "/app/applet/docs/monitoring/auth-alerts.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "mon-reg-01",
@@ -280,7 +328,8 @@
           "ownership": {
             "team": "sre-team"
           },
-          "file": "/app/applet/docs/monitoring/registration-dashboard.md"
+          "file": "/app/applet/docs/monitoring/registration-dashboard.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "ops-run-1",
@@ -290,7 +339,8 @@
           "version": "v-1",
           "description": "Procedimiento detallado para realizar un failover manual de la base de datos de Auth en caso de que la replicación automática falle.",
           "layer": "DOCUMENTATION",
-          "file": "/app/applet/docs/operations/db-failover.md"
+          "file": "/app/applet/docs/operations/db-failover.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "ops-dep-1",
@@ -303,7 +353,8 @@
           "ownership": {
             "team": "devops"
           },
-          "file": "/app/applet/docs/operations/k8s-deployment.md"
+          "file": "/app/applet/docs/operations/k8s-deployment.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "req-br-1",
@@ -313,7 +364,8 @@
           "version": "v-1",
           "description": "Solo usuarios mayores de 18 años pueden registrarse en la plataforma para cumplir con las regulaciones de servicios financieros locales.",
           "layer": "BUSINESS",
-          "file": "/app/applet/docs/requirements/age-restriction.md"
+          "file": "/app/applet/docs/requirements/age-restriction.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "req-res-1",
@@ -323,7 +375,8 @@
           "version": "v-1",
           "description": "Todos los datos personales deben ser cifrados en reposo y el sistema debe permitir el \"derecho al olvido\" (borrado físico de datos).",
           "layer": "BUSINESS",
-          "file": "/app/applet/docs/requirements/gdpr.md"
+          "file": "/app/applet/docs/requirements/gdpr.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "req-nfunc-1",
@@ -333,7 +386,8 @@
           "version": "v-1",
           "description": "El sistema debe tener un uptime garantizado del 99.9% (Tier 3). Se requiere redundancia geográfica y auto-escalado.",
           "layer": "BUSINESS",
-          "file": "/app/applet/docs/requirements/high-availability.md"
+          "file": "/app/applet/docs/requirements/high-availability.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "req-func-1",
@@ -347,7 +401,8 @@
             "owner": "jdoe",
             "team": "core-product"
           },
-          "file": "/app/applet/docs/requirements/user-registration.md"
+          "file": "/app/applet/docs/requirements/user-registration.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "ver-tst-1",
@@ -357,7 +412,8 @@
           "version": "v-1",
           "description": "Suite de pruebas unitarias e integración para el flujo de autenticación.\n\n## Cobertura\n* Registro exitoso.\n* Fallo por email duplicado.\n* Fallo por contraseña débil.",
           "layer": "IMPLEMENTATION",
-          "file": "/app/applet/docs/testing/auth-regression.md"
+          "file": "/app/applet/docs/testing/auth-regression.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "test-auth-01",
@@ -367,7 +423,8 @@
           "version": "v-1",
           "description": "Verifica que el controlador de autenticación maneja correctamente los casos de éxito y error, incluyendo la restricción de edad req-br-1.",
           "layer": "IMPLEMENTATION",
-          "file": "/app/applet/docs/testing/auth-test.md"
+          "file": "/app/applet/docs/testing/auth-test.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "test-reg-01",
@@ -380,7 +437,8 @@
           "ownership": {
             "team": "qa-team"
           },
-          "file": "/app/applet/docs/testing/registration-test.md"
+          "file": "/app/applet/docs/testing/registration-test.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "ver-evi-1",
@@ -390,7 +448,8 @@
           "version": "v-1",
           "description": "Certificado de aprobación de la auditoría de seguridad externa (Pentest) realizada el 2026-05-01.\nNo se encontraron vulnerabilidades críticas ni altas.",
           "layer": "DOCUMENTATION",
-          "file": "/app/applet/docs/testing/sec-audit.md"
+          "file": "/app/applet/docs/testing/sec-audit.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "ver-res-1",
@@ -400,7 +459,8 @@
           "version": "v-1",
           "description": "Resultado de la ejecución de pruebas en el pipeline de CI/CD.\n* Cobertura: 92%\n* Pruebas Unitarias: 154/154 OK\n* Pruebas de Integración: 42/42 OK",
           "layer": "DOCUMENTATION",
-          "file": "/app/applet/docs/testing/test-report.md"
+          "file": "/app/applet/docs/testing/test-report.md",
+          "schemaVersion": "1.0.0"
         }
       ],
       "relations": [
@@ -679,6 +739,36 @@
     "v-2": {
       "artifacts": [
         {
+          "id": "ch-auth-pool",
+          "type": "CHANGE",
+          "title": "Resolución de Timeouts en Auth API",
+          "version": "v-1",
+          "description": "Se identificó que el pool de conexiones de la base de datos era insuficiente para el volumen de tráfico de v1.0.0.",
+          "layer": "IMPLEMENTATION",
+          "file": "/app/applet/docs/changes/changes.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "ch-ui-refactor",
+          "type": "CHANGE",
+          "title": "Refactor de Componentes UI Core",
+          "version": "v-1",
+          "description": "Migración de los componentes de botón y layouts a la nueva librería compartida Shared-UI-Lib v2.3.1 para asegurar consistencia visual.",
+          "layer": "IMPLEMENTATION",
+          "file": "/app/applet/docs/changes/changes.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
+          "id": "ch-compliance-update",
+          "type": "CHANGE",
+          "title": "Ajustes de Cumplimiento GDPR",
+          "version": "v-1",
+          "description": "Actualización de dependencias y refactorización del DAO para asegurar la anonimización de datos. Impacta relaciones de fuerza débil y media.",
+          "layer": "IMPLEMENTATION",
+          "file": "/app/applet/docs/changes/changes.md",
+          "schemaVersion": "1.0.0"
+        },
+        {
           "id": "build-pkg-1",
           "type": "INFRASTRUCTURE",
           "subType": "Package",
@@ -686,7 +776,8 @@
           "version": "v-2",
           "description": "Configuración de empaquetado para generar imágenes compatibles con x86 y ARM64.\nSe utiliza `buildx` para la compilación cruzada.",
           "layer": "OPERATIONS",
-          "file": "/app/applet/docs/ci/build.md"
+          "file": "/app/applet/docs/ci/build.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "ci-pipeline-1",
@@ -696,7 +787,8 @@
           "version": "v-2",
           "description": "Pipeline automatizada que se dispara en cada Pull Request.\nIncluye:\n- Linting\n- Unit Tests\n- Security Scan (Snyk)",
           "layer": "OPERATIONS",
-          "file": "/app/applet/docs/ci/pipeline.md"
+          "file": "/app/applet/docs/ci/pipeline.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "depl-auth-prod",
@@ -706,7 +798,8 @@
           "version": "v-1",
           "description": "Pipeline de despliegue automático para el servicio de autenticación en el entorno de producción.",
           "layer": "OPERATIONS",
-          "file": "/app/applet/docs/deployment/auth-deployment.md"
+          "file": "/app/applet/docs/deployment/auth-deployment.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "deploy-prod-1",
@@ -715,7 +808,8 @@
           "version": "v-2",
           "description": "Utilizamos despliegue Blue-Green para minimizar el downtime.\nActualmente el entorno **Green** es el activo ejecutando v1.1.0.",
           "layer": "OPERATIONS",
-          "file": "/app/applet/docs/deployment/prod.md"
+          "file": "/app/applet/docs/deployment/prod.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "depl-reg-01",
@@ -725,7 +819,8 @@
           "version": "v-1",
           "description": "Archivo de despliegue de Kubernetes para el servicio de registro.",
           "layer": "OPERATIONS",
-          "file": "/app/applet/docs/deployment/registration-k8s.md"
+          "file": "/app/applet/docs/deployment/registration-k8s.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "des-adr-1",
@@ -735,7 +830,8 @@
           "version": "v-1",
           "description": "# ADR-001: Use Postgres\n## Contexto\nNecesitamos una base de datos para almacenar información de usuarios y transacciones con integridad relacional.\n\n## Decisión\nHemos decidido usar PostgreSQL en lugar de MongoDB.\n\n## Consecuencias\n* Propiedades ACID garantizadas.\n* Mayor facilidad para reportes complejos.\n\n```mermaid\ngraph TD\n  API[Auth API] --> DB[(PostgreSQL)]\n```",
           "layer": "DOCUMENTATION",
-          "file": "/app/applet/docs/design/adr-001.md"
+          "file": "/app/applet/docs/design/adr-001.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "des-arq-1",
@@ -745,7 +841,8 @@
           "version": "v-1",
           "description": "Arquitectura basada en eventos usando RabbitMQ para la comunicación entre servicios.\n\n```mermaid\ngraph LR\n  Gateway --> Auth\n  Gateway --> Orders\n  Auth --> EventBus[RabbitMQ]\n  Orders --> EventBus\n```",
           "layer": "ARCHITECTURE",
-          "file": "/app/applet/docs/design/architecture.md"
+          "file": "/app/applet/docs/design/architecture.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "des-cmp-1",
@@ -755,7 +852,8 @@
           "version": "v-1",
           "description": "Diagrama C4 del subsistema de autenticación.\n\n```mermaid\nC4Context\n  Person(user, \"User\")\n  System(auth, \"Auth System\")\n  Rel(user, auth, \"Authenticates\")\n```",
           "layer": "ARCHITECTURE",
-          "file": "/app/applet/docs/design/auth-diagram.md"
+          "file": "/app/applet/docs/design/auth-diagram.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "des-con-1",
@@ -765,7 +863,8 @@
           "version": "v-1",
           "description": "Especificación OAS v3 para la API de Autenticación. Define los esquemas de entrada y salida para `/register` y `/login`.",
           "layer": "DOCUMENTATION",
-          "file": "/app/applet/docs/design/openapi-contract.md"
+          "file": "/app/applet/docs/design/openapi-contract.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "des-reg-01",
@@ -779,7 +878,8 @@
             "team": "architecture",
             "steward": "ssmith"
           },
-          "file": "/app/applet/docs/design/registration-design.md"
+          "file": "/app/applet/docs/design/registration-design.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-api-1",
@@ -796,7 +896,8 @@
               "security-team"
             ]
           },
-          "file": "/app/applet/docs/implementation/auth-api.md"
+          "file": "/app/applet/docs/implementation/auth-api.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-ctr-1",
@@ -806,7 +907,8 @@
           "version": "v-1",
           "description": "Controlador encargado de orquestar la lógica de negocio de autenticación.\n1. Recibe el Request.\n2. Valida Reglas de Negocio (Edad).\n3. Invoca al Servicio.",
           "layer": "IMPLEMENTATION",
-          "file": "/app/applet/docs/implementation/auth-controller.md"
+          "file": "/app/applet/docs/implementation/auth-controller.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-worker-notif",
@@ -817,7 +919,8 @@
           "description": "Worker encargado de procesar la cola de correos electrónicos. Utiliza BullMQ para la gestión de colas.\n\n```typescript\nexport class EmailDispatcher {\n  async process(job: Job) {\n    const { to, subject, body } = job.data;\n    await mailer.send(to, subject, body);\n  }\n}\n```",
           "systemVersionId": "sv-notif-0.8",
           "layer": "IMPLEMENTATION",
-          "file": "/app/applet/docs/implementation/email-dispatcher.md"
+          "file": "/app/applet/docs/implementation/email-dispatcher.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "ops-inc-fix-1",
@@ -827,7 +930,8 @@
           "version": "v-2",
           "description": "Incremento del pool de conexiones de la base de datos de 10 a 50 para evitar timeouts bajo carga.\n\n## Cambios\n* Se modificó `datasource.ts`.\n* Se añadió monitoreo de pool en Prometheus.",
           "layer": "IMPLEMENTATION",
-          "file": "/app/applet/docs/implementation/pool-fix.md"
+          "file": "/app/applet/docs/implementation/pool-fix.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-reg-01",
@@ -837,7 +941,8 @@
           "version": "v-1",
           "description": "Controlador que implementa el flujo de registro de usuarios de acuerdo a las especificaciones en [Registration Service Design](#des-reg-01).",
           "layer": "IMPLEMENTATION",
-          "file": "/app/applet/docs/implementation/registration-controller.md"
+          "file": "/app/applet/docs/implementation/registration-controller.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-review-1",
@@ -847,7 +952,8 @@
           "version": "v-2",
           "description": "Se realizó una revisión exhaustiva del parche aplicado en `Auth Repository`. Se validó que los límites de hilos no excedan la capacidad de la base de datos PostgreSQL v15.4.\n\n**Resultado:** Aprobado con recomendaciones de monitorización de CPU.",
           "layer": "IMPLEMENTATION",
-          "file": "/app/applet/docs/implementation/review.md"
+          "file": "/app/applet/docs/implementation/review.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-ui-button",
@@ -862,7 +968,8 @@
             "owner": "alice",
             "team": "frontend-team"
           },
-          "file": "/app/applet/docs/implementation/shared-button.md"
+          "file": "/app/applet/docs/implementation/shared-button.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-dao-user",
@@ -877,7 +984,8 @@
             "owner": "bob",
             "team": "backend-team"
           },
-          "file": "/app/applet/docs/implementation/user-dao.md"
+          "file": "/app/applet/docs/implementation/user-dao.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-dto-user",
@@ -887,7 +995,8 @@
           "version": "v-1",
           "description": "Object that encapsulates `email`, `password`, and `age` fields for input validation at the registration endpoint.",
           "layer": "IMPLEMENTATION",
-          "file": "/app/applet/docs/implementation/user-dto.md"
+          "file": "/app/applet/docs/implementation/user-dto.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-cls-1",
@@ -897,7 +1006,8 @@
           "version": "v-1",
           "description": "Domain entity representing a User in the system.\n\n```typescript\nexport class User {\n  id: string;\n  email: string;\n  passwordHash: string;\n}\n```",
           "layer": "IMPLEMENTATION",
-          "file": "/app/applet/docs/implementation/user-entity.md"
+          "file": "/app/applet/docs/implementation/user-entity.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "impl-repo-1",
@@ -911,7 +1021,8 @@
           "ownership": {
             "team": "backend-team"
           },
-          "file": "/app/applet/docs/implementation/user-repository.md"
+          "file": "/app/applet/docs/implementation/user-repository.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "ops-inc-1",
@@ -924,7 +1035,8 @@
           "ownership": {
             "team": "sre-team"
           },
-          "file": "/app/applet/docs/incidents/auth-timeout.md"
+          "file": "/app/applet/docs/incidents/auth-timeout.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "maint-refactor-1",
@@ -936,7 +1048,8 @@
           "ownership": {
             "team": "frontend-team"
           },
-          "file": "/app/applet/docs/maintenance/refactor.md"
+          "file": "/app/applet/docs/maintenance/refactor.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "retire-old-api-1",
@@ -946,7 +1059,8 @@
           "version": "v-2",
           "description": "Se ha marcado la API v0.9 como obsoleta. Se eliminará definitivamente en la próxima versión mayor.\nAviso enviado a todos los clientes.",
           "layer": "OPERATIONS",
-          "file": "/app/applet/docs/maintenance/retire.md"
+          "file": "/app/applet/docs/maintenance/retire.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "mon-auth-99",
@@ -956,7 +1070,8 @@
           "version": "v-1",
           "description": "Alerta configurada en Prometheus para detectar picos de error en el endpoint de registro.",
           "layer": "OPERATIONS",
-          "file": "/app/applet/docs/monitoring/auth-alerts.md"
+          "file": "/app/applet/docs/monitoring/auth-alerts.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "mon-reg-01",
@@ -969,7 +1084,8 @@
           "ownership": {
             "team": "sre-team"
           },
-          "file": "/app/applet/docs/monitoring/registration-dashboard.md"
+          "file": "/app/applet/docs/monitoring/registration-dashboard.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "monitor-dashboard-1",
@@ -978,7 +1094,8 @@
           "version": "v-2",
           "description": "Métricas clave monitorizadas:\n- Latencia (P99)\n- Tasa de errores 5xx\n- Uso de memoria por nodo",
           "layer": "OPERATIONS",
-          "file": "/app/applet/docs/monitoring/status.md"
+          "file": "/app/applet/docs/monitoring/status.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "ops-run-1",
@@ -988,7 +1105,8 @@
           "version": "v-1",
           "description": "Procedimiento detallado para realizar un failover manual de la base de datos de Auth en caso de que la replicación automática falle.",
           "layer": "DOCUMENTATION",
-          "file": "/app/applet/docs/operations/db-failover.md"
+          "file": "/app/applet/docs/operations/db-failover.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "ops-dep-1",
@@ -1001,7 +1119,8 @@
           "ownership": {
             "team": "devops"
           },
-          "file": "/app/applet/docs/operations/k8s-deployment.md"
+          "file": "/app/applet/docs/operations/k8s-deployment.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "req-br-1",
@@ -1011,7 +1130,8 @@
           "version": "v-1",
           "description": "Solo usuarios mayores de 18 años pueden registrarse en la plataforma para cumplir con las regulaciones de servicios financieros locales.",
           "layer": "BUSINESS",
-          "file": "/app/applet/docs/requirements/age-restriction.md"
+          "file": "/app/applet/docs/requirements/age-restriction.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "req-res-1",
@@ -1021,7 +1141,8 @@
           "version": "v-1",
           "description": "Todos los datos personales deben ser cifrados en reposo y el sistema debe permitir el \"derecho al olvido\" (borrado físico de datos).",
           "layer": "BUSINESS",
-          "file": "/app/applet/docs/requirements/gdpr.md"
+          "file": "/app/applet/docs/requirements/gdpr.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "req-nfunc-1",
@@ -1031,7 +1152,8 @@
           "version": "v-1",
           "description": "El sistema debe tener un uptime garantizado del 99.9% (Tier 3). Se requiere redundancia geográfica y auto-escalado.",
           "layer": "BUSINESS",
-          "file": "/app/applet/docs/requirements/high-availability.md"
+          "file": "/app/applet/docs/requirements/high-availability.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "req-func-1",
@@ -1045,7 +1167,8 @@
             "owner": "jdoe",
             "team": "core-product"
           },
-          "file": "/app/applet/docs/requirements/user-registration.md"
+          "file": "/app/applet/docs/requirements/user-registration.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "ver-tst-1",
@@ -1055,7 +1178,8 @@
           "version": "v-1",
           "description": "Suite de pruebas unitarias e integración para el flujo de autenticación.\n\n## Cobertura\n* Registro exitoso.\n* Fallo por email duplicado.\n* Fallo por contraseña débil.",
           "layer": "IMPLEMENTATION",
-          "file": "/app/applet/docs/testing/auth-regression.md"
+          "file": "/app/applet/docs/testing/auth-regression.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "test-auth-01",
@@ -1065,7 +1189,8 @@
           "version": "v-1",
           "description": "Verifica que el controlador de autenticación maneja correctamente los casos de éxito y error, incluyendo la restricción de edad req-br-1.",
           "layer": "IMPLEMENTATION",
-          "file": "/app/applet/docs/testing/auth-test.md"
+          "file": "/app/applet/docs/testing/auth-test.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "test-reg-01",
@@ -1078,7 +1203,8 @@
           "ownership": {
             "team": "qa-team"
           },
-          "file": "/app/applet/docs/testing/registration-test.md"
+          "file": "/app/applet/docs/testing/registration-test.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "ver-evi-1",
@@ -1088,7 +1214,8 @@
           "version": "v-1",
           "description": "Certificado de aprobación de la auditoría de seguridad externa (Pentest) realizada el 2026-05-01.\nNo se encontraron vulnerabilidades críticas ni altas.",
           "layer": "DOCUMENTATION",
-          "file": "/app/applet/docs/testing/sec-audit.md"
+          "file": "/app/applet/docs/testing/sec-audit.md",
+          "schemaVersion": "1.0.0"
         },
         {
           "id": "ver-res-1",
@@ -1098,7 +1225,8 @@
           "version": "v-1",
           "description": "Resultado de la ejecución de pruebas en el pipeline de CI/CD.\n* Cobertura: 92%\n* Pruebas Unitarias: 154/154 OK\n* Pruebas de Integración: 42/42 OK",
           "layer": "DOCUMENTATION",
-          "file": "/app/applet/docs/testing/test-report.md"
+          "file": "/app/applet/docs/testing/test-report.md",
+          "schemaVersion": "1.0.0"
         }
       ],
       "relations": [

@@ -1,35 +1,17 @@
+import { scanDocs } from "./parser/scanner.js";
+import { ParsedArtifact, ParsedRelation, ParseError, OpenLagData, RawDocument } from "./parser/types.js";
+import { ArtifactType } from "../../src/types";
+import { inferRelationSemantics } from "../../src/core/semantic/relation-definitions.js";
+import { ArtifactSchema } from "./parser/schemas.js";
+import { normalizeArtifact } from "./parser/normalizer.js";
+import { DiagnosticEngine, Severity } from "./parser/diagnostic.js";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import yaml from "js-yaml";
-import { Artifact, ArtifactType, Relation, RelationType, Change, ChangeType, SystemVersion, Version } from "../../src/types";
-import { inferLayer } from "../../src/core/semantic/artifact-layers.js";
-import { inferRelationSemantics } from "../../src/core/semantic/relation-definitions.js";
-
-export interface ParsedArtifact extends Artifact {
-  file: string;
-  status?: 'draft' | 'in_progress' | 'ready' | 'closed' | 'deprecated';
-}
-
-export interface ParsedRelation extends Relation {
-  file: string;
-}
-
-export interface ParseError {
-  file: string;
-  message: string;
-}
-
-export interface OpenLagData {
-  versions: Version[];
-  systemVersions: SystemVersion[];
-  changes: Change[];
-  artifacts: ParsedArtifact[];
-  relations: ParsedRelation[];
-  errors: ParseError[];
-}
 
 export function parseOpenLagDocs(docsDir: string): OpenLagData {
+  const diag = new DiagnosticEngine();
   const state: OpenLagData = {
     versions: [],
     systemVersions: [],
@@ -41,7 +23,8 @@ export function parseOpenLagDocs(docsDir: string): OpenLagData {
 
   const manifestPath = path.join(docsDir, 'project-manifest.md');
   if (!fs.existsSync(manifestPath)) {
-    state.errors.push({ file: manifestPath, message: "Manifest not found" });
+    diag.add(manifestPath, "Manifest not found", Severity.CRITICAL);
+    state.errors = diag.getErrors();
     return state;
   }
 
@@ -60,26 +43,19 @@ export function parseOpenLagDocs(docsDir: string): OpenLagData {
   try {
     state.versions = parseYamlBlock('Versions') || [];
   } catch (e) {
-    state.errors.push({ file: manifestPath, message: "Invalid YAML in Versions" });
+    diag.add(manifestPath, "Invalid YAML in Versions", Severity.CRITICAL);
   }
 
-  const scanDocs = (dir: string) => {
-    if (!fs.existsSync(dir)) return;
-    const items = fs.readdirSync(dir);
-    for (const item of items) {
-      const fullPath = path.join(dir, item);
-      const stat = fs.statSync(fullPath);
+  const documents = scanDocs(docsDir);
 
-      if (stat.isDirectory()) {
-        scanDocs(fullPath);
-      } else if (item.endsWith('.md') && item !== 'project-manifest.md') {
-        const fileC = fs.readFileSync(fullPath, 'utf-8');
-        const sections = fileC.split(/---+\r?\n/);
-        
-        let i = 0;
-        if (fileC.trim().startsWith('---')) i = 1;
+  for (const doc of documents) {
+    const { content, file: fullPath } = doc;
+    const sections = content.split(/---+\r?\n/);
+    
+    let i = 0;
+    if (content.trim().startsWith('---')) i = 1;
 
-        for (; i < sections.length; i += 1) {
+    for (; i < sections.length; i += 1) {
           const section = sections[i].trim();
           if (section.length < 5) continue;
 
@@ -91,84 +67,75 @@ export function parseOpenLagDocs(docsDir: string): OpenLagData {
             
             parsed = yaml.load(yamlCandidate) as any;
           } catch (e) {
-            state.errors.push({ file: fullPath, message: `Invalid YAML block: ${(e as Error).message}` });
-            continue;
+            throw new Error(`CRITICAL: Invalid YAML block in ${fullPath}: ${(e as Error).message}`, { cause: e });
           }
 
           if (parsed && typeof parsed === 'object' && (parsed.id || parsed.ID) && (parsed.type || parsed.Type)) {
             const body = (i + 1 < sections.length) ? sections[i+1].trim() : '';
-            if (i + 1 < sections.length) i++;
+            if (i+1 < sections.length) i++; // Consume body section if we took it
 
-            const id = String(parsed.id || parsed.ID || '');
-            const typeValue = (parsed.type || parsed.Type) as ArtifactType;
+            const normalized = normalizeArtifact(parsed, fullPath, body);
+            
+            try {
+              ArtifactSchema.parse(normalized);
+              
+              const artifact: ParsedArtifact = normalized;
+              state.artifacts.push(artifact);
 
-            if (typeValue === 'SYSTEM_VERSION') {
-              state.systemVersions.push({
-                id,
-                component: String(parsed.component || ''),
-                version: String(parsed.version || ''),
-                releaseDate: String(parsed.releaseDate || '')
-              });
-            } else if (typeValue === 'CHANGE') {
-              state.changes.push({
-                id,
-                type: parsed.changeType || 'FEATURE',
-                title: String(parsed.title || parsed.Title || ''),
-                description: body,
-                affects: Array.isArray(parsed.affects) ? parsed.affects : [],
-                versionFrom: String(parsed.versionFrom || ''),
-                versionTo: String(parsed.versionTo || '')
-              });
+              const typeValue = artifact.type as ArtifactType;
+
+              if (typeValue === 'SYSTEM_VERSION') {
+                state.systemVersions.push({
+                  id: artifact.id,
+                  component: String(parsed.component || ''),
+                  version: String(parsed.version || ''),
+                  releaseDate: String(parsed.releaseDate || '')
+                });
+              } else if (typeValue === 'CHANGE') {
+                state.changes.push({
+                  id: artifact.id,
+                  type: parsed.changeType || 'FEATURE',
+                  title: artifact.title,
+                  description: artifact.description,
+                  affects: Array.isArray(parsed.affects) ? parsed.affects : [],
+                  versionFrom: String(parsed.versionFrom || ''),
+                  versionTo: String(parsed.versionTo || '')
+                });
+              }
+
+              const rels = parsed.relations || parsed.Relations;
+              if (rels) {
+                const relArray = Array.isArray(rels) ? rels : [rels];
+                relArray.forEach((rel: any, idx: number) => {
+                  const to = typeof rel === 'string' ? rel : (rel.to || rel.id || rel.ID);
+                  if (to) {
+                     const relType = rel.type || (artifact.type === 'TEST' ? 'TESTS' : 'IMPLEMENTS');
+                     const semantics = inferRelationSemantics(relType);
+                     state.relations.push({
+                        id: `rel-${artifact.id}-${idx}`,
+                        from: artifact.id,
+                        to: String(to),
+                        type: relType,
+                        category: semantics?.category,
+                        strength: semantics?.strength,
+                        file: fullPath
+                     });
+                  }
+                });
+              }
+            } catch (e) {
+                diag.add(fullPath, `Schema validation error: ${(e as Error).message}`, Severity.INVALID);
             }
 
-            const artifact: ParsedArtifact = {
-              id,
-              type: typeValue,
-              subType: parsed.subType || parsed.subtype || parsed.SubType,
-              title: String(parsed.title || parsed.Title || id),
-              version: String(parsed.version || parsed.Version || 'v-1'),
-              description: body,
-              systemVersionId: parsed.systemVersionId || parsed.systemversionid,
-              status: parsed.status,
-              layer: inferLayer(typeValue),
-              ownership: parsed.ownership || parsed.owner ? { owner: parsed.owner, ...parsed.ownership } : undefined,
-              file: fullPath
-            };
-            state.artifacts.push(artifact);
-
-            const rels = parsed.relations || parsed.Relations;
-            if (rels) {
-              const relArray = Array.isArray(rels) ? rels : [rels];
-              relArray.forEach((rel: any, idx: number) => {
-                const to = typeof rel === 'string' ? rel : (rel.to || rel.id || rel.ID);
-                if (to) {
-                   const relType = rel.type || (artifact.type === 'TEST' ? 'TESTS' : 'IMPLEMENTS');
-                   const semantics = inferRelationSemantics(relType);
-                   state.relations.push({
-                      id: `rel-${artifact.id}-${idx}`,
-                      from: artifact.id,
-                      to: String(to),
-                      type: relType,
-                      category: semantics?.category,
-                      strength: semantics?.strength,
-                      file: fullPath
-                   });
-                }
-              });
-            }
           } else if (parsed && typeof parsed === 'object') {
             if (!(parsed.id || parsed.ID)) {
-                state.errors.push({ file: fullPath, message: `Missing ID in artifact` });
+                diag.add(fullPath, `Missing ID in artifact`, Severity.INVALID);
             } else if (!(parsed.type || parsed.Type)) {
-                state.errors.push({ file: fullPath, message: `Missing Type in artifact` });
+                diag.add(fullPath, `Missing Type in artifact`, Severity.INVALID);
             }
           }
         }
       }
-    }
-  };
-
-  scanDocs(docsDir);
-
+  state.errors = diag.getErrors();
   return state;
 }

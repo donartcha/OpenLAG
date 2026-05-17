@@ -497,8 +497,7 @@ export const DocumentationView: React.FC = () => {
           </div>
           
           <div className="px-8 lg:px-16 pt-4 shrink-0">
-            {(!isHeaderMinified || true) && (
-              <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-12 mb-8 mt-2 animate-in fade-in slide-in-from-top-1 duration-300">
+            <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-12 mb-8 mt-2 animate-in fade-in slide-in-from-top-1 duration-300">
                   <div className="text-xs font-mono text-white/40">
                       SYS DOMAIN: <span className="text-emerald-400 font-bold tracking-widest">{selectedSubType ? `${selectedSubType} Documentation` : selectedPhase ? phasesData.find(p => p.id === selectedPhase)?.title : 'System Documentation'}</span><br/>
                       VERSION: <span className="text-white/80">{currentVersion?.name} ({currentVersionId})</span><br/>
@@ -526,7 +525,6 @@ export const DocumentationView: React.FC = () => {
                       </div>
                   )}
               </div>
-            )}
           </div>
           
           <div className="flex-1 overflow-y-auto px-8 lg:px-16 pb-12 custom-scrollbar">
