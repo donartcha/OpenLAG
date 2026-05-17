@@ -152,6 +152,37 @@ erDiagram
     }
 ```
 
+## 19. Sistema de Linting (Architecture as Code Validator)
+
+**Propósito:**
+OpenLAG incluye un motor de validación (Linter CLI) que asegura la trazabilidad, coherencia y calidad de la documentación "Architecture as Code" sin penalizar el flujo de trabajo ágil. Fue diseñado para ser progresivo: permite huecos de información en artefactos recientes (`draft`, `in_progress`) y penaliza estrictamente las carencias en fases de `release`.
+
+**Comandos y Casos de Uso:**
+```bash
+npm run lint:openlag           # Perfil 'develop' por defecto
+npm run lint:openlag:feature   # Perfil relajado
+npm run lint:openlag:release   # Perfil estricto
+
+# Ejecución manual en consola con reporte JSON:
+npx tsx scripts/lint-cli.ts --profile develop --json
+```
+
+**Perfiles de Severidad:**
+- **`feature`**: Relajado. Solo caen errores estructurales fuertes (esquemas rotos o IDs duplicados). Faltas de tests o implementación son alertas `info`.
+- **`develop`**: Intermedio. Penaliza con `warnings` requerimientos sin test o código huérfano.
+- **`release`**: Estricto. Exige trazabilidad completa y de ida y vuelta para todos los objetos marcando ausencias como `error`.
+
+**Diseño e Implementación:**
+1. **Separación Core-React**: La lógica de validación reside al 100% en `scripts/`, aislándola del frontend SPA en Vite. Garantiza ligereza de cómputo en integración continua (CI).
+2. **Parser Unificado**: Se rompió el monolito de `generate-static-data.ts`. Se extrajo la capa de lectura (ETL) a `scripts/core/parser.ts`. Ahora el motor de generación y el Linter consumen una misma verdad que recorre y normaliza los `.md`.
+3. **Máquina de Severidad Sensible a Estado**: El motor ajusta la severidad de las reglas dinámicamente si reconoce la propiedad `status:` del frontmatter. Los documentos en `status: draft` atenúan sus carencias estructurales.
+4. **API Agnóstica**: Retorna un objeto `LintReport` estructurado sin emitir logs de consola bloqueantes, permitiendo que otros módulos o pipelines consuman las validaciones directamente con `--json`.
+5. **Grafo Plano**: Las validaciones se ejecutan localmente mediante diccionarios y grafos planos indexados (estructuras `Map`), evitando árboles recursivos lentos y permitiendo validar el gran volumen documental en sub-milisegundos.
+
+**Limitaciones Conocidas del Linter:**
+- Actualmente no parsea el contenido _cuerpo Markdown_ interno (Markdown AST) de los documentos para ver referencias en línea; solo el bloque estructurado o YAML FrontMatter.
+- La extensión y configuración de roles desde `openlag.config.yml` asume configuración perfecta por parte del usuario (Deuda técnica: requiere estricto parseo usando `Zod`).
+
 ## 20. Guía de Uso del Proyecto NPM
 
 Para utilizar **OpenLAG** en tu entorno local de desarrollo, el proyecto está configurado como un proyecto Node.js estándar.
@@ -207,3 +238,37 @@ Para borrar los artefactos generados en la carpeta `dist/`:
 ```bash
 npm run clean
 ```
+
+## 21. Generación de Portales Independientes
+
+OpenLAG permite configurar y generar un portal de documentación completo e independiente para tu proyecto.
+
+### Inicialización de Proyecto
+Si quieres empezar un nuevo portal desde cero (o reconfigurar el actual), puedes usar el comando `init`:
+
+```bash
+# Configuración rápida con valores por defecto
+npm run init
+
+# Configuración personalizada usando variables de entorno
+PROJECT_NAME="Mi Sistema Solar" PROJECT_DESCRIPTION="Diagrama de arquitectura del sistema de navegación." npm run init
+```
+
+**¿Qué hace este comando?**
+1. Actualiza `metadata.json` con el nombre y descripción de tu proyecto.
+2. Cambia el `<title>` en el `index.html`.
+3. Crea un directorio `/docs` (si no existe) e inicializa un `project-manifest.md` base.
+4. Genera un documento de ejemplo para que puedas empezar a escribir inmediatamente.
+
+### Despliegue Independiente
+Una vez configurado e inicializada la documentación en `/docs`, puedes generar la aplicación web estática:
+
+```bash
+npm run build
+```
+
+Esto generará una carpeta `dist/` que contiene un portal SPA (Single Page Application) completamente funcional que puedes alojar en cualquier servidor estático (GitHub Pages, Netlify, Vercel, S3, etc.). El portal incluye:
+- Visualizador de grafos interactivo.
+- Buscador de documentos.
+- Análisis de impacto basado en los tipos de cambio (ERROR, FEATURE, etc.).
+- Detección de orfandad y deuda técnica documental.

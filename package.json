@@ -18,6 +18,7 @@
     "build": "npm run generate && vite build",
     "preview": "vite preview",
     "clean": "rm -rf dist",
+    "init": "tsx scripts/init-project.ts",
     "lint": "tsc --noEmit",
     "lint:openlag": "openlag lint --profile develop",
     "lint:openlag:feature": "openlag lint --profile feature",
