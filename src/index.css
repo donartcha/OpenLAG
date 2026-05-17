@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+@layer base {
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0a0a0a;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #222;
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #10b981;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #222 #0a0a0a;
+  }
+}
+
+@media print {
+  @page {
+    size: auto;
+    margin: 15mm 10mm;
+  }
+  
+  /* Force light theme for printing to save ink */
+  *, *::before, *::after {
+    background: transparent !important;
+    background-color: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  body {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    background-color: white !important;
+  }
+  
+  [class*="border"],
+  [class*="divide"] > * {
+    border-color: #aaa !important;
+  }
+
+  /* Hide scrollbars and allow full height for printing */
+  html, body, #root, .h-full, .h-screen, .overflow-hidden, .overflow-y-auto, .flex-1, .print-block {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    position: static !important;
+  }
+  
+  /* Change specific flex containers to block to prevent print cutoff */
+  .print-block {
+    display: block !important;
+  }
+
+  /* Prevent page breaks inside sections and artifacts */
+  section, tr, .group {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  
+  /* Hide UI elements */
+  .print-hidden {
+    display: none !important;
+  }
+
+  /* Fix for Mermaid diagrams printing as black blocks */
+  .mermaid-wrapper svg rect,
+  .mermaid-wrapper svg circle,
+  .mermaid-wrapper svg ellipse,
+  .mermaid-wrapper svg polygon,
+  .mermaid-wrapper svg path {
+    fill: white !important;
+    stroke: #555 !important;
+    stroke-width: 1px !important;
+  }
+  
+  .mermaid-wrapper svg .edgePath path,
+  .mermaid-wrapper svg .flowchart-link {
+    fill: none !important;
+  }
+
+  /* Keep arrows filled */
+  .mermaid-wrapper svg [id*="arrow"] path,
+  .mermaid-wrapper svg marker path,
+  .mermaid-wrapper svg marker polygon {
+    fill: #555 !important;
+    stroke: none !important;
+  }
+
+  .mermaid-wrapper svg text,
+  .mermaid-wrapper svg tspan {
+    fill: black !important;
+    stroke: none !important;
+    color: black !important;
+  }
+  
+  .mermaid-wrapper svg .cluster rect {
+    fill: transparent !important;
+    stroke: #999 !important;
+    stroke-dasharray: 4 !important;
+  }
+  
+  .mermaid-wrapper svg .edgeLabel rect {
+    fill: white !important;
+    stroke: none !important;
+  }
+}

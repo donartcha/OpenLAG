@@ -1,0 +1,10 @@
+relation: MONITORS
+description: "Relación de observabilidad."
+category: OPERATIONAL
+allowedFrom: [MONITORING, CHECK]
+allowedTo: [COMPONENT, INFRASTRUCTURE, DEPLOYMENT, DATABASE_ENTITY, API]
+multiplicity:
+  from: many
+  to: many
+validation:
+  severity: info

@@ -1,0 +1,73 @@
+{
+  "name": "openlag",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "openlag": "./bin/openlag.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "scripts",
+    "public/graph-data.json"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "npm run generate-relations && tsx bin/openlag.js generate && vite build",
+    "generate": "tsx bin/openlag.js generate",
+    "generate-relations": "tsx scripts/generate-relations.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rimraf dist public/graph-data.json"
+  },
+  "dependencies": {
+    "@google/genai": "^1.29.0",
+    "@tailwindcss/vite": "^4.1.14",
+    "@types/dagre": "^0.7.54",
+    "@typescript-eslint/eslint-plugin": "^8.59.3",
+    "@typescript-eslint/parser": "^8.59.3",
+    "@vitejs/plugin-react": "^5.0.4",
+    "@xyflow/react": "^12.10.2",
+    "chalk": "^5.4.1",
+    "chokidar": "^5.0.0",
+    "clsx": "^2.1.1",
+    "commander": "^14.0.3",
+    "dagre": "^0.8.5",
+    "dotenv": "^17.2.3",
+    "globals": "^17.6.0",
+    "gray-matter": "^4.0.3",
+    "html-to-image": "^1.11.13",
+    "html2canvas": "^1.4.1",
+    "js-yaml": "^4.1.1",
+    "jspdf": "^4.2.1",
+    "lucide-react": "^0.546.0",
+    "mermaid": "^11.15.0",
+    "motion": "^12.23.24",
+    "ora": "^8.2.0",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "react-markdown": "^10.1.0",
+    "rimraf": "^6.1.3",
+    "tailwind-merge": "^3.6.0",
+    "tsup": "^8.5.1",
+    "vite": "^6.2.3",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.13"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.14.0",
+    "autoprefixer": "^10.4.21",
+    "esbuild": "^0.25.0",
+    "eslint": "^10.4.0",
+    "tailwindcss": "^4.1.14",
+    "tsx": "^4.21.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.3",
+    "vitest": "^4.1.6"
+  }
+}
