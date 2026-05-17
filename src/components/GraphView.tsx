@@ -121,7 +121,7 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 };
 
 const GraphFlow: React.FC = () => {
-  const { graph, selectedArtifactId, setSelectedArtifact, setView, settings } = useStore();
+  const { graph, selectedArtifactId, setSelectedArtifact, setView, settings, globalFilters, setGlobalFilter } = useStore();
   const { setCenter } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
 
@@ -141,9 +141,13 @@ const GraphFlow: React.FC = () => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [filterLayer, setFilterLayer] = useState<string | 'ALL'>('ALL');
-  const [filterOwner, setFilterOwner] = useState<string | 'ALL'>('ALL');
-  const [filterTeam, setFilterTeam] = useState<string | 'ALL'>('ALL');
+  const filterLayer = globalFilters.layer;
+  const filterOwner = globalFilters.owner;
+  const filterTeam = globalFilters.team;
+
+  const setFilterLayer = (val: string) => setGlobalFilter('layer', val);
+  const setFilterOwner = (val: string) => setGlobalFilter('owner', val);
+  const setFilterTeam = (val: string) => setGlobalFilter('team', val);
 
   const filterOptions = useMemo(() => {
      if (!graph || !graph.artifacts) return { layers: [], owners: [], teams: [] };
@@ -384,37 +388,47 @@ const GraphFlow: React.FC = () => {
               </div>
             )}
             
-            <div className="flex gap-1 border border-white/5 p-0.5 rounded-md bg-[#111]">
+            <div className="flex gap-1 pt-2">
                 <select
                     value={filterLayer}
                     onChange={(e) => setFilterLayer(e.target.value)}
-                    className="bg-transparent border-none py-1 px-1 text-[8px] text-white/50 focus:outline-none cursor-pointer appearance-none uppercase tracking-wider flex-1"
+                    className={`bg-transparent py-1 px-1 text-[8px] focus:outline-none cursor-pointer uppercase tracking-wider flex-1 text-center transition-all border rounded-sm ${
+                        filterLayer !== 'ALL' 
+                            ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold' 
+                            : 'border-white/10 text-white/50 hover:border-white/20'
+                    }`}
                 >
-                    <option value="ALL">Layer</option>
+                    <option value="ALL" className="bg-[#0c0c0c] text-white font-normal">LAYER</option>
                     {filterOptions.layers.map(layer => (
-                        <option key={layer} value={layer} className="bg-[#0c0c0c]">{layer}</option>
+                        <option key={layer} value={layer} className="bg-[#0c0c0c] text-white font-normal">{layer}</option>
                     ))}
                 </select>
-                <div className="h-3 w-px bg-white/10 self-center mx-0.5"></div>
                 <select
                     value={filterOwner}
                     onChange={(e) => setFilterOwner(e.target.value)}
-                    className="bg-transparent border-none py-1 px-1 text-[8px] text-white/50 focus:outline-none cursor-pointer appearance-none uppercase tracking-wider flex-1"
+                    className={`bg-transparent py-1 px-1 text-[8px] focus:outline-none cursor-pointer uppercase tracking-wider flex-1 text-center transition-all border rounded-sm ${
+                        filterOwner !== 'ALL' 
+                            ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold' 
+                            : 'border-white/10 text-white/50 hover:border-white/20'
+                    }`}
                 >
-                    <option value="ALL">Owner</option>
+                    <option value="ALL" className="bg-[#0c0c0c] text-white font-normal">OWNER</option>
                     {filterOptions.owners.map(owner => (
-                        <option key={owner} value={owner} className="bg-[#0c0c0c]">{owner}</option>
+                        <option key={owner} value={owner} className="bg-[#0c0c0c] text-white font-normal">{owner}</option>
                     ))}
                 </select>
-                <div className="h-3 w-px bg-white/10 self-center mx-0.5"></div>
                 <select
                     value={filterTeam}
                     onChange={(e) => setFilterTeam(e.target.value)}
-                    className="bg-transparent border-none py-1 px-1 text-[8px] text-white/50 focus:outline-none cursor-pointer appearance-none uppercase tracking-wider flex-1"
+                    className={`bg-transparent py-1 px-1 text-[8px] focus:outline-none cursor-pointer uppercase tracking-wider flex-1 text-center transition-all border rounded-sm ${
+                        filterTeam !== 'ALL' 
+                            ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold' 
+                            : 'border-white/10 text-white/50 hover:border-white/20'
+                    }`}
                 >
-                    <option value="ALL">Team</option>
+                    <option value="ALL" className="bg-[#0c0c0c] text-white font-normal">TEAM</option>
                     {filterOptions.teams.map(team => (
-                        <option key={team} value={team} className="bg-[#0c0c0c]">{team}</option>
+                        <option key={team} value={team} className="bg-[#0c0c0c] text-white font-normal">{team}</option>
                     ))}
                 </select>
             </div>

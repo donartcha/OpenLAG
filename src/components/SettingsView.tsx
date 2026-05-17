@@ -29,6 +29,30 @@ export const SettingsView: React.FC = () => {
         <div className="space-y-8">
           <section className="bg-[#111] border border-white/10 p-6 rounded-md">
             <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
+              Global Preferences
+            </h2>
+            <div className="space-y-4">
+              <div className="flex justify-between items-start border-t border-white/5 pt-4">
+                <div>
+                  <h3 className="font-medium text-sm">Language</h3>
+                  <p className="text-xs text-white/50 mt-1 max-w-sm">
+                    Set the preferred language for guides and documentation interfaces where supported.
+                  </p>
+                </div>
+                <select 
+                  value={settings.language || 'EN'} 
+                  onChange={(e) => updateSettings({ language: e.target.value as 'EN' | 'ES' })}
+                  className="bg-black border border-white/20 rounded px-3 py-1.5 text-sm outline-none focus:border-indigo-500 transition-colors"
+                >
+                  <option value="EN">English</option>
+                  <option value="ES">Español</option>
+                </select>
+              </div>
+            </div>
+          </section>
+
+          <section className="bg-[#111] border border-white/10 p-6 rounded-md">
+            <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
               Graph View Configuration
             </h2>
             <div className="space-y-4">

@@ -5,6 +5,9 @@ subType: "Shared Component"
 title: "PrimaryButton.tsx"
 version: v-1
 systemVersionId: sv-ui-lib-2.3
+ownership:
+  team: frontend-team
+  owner: alice
 relations:
   - to: des-cmp-1
     type: IMPLEMENTS

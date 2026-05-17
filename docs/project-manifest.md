@@ -72,4 +72,11 @@ Registro de intervenciones, refactors y deudas técnicas abordadas.
   affects: ["impl-ui-button", "sv-ui-lib-2.3"]
   versionFrom: "v-1"
   versionTo: "v-2"
+- id: ch-compliance-update
+  type: EVOLUTION
+  title: Ajustes de Cumplimiento GDPR
+  description: "Actualización de dependencias y refactorización del DAO para asegurar la anonimización de datos. Impacta relaciones de fuerza débil y media."
+  affects: ["impl-dao-user", "req-res-1", "req-func-1"]
+  versionFrom: "v-1"
+  versionTo: "v-2"
 ```

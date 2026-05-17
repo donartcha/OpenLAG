@@ -83,6 +83,14 @@ Las relaciones ahora definen un peso semántico para filtrar el ruido visual e i
 - **Medium**: (Media) Relación descriptiva o de flujo (`DERIVES_FROM`, `USES`, `IMPACTS`, `JUSTIFIES`, `REFINES`, `MONITORS`).
 - **Weak**: (Débil) Relación laxa y estrictamente semántica (`RELATES_TO`, `DOCUMENTS`).
 
+### Relation Category Model
+Las relaciones también se pueden agrupar por su propósito en el sistema:
+- **STRUCTURAL**: Relaciones que definen la estructura (ej. DEPENDS_ON, REFINES, IMPLEMENTS, REPLACES).
+- **BEHAVIORAL**: Relaciones que definen el comportamiento y el flujo (ej. USES, DEFINES).
+- **OPERATIONAL**: Relaciones que ocurren en tiempo de ejecución (ej. IMPACTS, MONITORS, DEPLOYS, BREAKS, BLOCKS).
+- **SEMANTIC**: Relaciones descriptivas o de abstracción (ej. DERIVES_FROM, RELATES_TO, DOCUMENTS, JUSTIFIES).
+- **TRACEABILITY**: Relaciones que definen validación y corrección (ej. TESTS, VALIDATES, FIXES).
+
 ## 3. Estructura Oficial de Proyecto
 
 ```text
@@ -102,12 +110,40 @@ docs/
 ```
 
 ### project-manifest.md
-Define:
-- versiones,
-- snapshots,
-- metadata global,
-- herencia temporal,
-- y configuración base del proyecto.
+Es el manifiesto central del proyecto que controla el ciclo de vida y la configuración gobal. Define tres bloques principales en formato YAML dentro de bloques de código Markdown:
+
+1. **Versions**: Define la línea temporal e iteraciones del grafo arquitectónico (incluye identificador, nombre, fecha y la versión padre).
+2. **System Versions**: Inventario de las versiones reales de los componentes, librerías o sistemas externos involucrados (ej. bases de datos, librerías compartidas).
+3. **Changes**: Registro de intervenciones, refactorizaciones, errores solucionados o evoluciones. Cada cambio mapea entre versiones del grafo (`versionFrom`, `versionTo`) y documenta qué artefactos y versiones de sistema se ven afectados (`affects`).
+
+Ejemplo de su estructura:
+
+```markdown
+## Versions
+```yaml
+- id: v-1
+  name: 1.0.0
+  timestamp: "2026-05-06"
+  parentVersion: null
+```
+
+## System Versions
+```yaml
+- id: sv-db-pg-15
+  component: PostgreSQL Engine
+  version: 15.4
+```
+
+## Changes
+```yaml
+- id: ch-auth-pool
+  type: ERROR
+  title: Timeouts en Auth API
+  affects: ["impl-dao-user", "sv-db-pg-15"]
+  versionFrom: "v-1"
+  versionTo: "v-2"
+```
+```
 
 ### requirements/
 Contiene requisitos funcionales y no funcionales.
@@ -226,13 +262,14 @@ No debería bloquear salvo inconsistencias críticas.
 - **DEPLOYS**: Indica que una infraestructura o pipeline despliega a otro componente.
 - **MONITORS**: Un elemento observa la telemetría, salud o estado de otro artefacto.
 
-## 7. Formato Oficial Markdown
+## 6. Formato Oficial Markdown
 
 ```yaml
 ---
 id: REQ-001
 type: REQUIREMENT
 status: draft
+layer: BUSINESS
 title: Generar graph-data.json
 version: v1
 ownership:
@@ -246,6 +283,8 @@ tags:
 relations:
   - type: IMPLEMENTS
     target: CODE-001
+    strength: STRONG
+    category: TRACEABILITY
 ---
 ```
 
@@ -256,10 +295,11 @@ relations:
 - `title`
 
 ### Campos Opcionales
-- `owner`
+- `layer`
+- `ownership` (puede incluir `owner`, `team`, `domain`, `maintainers`, `reviewers`, `steward`)
 - `tags`
 - `version`
-- `relations`
+- `relations` (cada relación puede tener `strength` y `category`)
 - `description`
 - `references`
 

@@ -5,6 +5,7 @@ interface Settings {
   graphFocusDepth: number;
   docsFocusDepth: number;
   defaultDocsFocusMode: boolean;
+  language: 'EN' | 'ES';
 }
 
 interface StoreState {
@@ -17,12 +18,18 @@ interface StoreState {
   selectedArtifactId: string | null;
   isLoading: boolean;
   settings: Settings;
+  globalFilters: {
+    layer: string;
+    owner: string;
+    team: string;
+  };
   
   initializeStore: () => Promise<void>;
   setVersion: (versionId: string) => void;
   setView: (view: 'graph' | 'docs' | 'impact' | 'orphans' | 'guide' | 'settings') => void;
   setSelectedArtifact: (id: string | null) => void;
   updateSettings: (newSettings: Partial<Settings>) => void;
+  setGlobalFilter: (filterType: 'layer' | 'owner' | 'team', value: string) => void;
 }
 
 // Global variable to store fetched data
@@ -46,8 +53,20 @@ export const useStore = create<StoreState>((set, get) => ({
     graphFocusDepth: 1,
     docsFocusDepth: 1,
     defaultDocsFocusMode: true,
+    language: 'EN',
+  },
+  globalFilters: {
+    layer: 'ALL',
+    owner: 'ALL',
+    team: 'ALL',
   },
   updateSettings: (newSettings) => set((state) => ({ settings: { ...state.settings, ...newSettings } })),
+  setGlobalFilter: (filterType, value) => set((state) => ({
+    globalFilters: {
+      ...state.globalFilters,
+      [filterType]: value
+    }
+  })),
 
   initializeStore: async () => {
     

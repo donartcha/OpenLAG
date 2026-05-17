@@ -4,11 +4,27 @@ import { Activity, ArrowRight, GitCommit, Search, ShieldAlert, Zap } from 'lucid
 import { Artifact } from '../types';
 
 export const ImpactView: React.FC = () => {
-  const { changes, versions, graph, systemVersions } = useStore();
+  const { changes, versions, graph, systemVersions, globalFilters, setGlobalFilter } = useStore();
   const [selectedChangeId, setSelectedChangeId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState<string | 'ALL'>('ALL');
-  const [filterStrength, setFilterStrength] = useState<'ALL' | 'STRONG' | 'MEDIUM' | 'WEAK' | 'IGNORE_WEAK'>('IGNORE_WEAK');
+  const [filterStrength, setFilterStrength] = useState<'ALL' | 'STRONG' | 'MEDIUM' | 'WEAK' | 'IGNORE_WEAK'>('ALL');
+  
+  const filterLayer = globalFilters.layer;
+  const filterOwner = globalFilters.owner;
+  const filterTeam = globalFilters.team;
+
+  const setFilterLayer = (val: string) => setGlobalFilter('layer', val);
+  const setFilterOwner = (val: string) => setGlobalFilter('owner', val);
+  const setFilterTeam = (val: string) => setGlobalFilter('team', val);
+
+  const filterOptions = useMemo(() => {
+     if (!graph || !graph.artifacts) return { layers: [], owners: [], teams: [] };
+     const layers = Array.from(new Set(graph.artifacts.map(a => a.layer).filter(Boolean))) as string[];
+     const owners = Array.from(new Set(graph.artifacts.map(a => a.ownership?.owner).filter(Boolean))) as string[];
+     const teams = Array.from(new Set(graph.artifacts.map(a => a.ownership?.team).filter(Boolean))) as string[];
+     return { layers, owners, teams };
+  }, [graph]);
 
   // Initialize selectedId if not set
   useEffect(() => {
@@ -22,28 +38,38 @@ export const ImpactView: React.FC = () => {
       const matchesSearch = (c.title || '').toLowerCase().includes((searchQuery || '').toLowerCase()) || 
                            (c.description || '').toLowerCase().includes((searchQuery || '').toLowerCase());
       const matchesType = filterType === 'ALL' || c.type === filterType;
-      return matchesSearch && matchesType;
+      
+      const affectedLayerTeamOwner = (c.affects || []).some(id => {
+         const artifact = graph?.artifacts.find(a => a.id === id);
+         if (!artifact) return false;
+         const matchesLayer = filterLayer === 'ALL' || artifact.layer === filterLayer;
+         const matchesOwner = filterOwner === 'ALL' || artifact.ownership?.owner === filterOwner;
+         const matchesTeam = filterTeam === 'ALL' || artifact.ownership?.team === filterTeam;
+         return matchesLayer && matchesOwner && matchesTeam;
+      });
+
+      const matchesFilters = (filterLayer === 'ALL' && filterOwner === 'ALL' && filterTeam === 'ALL') || affectedLayerTeamOwner;
+
+      const matchesStrength = filterStrength === 'ALL' || (c.affects || []).some(id => {
+         return graph?.relations.some(r => {
+            if (r.from !== id && r.to !== id) return false;
+            if (filterStrength === 'IGNORE_WEAK') return r.strength !== 'WEAK';
+            return r.strength === filterStrength;
+         });
+      });
+
+      return matchesSearch && matchesType && matchesFilters && matchesStrength;
     });
-  }, [changes, searchQuery, filterType]);
+  }, [changes, searchQuery, filterType, filterLayer, filterOwner, filterTeam, filterStrength, graph]);
 
   const selectedChange = (changes || []).find(c => c.id === selectedChangeId);
 
   const affectedSystems = useMemo(() => {
     if (!selectedChange) return [];
     
-    // Evaluate strength based on graph relations connected to this change
-    const isRelationValid = (sourceId: string, relId: string) => {
-      if (filterStrength === 'ALL') return true;
-      const rel = graph?.relations.find(r => r.from === sourceId && r.to === relId || r.to === sourceId && r.from === relId);
-      if (!rel) return true;
-      if (filterStrength === 'IGNORE_WEAK' && rel.strength === 'WEAK') return false;
-      if (filterStrength !== 'IGNORE_WEAK' && rel.strength !== filterStrength) return false;
-      return true;
-    };
-
     // Find systems affected directly or through artifacts
     const directlyAffected = (systemVersions || []).filter(sv => (selectedChange.affects || []).includes(sv.id));
-    const indirectIds = (selectedChange.affects || []).filter(id => isRelationValid(selectedChange.id, id)).map(id => graph?.artifacts.find(a => a.id === id)?.systemVersionId).filter(Boolean);
+    const indirectIds = (selectedChange.affects || []).map(id => graph?.artifacts.find(a => a.id === id)?.systemVersionId).filter(Boolean);
     const indirectlyAffected = (systemVersions || []).filter(sv => indirectIds.includes(sv.id));
     
     // Merge unique
@@ -54,7 +80,7 @@ export const ImpactView: React.FC = () => {
         }
         return acc;
     }, [] as typeof all);
-  }, [selectedChange, systemVersions, graph, filterStrength]);
+  }, [selectedChange, systemVersions, graph]);
 
   const phaseImpact = useMemo(() => {
     if (!selectedChange || !graph || !graph.artifacts) return {};
@@ -100,7 +126,7 @@ export const ImpactView: React.FC = () => {
             </div>
 
             <div className="flex gap-1 pt-2 border-t border-white/5">
-                {['ALL', 'IGNORE_WEAK', 'STRONG'].map(strength => (
+                {['ALL', 'STRONG', 'MEDIUM', 'WEAK', 'IGNORE_WEAK'].map(strength => (
                     <button
                         key={strength}
                         onClick={() => setFilterStrength(strength as any)}
@@ -110,6 +136,51 @@ export const ImpactView: React.FC = () => {
                         {strength === 'IGNORE_WEAK' ? 'NO WEAK' : strength}
                     </button>
                 ))}
+            </div>
+
+            <div className="flex gap-1 pt-2 border-t border-white/5">
+                <select
+                    value={filterLayer}
+                    onChange={(e) => setFilterLayer(e.target.value)}
+                    className={`bg-transparent py-1 px-1 text-[8px] focus:outline-none cursor-pointer uppercase tracking-wider flex-1 text-center transition-all border ${
+                        filterLayer !== 'ALL' 
+                            ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold' 
+                            : 'border-white/10 text-white/50 hover:border-white/20'
+                    }`}
+                >
+                    <option value="ALL" className="bg-[#0c0c0c] text-white font-normal">LAYER</option>
+                    {filterOptions.layers.map(layer => (
+                        <option key={layer} value={layer} className="bg-[#0c0c0c] text-white font-normal">{layer}</option>
+                    ))}
+                </select>
+                <select
+                    value={filterOwner}
+                    onChange={(e) => setFilterOwner(e.target.value)}
+                    className={`bg-transparent py-1 px-1 text-[8px] focus:outline-none cursor-pointer uppercase tracking-wider flex-1 text-center transition-all border ${
+                        filterOwner !== 'ALL' 
+                            ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold' 
+                            : 'border-white/10 text-white/50 hover:border-white/20'
+                    }`}
+                >
+                    <option value="ALL" className="bg-[#0c0c0c] text-white font-normal">OWNER</option>
+                    {filterOptions.owners.map(owner => (
+                        <option key={owner} value={owner} className="bg-[#0c0c0c] text-white font-normal">{owner}</option>
+                    ))}
+                </select>
+                <select
+                    value={filterTeam}
+                    onChange={(e) => setFilterTeam(e.target.value)}
+                    className={`bg-transparent py-1 px-1 text-[8px] focus:outline-none cursor-pointer uppercase tracking-wider flex-1 text-center transition-all border ${
+                        filterTeam !== 'ALL' 
+                            ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold' 
+                            : 'border-white/10 text-white/50 hover:border-white/20'
+                    }`}
+                >
+                    <option value="ALL" className="bg-[#0c0c0c] text-white font-normal">TEAM</option>
+                    {filterOptions.teams.map(team => (
+                        <option key={team} value={team} className="bg-[#0c0c0c] text-white font-normal">{team}</option>
+                    ))}
+                </select>
             </div>
           </div>
         </div>
