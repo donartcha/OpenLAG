@@ -19,6 +19,18 @@ const typeColors: Record<ArtifactType, string> = {
   DEPLOYMENT: 'text-sky-400 border-sky-400',
   MONITORING: 'text-orange-400 border-orange-400',
   MAINTENANCE: 'text-violet-400 border-violet-400',
+  PROJECT: 'text-stone-400 border-stone-400',
+  EPIC: 'text-indigo-500 border-indigo-500',
+  FEATURE: 'text-blue-500 border-blue-500',
+  BUSINESS_RULE: 'text-teal-400 border-teal-400',
+  DECISION: 'text-pink-400 border-pink-400',
+  TEST_CASE: 'text-rose-500 border-rose-500',
+  CHANGE: 'text-lime-400 border-lime-400',
+  BUG: 'text-red-500 border-red-500',
+  RISK: 'text-fuchsia-400 border-fuchsia-400',
+  GLOSSARY_TERM: 'text-gray-400 border-gray-400',
+  API: 'text-emerald-500 border-emerald-500',
+  DATABASE_ENTITY: 'text-orange-500 border-orange-500',
 };
 
 const CustomNode = ({ data, selected }: any) => {
