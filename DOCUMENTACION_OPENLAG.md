@@ -50,12 +50,24 @@ El repositorio presenta un patrón modular híbrido simplificado:
    - Se invoca `initializeStore()`, desencadenando un Fetch asíncrono puro directo a `graph-data.json` y cargando en memoria (Store Zustand).
    - El usuario interactúa mutando selectores del top-bar del Header (`store.setVersionId`) re-renderizando las ramificaciones condicionalmente para ver la red (Graph) vs Documentos apilados.
 
-## 7. Modelo de Dominio
-Modelo orientado directamente a Graph-Network Series temporales.
-- **`Version`**: Representa un momento cronológico de captura (commits/releases). (Tiene ID y `parentVersion`).
-- **`Artifact`**: Es el **TODO** de la plataforma. Subdivido por Types (`REQUIREMENT`, `DESIGN`, `CODE_ENTITY`, `TEST`, etc.).
-- **`Relation`**: Las aristas lógicas y unidireccionales que interconectan (`DERIVES_FROM`, `IMPLEMENTS`, `FIXES`, `TESTS`).
-- **`Change` / `SystemVersion`**: Componentes auxiliares de tracking de incidencias de Ops, Evolutivos.
+## 7. Contratos Formales de Relaciones
+
+OpenLAG introduce relaciones como contratos explícitos.
+Cada relación define su propósito, multiplicidad, capas válidas y severidad de validación.
+
+### Objetivos
+- Eliminar ambigüedad arquitectónica.
+- Asegurar coherencia en el grafo.
+- Permitir validación contextual (Feature/Develop/Release).
+
+### Estructura
+La definición se centraliza en el `project-manifest.md` o en archivos de configuración específicos, definiendo:
+- Tipos de artefactos origen y destino.
+- Severidad (VALID, ALLOWED, DISCOURAGED, INVALID).
+- Multiplicidad permitida.
+- Capas (Layer) semánticas origen y destino.
+
+Esto permite al `ValidationEngine` reportar diagnósticos precisos ante inconsistencias.
 
 ## 8. APIs y Contratos
 Actualmente el sistema no requiere persistencia online, colas de eventos (RabbitMQ) o API REST para ingesta concurrente.

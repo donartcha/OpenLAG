@@ -1,0 +1,10 @@
+relation: MONITORS
+description: "Un elemento observa la telemetría, salud o estado de otro artefacto"
+category: OPERATIONAL
+allowedFrom: [COMPONENT, MONITORING_TOOL]
+allowedTo: [COMPONENT, API]
+multiplicity:
+  from: many
+  to: many
+validation:
+  severity: warn

@@ -1,0 +1,10 @@
+relation: REFINES
+description: "Detalla, especifica o divide a otro artefacto"
+category: TRACEABILITY
+allowedFrom: [DESIGN, REQUIREMENT]
+allowedTo: [REQUIREMENT, FEATURE]
+multiplicity:
+  from: many
+  to: one
+validation:
+  severity: warn

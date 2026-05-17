@@ -14,8 +14,9 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsx bin/openlag.js generate && vite build",
+    "build": "npm run generate-relations && tsx bin/openlag.js generate && vite build",
     "generate": "tsx bin/openlag.js generate",
+    "generate-relations": "tsx scripts/generate-relations.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

@@ -1,0 +1,10 @@
+relation: DOCUMENTS
+description: "Describe o documenta"
+category: TRACEABILITY
+allowedFrom: [DOCUMENT]
+allowedTo: [REQUIREMENT, FEATURE, DESIGN, CODE_ENTITY]
+multiplicity:
+  from: one
+  to: many
+validation:
+  severity: info

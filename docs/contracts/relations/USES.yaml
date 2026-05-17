@@ -1,0 +1,10 @@
+relation: USES
+description: "Consumo de otro artefacto"
+category: STRUCTURAL
+allowedFrom: [CODE_ENTITY, COMPONENT]
+allowedTo: [API, LIBRARY, COMPONENT]
+multiplicity:
+  from: many
+  to: many
+validation:
+  severity: warn

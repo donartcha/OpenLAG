@@ -1,0 +1,10 @@
+relation: VALIDATES
+description: "Valida cumplimiento"
+category: TRACEABILITY
+allowedFrom: [TEST_CASE, CHECK]
+allowedTo: [REQUIREMENT, FEATURE]
+multiplicity:
+  from: many
+  to: one
+validation:
+  severity: error

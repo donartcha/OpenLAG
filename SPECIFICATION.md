@@ -235,26 +235,54 @@ Debe poseer trazabilidad fuerte:
 Elemento legado o reemplazado.
 No debería bloquear salvo inconsistencias críticas.
 
-## 5. Relaciones Oficiales
+## 5. Formal Relation Contracts
 
-- **IMPLEMENTS**: Indica implementación de un requisito o diseño.
-- **TESTS**: Indica validación de otro artefacto.
-- **DEPENDS_ON**: Dependencia funcional o técnica.
-- **DERIVES_FROM**: Herencia o derivación conceptual.
-- **RELATES_TO**: Relación semántica débil.
-- **IMPACTS**: Indica impacto potencial.
-- **BLOCKS**: Bloqueo funcional o técnico.
-- **FIXES**: Corrección de defecto.
-- **USES**: Consumo de otro artefacto.
-- **DEFINES**: Define estructura o comportamiento.
-- **VALIDATES**: Valida cumplimiento.
-- **DOCUMENTS**: Describe o documenta.
-- **REPLACES**: Sustituye un artefacto anterior.
-- **JUSTIFIES**: Justificación o fundamento de una decisión técnica.
-- **BREAKS**: Indica que un artefacto o cambio rompe la funcionalidad de otro.
-- **REFINES**: Detalla, especifica o divide a otro artefacto.
-- **DEPLOYS**: Indica que una infraestructura o pipeline despliega a otro componente.
-- **MONITORS**: Un elemento observa la telemetría, salud o estado de otro artefacto.
+Las relaciones ahora se definen mediante un contrato explícito que garantiza la coherencia arquitectónica. Cada relación debe definir:
+
+- nombre y descripción,
+- categorías,
+- tipos origen y destino válidos,
+- capas semánticas permitidas,
+- multiplicidad,
+- y severidad del lint.
+
+### Estructura de Contrato de Relación (YAML)
+
+```yaml
+relation: <NOMBRE_REL>
+description: "<descripción>"
+category: <CATEGORIA>
+allowedFrom: [<TYPE>, ...]
+allowedTo: [<TYPE>, ...]
+allowedLayers:
+  from: [<LAYER>, ...]
+  to: [<LAYER>, ...]
+multiplicity:
+  from: <one|many>
+  to: <one|many>
+validation:
+  severity: <error|warn|info>
+```
+
+### Relation Rules Matrix (Ejemplo formal)
+
+| From | Relation | To | Severity |
+| :--- | :--- | :--- | :--- |
+| **CODE_ENTITY** | `IMPLEMENTS` | **REQUIREMENT** | error |
+| **FEATURE** | `IMPLEMENTS` | **REQUIREMENT** | error |
+| **TEST_CASE** | `TESTS` | **FEATURE** | error |
+| **INCIDENT** | `IMPLEMENTS` | **API** | warning |
+
+### Tipos de Restricción
+- **VALID**: Relación estándar y correcta.
+- **ALLOWED**: Permitida, pero no recomendada.
+- **DISCOURAGED**: Mala práctica, generará `warn` en desarrollo, `error` en release.
+- **INVALID**: Prohibida, generará `error` inmediato.
+
+### Severidad por Perfil
+- **feature**: Solo `error` en reglas `INVALID`.
+- **develop**: `warn` en reglas `DISCOURAGED`, `error` en `INVALID`.
+- **release**: `error` en reglas `DISCOURAGED` e `INVALID`.
 
 ## 6. Formato Oficial Markdown
 

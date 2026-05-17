@@ -1,0 +1,10 @@
+relation: DEFINES
+description: "Define estructura o comportamiento"
+category: STRUCTURAL
+allowedFrom: [DESIGN, SPECIFICATION]
+allowedTo: [CODE_ENTITY, COMPONENT]
+multiplicity:
+  from: one
+  to: many
+validation:
+  severity: error

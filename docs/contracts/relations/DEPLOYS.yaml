@@ -1,0 +1,10 @@
+relation: DEPLOYS
+description: "Indica que una infraestructura o pipeline despliega a otro componente"
+category: OPERATIONAL
+allowedFrom: [PIPELINE, INFRASTRUCTURE]
+allowedTo: [COMPONENT, API]
+multiplicity:
+  from: one
+  to: many
+validation:
+  severity: error

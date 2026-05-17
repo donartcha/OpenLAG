@@ -1,0 +1,10 @@
+relation: JUSTIFIES
+description: "Justificación o fundamento de una decisión técnica"
+category: TRACEABILITY
+allowedFrom: [DOCUMENT, DESIGN]
+allowedTo: [DESIGN, REQUIREMENT]
+multiplicity:
+  from: many
+  to: one
+validation:
+  severity: warn

@@ -1,0 +1,10 @@
+relation: BREAKS
+description: "Indica que un artefacto o cambio rompe la funcionalidad de otro"
+category: BEHAVIORAL
+allowedFrom: [CHANGE, COMMIT]
+allowedTo: [COMPONENT, API]
+multiplicity:
+  from: many
+  to: many
+validation:
+  severity: error
