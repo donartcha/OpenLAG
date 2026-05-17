@@ -401,7 +401,7 @@ relations: []
   if (!fs.existsSync(sampleDocPath)) {
     const sampleContent = `---
 id: arch-overview
-type: DOCUMENT
+type: DOCUMENTATION
 status: draft
 title: "Architecture Overview"
 description: "High-level description of the system architecture."
