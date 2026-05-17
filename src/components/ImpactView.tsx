@@ -114,7 +114,7 @@ export const ImpactView: React.FC = () => {
             </div>
             
             <div className="flex gap-1">
-                {['ALL', 'ERROR', 'FEATURE'].map(type => (
+                {['ALL', 'ERROR', 'FEATURE', 'EVOLUTION', 'REFACTOR', 'ADAPTATION'].map(type => (
                     <button
                         key={type}
                         onClick={() => setFilterType(type)}
@@ -200,7 +200,10 @@ export const ImpactView: React.FC = () => {
                   <span className={`text-[8px] font-bold px-2 py-0.5 border uppercase tracking-widest ${
                     change.type === 'ERROR' ? 'text-red-400 bg-red-400/10 border-red-500/20' : 
                     change.type === 'FEATURE' ? 'text-emerald-400 bg-emerald-400/10 border-emerald-500/20' :
-                    'text-blue-400 bg-blue-400/10 border-blue-500/20'
+                    change.type === 'EVOLUTION' ? 'text-blue-400 bg-blue-400/10 border-blue-500/20' :
+                    change.type === 'REFACTOR' ? 'text-amber-400 bg-amber-400/10 border-amber-500/20' :
+                    change.type === 'ADAPTATION' ? 'text-purple-400 bg-purple-400/10 border-purple-500/20' :
+                    'text-gray-400 bg-gray-400/10 border-gray-500/20'
                   }`}>
                     {change.type}
                   </span>
@@ -335,7 +338,16 @@ export const ImpactView: React.FC = () => {
                         </span>, affecting critical systems such as <span className="text-white/60">
                             {(affectedSystems || []).map(s => s.component).join(', ') || 'Base Components'}
                         </span>. 
-                        {selectedChange.type === 'ERROR' ? ' This change addresses technical debt or a previously identified operational failure.' : ' The implementation adds capabilities that expand the existing architecture.'}
+                        {(() => {
+                            switch (selectedChange.type) {
+                                case 'ERROR': return ' This change addresses technical debt or a previously identified operational failure.';
+                                case 'FEATURE': return ' The implementation adds capabilities that expand the existing architecture.';
+                                case 'EVOLUTION': return ' This change provides gradual improvements, security, or compliance updates.';
+                                case 'REFACTOR': return ' This change focuses on code re-structuring without altering external behavior.';
+                                case 'ADAPTATION': return ' This change adjusts the system to new environmental or integration constraints.';
+                                default: return ' This change modifies the system architecture.';
+                            }
+                        })()}
                     </p>
                     </div>
                 </section>

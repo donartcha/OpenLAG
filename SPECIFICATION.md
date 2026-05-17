@@ -110,11 +110,9 @@ docs/
 ```
 
 ### project-manifest.md
-Es el manifiesto central del proyecto que controla el ciclo de vida y la configuración gobal. Define tres bloques principales en formato YAML dentro de bloques de código Markdown:
+Es el manifiesto central del proyecto que controla el ciclo de vida. Define la línea temporal e iteraciones del grafo arquitectónico en formato YAML.
 
-1. **Versions**: Define la línea temporal e iteraciones del grafo arquitectónico (incluye identificador, nombre, fecha y la versión padre).
-2. **System Versions**: Inventario de las versiones reales de los componentes, librerías o sistemas externos involucrados (ej. bases de datos, librerías compartidas).
-3. **Changes**: Registro de intervenciones, refactorizaciones, errores solucionados o evoluciones. Cada cambio mapea entre versiones del grafo (`versionFrom`, `versionTo`) y documenta qué artefactos y versiones de sistema se ven afectados (`affects`).
+1. **Versions**: Define las versiones (iteraciones temporales) globales del sistema (incluye identificador, nombre, fecha y la versión padre).
 
 Ejemplo de su estructura:
 
@@ -126,24 +124,20 @@ Ejemplo de su estructura:
   timestamp: "2026-05-06"
   parentVersion: null
 ```
-
-## System Versions
-```yaml
-- id: sv-db-pg-15
-  component: PostgreSQL Engine
-  version: 15.4
 ```
 
-## Changes
-```yaml
-- id: ch-auth-pool
-  type: ERROR
-  title: Timeouts en Auth API
-  affects: ["impl-dao-user", "sv-db-pg-15"]
-  versionFrom: "v-1"
-  versionTo: "v-2"
-```
-```
+### system-versions/
+Directorio para artefactos que documentan versiones de componentes o librerías externas del sistema. Los artefactos aquí tienen el type `SYSTEM_VERSION` y contienen atributos como `component`, `version`, y `releaseDate`.
+
+### changes/
+Directorio para artefactos que documentan cambios arquitectónicos, refactors importantes, o bug fixes estructurales. Los artefactos tienen el type `CHANGE`, atributos como `changeType`, `versionFrom`, `versionTo`, y una lista `affects` detallando a qué otros artefactos o versiones de sistema aplican los cambios.
+
+Los tipos de cambio (`changeType`) soportados son:
+- **ERROR**: Corrección de fallos o deuda técnica crítica.
+- **FEATURE**: Nuevas capacidades con impacto en la arquitectura.
+- **EVOLUTION**: Mejoras graduales, seguridad o actualizaciones de cumplimiento.
+- **REFACTOR**: Reestructuraciones sin alterar el comportamiento externo.
+- **ADAPTATION**: Ajustes para nuevas integraciones o restricciones del entorno.
 
 ### requirements/
 Contiene requisitos funcionales y no funcionales.

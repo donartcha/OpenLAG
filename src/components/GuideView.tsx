@@ -31,24 +31,35 @@ export const GuideView: React.FC = () => {
             mediumRelationsDesc: "Descriptive/Flow: DERIVES_FROM, USES, IMPACTS, JUSTIFIES, REFINES, MONITORS, DEPLOYS",
             weakRelations: "Weak",
             weakRelationsDesc: "Semantic/Loose: RELATES_TO, DOCUMENTS",
+            changeTypes: "Change Types",
+            changeTypesDesc: "Defines the nature of an architectural change or modification:",
+            error: { label: "ERROR", desc: "Fixes for bugs or critical technical debt." },
+            feature: { label: "FEATURE", desc: "New capabilities impacting architecture." },
+            evolution: { label: "EVOLUTION", desc: "Gradual improvements, security or compliance updates." },
+            refactor: { label: "REFACTOR", desc: "Code restructurings without changing external behavior." },
+            adaptation: { label: "ADAPTATION", desc: "Changes to adjust to new environmental/integration constraints." },
             frontmatter: "Official Markdown Format",
             frontmatterDesc: "Each artifact requires a YAML frontmatter. Mandatory fields: id, type, status, title.",
             statusFlow: "Lifecycle Status Flow",
             statusFlowDesc: "Evolution of artifacts. The system tolerates missing relations in 'draft', but expects full traceability in 'closed'.",
             manifest: "Project Manifest",
-            manifestDesc: "The docs/project-manifest.md file controls the global timeline (Versions), external system dependencies (System Versions), and major changes.",
+            manifestDesc: "The docs/project-manifest.md file controls the global timeline (Versions).",
             bestPractices: "Best Practices & ID Conventions",
             bestPracticesDesc: "IDs must be unique and stable (e.g. REQ-001, CODE-023). Prefix defines the logical type.",
             tutorialTitle: "Step-by-Step Tutorial",
             tutorialDesc: "Follow these steps to structure a complete project using the OpenLAG specification.",
             step1Title: "Step 1: The Project Manifest",
-            step1Desc: "Always start by creating the docs/project-manifest.md file to define versions, external system dependencies, and tracked changes.",
+            step1Desc: "Always start by creating the docs/project-manifest.md file to define global versions of the project.",
             step2Title: "Step 2: Business Requirements",
             step2Desc: "Create the Business Layer artifacts (e.g., REQ-001) defining what needs to be built.",
             step3Title: "Step 3: Architecture & Design",
             step3Desc: "Define the Architecture Layer (e.g., DESIGN-001) and link it to the Business requirement.",
             step4Title: "Step 4: Implementation & Operations",
             step4Desc: "Finally, define Code and Infra (e.g., CODE-001, INFRA-001) linking them back up the chain.",
+            step5Title: "Step 5: System Versions",
+            step5Desc: "Document external libraries and components inside docs/system-versions/ using SYSTEM_VERSION artifacts.",
+            step6Title: "Step 6: Changes & Tracking",
+            step6Desc: "Add CHANGE type artifacts inside docs/changes/ to govern modifications, bugs, or major refactors affecting the graph.",
         },
         ES: {
             title: "Guía de Gestión",
@@ -74,24 +85,35 @@ export const GuideView: React.FC = () => {
             mediumRelationsDesc: "Descriptivas o de flujo: DERIVES_FROM, USES, IMPACTS, JUSTIFIES, REFINES, MONITORS, DEPLOYS",
             weakRelations: "Débil (Weak)",
             weakRelationsDesc: "Semánticas y laxas: RELATES_TO, DOCUMENTS",
+            changeTypes: "Tipos de Cambios (Change Types)",
+            changeTypesDesc: "Naturaleza de una modificación arquitectónica:",
+            error: { label: "ERROR", desc: "Corrección de fallos o deuda técnica crítica." },
+            feature: { label: "FEATURE", desc: "Nuevas capacidades con impacto en la arquitectura." },
+            evolution: { label: "EVOLUTION", desc: "Mejoras graduales, seguridad o actualizaciones de cumplimiento." },
+            refactor: { label: "REFACTOR", desc: "Reestructuraciones sin alterar el comportamiento externo." },
+            adaptation: { label: "ADAPTATION", desc: "Ajustes para nuevas integraciones o restricciones del entorno." },
             frontmatter: "Formato Oficial Markdown",
             frontmatterDesc: "Cada artefacto requiere un YAML frontmatter. Campos obligatorios: id, type, status, title.",
             statusFlow: "Estados y Ciclo de Vida",
             statusFlowDesc: "En estado 'draft' se permiten huérfanos, pero en 'closed' se exige trazabilidad completa.",
             manifest: "Manifiesto del Proyecto",
-            manifestDesc: "El archivo docs/project-manifest.md define versiones temporales, dependencias externas y control de cambios.",
+            manifestDesc: "El archivo docs/project-manifest.md define las versiones temporales globales.",
             bestPractices: "Buenas Prácticas y Convención de IDs",
             bestPracticesDesc: "Los IDs deben ser únicos y estables (Ej: REQ-001). El prefijo define su tipo lógico de forma clara.",
             tutorialTitle: "Tutorial Paso a Paso",
             tutorialDesc: "Sigue estos pasos para estructurar un proyecto completo usando la especificación OpenLAG.",
             step1Title: "Paso 1: Manifiesto del Proyecto",
-            step1Desc: "Comienza siempre creando el archivo docs/project-manifest.md para definir versiones, dependencias externas de sistemas y registro de cambios.",
+            step1Desc: "Comienza siempre creando el archivo docs/project-manifest.md para definir versiones a nivel global del proyecto.",
             step2Title: "Paso 2: Requisitos de Negocio",
             step2Desc: "Crea los artefactos de la Capa de Negocio (Ej. REQ-001) para definir qué se debe construir.",
             step3Title: "Paso 3: Arquitectura y Diseño",
             step3Desc: "Define la Capa de Arquitectura (Ej. DESIGN-001) y enlaza con los requisitos de negocio.",
             step4Title: "Paso 4: Implementación y Operaciones",
             step4Desc: "Finalmente, documenta Código e Infra (Ej. CODE-001, INFRA-001) trazando los enlaces hacia arriba.",
+            step5Title: "Paso 5: Versiones de Sistemas",
+            step5Desc: "Documenta en docs/system-versions/ los componentes y librerías externas mediante artefactos de tipo SYSTEM_VERSION.",
+            step6Title: "Paso 6: Registro de Cambios",
+            step6Desc: "Añade en docs/changes/ artefactos de tipo CHANGE para gobernar las modificaciones, errores o refactors mayores que afecten el grafo.",
         }
     };
 
@@ -214,6 +236,31 @@ export const GuideView: React.FC = () => {
                     </div>
                 </section>
 
+                {/* Section: Change Types */}
+                <section>
+                    <div className="flex items-center gap-3 mb-6">
+                        <div className="p-2 bg-indigo-500/10 rounded border border-indigo-500/20">
+                            <Terminal size={18} className="text-indigo-400" />
+                        </div>
+                        <h2 className="text-xl font-medium tracking-tight">{c.changeTypes}</h2>
+                    </div>
+                    <p className="text-sm text-white/50 mb-8 leading-relaxed max-w-3xl">
+                        {c.changeTypesDesc}
+                    </p>
+
+                    <div className="space-y-4">
+                        <div className="bg-[#0c0c0c] border border-white/5 p-5 rounded">
+                            <ul className="space-y-3">
+                                <li className="text-sm text-white/80 font-mono"><span className="text-rose-400 font-bold p-1 bg-rose-500/10 rounded mr-2">{c.error.label}</span> {c.error.desc}</li>
+                                <li className="text-sm text-white/80 font-mono"><span className="text-emerald-400 font-bold p-1 bg-emerald-500/10 rounded mr-2">{c.feature.label}</span> {c.feature.desc}</li>
+                                <li className="text-sm text-white/80 font-mono"><span className="text-blue-400 font-bold p-1 bg-blue-500/10 rounded mr-2">{c.evolution.label}</span> {c.evolution.desc}</li>
+                                <li className="text-sm text-white/80 font-mono"><span className="text-amber-400 font-bold p-1 bg-amber-500/10 rounded mr-2">{c.refactor.label}</span> {c.refactor.desc}</li>
+                                <li className="text-sm text-white/80 font-mono"><span className="text-purple-400 font-bold p-1 bg-purple-500/10 rounded mr-2">{c.adaptation.label}</span> {c.adaptation.desc}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
                 {/* Section: Lifecycle Status */}
                 <section>
                     <div className="flex items-center gap-3 mb-6">
@@ -328,23 +375,6 @@ relations:
   name: 1.0.0
   timestamp: "2024-01-01"
   parentVersion: null
-\`\`\`
-
-## System Versions
-\`\`\`yaml
-- id: sv-db-pg-15
-  component: PostgreSQL Engine
-  version: 15.4
-\`\`\`
-
-## Changes
-\`\`\`yaml
-- id: ch-auth-pool
-  type: ERROR
-  title: Timeouts en Auth API
-  affects: ["impl-dao-user", "sv-db-pg-15"]
-  versionFrom: "v1"
-  versionTo: "v2"
 \`\`\``}
                                 </pre>
                             </div>
@@ -428,6 +458,54 @@ relations:
 
 # AuthService
 Implementation of the login endpoint...`}
+                                </pre>
+                            </div>
+                        </div>
+
+                        {/* Step 5 */}
+                        <div className="bg-[#0c0c0c] border border-white/5 rounded-lg overflow-hidden flex flex-col">
+                            <div className="p-4 bg-white/[0.03] border-b border-white/5 flex items-center justify-between">
+                                <h4 className="text-sm font-bold text-white/80">{c.step5Title}</h4>
+                                <span className="text-[10px] font-mono text-white/40 italic">docs/system-versions/sv-db-pg.md</span>
+                            </div>
+                            <div className="p-6">
+                                <p className="text-xs text-white/50 mb-4">{c.step5Desc}</p>
+                                <pre className="text-[11px] font-mono leading-relaxed text-yellow-400/80 bg-black/40 p-4 rounded border border-white/5 overflow-x-auto">
+{`---
+id: sv-db-pg-15
+type: SYSTEM_VERSION
+component: PostgreSQL Engine
+version: 15.4
+releaseDate: "2023-08-10"
+---
+
+# PostgreSQL Engine
+Used for primary relational data storage.`}
+                                </pre>
+                            </div>
+                        </div>
+
+                        {/* Step 6 */}
+                        <div className="bg-[#0c0c0c] border border-white/5 rounded-lg overflow-hidden flex flex-col">
+                            <div className="p-4 bg-white/[0.03] border-b border-white/5 flex items-center justify-between">
+                                <h4 className="text-sm font-bold text-white/80">{c.step6Title}</h4>
+                                <span className="text-[10px] font-mono text-white/40 italic">docs/changes/ch-auth-pool.md</span>
+                            </div>
+                            <div className="p-6">
+                                <p className="text-xs text-white/50 mb-4">{c.step6Desc}</p>
+                                <pre className="text-[11px] font-mono leading-relaxed text-rose-400/80 bg-black/40 p-4 rounded border border-white/5 overflow-x-auto">
+{`---
+id: ch-auth-pool
+type: CHANGE
+changeType: ERROR
+title: Resolve Auth API Timeouts
+affects: ["CODE-auth-service", "sv-db-pg-15"]
+versionFrom: "v-1"
+versionTo: "v-2"
+---
+
+# Auth Pool Issue
+Database connection pool was insufficient for v1 traffic volume.`}
                                 </pre>
                             </div>
                         </div>

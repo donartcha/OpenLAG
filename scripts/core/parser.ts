@@ -63,18 +63,6 @@ export function parseOpenLagDocs(docsDir: string): OpenLagData {
     state.errors.push({ file: manifestPath, message: "Invalid YAML in Versions" });
   }
 
-  try {
-    state.systemVersions = parseYamlBlock('System Versions') || [];
-  } catch (e) {
-    state.errors.push({ file: manifestPath, message: "Invalid YAML in System Versions" });
-  }
-
-  try {
-    state.changes = parseYamlBlock('Changes') || [];
-  } catch (e) {
-    state.errors.push({ file: manifestPath, message: "Invalid YAML in Changes" });
-  }
-
   const scanDocs = (dir: string) => {
     if (!fs.existsSync(dir)) return;
     const items = fs.readdirSync(dir);
@@ -113,6 +101,25 @@ export function parseOpenLagDocs(docsDir: string): OpenLagData {
 
             const id = String(parsed.id || parsed.ID || '');
             const typeValue = (parsed.type || parsed.Type) as ArtifactType;
+
+            if (typeValue === 'SYSTEM_VERSION') {
+              state.systemVersions.push({
+                id,
+                component: String(parsed.component || ''),
+                version: String(parsed.version || ''),
+                releaseDate: String(parsed.releaseDate || '')
+              });
+            } else if (typeValue === 'CHANGE') {
+              state.changes.push({
+                id,
+                type: parsed.changeType || 'FEATURE',
+                title: String(parsed.title || parsed.Title || ''),
+                description: body,
+                affects: Array.isArray(parsed.affects) ? parsed.affects : [],
+                versionFrom: String(parsed.versionFrom || ''),
+                versionTo: String(parsed.versionTo || '')
+              });
+            }
 
             const artifact: ParsedArtifact = {
               id,

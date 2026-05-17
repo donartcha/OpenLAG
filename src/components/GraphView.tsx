@@ -31,6 +31,7 @@ const typeColors: Record<ArtifactType, string> = {
   GLOSSARY_TERM: 'text-gray-400 border-gray-400',
   API: 'text-emerald-500 border-emerald-500',
   DATABASE_ENTITY: 'text-orange-500 border-orange-500',
+  SYSTEM_VERSION: 'text-yellow-500 border-yellow-500',
 };
 
 const CustomNode = ({ data, selected }: any) => {

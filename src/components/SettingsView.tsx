@@ -42,10 +42,10 @@ export const SettingsView: React.FC = () => {
                 <select 
                   value={settings.language || 'EN'} 
                   onChange={(e) => updateSettings({ language: e.target.value as 'EN' | 'ES' })}
-                  className="bg-black border border-white/20 rounded px-3 py-1.5 text-sm outline-none focus:border-indigo-500 transition-colors"
+                  className="bg-black text-white border border-white/20 rounded px-3 py-1.5 text-sm outline-none focus:border-indigo-500 transition-colors"
                 >
-                  <option value="EN">English</option>
-                  <option value="ES">Español</option>
+                  <option value="EN" className="bg-black text-white">English</option>
+                  <option value="ES" className="bg-black text-white">Español</option>
                 </select>
               </div>
             </div>

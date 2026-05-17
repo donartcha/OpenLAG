@@ -101,7 +101,9 @@ export default function App() {
                 className="bg-[#0c0c0c] border border-white/20 text-xs font-mono text-emerald-400 rounded-sm px-3 py-1.5 outline-none cursor-pointer hover:bg-white/5 transition-colors focus:border-emerald-400"
               >
                 {versions.map(v => (
-                  <option key={v.id} value={v.id}>{v.name} ({new Date(v.timestamp).toLocaleDateString()})</option>
+                  <option key={v.id} value={v.id} className="bg-[#0c0c0c] text-white">
+                    {v.name} ({new Date(v.timestamp).toLocaleDateString()})
+                  </option>
                 ))}
               </select>
             </div>
