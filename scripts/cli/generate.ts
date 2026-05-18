@@ -10,6 +10,7 @@ interface StaticState {
   systemVersions: SystemVersion[];
   graphs: Record<string, GraphSnapshot>;
   changes: Change[];
+  metadata?: { name: string; description: string; [key: string]: any };
 }
 
 function isDescendant(currentVersionId: string, artifactVersionId: string, versions: Version[]): boolean {
@@ -32,11 +33,22 @@ export function generateData(docsDir: string, outputDir: string, silent = false)
 
   const parsedData = parseOpenLagDocs(docsDir);
 
+  let metadata = { name: "OpenLAG Project", description: "Architecture documentation." };
+  const metadataPath = path.join(docsDir, '..', 'metadata.json');
+  if (fs.existsSync(metadataPath)) {
+    try {
+      metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
+    } catch {
+      if (!silent) console.warn(chalk.yellow("⚠️  Could not parse metadata.json"));
+    }
+  }
+
   const state: StaticState = {
     versions: parsedData.versions,
     systemVersions: parsedData.systemVersions,
     graphs: {},
-    changes: parsedData.changes
+    changes: parsedData.changes,
+    metadata
   };
 
   const allArtifacts = parsedData.artifacts;

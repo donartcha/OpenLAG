@@ -27,7 +27,8 @@ interface StoreState {
     owner: string;
     team: string;
   };
-  
+  metadata?: { name: string; description: string; [key: string]: any };
+
   initializeStore: () => Promise<void>;
   setVersion: (versionId: string) => void;
   setView: (view: 'graph' | 'docs' | 'impact' | 'orphans' | 'guide' | 'settings') => void;
@@ -43,6 +44,7 @@ let cachedData: {
   systemVersions: SystemVersion[];
   changes: Change[];
   graphs: Record<string, GraphSnapshot>;
+  metadata?: { name: string; description: string; [key: string]: any };
 } | null = null;
 
 export const useStore = create<StoreState>((set, get) => ({
@@ -56,6 +58,7 @@ export const useStore = create<StoreState>((set, get) => ({
   activeView: 'graph',
   selectedArtifactId: null,
   isLoading: false,
+  metadata: undefined,
   settings: {
     graphFocusDepth: DEFAULT_NEIGHBORHOOD_DEPTH,
     docsFocusDepth: 1,
@@ -109,11 +112,12 @@ export const useStore = create<StoreState>((set, get) => ({
       cachedData = await response.json();
       
       if (cachedData) {
-        const { versions, systemVersions, changes } = cachedData;
+        const { versions, systemVersions, changes, metadata } = cachedData;
         set({ 
           versions, 
           systemVersions: systemVersions || [],
           changes,
+          metadata,
           isLoading: false
         });
         

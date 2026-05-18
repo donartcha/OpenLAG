@@ -11,11 +11,18 @@ export async function initProject(projectName?: string, projectDesc?: string, in
   const name = projectName || process.env.PROJECT_NAME || 'My OpenLAG Project';
   const desc = projectDesc || process.env.PROJECT_DESCRIPTION || 'Living Architecture documentation for my system.';
 
-  const ROOT_DIR = process.cwd();
+  let ROOT_DIR = process.cwd();
+  if (projectName) {
+    ROOT_DIR = path.join(process.cwd(), projectName);
+    if (!fs.existsSync(ROOT_DIR)) {
+      fs.mkdirSync(ROOT_DIR, { recursive: true });
+      console.log(chalk.green(`✅ Created project directory: ${projectName}`));
+    }
+  }
 
   console.log(chalk.blue(`🛠️  Initializing OpenLAG for: `) + chalk.bold(name));
 
-  // 1. Update metadata.json
+  // 1. Update or Create metadata.json
   const metadataPath = path.join(ROOT_DIR, 'metadata.json');
   if (fs.existsSync(metadataPath)) {
     const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
@@ -23,15 +30,31 @@ export async function initProject(projectName?: string, projectDesc?: string, in
     metadata.description = desc;
     fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
     console.log(chalk.green('✅ Updated metadata.json'));
+  } else {
+    const metadata = {
+      name: name,
+      description: desc
+    };
+    fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
+    console.log(chalk.green('✅ Created metadata.json'));
   }
 
-  // 2. Update index.html title
+  // 2. Update index.html title if exists, or create a basic one?
+  // Wait, openlag is used as a tool inside an app? Or is it a scaffold?
   const htmlPath = path.join(ROOT_DIR, 'index.html');
   if (fs.existsSync(htmlPath)) {
     let html = fs.readFileSync(htmlPath, 'utf-8');
     html = html.replace(/<title>.*?<\/title>/, `<title>${name} | OpenLAG</title>`);
+    
+    const descMetaRegex = /<meta name="description" content=".*?"\s*\/?>/;
+    if (descMetaRegex.test(html)) {
+      html = html.replace(descMetaRegex, `<meta name="description" content="${desc}" />`);
+    } else {
+      html = html.replace(/<\/title>/, `</title>\n    <meta name="description" content="${desc}" />`);
+    }
+    
     fs.writeFileSync(htmlPath, html);
-    console.log(chalk.green('✅ Updated index.html title'));
+    console.log(chalk.green('✅ Updated index.html title and description'));
   }
 
   // 3. Initialize /docs if empty or missing

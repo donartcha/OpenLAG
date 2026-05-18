@@ -2,6 +2,7 @@ import React, { useMemo, useCallback, useEffect, useState } from 'react';
 import { ReactFlow, MiniMap, Controls, Background, useNodesState, useEdgesState, Node, Edge, MarkerType, Handle, Position, Panel, ReactFlowProvider, useReactFlow } from '@xyflow/react';
 import dagre from 'dagre';
 import { Search, X, AlertCircle, ChevronUp, ChevronDown } from 'lucide-react';
+import Markdown from 'react-markdown';
 import '@xyflow/react/dist/style.css';
 import { useStore } from '../store';
 import { ArtifactType } from '../types';
@@ -40,6 +41,29 @@ const typeColors: Record<ArtifactType, string> = {
   PIPELINE: 'text-sky-400 border-sky-400',
 };
 
+const CompactMarkdown = ({ content }: { content: string }) => (
+  <div className="text-[11px] leading-relaxed opacity-60 h-8 overflow-hidden text-ellipsis line-clamp-2 [&_*]:m-0 [&_*]:p-0">
+    <Markdown
+      components={{
+        h1: ({ children }) => <span className="font-semibold">{children}</span>,
+        h2: ({ children }) => <span className="font-semibold">{children}</span>,
+        h3: ({ children }) => <span className="font-semibold">{children}</span>,
+        h4: ({ children }) => <span className="font-semibold">{children}</span>,
+        p: ({ children }) => <span>{children}</span>,
+        ul: ({ children }) => <span>{children}</span>,
+        ol: ({ children }) => <span>{children}</span>,
+        li: ({ children }) => <span>{children} </span>,
+        strong: ({ children }) => <strong className="font-semibold text-white/80">{children}</strong>,
+        em: ({ children }) => <em className="italic">{children}</em>,
+        code: ({ children }) => <code className="font-mono text-emerald-400/80">{children}</code>,
+        a: ({ children }) => <span className="text-blue-300/80 underline">{children}</span>,
+      }}
+    >
+      {content}
+    </Markdown>
+  </div>
+);
+
 const CustomNode = ({ data, selected }: any) => {
   const colorClass = typeColors[data.type as ArtifactType] || 'text-white/40 border-white/40';
   const isDimmed = data.dimmed;
@@ -72,7 +96,7 @@ const CustomNode = ({ data, selected }: any) => {
       </div>
       <div className="font-serif text-[#e0e0e0] text-sm mb-2 leading-tight">{data.title}</div>
       <div className="flex flex-col gap-1">
-          <div className="text-[11px] leading-relaxed opacity-60 h-8 overflow-hidden text-ellipsis line-clamp-2">{data.description}</div>
+          <CompactMarkdown content={data.description || ''} />
           {data.ownership?.owner && <div className="text-[8px] text-emerald-500 font-mono">OWNER: {data.ownership.owner}</div>}
           {data.ownership?.team && <div className="text-[8px] text-blue-400 font-mono">TEAM: {data.ownership.team}</div>}
       </div>
@@ -526,4 +550,3 @@ export const GraphView: React.FC = () => {
     </ReactFlowProvider>
   );
 };
-

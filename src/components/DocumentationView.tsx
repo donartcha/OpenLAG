@@ -1,7 +1,7 @@
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useStore } from '../store';
-import { Artifact, ArtifactType } from '../types';
-import { Layers, FileText, Server, FileCode2, ShieldCheck, Stethoscope, ChevronRight, Search, GitPullRequest, Repeat, Box, Rocket, Activity, Wrench, Trash2, AlertCircle, Printer, Download, Milestone } from 'lucide-react';
+import { Artifact } from '../types';
+import { Layers, FileText, FileCode2, ShieldCheck, ChevronRight, Search, GitPullRequest, Repeat, Box, Rocket, Activity, Wrench, Trash2, AlertCircle, Printer, Milestone, Bookmark, BookOpen } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
 const OwnershipBadge = ({ artifact }: { artifact: Artifact }) => {
@@ -15,36 +15,21 @@ const OwnershipBadge = ({ artifact }: { artifact: Artifact }) => {
     );
 };
 
-interface GroupedArtifacts {
-  REQUIREMENT: Artifact[];
-  USE_CASE: Artifact[];
-  DESIGN: Artifact[];
-  COMPONENT: Artifact[];
-  CODE_ENTITY: Artifact[];
-  TEST: Artifact[];
-  DOCUMENTATION: Artifact[];
-  INCIDENT: Artifact[];
-  INFRASTRUCTURE: Artifact[];
-  DEPLOYMENT: Artifact[];
-  MONITORING: Artifact[];
-  MAINTENANCE: Artifact[];
-  VERSION: Artifact[];
-  SYSTEM_VERSION: Artifact[];
-}
-
 const PHASES = [
+  { id: 'strategy', title: 'Strategy & Planning', icon: Bookmark, types: ['PROJECT', 'EPIC', 'FEATURE', 'BUSINESS_RULE', 'DECISION', 'GLOSSARY_TERM', 'RISK', 'PROCESS'] },
   { id: 'req', title: 'Requirements / Analysis', icon: FileText, types: ['REQUIREMENT', 'USE_CASE'] },
-  { id: 'design', title: 'Technical Design', icon: Layers, types: ['DESIGN', 'COMPONENT'] },
-  { id: 'dev', title: 'Development', icon: FileCode2, types: ['CODE_ENTITY'] },
+  { id: 'design', title: 'Architecture & Design', icon: Layers, types: ['DESIGN', 'COMPONENT', 'API', 'DATABASE_ENTITY'] },
+  { id: 'dev', title: 'Development', icon: FileCode2, types: ['CODE_ENTITY', 'LIBRARY', 'ENVIRONMENT'] },
   { id: 'review', title: 'Code Review', icon: GitPullRequest, types: ['CODE_ENTITY'] },
-  { id: 'ci', title: 'Continuous Integration', icon: Repeat, types: ['INFRASTRUCTURE'] },
-  { id: 'verif', title: 'Testing', icon: ShieldCheck, types: ['TEST'] },
+  { id: 'ci', title: 'Continuous Integration', icon: Repeat, types: ['INFRASTRUCTURE', 'PIPELINE'] },
+  { id: 'verif', title: 'Testing / QA', icon: ShieldCheck, types: ['TEST', 'TEST_CASE', 'CHECK', 'BUG'] },
   { id: 'build', title: 'Build / Packaging', icon: Box, types: ['INFRASTRUCTURE'] },
   { id: 'deploy', title: 'Deployment', icon: Rocket, types: ['DEPLOYMENT'] },
-  { id: 'monitor', title: 'Monitoring', icon: Activity, types: ['MONITORING', 'INCIDENT'] },
+  { id: 'monitor', title: 'Monitoring & Feedback', icon: Activity, types: ['MONITORING', 'INCIDENT'] },
+  { id: 'docs', title: 'Documentation', icon: BookOpen, types: ['DOCUMENTATION'] },
   { id: 'maint', title: 'Maintenance / Refactoring', icon: Wrench, types: ['MAINTENANCE'] },
   { id: 'retire', title: 'Retirement / Replacement', icon: Trash2, types: ['MAINTENANCE'] },
-  { id: 'versions', title: 'Releases & Versions', icon: Milestone, types: ['VERSION', 'SYSTEM_VERSION'] },
+  { id: 'versions', title: 'Releases & Versions', icon: Milestone, types: ['VERSION', 'SYSTEM_VERSION', 'CHANGE'] },
 ];
 
 export const DocumentationView: React.FC = () => {
@@ -117,18 +102,13 @@ export const DocumentationView: React.FC = () => {
   }, [selectedArtifactId, graph, settings.docsFocusDepth]);
 
   const grouped = useMemo(() => {
-    const groups: GroupedArtifacts = {
-      REQUIREMENT: [], USE_CASE: [], DESIGN: [], COMPONENT: [],
-      CODE_ENTITY: [], TEST: [], DOCUMENTATION: [], INCIDENT: [],
-      INFRASTRUCTURE: [], DEPLOYMENT: [], MONITORING: [], MAINTENANCE: [],
-      VERSION: [], SYSTEM_VERSION: []
-    };
+    const groups: Record<string, Artifact[]> = {};
     if (graph && graph.artifacts) {
       graph.artifacts.forEach(a => {
-        const type = a.type as keyof GroupedArtifacts;
-        if (groups[type]) {
-          groups[type].push(a);
+        if (!groups[a.type]) {
+          groups[a.type] = [];
         }
+        groups[a.type].push(a);
       });
     }
     return groups;
@@ -162,28 +142,17 @@ export const DocumentationView: React.FC = () => {
 
     const applyFilters = (list: Artifact[] = []) => filterByGraph(filterByLayerAndOwnership(filterBySearch(list)));
     
-    return {
-      REQUIREMENT: applyFilters(grouped.REQUIREMENT),
-      USE_CASE: applyFilters(grouped.USE_CASE),
-      DESIGN: applyFilters(grouped.DESIGN),
-      COMPONENT: applyFilters(grouped.COMPONENT),
-      CODE_ENTITY: applyFilters(grouped.CODE_ENTITY),
-      TEST: applyFilters(grouped.TEST),
-      DOCUMENTATION: applyFilters(grouped.DOCUMENTATION),
-      INCIDENT: applyFilters(grouped.INCIDENT),
-      INFRASTRUCTURE: applyFilters(grouped.INFRASTRUCTURE),
-      DEPLOYMENT: applyFilters(grouped.DEPLOYMENT),
-      MONITORING: applyFilters(grouped.MONITORING),
-      MAINTENANCE: applyFilters(grouped.MAINTENANCE),
-      VERSION: applyFilters(grouped.VERSION),
-      SYSTEM_VERSION: applyFilters(grouped.SYSTEM_VERSION),
-    };
+    const result: Record<string, Artifact[]> = {};
+    Object.keys(grouped).forEach(key => {
+      result[key] = applyFilters(grouped[key]);
+    });
+    return result;
   }, [grouped, searchQuery, selectedArtifactId, reachableArtifactIds, isImpactFocusMode, filterLayer, filterOwner, filterTeam]);
 
   const phasesData = useMemo(() => {
     return PHASES.map(phase => {
       let filteredArtifactsInPhase = phase.types.flatMap(type => 
-        (filteredGroups[type as keyof typeof filteredGroups] || [])
+        (filteredGroups[type] || [])
       );
 
       if (phase.id === 'dev') {
@@ -191,20 +160,19 @@ export const DocumentationView: React.FC = () => {
       } else if (phase.id === 'review') {
         filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.subType === 'Review');
       } else if (phase.id === 'ci') {
-        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.subType?.includes('CI') || a.subType === 'Pipeline');
+        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.type === 'PIPELINE' || (a.type === 'INFRASTRUCTURE' && a.subType?.includes('CI')));
       } else if (phase.id === 'build') {
-        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.subType === 'Build' || a.subType === 'Package');
+        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.type === 'INFRASTRUCTURE' && (a.subType === 'Build' || a.subType === 'Package'));
       } else if (phase.id === 'maint') {
-        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.subType !== 'Retirement');
+        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.type === 'MAINTENANCE' && a.subType !== 'Retirement');
       } else if (phase.id === 'retire') {
-        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.subType === 'Retirement');
+        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.type === 'MAINTENANCE' && a.subType === 'Retirement');
       }
       
       const subTypes = Array.from(new Set(filteredArtifactsInPhase.map(a => a.subType).filter(Boolean))) as string[];
-      // We will also synthesize "COMPONENT" as a pseudo subtype for Design since we grouped DESIGN and COMPONENT together in phase 2,
-      // but only if there are COMPONENT artifacts and they don't already have subTypes.
-      if (phase.id === 'design' && (filteredGroups.COMPONENT || []).length > 0) {
-          const compSubTypes = Array.from(new Set((filteredGroups.COMPONENT || []).map(a => a.subType).filter(Boolean))) as string[];
+      
+      if (phase.id === 'design' && (filteredGroups['COMPONENT'] || []).length > 0) {
+          const compSubTypes = Array.from(new Set((filteredGroups['COMPONENT'] || []).map(a => a.subType).filter(Boolean))) as string[];
           for (const s of compSubTypes) {
               if (!subTypes.includes(s)) subTypes.push(s);
           }
@@ -235,18 +203,9 @@ export const DocumentationView: React.FC = () => {
 
   const currentVersion = versions.find(v => v.id === currentVersionId);
 
-  const getRelations = (artifactId: string, type: 'to' | 'from') => {
-    return graph.relations.filter(r => type === 'to' ? r.to === artifactId : r.from === artifactId)
-      .map(r => {
-        const relatedId = type === 'to' ? r.from : r.to;
-        const relatedArt = graph.artifacts.find(a => a.id === relatedId);
-        return { relation: r, artifact: relatedArt };
-      }).filter(r => r.artifact !== undefined);
-  };
-
   const handlePhaseClick = (phaseId: string) => {
       if (selectedPhase === phaseId && !selectedSubType) {
-          setSelectedPhase(null); // toggle off
+          setSelectedPhase(null);
       } else {
           setSelectedPhase(phaseId);
           setSelectedSubType(null);
@@ -262,19 +221,6 @@ export const DocumentationView: React.FC = () => {
           setSelectedSubType(subType);
       }
   };
-
-  const hasReqs = (filteredGroups.REQUIREMENT?.length || 0) + (filteredGroups.USE_CASE?.length || 0) > 0;
-  const hasDesign = (filteredGroups.DESIGN?.length || 0) + (filteredGroups.COMPONENT?.length || 0) > 0;
-  const hasDev = (filteredGroups.CODE_ENTITY || []).filter(c => c.subType !== 'Review').length > 0;
-  const hasReview = (filteredGroups.CODE_ENTITY || []).filter(c => c.subType === 'Review').length > 0;
-  const hasCI = (filteredGroups.INFRASTRUCTURE || []).filter(i => i.subType?.includes('CI') || i.subType === 'Pipeline').length > 0;
-  const hasTest = (filteredGroups.TEST?.length || 0) > 0;
-  const hasBuild = (filteredGroups.INFRASTRUCTURE || []).filter(i => i.subType === 'Build' || i.subType === 'Package').length > 0;
-  const hasDeploy = (filteredGroups.DEPLOYMENT?.length || 0) > 0;
-  const hasMonit = (filteredGroups.MONITORING?.length || 0) + (filteredGroups.INCIDENT?.length || 0) > 0;
-  const hasMaint = (filteredGroups.MAINTENANCE || []).filter(m => m.subType !== 'Retirement').length > 0;
-  const hasRet = (filteredGroups.MAINTENANCE || []).filter(m => m.subType === 'Retirement').length > 0;
-  const hasVersions = (filteredGroups.VERSION?.length || 0) + (filteredGroups.SYSTEM_VERSION?.length || 0) > 0;
 
   const shouldShow = (hasItems: boolean) => !(isImpactFocusMode && selectedArtifactId && !hasItems);
 
@@ -535,371 +481,77 @@ export const DocumentationView: React.FC = () => {
           </div>
           
           <div className="flex-1 overflow-y-auto px-8 lg:px-16 pb-12 custom-scrollbar">
-        {/* 1. Requirements */}
-        {(!selectedPhase || selectedPhase === 'req') && shouldShow(hasReqs) && (
-            <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">1. Requirements / Analysis</h2>
-                {(filteredGroups.REQUIREMENT?.length === 0 && filteredGroups.USE_CASE?.length === 0) && <p className="italic text-white/40 text-xs">No requirements found in this version.</p>}
-                {[...(filteredGroups.REQUIREMENT || []), ...(filteredGroups.USE_CASE || [])]
-                    .filter(req => !selectedSubType || req.subType === selectedSubType)
-                    .map(req => (
-                  <div key={req.id} id={req.id} className="mb-6 bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-blue-500/50 hover:bg-white-[0.02] transition-colors relative group">
-                    <h3 className="font-serif text-lg text-white flex items-center gap-4 flex-wrap mb-4">
-                      <button 
-                        onClick={() => setSelectedArtifact(req.id)}
-                        className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest hover:border-blue-500/50 transition-colors ${selectedArtifactId === req.id ? 'text-blue-400 border-blue-500/50' : 'text-white/40'}`}
-                      >
-                          {req.id}
-                      </button>
-                      {req.subType && <span className="text-[10px] font-sans bg-blue-500/10 text-blue-300 px-2 py-1 border border-blue-500/20 uppercase tracking-widest">{req.subType}</span>}
-                      {orphanArtifactIds.has(req.id) && (
-                        <span className="text-[10px] bg-red-500/10 text-red-400 px-2 py-1 border border-red-500/20 uppercase tracking-widest flex items-center gap-1">
-                          <AlertCircle size={10} />
-                          Traceability Gap
-                        </span>
-                      )}
-                      {req.title}
-                    </h3>
-                    <OwnershipBadge artifact={req} />
-                    <MarkdownRenderer content={req.description} />
-                  </div>
-                ))}
-            </section>
-        )}
+            {phasesData.map((phase, idx) => {
+                if (selectedPhase && selectedPhase !== phase.id) return null;
+                
+                let phaseArtifacts = phase.types.flatMap(type => filteredGroups[type] || []);
 
-        {/* 2. Technical Design */}
-        {(!selectedPhase || selectedPhase === 'design') && shouldShow(hasDesign) && (
-            <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">2. Technical Design</h2>
-                {(filteredGroups.DESIGN?.length === 0 && (filteredGroups.COMPONENT?.length || 0) === 0) && <p className="italic text-white/40 text-xs text-center p-12 bg-white/5 border border-dashed border-white/10 rounded">No architectural design for this phase.</p>}
-                {(filteredGroups.DESIGN || [])
-                    .filter(des => !selectedSubType || des.subType === selectedSubType)
-                    .map(des => (
-                  <div key={des.id} id={des.id} className="mb-6 bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-purple-500/50 hover:bg-white-[0.02] transition-colors">
-                    <h3 className="font-serif text-lg text-white mb-4 flex items-center gap-3">
-                        <button 
-                            onClick={() => setSelectedArtifact(des.id)}
-                            className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest hover:border-purple-500/50 transition-colors ${selectedArtifactId === des.id ? 'text-purple-400 border-purple-500/50' : 'text-white/40'}`}
-                        >
-                            {des.id}
-                        </button>
-                        {orphanArtifactIds.has(des.id) && (
-                            <span className="text-[8px] bg-red-500/10 text-red-400 px-1.5 py-0.5 border border-red-500/20 uppercase font-mono tracking-tighter flex items-center gap-1">
-                                <AlertCircle size={10} />
-                                Orphan
-                            </span>
+                if (phase.id === 'dev') {
+                    phaseArtifacts = phaseArtifacts.filter(a => a.subType !== 'Review');
+                } else if (phase.id === 'review') {
+                    phaseArtifacts = phaseArtifacts.filter(a => a.subType === 'Review');
+                } else if (phase.id === 'ci') {
+                    phaseArtifacts = phaseArtifacts.filter(a => a.type === 'PIPELINE' || (a.type === 'INFRASTRUCTURE' && a.subType?.includes('CI')));
+                } else if (phase.id === 'build') {
+                    phaseArtifacts = phaseArtifacts.filter(a => a.type === 'INFRASTRUCTURE' && (a.subType === 'Build' || a.subType === 'Package'));
+                } else if (phase.id === 'maint') {
+                    phaseArtifacts = phaseArtifacts.filter(a => a.type === 'MAINTENANCE' && a.subType !== 'Retirement');
+                } else if (phase.id === 'retire') {
+                    phaseArtifacts = phaseArtifacts.filter(a => a.type === 'MAINTENANCE' && a.subType === 'Retirement');
+                }
+
+                if (selectedSubType) {
+                    if (selectedSubType === 'Component') {
+                      phaseArtifacts = phaseArtifacts.filter(a => a.type === 'COMPONENT' && !a.subType);
+                    } else {
+                      phaseArtifacts = phaseArtifacts.filter(a => a.subType === selectedSubType);
+                    }
+                }
+
+                if (!shouldShow(phaseArtifacts.length > 0)) return null;
+                if (phaseArtifacts.length === 0 && selectedPhase !== phase.id && !selectedSubType) return null;
+
+                return (
+                    <section key={phase.id} className="mb-16">
+                        <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">
+                            {idx + 1}. {phase.title}
+                        </h2>
+                        {phaseArtifacts.length === 0 && (
+                            <p className="italic text-white/40 text-xs p-8 bg-white/5 border border-dashed border-white/10 rounded text-center">
+                                No active artifacts for this phase.
+                            </p>
                         )}
-                        {des.title}
-                    </h3>
-                    <OwnershipBadge artifact={des} />
-                    <MarkdownRenderer content={des.description} />
-                  </div>
-                ))}
-            </section>
-        )}
-
-        {/* 3. Development */}
-        {(!selectedPhase || selectedPhase === 'dev') && shouldShow(hasDev) && (
-            <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">3. Development</h2>
-                <div className="overflow-x-auto rounded border border-white/10">
-                <table className="min-w-full border-collapse text-xs">
-                    <thead className="bg-[#0c0c0c] border-b border-white/10 text-white/40 uppercase tracking-[0.2em] text-[8px] font-bold">
-                    <tr>
-                        <th className="p-4 text-left">Code Entity</th>
-                        <th className="p-4 text-left border-l border-white/5">Mapping</th>
-                        <th className="p-4 text-left border-l border-white/5 w-1/2">Logic Summary</th>
-                    </tr>
-                    </thead>
-                    <tbody className="divide-y divide-white/5">
-                    {(filteredGroups.CODE_ENTITY || [])
-                        .filter(code => code.subType !== 'Review')
-                        .filter(code => !selectedSubType || code.subType === selectedSubType)
-                        .map(code => (
-                        <tr key={code.id} id={code.id} className="bg-transparent hover:bg-white/[0.02] transition-colors group">
-                            <td className="p-4 font-mono">
-                                <button 
-                                    onClick={() => setSelectedArtifact(code.id)}
-                                    className={`text-left hover:text-emerald-300 transition-colors ${selectedArtifactId === code.id ? 'text-emerald-400' : 'text-emerald-500/70'}`}
-                                >
-                                    {code.title}
-                                </button>
-                                <OwnershipBadge artifact={code} />
-                                {orphanArtifactIds.has(code.id) && (
-                                    <div className="flex items-center gap-1 text-[8px] text-red-400 mt-0.5 font-bold uppercase tracking-tighter">
-                                        <AlertCircle size={8} />
-                                        Unlinked Entity
-                                    </div>
-                                )}
-                                <div className="text-[8px] text-white/20 mt-1 uppercase tracking-tighter">{code.id}</div>
-                            </td>
-                            <td className="p-4 border-l border-white/5 text-amber-400/80">{code.subType || '-'}</td>
-                            <td className="p-4 border-l border-white/5 text-white/60"><MarkdownRenderer content={code.description} /></td>
-                        </tr>
-                    ))}
-                    {((filteredGroups.CODE_ENTITY || []).filter(c => c.subType !== 'Review').length === 0) && (
-                        <tr>
-                            <td colSpan={3} className="p-12 text-center text-white/20 italic">No code entities documented for this version.</td>
-                        </tr>
-                    )}
-                    </tbody>
-                </table>
-                </div>
-            </section>
-        )}
-
-        {/* 4. Code Review */}
-        {(!selectedPhase || selectedPhase === 'review') && shouldShow(hasReview) && (
-            <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">4. Code Review</h2>
-                {((filteredGroups.CODE_ENTITY || []).filter(c => c.subType === 'Review').length === 0) && <p className="italic text-white/40 text-xs text-center p-8 bg-white/5 border border-dashed border-white/10 rounded">No active reviews for this version.</p>}
-                <div className="grid grid-cols-1 gap-4">
-                    {(filteredGroups.CODE_ENTITY || []).filter(c => c.subType === 'Review').map(rev => (
-                        <div key={rev.id} id={rev.id} className="bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-emerald-500/50">
-                            <h3 className="font-serif text-lg text-white mb-2 flex items-center gap-3">
-                                <button 
-                                    onClick={() => setSelectedArtifact(rev.id)}
-                                    className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest hover:border-emerald-500/50 transition-colors ${selectedArtifactId === rev.id ? 'text-emerald-400 border-emerald-500/50' : 'text-white/40'}`}
-                                >
-                                    {rev.id}
-                                </button>
-                                {rev.title}
-                            </h3>
-                            <MarkdownRenderer content={rev.description} />
-                        </div>
-                    ))}
-                </div>
-            </section>
-        )}
-
-        {/* 5. Continuous Integration */}
-        {(!selectedPhase || selectedPhase === 'ci') && shouldShow(hasCI) && (
-            <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">5. Continuous Integration (CI)</h2>
-                {((filteredGroups.INFRASTRUCTURE || []).filter(i => i.subType?.includes('CI') || i.subType === 'Pipeline').length === 0) && <p className="italic text-white/40 text-xs p-12 bg-white/5 border border-dashed border-white/10 rounded text-center">No CI pipelines defined.</p>}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(filteredGroups.INFRASTRUCTURE || []).filter(i => i.subType?.includes('CI') || i.subType === 'Pipeline').map(ci => (
-                        <div key={ci.id} id={ci.id} className="bg-[#0c0c0c] border border-white/10 p-5 hover:bg-white/[0.03] transition-all">
-                            <h4 className="text-white font-bold mb-2 flex items-center gap-2">
-                                <Repeat size={14} className="text-emerald-400" />
-                                {ci.title}
-                            </h4>
-                            <MarkdownRenderer content={ci.description} />
-                        </div>
-                    ))}
-                </div>
-            </section>
-        )}
-
-        {/* 6. Testing */}
-        {(!selectedPhase || selectedPhase === 'verif') && shouldShow(hasTest) && (
-            <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">6. Verification & Quality</h2>
-                <div className="space-y-4">
-                {(filteredGroups.TEST || []).map(test => (
-                    <div key={test.id} id={test.id} className="bg-[#0c0c0c] border border-white/10 p-5 border-l-[3px] border-l-rose-500/50">
-                        <h3 className="font-serif text-[#e0e0e0] mb-2 flex items-center gap-3">
-                            <button 
-                                onClick={() => setSelectedArtifact(test.id)}
-                                className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest hover:border-rose-500/50 transition-colors ${selectedArtifactId === test.id ? 'text-rose-400 border-rose-500/50' : 'text-white/40'}`}
-                            >
-                                {test.id}
-                            </button>
-                            {orphanArtifactIds.has(test.id) && (
-                                <span className="text-[10px] bg-red-500/10 text-red-400 px-2 py-1 border border-red-500/20 uppercase tracking-widest flex items-center gap-1">
-                                    <AlertCircle size={10} />
-                                    Gap
-                                </span>
-                            )}
-                            {test.title}
-                        </h3>
-                        <OwnershipBadge artifact={test} />
-                        <MarkdownRenderer content={test.description} />
-                    </div>
-                ))}
-                {(filteredGroups.TEST || []).length === 0 && <p className="italic text-white/40 text-xs">No verification artifacts recorded.</p>}
-                </div>
-            </section>
-        )}
-
-        {/* 7. Build */}
-        {(!selectedPhase || selectedPhase === 'build') && shouldShow(hasBuild) && (
-            <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">7. Build & Packaging</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {(filteredGroups.INFRASTRUCTURE || []).filter(i => i.subType === 'Build' || i.subType === 'Package').map(b => (
-                        <div key={b.id} id={b.id} className="bg-[#0c0c0c] border border-white/10 p-5 border-l-[3px] border-l-amber-500/50">
-                            <h4 className="text-white font-bold mb-2 flex items-center gap-2">
-                                <Box size={14} className="text-amber-400" />
-                                {b.title}
-                            </h4>
-                            <OwnershipBadge artifact={b} />
-                            <MarkdownRenderer content={b.description} />
-                        </div>
-                    ))}
-                    {((filteredGroups.INFRASTRUCTURE || []).filter(i => i.subType === 'Build' || i.subType === 'Package').length === 0) && <p className="italic text-white/40 text-xs col-span-2">Build configurations are handled externally.</p>}
-                </div>
-            </section>
-        )}
-
-        {/* 8. Deployment */}
-        {(!selectedPhase || selectedPhase === 'deploy') && shouldShow(hasDeploy) && (
-            <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">8. Deployment</h2>
-                <div className="space-y-6">
-                    {(filteredGroups.DEPLOYMENT || []).map(d => (
-                        <div key={d.id} id={d.id} className="bg-[#0c0c0c] border border-white/10 p-6 rounded-sm border-l-[3px] border-l-sky-500/50">
-                            <h3 className="text-xl font-serif italic text-white mb-4 flex items-center gap-3">
-                                <Rocket size={20} className="text-sky-400" />
-                                <button 
-                                    onClick={() => setSelectedArtifact(d.id)}
-                                    className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest hover:border-sky-500/50 transition-colors ${selectedArtifactId === d.id ? 'text-sky-400 border-sky-500/50' : 'text-white/40'}`}
-                                >
-                                    {d.id}
-                                </button>
-                                {orphanArtifactIds.has(d.id) && (
+                        <div className="space-y-4">
+                            {phaseArtifacts.map((artifact) => (
+                              <div key={artifact.id} id={artifact.id} className="mb-6 bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-emerald-500/50 hover:bg-white/[0.02] transition-colors relative group">
+                                <h3 className="font-serif text-lg text-white flex items-center gap-4 flex-wrap mb-4">
+                                  <button 
+                                    onClick={() => setSelectedArtifact(artifact.id)}
+                                    className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest transition-colors hover:border-emerald-500/50 ${selectedArtifactId === artifact.id ? 'text-emerald-400 border-emerald-500/50' : 'text-white/40'}`}
+                                  >
+                                      {artifact.id}
+                                  </button>
+                                  {artifact.subType && <span className="text-[10px] font-sans bg-white/5 text-white/60 px-2 py-1 border border-white/10 uppercase tracking-widest">{artifact.subType}</span>}
+                                  {orphanArtifactIds.has(artifact.id) && (
                                     <span className="text-[10px] bg-red-500/10 text-red-400 px-2 py-1 border border-red-500/20 uppercase tracking-widest flex items-center gap-1">
-                                        <AlertCircle size={10} />
-                                        Unlinked
+                                      <AlertCircle size={10} />
+                                      Traceability Gap
                                     </span>
-                                )}
-                                {d.title}
-                            </h3>
-                            <OwnershipBadge artifact={d} />
-                            <MarkdownRenderer content={d.description} />
+                                  )}
+                                  <span>{artifact.title}</span>
+                                  {artifact.version && <span className="ml-auto text-xs font-mono text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 rounded">v{artifact.version}</span>}
+                                </h3>
+                                <OwnershipBadge artifact={artifact} />
+                                <MarkdownRenderer content={artifact.description} />
+                              </div>
+                            ))}
                         </div>
-                    ))}
-                    {(filteredGroups.DEPLOYMENT || []).length === 0 && <p className="italic text-white/40 text-xs">No deployment records found.</p>}
-                </div>
-            </section>
-        )}
-
-        {/* 9. Monitoring */}
-        {(!selectedPhase || selectedPhase === 'monitor') && shouldShow(hasMonit) && (
-            <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">9. Monitoring & Observability</h2>
-                <div className="grid grid-cols-1 gap-6">
-                    {(filteredGroups.MONITORING || []).map(m => (
-                        <div key={m.id} id={m.id} className="bg-black/40 border border-white/10 p-6 rounded relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4 opacity-5">
-                                <Activity size={80} />
-                            </div>
-                            <h3 className="text-white font-bold mb-3 flex items-center gap-2">
-                                <Activity size={16} className="text-red-400" />
-                                <button 
-                                    onClick={() => setSelectedArtifact(m.id)}
-                                    className={`text-[10px] font-mono bg-black/40 px-2 py-1 border border-white/5 uppercase tracking-widest hover:border-red-400/50 transition-colors ${selectedArtifactId === m.id ? 'text-red-400 border-red-500/50' : 'text-white/40'}`}
-                                >
-                                    {m.id}
-                                </button>
-                                {orphanArtifactIds.has(m.id) && (
-                                    <span className="text-[10px] bg-red-500/10 text-red-400 px-2 py-1 border border-red-500/20 uppercase tracking-widest flex items-center gap-1">
-                                        <AlertCircle size={10} />
-                                        Unlinked
-                                    </span>
-                                )}
-                                {m.title}
-                            </h3>
-                            <OwnershipBadge artifact={m} />
-                            <MarkdownRenderer content={m.description} />
-                        </div>
-                    ))}
-                    {(filteredGroups.INCIDENT || []).length > 0 && (
-                        <div className="mt-8">
-                            <h4 className="text-[10px] uppercase tracking-widest text-red-500/60 font-bold mb-4">Historical Incidents (Feedback Loop)</h4>
-                            <div className="space-y-3">
-                                {filteredGroups.INCIDENT.map(inc => (
-                                    <div key={inc.id} id={inc.id} className="bg-red-500/5 border border-red-500/10 p-4 rounded text-xs">
-                                        <span className="font-bold text-red-400 mr-2">[{inc.id}]</span>
-                                        <span className="text-white/80">{inc.title}</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-                </div>
-            </section>
-        )}
-
-        {/* 10. Maintenance */}
-        {(!selectedPhase || selectedPhase === 'maint') && shouldShow(hasMaint) && (
-            <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">10. Maintenance / Refactoring</h2>
-                <div className="space-y-4">
-                    {(filteredGroups.MAINTENANCE || []).filter(m => m.subType !== 'Retirement').map(m => (
-                        <div key={m.id} id={m.id} className="bg-[#0c0c0c] border border-white/10 p-5 border-l-[3px] border-l-indigo-500/50">
-                            <h3 className="text-white font-bold mb-2 flex items-center gap-2">
-                                <Wrench size={14} className="text-indigo-400" />
-                                {m.title}
-                            </h3>
-                            <OwnershipBadge artifact={m} />
-                            <MarkdownRenderer content={m.description} />
-                        </div>
-                    ))}
-                    {((filteredGroups.MAINTENANCE || []).filter(m => m.subType !== 'Retirement').length === 0) && <p className="italic text-white/40 text-xs">System is in active health. No maintenance tasks scheduled.</p>}
-                </div>
-            </section>
-        )}
-
-        {/* 11. Retirement */}
-        {(!selectedPhase || selectedPhase === 'retire') && shouldShow(hasRet) && (
-            <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">11. Retirement / Replacement</h2>
-                <div className="space-y-4">
-                    {(filteredGroups.MAINTENANCE || []).filter(m => m.subType === 'Retirement').map(m => (
-                        <div key={m.id} id={m.id} className="bg-[#1a0a0a] border border-red-900/30 p-5 border-l-[3px] border-l-red-900">
-                            <h3 className="text-white/60 font-bold mb-2 flex items-center gap-2">
-                                <Trash2 size={14} className="text-red-900" />
-                                {m.title}
-                            </h3>
-                            <OwnershipBadge artifact={m} />
-                            <MarkdownRenderer content={m.description} />
-                        </div>
-                    ))}
-                    {((filteredGroups.MAINTENANCE || []).filter(m => m.subType === 'Retirement').length === 0) && <p className="italic text-white/40 text-xs">No retired components for this version.</p>}
-                </div>
-            </section>
-        )}
-
-        {/* 12. Releases & Versions */}
-        {(!selectedPhase || selectedPhase === 'versions') && (
-            <section className="mb-16">
-                <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">12. Releases & Versions</h2>
-                <div className="space-y-4">
-                    {[...(grouped.VERSION || []), ...(grouped.SYSTEM_VERSION || [])].map(v => (
-                        <div key={v.id} id={v.id} className="bg-[#0c0c0c] border border-white/10 p-5 border-l-[3px] border-l-emerald-500/50">
-                            <h3 className="font-serif text-lg text-white mb-2 flex items-center gap-3">
-                                <Milestone size={16} className="text-emerald-400" />
-                                <button 
-                                    onClick={() => setSelectedArtifact(v.id)}
-                                    className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest hover:border-emerald-500/50 transition-colors ${selectedArtifactId === v.id ? 'text-emerald-400 border-emerald-500/50' : 'text-white/40'}`}
-                                >
-                                    {v.id}
-                                </button>
-                                <span>{v.title}</span>
-                                {v.type === 'SYSTEM_VERSION' && (
-                                    <span className="ml-auto text-xs font-mono text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 rounded">
-                                        {v.component} v{v.version}
-                                    </span>
-                                )}
-                                {v.type === 'VERSION' && (
-                                    <span className="ml-auto text-xs font-mono text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 rounded">
-                                        v{v.version}
-                                    </span>
-                                )}
-                            </h3>
-                            <OwnershipBadge artifact={v} />
-                            <MarkdownRenderer content={v.description} />
-                        </div>
-                    ))}
-                    {([...(grouped.VERSION || []), ...(grouped.SYSTEM_VERSION || [])].length === 0) && <p className="italic text-white/40 text-xs">No version artifacts.</p>}
-                </div>
-            </section>
-        )}
-        </div>
+                    </section>
+                );
+            })}
+          </div>
         </div>
       </div>
     </div>
   );
 };
-
