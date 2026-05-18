@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { execFileSync } from 'child_process';
+import { readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -15,6 +16,7 @@ import { resolveViteBin } from './vite-bin.js';
 
 const program = new Command();
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const pkg = JSON.parse(readFileSync(path.join(packageRoot, 'package.json'), 'utf8')) as { version: string };
 
 function runVitePreview() {
   const viteBin = resolveViteBin(import.meta.url);
@@ -28,7 +30,7 @@ function runVitePreview() {
   });
 }
 
-program.name('openlag').description('Architecture as Code traceability graph generator').version('0.1.0');
+program.name('openlag').description('Architecture as Code traceability graph generator').version(pkg.version);
 
 program
   .command('init')
