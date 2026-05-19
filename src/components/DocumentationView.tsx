@@ -131,11 +131,13 @@ export const DocumentationView: React.FC = () => {
     const strategy = strategyRegistry.getStrategy(currentStrategyId);
     const groups = strategy.project(filteredArtifacts);
     return groups.map(group => {
-      const subTypes = Array.from(new Set(group.artifacts.map(a => a.subType).filter(Boolean))) as string[];
+      const sortedArtifacts = [...group.artifacts].sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' }));
+      const subTypes = Array.from(new Set(sortedArtifacts.map(a => a.subType).filter(Boolean))) as string[];
       return {
         ...group,
+        artifacts: sortedArtifacts,
         icon: Bookmark, // Can be improved
-        count: group.artifacts.length,
+        count: sortedArtifacts.length,
         subTypes,
       };
     });

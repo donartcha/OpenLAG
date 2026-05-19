@@ -1,97 +1,97 @@
 # OpenLAG Project Specification v0.1
 
-## 1. Filosofía de OpenLAG
+## 1. OpenLAG Philosophy
 
-OpenLAG (Open Living Architecture Graph) es un sistema de Architecture as Code diseñado para representar el estado trazable del conocimiento técnico de un sistema software en evolución.
+OpenLAG (Open Living Architecture Graph) is an Architecture as Code system designed to represent the traceable state of the technical knowledge of an evolving software system.
 
-Su propósito principal no es generar documentación estática ni imponer procesos rígidos, sino permitir que equipos técnicos puedan:
-- visualizar relaciones entre artefactos,
-- comprender impacto de cambios,
-- detectar huecos de trazabilidad,
-- mantener documentación viva,
-- y evolucionar sistemas complejos de forma observable.
+Its main purpose is not to generate static documentation or impose rigid processes, but to allow technical teams to:
+- visualize relationships between artifacts,
+- understand the impact of changes,
+- detect traceability gaps,
+- maintain living documentation,
+- and evolve complex systems in an observable way.
 
-OpenLAG parte de una premisa fundamental:
-> La documentación nunca está completamente terminada, pero sí puede ser observable, versionable y verificable.
+OpenLAG starts from a fundamental premise:
+> Documentation is never completely finished, but it can be observable, versionable, and verifiable.
 
-### Qué NO intenta resolver
-OpenLAG NO pretende:
-- reemplazar Jira,
-- reemplazar Confluence,
-- sustituir herramientas ALM empresariales,
-- imponer burocracia documental,
-- modelar perfectamente toda la organización,
-- ni actuar como una “fuente absoluta de verdad”.
+### What it does NOT try to solve
+OpenLAG does NOT intend to:
+- replace Jira,
+- replace Confluence,
+- replace enterprise ALM tools,
+- impose documentary bureaucracy,
+- perfectly model the entire organization,
+- or act as an "absolute source of truth".
 
-OpenLAG representa conocimiento parcial, incremental y cambiante.
+OpenLAG represents partial, incremental, and changing knowledge.
 
 ### Architecture as Code
-En OpenLAG, la arquitectura se modela como artefactos versionables definidos mediante Markdown estructurado.
+In OpenLAG, architecture is modeled as versionable artifacts defined using structured Markdown.
 
-Cada artefacto:
-- posee identidad,
-- relaciones,
-- estado,
-- contexto temporal,
-- y trazabilidad.
+Each artifact:
+- possesses identity,
+- relationships,
+- status,
+- temporal context,
+- and traceability.
 
-La arquitectura deja de ser una imagen estática y pasa a convertirse en un grafo navegable y evolutivo.
+Architecture ceases to be a static image and becomes a navigable and evolutionary graph.
 
-### Grafo Arquitectónico Vivo
-OpenLAG transforma documentos y relaciones en un grafo semántico navegable que refleja:
-- requisitos,
-- decisiones,
-- implementaciones,
-- validaciones,
-- riesgos,
-- cambios,
-- y dependencias.
+### Living Architectural Graph
+OpenLAG transforms documents and relationships into a navigable semantic graph that reflects:
+- requirements,
+- decisions,
+- implementations,
+- validations,
+- risks,
+- changes,
+- and dependencies.
 
-El grafo evoluciona junto al software.
+The graph evolves alongside the software.
 
-### Principios Fundamentales
-- Hacer visibles los huecos.
-- La documentación evoluciona junto al software.
-- Los artefactos representan conocimiento parcial y cambiante.
-- La trazabilidad es progresiva.
-- La validación debe adaptarse al contexto del desarrollo.
-- El sistema debe tolerar incertidumbre y refactors.
-- El linting debe ayudar, no bloquear innecesariamente.
+### Fundamental Principles
+- Make gaps visible.
+- Documentation evolves alongside the software.
+- Artifacts represent partial and changing knowledge.
+- Traceability is progressive.
+- Validation must adapt to the development context.
+- The system must tolerate uncertainty and refactors.
+- Linting should help, not block unnecessarily.
 
 ## 2. Semantic Layer Model
 
-OpenLAG clasifica los artefactos en diferentes capas semánticas (Layers) para entender en qué nivel de abstracción operan y qué tipo de relaciones son válidas entre ellos.
+OpenLAG classifies artifacts into different semantic layers (Layers) to understand at what level of abstraction they operate and what kind of relationships are valid between them.
 
-### Taxonomía de Capas
-1. **Business Layer**: Define qué se debe construir y por qué. (Propósito: Alinear negocio; Límites: No dicta implementación; Artefactos: `PROJECT`, `EPIC`, `FEATURE`, `REQUIREMENT`).
-2. **Architecture Layer**: Define el diseño y los límites técnicos del sistema. (Propósito: Diseño y restricciones; Artefactos: `DESIGN`, `DECISION`, `API`, `COMPONENT`).
-3. **Implementation Layer**: Modela el código, los tests y su trazabilidad. (Propósito: Código concreto; Artefactos: `CODE_ENTITY`, `TEST_CASE`, `DATABASE_ENTITY`, `CHANGE`, `BUG`).
-4. **Operations Layer**: Modela la infraestructura, el despliegue y la salud en tiempo de ejecución. (Propósito: Observabilidad y entrega; Artefactos: `INFRASTRUCTURE`, `DEPLOYMENT`, `MONITORING`, `INCIDENT`).
-5. **Documentation Layer**: Todo el conocimiento adicional transversal. (Propósito: Contexto; Artefactos: `GLOSSARY_TERM`, `DOCUMENTATION`).
+### Layer Taxonomy
+1. **Business Layer**: Defines what should be built and why. (Purpose: Align business; Limits: Does not dictate implementation; Artifacts: `PROJECT`, `EPIC`, `FEATURE`, `REQUIREMENT`).
+2. **Architecture Layer**: Defines the design and technical boundaries of the system. (Purpose: Design and constraints; Artifacts: `DESIGN`, `DECISION`, `API`, `COMPONENT`).
+3. **Implementation Layer**: Models code, tests, and their traceability. (Purpose: Concrete code; Artifacts: `CODE_ENTITY`, `TEST_CASE`, `DATABASE_ENTITY`, `CHANGE`, `BUG`).
+4. **Operations Layer**: Models infrastructure, deployment, and runtime health. (Purpose: Observability and delivery; Artifacts: `INFRASTRUCTURE`, `DEPLOYMENT`, `MONITORING`, `INCIDENT`).
+5. **Documentation Layer**: All transversal additional knowledge. (Purpose: Context; Artifacts: `GLOSSARY_TERM`, `DOCUMENTATION`).
 
 ### Ownership Model
-El motor de OpenLAG soporta asignación de responsabilidad semántica (Ownership) con distintos roles:
-- `owner`: El principal responsable (persona).
-- `team`: El equipo propietario.
-- `maintainers`: Array de contribuidores activos.
-- `reviewers`: Array de validadores de negocio/técnicos.
-- `steward`: Responsable de gobernanza y calidad del artefacto.
+The OpenLAG engine supports assigning semantic responsibility (Ownership) with different roles:
+- `owner`: The main responsible party (person).
+- `team`: The owning team.
+- `maintainers`: Array of active contributors.
+- `reviewers`: Array of business/technical validators.
+- `steward`: Responsible for the governance and quality of the artifact.
 
 ### Relation Strength Model
-Las relaciones se catalogan según un peso semántico para filtrar el ruido visual e impacto:
-- **Strong**: (Fuerte) Relación crítica y de acoplamiento directo (`IMPLEMENTS`, `TESTS`, `DEPENDS_ON`, `BLOCKS`, `FIXES`, `DEFINES`, `VALIDATES`, `REPLACES`).
-- **Medium**: (Media) Relación descriptiva o de flujo (`DERIVES_FROM`, `USES`, `IMPACTS`, `JUSTIFIES`, `BREAKS`, `REFINES`, `DEPLOYS`, `MONITORS`).
-- **Weak**: (Débil) Relación laxa y estrictamente semántica (`RELATES_TO`, `DOCUMENTS`).
+Relationships are cataloged according to a semantic weight to filter visual noise and impact:
+- **Strong**: Critical relationship and direct coupling (`IMPLEMENTS`, `TESTS`, `DEPENDS_ON`, `BLOCKS`, `FIXES`, `DEFINES`, `VALIDATES`, `REPLACES`).
+- **Medium**: Descriptive or flow relationship (`DERIVES_FROM`, `USES`, `IMPACTS`, `JUSTIFIES`, `BREAKS`, `REFINES`, `DEPLOYS`, `MONITORS`).
+- **Weak**: Loose and strictly semantic relationship (`RELATES_TO`, `DOCUMENTS`).
 
 ### Relation Category Model
-Las 18 relaciones oficiales de OpenLAG se agrupan por su propósito semántico en el sistema:
-- **TRACEABILITY**: Relaciones que definen validación y cobertura documental (`IMPLEMENTS`, `TESTS`, `VALIDATES`, `REFINES`, `FIXES`).
-- **STRUCTURAL**: Relaciones que definen la estructura y jerarquías (`DEPENDS_ON`, `USES`).
-- **BEHAVIORAL**: Relaciones que definen el comportamiento y el flujo en código (`DEFINES`, `BREAKS`).
-- **OPERATIONAL**: Relaciones que ocurren en infraestructura y tiempo de ejecución (`DEPLOYS`, `MONITORS`, `IMPACTS`, `BLOCKS`).
-- **SEMANTIC**: Relaciones descriptivas, de abstracción o históricas (`RELATES_TO`, `DOCUMENTS`, `REPLACES`, `JUSTIFIES`, `DERIVES_FROM`).
+The 18 official OpenLAG relationships are grouped by their semantic purpose in the system:
+- **TRACEABILITY**: Relationships defining validation and documentary coverage (`IMPLEMENTS`, `TESTS`, `VALIDATES`, `REFINES`, `FIXES`).
+- **STRUCTURAL**: Relationships defining structure and hierarchies (`DEPENDS_ON`, `USES`).
+- **BEHAVIORAL**: Relationships defining behavior and flow in code (`DEFINES`, `BREAKS`).
+- **OPERATIONAL**: Relationships occurring in infrastructure and runtime (`DEPLOYS`, `MONITORS`, `IMPACTS`, `BLOCKS`).
+- **SEMANTIC**: Descriptive, abstraction, or historical relationships (`RELATES_TO`, `DOCUMENTS`, `REPLACES`, `JUSTIFIES`, `DERIVES_FROM`).
 
-## 3. Estructura Oficial de Proyecto
+## 3. Official Project Structure
 
 ```text
 docs/
@@ -111,12 +111,12 @@ docs/
 ```
 
 ### versions/
-El directorio `versions/` controla el ciclo de vida, agrupando los archivos definitorios del tiempo.
+The `versions/` directory controls the life cycle, grouping the defining files over time.
 
-#### Artefactos de Versión (VERSION)
-Se definen en archivos markdown individuales dentro de `docs/versions/` (por ejemplo, `v-1.md`). Define la línea temporal global e iteraciones del sistema. Los artefactos deben tener el `type: VERSION`. Además de sus campos específicos (`id`, `name`, `timestamp`, `parentVersion`), al requerirse trazabilidad y calidad estructural, **deben** especificar campos comunes como `layer`, `title`, `description`, `ownership` (mínimo `owner` y `team`), y `relations`.
+#### Version Artifacts (VERSION)
+Defined in individual markdown files within `docs/versions/` (e.g., `v-1.md`). It defines the global timeline and iterations of the system. Artifacts must have `type: VERSION`. In addition to their specific fields (`id`, `name`, `timestamp`, `parentVersion`), as traceability and structural quality are required, they **must** specify common fields such as `layer`, `title`, `description`, `ownership` (minimum `owner` and `team`), and `relations`.
 
-Ejemplo de su estructura:
+Example of its structure:
 
 ```yaml
 ---
@@ -137,8 +137,8 @@ relations:
 ---
 ```
 
-#### Artefactos de Componentes y Librerías (SYSTEM_VERSION)
-Archivo para artefactos en archivos separados dentro de `docs/versions/` (por ejemplo, `sv-db-1.md`) que documentan versiones de componentes o librerías externas del sistema. Los artefactos aquí tienen el type `SYSTEM_VERSION` y contienen atributos como `component`, `version`, y `releaseDate`. También deben incluir los campos comunes estructurales para evitar advertencias de *linters*.
+#### Component and Library Artifacts (SYSTEM_VERSION)
+File for artifacts in separate files within `docs/versions/` (e.g., `sv-db-1.md`) documenting versions of components or external libraries of the system. Artifacts here have the type `SYSTEM_VERSION` and contain attributes like `component`, `version`, and `releaseDate`. They must also include the common structural fields to avoid *linter* warnings.
 
 ```yaml
 ---
@@ -160,83 +160,83 @@ relations:
 ```
 
 ### relations/
-Directorio donde se definen formalmente las reglas y multiplicidades de las relaciones que rigen el grafo mediante archivos YAML individuales (ej: `IMPLEMENTS.yaml`, `USES.yaml`).
+Directory where rules and multiplicities of relationships governing the graph are formally defined using individual YAML files (e.g.: `IMPLEMENTS.yaml`, `USES.yaml`).
 
 ### changes/
-Directorio para artefactos que documentan cambios arquitectónicos, refactors importantes, o bug fixes estructurales. Los artefactos tienen el type `CHANGE`, atributos como `changeType`, `versionFrom`, `versionTo`, y una lista `affects` detallando a qué otros artefactos o versiones de sistema aplican los cambios.
+Directory for artifacts documenting architectural changes, major refactors, or structural bug fixes. Artifacts have the type `CHANGE`, attributes like `changeType`, `versionFrom`, `versionTo`, and an `affects` list detailing which other artifacts or system versions the changes apply to.
 
-Los tipos de cambio (`changeType`) soportados son:
-- **ERROR**: Corrección de fallos o deuda técnica crítica.
-- **FEATURE**: Nuevas capacidades con impacto en la arquitectura.
-- **EVOLUTION**: Mejoras graduales, seguridad o actualizaciones de cumplimiento.
-- **REFACTOR**: Reestructuraciones sin alterar el comportamiento externo.
-- **ADAPTATION**: Ajustes para nuevas integraciones o restricciones del entorno.
+Supported change types (`changeType`) are:
+- **ERROR**: Correction of failures or critical technical debt.
+- **FEATURE**: New capabilities with architectural impact.
+- **EVOLUTION**: Gradual improvements, security, or compliance updates.
+- **REFACTOR**: Restructurings without altering external behavior.
+- **ADAPTATION**: Adjustments for new integrations or environment constraints.
 
 ### requirements/
-Contiene requisitos funcionales y no funcionales.
+Contains functional and non-functional requirements.
 
 ### epics/
-Agrupaciones de alto nivel de funcionalidades o dominios.
+High-level groupings of features or domains.
 
 ### features/
-Funcionalidades específicas implementables.
+Specific implementable features.
 
 ### decisions/
-Decisiones arquitectónicas o técnicas relevantes.
+Relevant architectural or technical decisions.
 
 ### design/
-Diseños técnicos, diagramas y estructuras internas.
+Technical designs, diagrams, and internal structures.
 
 ### code/
-Representaciones trazables de entidades de código.
+Traceable representations of code entities.
 
 ### tests/
-Casos de prueba y validaciones.
+Test cases and validations.
 
 ### risks/
-Riesgos técnicos, operativos o arquitectónicos.
+Technical, operational, or architectural risks.
 
 ### changes/
-Historial de cambios relevantes.
+History of relevant changes.
 
 ### glossary/
-Términos compartidos y semántica del dominio.
+Shared terms and domain semantics.
 
 ### architecture/
-Documentación transversal del sistema.
+Cross-cutting system documentation.
 
-## 4. Tipos Oficiales de Artefacto
+## 4. Official Artifact Types
 
-### Artefactos Base
-- **PROJECT**: Representa el sistema completo.
-- **EPIC**: Agrupación funcional o de negocio de alto nivel.
-- **FEATURE**: Funcionalidad concreta derivada de un EPIC.
-- **REQUIREMENT**: Necesidad funcional o técnica.
-- **BUSINESS_RULE**: Restricción o comportamiento esperado del dominio.
-- **USE_CASE**: Caso de uso que describe una interacción usuario-sistema.
-- **DESIGN**: Diseño técnico o arquitectónico.
-- **DECISION**: Decisión técnica persistente o histórica.
-- **CODE_ENTITY**: Elemento implementado en código. Ejemplos: clase, módulo, endpoint, servicio, componente, script.
-- **TEST_CASE**: Caso de validación o prueba verificable (agrupaciones u ocurrencias menores han de ser mapeadas a un test case real o suprimidas).
-- **CHANGE**: Cambio funcional o técnico registrado.
-- **BUG**: Defecto identificado.
-- **RISK**: Riesgo conocido.
-- **GLOSSARY_TERM**: Concepto compartido del dominio.
-- **COMPONENT**: Subconjunto arquitectónico del sistema.
-- **API**: Contrato de integración.
-- **DATABASE_ENTITY**: Entidad persistente.
-- **DOCUMENTATION**: Elemento descriptivo o de referencia.
-- **INCIDENT**: Incidencia o caída registrada en producción o entorno de ejecución.
-- **INFRASTRUCTURE**: Componente físico o cloud.
-- **DEPLOYMENT**: Instancia desplegada o configuración de despliegue.
-- **MONITORING**: Elemento de observabilidad, alerta o dashboard.
-- **MAINTENANCE**: Tarea de mantenimiento u operación.
+### Base Artifacts
+- **PROJECT**: Represents the complete system.
+- **EPIC**: High-level functional or business grouping.
+- **FEATURE**: Concrete feature derived from an EPIC.
+- **REQUIREMENT**: Functional or technical need.
+- **BUSINESS_RULE**: Restriction or expected domain behavior.
+- **USE_CASE**: Use case describing a user-system interaction.
+- **DESIGN**: Technical or architectural design.
+- **DECISION**: Persistent or historical technical decision.
+- **CODE_ENTITY**: Element implemented in code. Examples: class, module, endpoint, service, component, script.
+- **TEST_CASE**: Validation or verifiable test case (minor groupings or occurrences must be mapped to a real test case or suppressed).
+- **CHANGE**: Registered functional or technical change.
+- **BUG**: Identified defect.
+- **RISK**: Known risk.
+- **GLOSSARY_TERM**: Shared domain concept.
+- **COMPONENT**: Architectural subset of the system.
+- **API**: Integration contract.
+- **DATABASE_ENTITY**: Persistent entity.
+- **DOCUMENTATION**: Descriptive or reference element.
+- **INCIDENT**: Incident or outage registered in production or runtime environment.
+- **INFRASTRUCTURE**: Physical or cloud component.
+- **DEPLOYMENT**: Deployed instance or deployment configuration.
+- **MONITORING**: Observability element, alert, or dashboard.
+- **MAINTENANCE**: Maintenance or operations task.
 
-### Artefactos Temporales
-- **VERSION**: Representa un estado o hito del proyecto en el tiempo.
-- **SYSTEM_VERSION**: Versión específica de un componente o librería ajena o del sistema.
+### Temporal Artifacts
+- **VERSION**: Represents a state or milestone of the project over time.
+- **SYSTEM_VERSION**: Specific version of an external or system component or library.
 
-## 5. Estados Oficiales
+## 5. Official Statuses
 
 ```text
 draft
@@ -247,118 +247,118 @@ deprecated
 ```
 
 ### draft
-Conocimiento inicial o incompleto.
-Permite:
-- relaciones faltantes,
-- implementaciones pendientes,
-- tests ausentes.
+Initial or incomplete knowledge.
+Allows:
+- missing relationships,
+- pending implementations,
+- missing tests.
 
 ### in_progress
-Trabajo activo.
-El sistema puede emitir warnings pero no bloquear.
+Active work.
+The system may issue warnings but not block.
 
 ### ready
-Estado suficientemente trazable.
-Debe poseer coherencia razonable.
+Sufficiently traceable state.
+Should possess reasonable consistency.
 
 ### closed
-Artefacto completado.
-Debe poseer trazabilidad fuerte:
-- implementación,
-- validación,
-- relaciones completas.
+Completed artifact.
+Must possess strong traceability:
+- implementation,
+- validation,
+- complete relationships.
 
 ### deprecated
-Elemento legado o reemplazado.
-No debería bloquear salvo inconsistencias críticas.
+Legacy or replaced element.
+Should not block unless critical inconsistencies exist.
 
 ## 6. Formal Relation Contracts
 
-Las relaciones se definen mediante contratos explícitos que garantizan la coherencia arquitectónica. Estos contratos se definen en archivos YAML individuales dentro de la carpeta `/docs/relations/`. 
+Relationships are defined by explicit contracts ensuring architectural consistency. These contracts are defined in individual YAML files within the `/docs/relations/` folder.
 
-El diseño de las relaciones obedece a un modelo semántico coherente, mantenible y alineado con la filosofía Architecture as Code.
+The design of relationships obeys a consistent, maintainable semantic model aligned with the Architecture as Code philosophy.
 
 ### Relation Support Levels
 
-El soporte de relaciones en OpenLAG se divide en niveles para gestionar la complejidad cognitiva y la flexibilidad evolutiva:
+Relation support in OpenLAG is divided into levels to manage cognitive complexity and evolutionary flexibility:
 
-1. **Mandatory Core Relations:** Obligatorias. Forman la base mínima para rastrear el "por qué" de las cosas.
-2. **Official Optional Relations:** Opcionales. Útiles para modelar el "cómo" y el despliegue del software de forma estructurada. 
-3. **Custom Relations:** Definibles por el usuario para casos internos específicos, documentándolas en `/docs/relations/`.
+1. **Mandatory Core Relations:** Obligatory. They form the minimum basis for tracing the "why" of things.
+2. **Official Optional Relations:** Optional. Useful for modeling the "how" and deployment of software in a structured way.
+3. **Custom Relations:** Definable by the user for specific internal cases, documenting them in `/docs/relations/`.
 
 ### Mandatory Core Relations Contracts
 
-Estas relaciones son el subconjunto oficial y obligatorio de OpenLAG. Son las únicas generadas por defecto para favorecer la adopción. Constituyen la base mínima para rastrear el "por qué" de las cosas.
+These relations are the official and mandatory subset of OpenLAG. They are the only ones generated by default to favor adoption. They form the minimum basis for tracing the "why" of things.
 
-| Relación | Allowed From | Allowed To | Categoría | Fuerza | Regla Semántica de Validación |
+| Relation | Allowed From | Allowed To | Category | Strength | Semantic Validation Rule |
 |---|---|---|---|---|---|
-| **IMPLEMENTS** | `CODE_ENTITY` | `REQUIREMENT`, `FEATURE`, `BUG`, `API` | `TRACEABILITY` | `STRONG` | Toda `CODE_ENTITY` debe implementar directamente algún requerimiento de lógica, feature de negocio o solucionar un bug documentado, validando la ausencia de código huérfano. |
-| **TESTS** | `TEST_CASE` | `CODE_ENTITY`, `REQUIREMENT`, `FEATURE`, `BUG`, `USE_CASE` | `TRACEABILITY` | `STRONG` | Todo `TEST_CASE` tiene que verificar algo concreto, asegurando la existencia de pruebas que garantizan el correcto funcionamiento del sistema. |
-| **REFINES** | `EPIC`, `FEATURE`, `REQUIREMENT` | `EPIC`, `FEATURE`, `REQUIREMENT` | `TRACEABILITY` | `MEDIUM` | Descompone artefactos funcionales/de negocio en otros más concretos. El from debe ser de menor granularidad que el to (ej. FEATURE refines EPIC). |
-| **FIXES** | `CODE_ENTITY`, `CHANGE`, `DECISION` | `BUG`, `INCIDENT` | `TRACEABILITY` | `STRONG` | Conecta correcciones, cambios o decisiones que subsanan un defecto o incidencia directamente. |
-| **DOCUMENTS** | `DOCUMENTATION` | (Any) | `SEMANTIC` | `WEAK` | Conecta artefactos de documentación con las entidades que describen. |
-| **JUSTIFIES** | `DECISION` | `DESIGN`, `REQUIREMENT`, `FEATURE`, `CODE_ENTITY`, `ARCHITECTURE` | `SEMANTIC` | `MEDIUM` | Conecta decisiones de diseño/arquitectura con aquello que justifican o impactan directamente. |
+| **IMPLEMENTS** | `CODE_ENTITY` | `REQUIREMENT`, `FEATURE`, `BUG`, `API` | `TRACEABILITY` | `STRONG` | Every `CODE_ENTITY` must directly implement a logic requirement, business feature, or fix a documented bug, validating the absence of orphaned code. |
+| **TESTS** | `TEST_CASE` | `CODE_ENTITY`, `REQUIREMENT`, `FEATURE`, `BUG`, `USE_CASE` | `TRACEABILITY` | `STRONG` | Every `TEST_CASE` must verify something concrete, ensuring the existence of tests that guarantee the correct operation of the system. |
+| **REFINES** | `EPIC`, `FEATURE`, `REQUIREMENT` | `EPIC`, `FEATURE`, `REQUIREMENT` | `TRACEABILITY` | `MEDIUM` | Breaks down functional/business artifacts into more concrete ones. The from must be of a lower granularity than the to (e.g., FEATURE refines EPIC). |
+| **FIXES** | `CODE_ENTITY`, `CHANGE`, `DECISION` | `BUG`, `INCIDENT` | `TRACEABILITY` | `STRONG` | Connects fixes, changes, or decisions that directly remediate a defect or incident. |
+| **DOCUMENTS** | `DOCUMENTATION` | (Any) | `SEMANTIC` | `WEAK` | Connects documentation artifacts with the entities they describe. |
+| **JUSTIFIES** | `DECISION` | `DESIGN`, `REQUIREMENT`, `FEATURE`, `CODE_ENTITY`, `ARCHITECTURE` | `SEMANTIC` | `MEDIUM` | Connects design/architectural decisions with what they justify or directly impact. |
 
 ### Official Optional Relations
 
-Estas relaciones describen principalmente la operatividad e infraestructura ("CÓMO" operan las cosas), en lugar de la justificación (el "POR QUÉ"). Pueden añadirse manualmente en `/docs/relations/` si el proyecto necesita este modelado.
+These relations mainly describe operability and infrastructure ("HOW" things operate), rather than justification (the "WHY"). They can be added manually in `/docs/relations/` if the project needs this modeling.
 
-- **DEPENDS_ON**: Acoplamiento arquitectónico y de empaquetado. Idealmente inferido sintéticamente.
-- **USES**: Invocación o flujo en tiempo de ejecución.
-- **DEPLOYS**: Instanciación de componentes o release en infraestructura.
-- **MONITORS**: Relación de observabilidad.
-- **IMPACTS / BLOCKS / BREAKS**: Descripción de averías o impedimentos.
-- **REPLACES**: Útil para modelar evolución/histórico.
-- **DERIVES_FROM**: Relación genérica de evolución conceptual.
-- **VALIDATES**: Relación empírica/humana (QA Manual) a diferencia de TESTS.
-- **DEFINES**: Para entidades que instauran glosarios o normas.
-- **CALLS / IMPORTS**: Trazabilidad puramente a nivel de código de componentes.
-- **RELATES_TO**: (DISCOURAGED) Uso genérico altamente propenso a polución semántica. Requiere rationale si se emplea.
+- **DEPENDS_ON**: Architectural and packaging coupling. Ideally inferred synthetically.
+- **USES**: Invocation or flow at runtime.
+- **DEPLOYS**: Instantiation of components or release in infrastructure.
+- **MONITORS**: Observability relationship.
+- **IMPACTS / BLOCKS / BREAKS**: Description of failures or impediments.
+- **REPLACES**: Useful for modeling evolution/history.
+- **DERIVES_FROM**: Generic conceptual evolution relationship.
+- **VALIDATES**: Empirical/human relationship (Manual QA) as opposed to TESTS.
+- **DEFINES**: For entities establishing glossaries or norms.
+- **CALLS / IMPORTS**: Traceability purely at the code level of components.
+- **RELATES_TO**: (DISCOURAGED) Highly prone to semantic pollution general use. Requires rationale if used.
 
 ### Default Init Behavior
 
-El comando de inicialización (`npx openlag init` o `npm run init` si está expuesto) genera **únicamente Mandatory Core Relations**.
+The initialization command (`npx openlag init` or `npm run init` if exposed) generates **only Mandatory Core Relations**.
 
-El objetivo es reducir la complejidad cognitiva para nuevos proyectos. Los equipos pueden incorporar `Official Optional Relations` progresivamente copiando las especificaciones según madure su modelo documental; evitando así agobiar a los equipos con más de 18 opciones desde el día uno.
+The goal is to reduce cognitive complexity for new projects. Teams can progressively incorporate `Official Optional Relations` by copying the specifications as their documentary model matures; thus avoiding overwhelming teams with more than 18 options from day one.
 
 ### Human Relations vs Synthetic Relations
 
-OpenLAG distingue conceptualmente el origen y la responsabilidad de las relaciones:
+OpenLAG conceptually distinguishes the source and responsibility of relationships:
 
-**Human Relations (Manuales)**
-Relaciones que requieren de análisis, intención e intervención humana:
+**Human Relations (Manual)**
+Relationships requiring analysis, intent, and human intervention:
 - `IMPLEMENTS`, `TESTS`, `REFINES`, `FIXES`, `JUSTIFIES`, `DOCUMENTS`.
-Estas relaciones justifican *por qué* suceden las cosas en el ciclo de vida del software y conforman el set Mandatory Core.
+These relationships justify *why* things happen in the software lifecycle and form the Mandatory Core set.
 
-**Synthetic Relations (Inferidas automáticamente)**
-Relaciones estructurales u operativas que, idealmente, provienen de análisis de código o tooling externo (aunque pueden ser manuales de forma transitiva):
+**Synthetic Relations (Automatically Inferred)**
+Structural or operational relationships that, ideally, come from code analysis or external tooling (though they can be manual transitively):
 - `DEPENDS_ON`, `CALLS`, `IMPORTS`, `USES`, `DEPLOYS`.
-Estas relaciones indican *cómo* operan las cosas. No se exige mantenerlas manualmente al inicio del proyecto.
+These relationships indicate *how* things operate. There is no requirement to maintain them manually at the start of the project.
 
-### Criterio Anti-Desperdicio & Gobernanza
-OpenLAG prohíbe las "relaciones dinámicas abiertas" para salvaguardar el grafo frente a la polución semántica (donde "related" se usa como excusa comodín y enrarece el entendimiento visual). Toda relación necesaria extra debe definirse mediante nuevos archivos `.yaml` en el directorio `/docs/relations/`. Estos pasarán escrutinio como reglas locales del grafo.
+### Anti-Waste Criterion & Governance
+OpenLAG prohibits "open dynamic relations" to safeguard the graph from semantic pollution (where "related" is used as a wildcard excuse and muddies visual understanding). Any necessary extra relationship must be defined using new `.yaml` files in the `/docs/relations/` directory. These will pass scrutiny as local rules of the graph.
 
-La relación `RELATES_TO` se considera **DISCOURAGED**. Su uso excesivo o injustificado destruye el valor del grafo, convirtiéndolo en un enjambre incomprensible (polución semántica). Por defecto, no se genera al inicializar un proyecto.
+The `RELATES_TO` relationship is considered **DISCOURAGED**. Its excessive or unjustified use destroys the graph's value, turning it into an incomprehensible swarm (semantic pollution). By default, it is not generated when initializing a project.
 
-Para utilizar esta relación, el contrato debe ser explícitamente generado usando `npx openlag init --all` (o creado manualmente en `/docs/relations/RELATES_TO.yaml`). Cuando un desarrollador utilice esta relación en el Frontmatter de un artefacto Markdown, se recomienda justificarla estrictamente aportando contexto mediante un campo `rationale` o detallando la motivación de la conexión dentro del cuerpo del documento, demostrando que ninguna relación con mayor peso semántico (como `IMPLEMENTS`, `DEPENDS_ON`, o `USES`) encajaba en ese escenario particular.
+To use this relationship, the contract must be explicitly generated using `npx openlag init --all` (or created manually in `/docs/relations/RELATES_TO.yaml`). When a developer uses this relationship in the Frontmatter of a Markdown artifact, it is recommended to strictly justify it by providing context through a `rationale` field or detailing the motivation for the connection within the document body, demonstrating that no relationship with a greater semantic weight (like `IMPLEMENTS`, `DEPENDS_ON`, or `USES`) fit that particular scenario.
 
-### Tipos de Restricción
-- **VALID**: Relación estándar y correcta.
-- **ALLOWED**: Permitida, pero no recomendada.
-- **DISCOURAGED**: Mala práctica, generará `warn` en desarrollo, `error` en release.
-- **INVALID**: Prohibida, generará `error` inmediato.
+### types of restriction
+- **VALID**: Standard and correct relationship.
+- **ALLOWED**: Permitted, but not recommended.
+- **DISCOURAGED**: Bad practice, will generate `warn` in development, `error` in release.
+- **INVALID**: Prohibited, will generate immediate `error`.
 
-### Estructura de Artefactos vs Semántica
-Mientras las relaciones (reglas del grafo) se definen formalmente en `/docs/relations/*.yaml`, los **Artefactos (ArtifactTypes)** pertenecen al núcleo estático validado por OpenLAG (`ArtifactRegistry`).
-La documentación real del proyecto NUNCA debe comprimirse artificialmente en archivos YAML técnicos.
-Se exige que los artefactos persistan como **archivos Markdown legibles por humanos (`.md`)** distribuidos en directorios semánticos (`/requirements`, `/features`, `/design`, `/code`). Así, se mantiene la filosofía *Architecture as Code* legible directamente en repositorios de Git.
+### Artifact Structure vs Semantics
+While relationships (graph rules) are formally defined in `/docs/relations/*.yaml`, **Artifacts (ArtifactTypes)** belong to the static core validated by OpenLAG (`ArtifactRegistry`).
+The actual project documentation should NEVER be artificially compressed into technical YAML files.
+It is required that artifacts persist as **human-readable Markdown files (`.md`)** distributed in semantic directories (`/requirements`, `/features`, `/design`, `/code`). Thus, the *Architecture as Code* philosophy is kept legible directly in Git repositories.
 
-### Severidad por Perfil
-- **feature**: Solo `error` en reglas `INVALID`.
-- **develop**: `warn` en reglas `DISCOURAGED`, `error` en `INVALID`.
-- **release**: `error` en reglas `DISCOURAGED` e `INVALID`.
+### Severity per Profile
+- **feature**: Only `error` on `INVALID` rules.
+- **develop**: `warn` on `DISCOURAGED` rules, `error` on `INVALID`.
+- **release**: `error` on `DISCOURAGED` and `INVALID` rules.
 
-## 7. Formato Oficial Markdown
+## 7. Official Markdown Format
 
 ```yaml
 ---
@@ -367,7 +367,7 @@ type: REQUIREMENT
 subType: Auth
 status: draft
 layer: BUSINESS
-title: Generar graph-data.json
+title: Generate graph-data.json
 version: v1
 ownership:
   owner: dony
@@ -383,28 +383,28 @@ relations:
 ---
 ```
 
-### Campos Obligatorios
+### Mandatory Fields
 - `id`
 - `type`
 - `status`
 - `title`
 
-### Campos Opcionales
-- `layer` (El valor de `layer` es siempre derivado implícitamente por el campo `type` según la taxonomía de capas semánticas. Solo se permite definir como un *override* manual pero está desaconsejado o sujeto a validación estricta).
-- `subType` (Opcional. Clasificación semántica de sub-dominio o especialización puramente taxonómica de un artefacto [ej. `Database`, `Microservice`]. No se le deben atribuir acciones de UI explícitas en el contrato).
-- `ownership` (puede incluir `owner`, `team`, `domain`, `maintainers`, `reviewers`, `steward`)
+### Optional Fields
+- `layer` (The value of `layer` is always implicitly derived by the `type` field based on the semantic layer taxonomy. It is only allowed to be defined as a manual *override* but is discouraged or subject to strict validation).
+- `subType` (Optional. Semantic sub-domain classification or purely taxonomic specialization of an artifact [e.g., `Database`, `Microservice`]. It should not be attributed explicit UI actions in the contract).
+- `ownership` (can include `owner`, `team`, `domain`, `maintainers`, `reviewers`, `steward`)
 - `tags`
 - `version`
-- `relations` (cada relación debe declarar su `type` y `target`. Los valores `strength` y `category` son intrínsecos al contrato del tipo de relación, y agregarlos manualmente se considera un "override" avanzado prohibido por defecto).
+- `relations` (each relation must declare its `type` and `to`. The values `strength` and `category` are intrinsic to the relation type contract, and adding them manually is considered an advanced "override" disabled by default).
 - `description`
 - `references`
 
-### Convenciones
-- IDs únicos.
-- Frontmatter YAML obligatorio.
-- Markdown libre debajo del bloque estructurado.
+### Conventions
+- Unique IDs.
+- Mandatory YAML Frontmatter.
+- Free Markdown below the structured block.
 
-## 8. Convenciones de IDs
+## 8. ID Conventions
 
 ```text
 REQ-001
@@ -414,17 +414,17 @@ DEC-002
 BUG-018
 ```
 
-### Reglas
-- IDs deben ser únicos.
-- IDs no deben reutilizarse.
-- IDs deben ser estables temporalmente.
-- El prefijo define el tipo lógico.
+### Rules
+- IDs must be unique.
+- IDs should not be reused.
+- IDs must be temporally stable.
+- The prefix defines the logical type.
 
-## 9. Modelo de Evolución
+## 9. Evolution Model
 
-OpenLAG modela sistemas vivos.
+OpenLAG models living systems.
 
-La evolución típica:
+Typical evolution:
 ```text
 Idea
  → draft
@@ -434,11 +434,11 @@ Idea
  → deprecated
 ```
 
-La trazabilidad aumenta progresivamente.
-No se espera completitud inmediata.
-Los huecos representan conocimiento pendiente, no necesariamente errores.
+Traceability increases progressively.
+Immediate completeness is not expected.
+Gaps represent pending knowledge, not necessarily errors.
 
-## 10. Semántica del Linter
+## 10. Linter Semantics
 
 ### Profiles
 ```text
@@ -448,109 +448,109 @@ release
 ```
 
 ### feature
-Relajado.
-Solo bloquea errores estructurales graves.
+Relaxed.
+Only blocks severe structural errors.
 
 ### develop
-Intermedio.
-Detecta deuda y huecos.
+Intermediate.
+Detects debt and gaps.
 
 ### release
-Estricto.
-Exige trazabilidad fuerte.
+Strict.
+Requires strong traceability.
 
-### Filosofía
-El linter no busca castigar, busca visibilizar.
+### Philosophy
+The linter doesn't aim to punish, it aims to make visible.
 
-### Errores típicos
-- IDs duplicados.
-- relaciones rotas.
-- YAML inválido.
-- tipos inexistentes.
+### Typical errors
+- Duplicated IDs.
+- Broken relations.
+- Invalid YAML.
+- Non-existent types.
 
-### Warnings típicos
-- requisitos sin test.
-- código sin trazabilidad.
-- relaciones incompletas.
+### Typical Warnings
+- Requirements without a test.
+- Code without traceability.
+- Incomplete relations.
 
-## 11. Artefactos Huérfanos
+## 11. Orphaned Artifacts
 
-Un huérfano es un artefacto sin relaciones significativas.
+An orphan is an artifact without meaningful relations.
 
-Ejemplos:
-- requisito sin implementación,
-- test sin objetivo,
-- código sin justificación.
+Examples:
+- requirement without implementation,
+- test without target,
+- code without justification.
 
-Los huérfanos:
-- pueden ser normales en `draft`,
-- representan riesgo en `release`.
+Orphans:
+- can be normal in `draft`,
+- represent risk in `release`.
 
-## 12. Análisis de Impacto
+## 12. Impact Analysis
 
-OpenLAG permite responder:
-- ¿Qué rompe este cambio?
-- ¿Qué depende de este componente?
-- ¿Qué requisitos implementa este módulo?
-- ¿Qué tests validan esta funcionalidad?
+OpenLAG allows answering:
+- What does this change break?
+- What depends on this component?
+- What requirements does this module implement?
+- What tests validate this functionality?
 
-El impacto se calcula recorriendo relaciones del grafo.
+Impact is calculated by traversing the graph's relationships.
 
-## 13. Versionado y Línea Temporal
+## 13. Versioning and Timeline
 
-OpenLAG modela:
+OpenLAG models:
 - snapshots,
 - releases,
-- herencia temporal,
-- evolución histórica.
+- temporal inheritance,
+- historical evolution.
 
-Las versiones forman un árbol temporal navegable.
+Versions form a navigable temporal tree.
 
-Los artefactos pueden:
-- persistir,
-- cambiar,
-- reemplazarse,
-- o desaparecer.
+Artifacts can:
+- persist,
+- change,
+- be replaced,
+- or disappear.
 
 ## 14. Graph Scalability and Exploration Model
 
-OpenLAG está diseñado bajo el principio Offline-First y Static-by-Default (Architecture as Code puro alojable en S3, GitHub Pages o Netlify). Sin embargo, cuando los proyectos crecen sustancialmente, intentar visualizar todo el sistema de una sola vez no es cognitivamente útil y provoca severos problemas de rendimiento en el frontend.
+OpenLAG is designed under the Offline-First and Static-by-Default principle (pure Architecture as Code hostable on S3, GitHub Pages, or Netlify). However, when projects grow substantially, attempting to visualize the entire system at once is not cognitively useful and causes severe performance issues in the frontend.
 
-Por ello, OpenLAG adopta las siguientes reglas de escalabilidad mediante un modelo de "Exploración de Subgrafos":
+Therefore, OpenLAG adopts the following scalability rules through a "Subgraph Exploration" model:
 
-### Principios Fundamentales
-- **El Grafo Completo es Base de Conocimiento, NO Interfaz Obligatoria**: OpenLAG procesa, valida y almacena el total del `GraphState`, pero no promete ni intenta renderizarlo visualmente todo de golpe.
-- **Subgraph Projection & Focus Mode**: El usuario explora vistas proyectadas controladas (Subgrafos). Por defecto, la experiencia visual se basa en seleccionar un artefacto foco y expandir la vecindad a una profundidad configurada (`depth = 1` o `2`). Las sub-ramas no solicitadas se recortan agresivamente.
-- **Semantic Graph Visualization Engine**: OpenLAG ha evolucionado de ser un simple explorador de documentos ("Document Graph Explorer") a un motor visual de análisis del ciclo de vida del software ("Software Lifecycle Visualization Engine"). El grafo base es inamovible, pero la visualización y ordenación se realiza de manera dinámica a través del *Ordering Strategy Registry* según la perspectiva (por defecto: Lifecycle Strategy).
-- **Weak Relation Hiding**: Las relaciones difusas o semánticas (`RELATES_TO`, `DOCUMENTS`, u otras categorizadas como `WEAK`) aumentan el ruido introduciendo dependencias cruzadas sin impacto arquitectónico crítico. Estarán ocultas por defecto en la UI (se pueden activar explícitamente mediante filtros si se requiere análisis transversal de trazabilidad).
-- **Hub Collapsing (Umbrales de Tolerancia)**: Existen límites duros de visualización (`MAX_RENDER_NODES = 150`, `MAX_RENDER_EDGES = 300`). Si un subgrafo sobrepasa estos umbrales generados (por ejemplo un proyecto gigantesco con cientos de features apuntando a un único componente `Auth`), la visualización truncará de forma segura el grafo y alertará al usuario indicando el uso de un filtro de profundidad/Layer.
-- **Análisis por Slices Semánticos**: El Impact Engine ya no recorre visualmente todos los nodos, sino que realiza consultas controladas directamente sobre el índice estructural de GraphQL/TypeScript construido en memoria del navegador antes de renderizar la solución.
+### Fundamental Principles
+- **The Complete Graph is a Knowledge Base, NOT a Mandatory Interface**: OpenLAG processes, validates, and stores the total `GraphState`, but does not promise or attempt to visually render it all at once.
+- **Subgraph Projection & Focus Mode**: The user explores controlled projected views (Subgraphs). By default, the visual experience is based on selecting a focal artifact and expanding the neighborhood to a configured depth (`depth = 1` or `2`). Unrequested sub-branches are aggressively cropped.
+- **Semantic Graph Visualization Engine**: OpenLAG has evolved from being a simple "Document Graph Explorer" into a visual "Software Lifecycle Visualization Engine". The base graph is immovable, but visualization and ordering are done dynamically through the *Ordering Strategy Registry* depending on the perspective (default: Lifecycle Strategy).
+- **Weak Relation Hiding**: Diffuse or semantic relations (`RELATES_TO`, `DOCUMENTS`, or others categorized as `WEAK`) increase noise by introducing cross-dependencies without critical architectural impact. They will be hidden by default in the UI (they can be explicitly activated using filters if transversal traceability analysis is required).
+- **Hub Collapsing (Tolerance Thresholds)**: There are hard rendering limits (`MAX_RENDER_NODES = 150`, `MAX_RENDER_EDGES = 300`). If a subgraph exceeds these generated thresholds (e.g., a massive project with hundreds of features pointing to a single `Auth` component), the visualization will safely truncate the graph and alert the user, suggesting the use of a depth/Layer filter.
+- **Semantic Slice Analysis**: The Impact Engine no longer visually traverses all nodes; instead, it performs controlled queries directly on the GraphQL/TypeScript structural index built in the browser's memory before rendering the solution.
 
-### Estrategias de Visualización (Proyección Semántica)
+### Visualization Strategies (Semantic Projection)
 
-El portal permite visualizar los artefactos bajo diferentes "Estrategias de Ordenación y Agrupación", resolviendo el grafo desde diferentes ópticas profesionales sin modificar el grafo mismo.
+The portal allows visualizing artifacts under different "Ordering and Grouping Strategies," resolving the graph from different professional perspectives without modifying the graph itself.
 
-1. **Lifecycle Strategy (Default)**: Visualización en orden natural evolutivo: VISION → PROJECT → VERSION → EPIC → REQUIREMENT → USE_CASE → DECISION → DESIGN → COMPONENT → FEATURE → CODE_ENTITY → TEST_CASE → RISK → CHANGE → CHANGELOG.
-2. **Implementation Strategy**: Orden de implementación (DECISION → DESIGN → COMPONENT → FEATURE → CODE_ENTITY → TEST_CASE).
-3. **Validation Strategy**: Trazabilidad de pruebas y validaciones (REQUIREMENT → FEATURE → TEST_CASE → BUG → CHANGE → INCIDENT).
-4. **Architecture / Governance / Release / Domains**: Proyecciones adicionales que enfatizan o aíslan segmentos según propósitos analíticos o políticas.
+1. **Lifecycle Strategy (Default)**: Visualization in natural evolutionary order: VISION → PROJECT → VERSION → EPIC → REQUIREMENT → USE_CASE → DECISION → DESIGN → COMPONENT → FEATURE → CODE_ENTITY → TEST_CASE → RISK → CHANGE → CHANGELOG.
+2. **Implementation Strategy**: Order of implementation (DECISION → DESIGN → COMPONENT → FEATURE → CODE_ENTITY → TEST_CASE).
+3. **Validation Strategy**: Traceability of tests and validations (REQUIREMENT → FEATURE → TEST_CASE → BUG → CHANGE → INCIDENT).
+4. **Architecture / Governance / Release / Domains**: Additional projections that emphasize or isolate segments according to analytical purposes or policies.
 
-### Evolución del Static Graph Data (`graph-data.json`)
-- **Fase 1 (Actual)**: `graph-data.json` único + **GraphQueryLayer en Frontend**. Todos los índices (`artifactsById`, `relationsBySource`) se computan en la memoria local estática para luego derivar los subgrafos que consume la UI.
-- **Fase 2 (Fragmentación Estática)**: Descomposición opcional mediante compilación del generador en fragmentos estáticos (`/slices/*.json` o `/versions/*.json`) para evitar descargas monolíticas.
-- **Fase 3 (Backend Opcional Futuro)**: Despliegue de un Engine/BFF transitorio solo utilizado cuando el modelo base sobrepasa groseramente los 10,000 artefactos con uso ultra-asíncrono, búsquedas vectoriales, roles y permisos, mutaciones interactivas sobre Graph DB. Permanecerá **100% opcional**; OpenLAG debe seguir funcionando sin Backend como premisa.
+### Evolution of Static Graph Data (`graph-data.json`)
+- **Phase 1 (Current)**: Single `graph-data.json` + **GraphQueryLayer in Frontend**. All indices (`artifactsById`, `relationsBySource`) are computed in local static memory to then derive the subgraphs consumed by the UI.
+- **Phase 2 (Static Fragmentation)**: Optional decomposition by compiling the generator into static fragments (`/slices/*.json` or `/versions/*.json`) to avoid monolithic downloads.
+- **Phase 3 (Future Optional Backend)**: Deployment of a transient Engine/BFF only used when the base model grossly exceeds 10,000 artifacts with ultra-asynchronous use, vectorial searches, roles and permissions, interactive mutations on Graph DB. It will remain **100% optional**; OpenLAG must continue to work without a Backend as a premise.
 
-## 15. Integración CI/CD
+## 15. CI/CD Integration
 
-La CLI de OpenLAG está diseñada para integrarse en pipelines de integración continua.
+The OpenLAG CLI is designed to integrate into continuous integration pipelines.
 
-### Comando `check`
-El comando `openlag check` es el estándar recomendado para CI, ya que agrupa:
-1. Validación de tipos (TypeScript).
-2. Lint de código fuente (ESLint).
-3. Validación arquitectónica (OpenLAG Lint).
+### `check` Command
+The `openlag check` command is the recommended standard for CI, as it groups:
+1. Type validation (TypeScript).
+2. Source code linting (ESLint).
+3. Architectural validation (OpenLAG Lint).
 
-### Ejemplo GitHub Actions:
+### GitHub Actions Example:
 
 ```yaml
 name: OpenLAG Guard
@@ -569,39 +569,39 @@ jobs:
       - run: npx openlag check
 ```
 
-### Uso recomendado
-- Validar PRs mediante `openlag check`.
-- Detectar drift documental.
-- Mostrar deuda progresiva de trazabilidad.
-- Evitar inconsistencias estructurales antes de merge.
+### Recommended Usage
+- Validate PRs using `openlag check`.
+- Detect documentary drift.
+- Show progressive traceability debt.
+- Avoid structural inconsistencies before merge.
 
-## 16. Roadmap Conceptual
+## 16. Conceptual Roadmap
 
-#### Fase 1: Núcleo y Tooling (Completado/En curso)
-- **Parser Robusto**: Extracción centralizada de datos Markdown y YAML.
-- **CLI Oficial**: Interfaz unificada (`openlag`) para manipulación y visualización.
-- **Linting Extensible**: Motor de validación con perfiles de severidad.
-- **Generación Estable**: Pipeline de datos optimizado para el portal.
+#### Phase 1: Core and Tooling (Completed/In Progress)
+- **Robust Parser**: Centralized extraction of Markdown and YAML data.
+- **Official CLI**: Unified interface (`openlag`) for manipulation and visualization.
+- **Extensible Linting**: Validation engine with severity profiles.
+- **Stable Generation**: Optimized data pipeline for the portal.
 
-#### Fase 2: Capacidades Avanzadas (Próximo paso)
-- **Capa de Extensibilidad**: Plugins para customizar reglas de linting y tipos de artefactos.
-- **API de Consultas**: Interfaz programática para extraer métricas del grafo.
-- **Análisis Temporal Profundo**: Comparativa automática entre versiones del grafo.
+#### Phase 2: Advanced Capabilities (Next step)
+- **Extensibility Layer**: Plugins to customize linting rules and artifact types.
+- **Query API**: Programmatic interface to extract metrics from the graph.
+- **Deep Temporal Analysis**: Automatic comparison between graph versions.
 
-#### Fase 3: Escalabilidad (Visión)
-- **Backend Opcional**: Persistencia en bases de datos de grafos para repositorios masivos.
-- **Asistentes IA**: Integración con modelos de lenguaje para sugerir trazabilidad y detectar inconsistencias.
-- **Generación Automática**: Puentes entre código real y documentación de arquitectura.
+#### Phase 3: Scalability (Vision)
+- **Optional Backend**: Persistence in graph databases for massive repositories.
+- **AI Assistants**: Integration with language models to suggest traceability and detect inconsistencies.
+- **Automatic Generation**: Bridges between real code and architecture documentation.
 
-## 17. Filosofía Final
+## 17. Final Philosophy
 
-OpenLAG no intenta representar una verdad absoluta.
-Intenta representar el estado observable y trazable del conocimiento técnico de un sistema en evolución.
+OpenLAG does not attempt to represent an absolute truth.
+It attempts to represent the observable and traceable state of the technical knowledge of an evolving system.
 
-El objetivo no es alcanzar perfección documental.
+The goal is not achieving documentary perfection.
 
-El objetivo es:
-- reducir incertidumbre,
-- aumentar comprensión,
-- mejorar trazabilidad,
-- y hacer visible la evolución real del software.
+The goal is to:
+- reduce uncertainty,
+- increase understanding,
+- improve traceability,
+- and make the actual evolution of the software visible.
