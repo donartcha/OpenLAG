@@ -2,6 +2,16 @@
 
 All notable changes to OpenLAG are documented in this file.
 
+## Unreleased
+
+### Added
+
+- Added GitHub collaboration governance with CODEOWNERS, pull request and issue templates, and mandatory CI for `main`.
+
+### Changed
+
+- Documented the protected `main` branch policy for contributors.
+
 ## 0.1.8 - 2026-05-19
 
 ### Changed
