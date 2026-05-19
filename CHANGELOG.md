@@ -11,6 +11,7 @@ All notable changes to OpenLAG are documented in this file.
 ### Changed
 
 - Documented the protected `main` branch policy for contributors.
+- Made `npm run check` build the CLI before tests so validation works in clean CI checkouts.
 
 ## 0.1.8 - 2026-05-19
 
