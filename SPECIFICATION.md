@@ -360,6 +360,7 @@ Se exige que los artefactos persistan como **archivos Markdown legibles por huma
 ---
 id: REQ-001
 type: REQUIREMENT
+subType: SYSTEM
 status: draft
 layer: BUSINESS
 title: Generar graph-data.json
@@ -388,6 +389,12 @@ relations:
 
 ### Campos Opcionales
 - `layer`
+- `subType` (Opcional. Define una subcategoría estilística y estructural. Si se proporciona, la interfaz de OpenLAG agrupará y anidará automáticamente los artefactos de ese tipo bajo esta subcategoría. Además, existen valores reservados que mueven artefactos a fases específicas del modelo de ciclo de vida del frontend:
+  * `Review`: Mueve artefactos de la fase de Desarrollo a la fase de Revisión (Review).
+  * `CI`: Mueve artefactos de Infraestructura a la fase de Continuous Integration.
+  * `Build` / `Package`: Mueve artefactos de Infraestructura a la fase de Embalaje/Construcción (Build).
+  * `Retirement`: Mueve artefactos de Mantenimiento a la fase final de Retiro.
+  Cualquier otro valor (ej. `SYSTEM`, `Component`, `Security`) simplemente agrupará los artefactos dentro de su fase por defecto correspondiente).
 - `ownership` (puede incluir `owner`, `team`, `domain`, `maintainers`, `reviewers`, `steward`)
 - `tags`
 - `version`

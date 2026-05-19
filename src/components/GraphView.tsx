@@ -6,6 +6,7 @@ import Markdown from 'react-markdown';
 import '@xyflow/react/dist/style.css';
 import { useStore } from '../store';
 import { ArtifactType } from '../types';
+import { getArtifactLayer, getArtifactOwner, getArtifactTeam } from '../utils/artifactUtils';
 
 const typeColors: Record<ArtifactType, string> = {
   REQUIREMENT: 'text-blue-400 border-blue-400',
@@ -311,9 +312,12 @@ const GraphFlow: React.FC = () => {
         isConnectedToSelected = connectedNodes.has(a.id);
       }
 
-      const isFilteredOut = (filterLayer !== 'ALL' && a.layer !== filterLayer) ||
-                            (filterOwner !== 'ALL' && a.ownership?.owner !== filterOwner) ||
-                            (filterTeam !== 'ALL' && a.ownership?.team !== filterTeam);
+      const computedLayer = getArtifactLayer(a);
+      const computedOwner = getArtifactOwner(a, fullGraph);
+      const computedTeam = getArtifactTeam(a, fullGraph);
+      const isFilteredOut = (filterLayer !== 'ALL' && computedLayer !== filterLayer) ||
+                            (filterOwner !== 'ALL' && computedOwner !== filterOwner) ||
+                            (filterTeam !== 'ALL' && computedTeam !== filterTeam);
 
       const isDimmed = isFilteredOut || (selectedArtifactId !== null && !isSelected && !isConnectedToSelected);
       const isOrphan = orphanIds.has(a.id);
@@ -334,9 +338,16 @@ const GraphFlow: React.FC = () => {
       
       const sourceNode = graph.artifacts.find(a => a.id === r.from);
       const targetNode = graph.artifacts.find(a => a.id === r.to);
-      const isFilteredOut = (filterLayer !== 'ALL' && (sourceNode?.layer !== filterLayer || targetNode?.layer !== filterLayer)) ||
-                            (filterOwner !== 'ALL' && (sourceNode?.ownership?.owner !== filterOwner || targetNode?.ownership?.owner !== filterOwner)) ||
-                            (filterTeam !== 'ALL' && (sourceNode?.ownership?.team !== filterTeam || targetNode?.ownership?.team !== filterTeam));
+      const sourceLayer = sourceNode ? getArtifactLayer(sourceNode) : undefined;
+      const targetLayer = targetNode ? getArtifactLayer(targetNode) : undefined;
+      const sourceOwner = sourceNode ? getArtifactOwner(sourceNode, fullGraph) : undefined;
+      const targetOwner = targetNode ? getArtifactOwner(targetNode, fullGraph) : undefined;
+      const sourceTeam = sourceNode ? getArtifactTeam(sourceNode, fullGraph) : undefined;
+      const targetTeam = targetNode ? getArtifactTeam(targetNode, fullGraph) : undefined;
+      
+      const isFilteredOut = (filterLayer !== 'ALL' && (sourceLayer !== filterLayer || targetLayer !== filterLayer)) ||
+                            (filterOwner !== 'ALL' && (sourceOwner !== filterOwner || targetOwner !== filterOwner)) ||
+                            (filterTeam !== 'ALL' && (sourceTeam !== filterTeam || targetTeam !== filterTeam));
                             
       const isDimmed = isFilteredOut || (selectedArtifactId !== null && !isConnectedToSelected);
 
@@ -550,3 +561,4 @@ export const GraphView: React.FC = () => {
     </ReactFlowProvider>
   );
 };
+

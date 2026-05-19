@@ -39,7 +39,7 @@ export const GuideView: React.FC = () => {
             refactor: { label: "REFACTOR", desc: "Code restructurings without changing external behavior." },
             adaptation: { label: "ADAPTATION", desc: "Changes to adjust to new environmental/integration constraints." },
             frontmatter: "Official Markdown Format",
-            frontmatterDesc: "Each artifact requires a YAML frontmatter. Mandatory fields: id, type, status, title.",
+            frontmatterDesc: "Each artifact requires a YAML frontmatter. Mandatory: id, type, status, title. Optional: subType (for taxonomic classification).",
             statusFlow: "Lifecycle Status Flow",
             statusFlowDesc: "Evolution of artifacts. The system tolerates missing relations in 'draft', but expects full traceability in 'closed'.",
             versions: "Project & System Versions",
@@ -93,7 +93,7 @@ export const GuideView: React.FC = () => {
             refactor: { label: "REFACTOR", desc: "Reestructuraciones sin alterar el comportamiento externo." },
             adaptation: { label: "ADAPTATION", desc: "Ajustes para nuevas integraciones o restricciones del entorno." },
             frontmatter: "Formato Oficial Markdown",
-            frontmatterDesc: "Cada artefacto requiere un YAML frontmatter. Campos obligatorios: id, type, status, title.",
+            frontmatterDesc: "Cada artefacto requiere un YAML frontmatter. Campos obligatorios: id, type, status, title. Opcional: subType (clasificación taxonómica).",
             statusFlow: "Estados y Ciclo de Vida",
             statusFlowDesc: "En estado 'draft' se permiten huérfanos, pero en 'closed' se exige trazabilidad completa.",
             versions: "Versiones del Sistema y Proyecto",
@@ -173,7 +173,7 @@ export const GuideView: React.FC = () => {
                             <h3 className="text-sm font-bold text-white/80 mb-2 uppercase tracking-widest">{c.implementationLayer}</h3>
                             <p className="text-[11px] text-white/40 leading-relaxed mb-4">{c.implementationLayerDesc}</p>
                             <div className="flex flex-wrap gap-2">
-                                {['CODE_ENTITY', 'TEST_CASE', 'DATABASE_ENTITY', 'CHANGE', 'BUG', 'RISK', 'TEST'].map(t => (
+                                {['CODE_ENTITY', 'TEST_CASE', 'DATABASE_ENTITY', 'CHANGE', 'BUG', 'RISK'].map(t => (
                                     <span key={t} className="text-[9px] bg-white/5 px-1.5 py-0.5 rounded text-white/60">{t}</span>
                                 ))}
                             </div>
@@ -306,6 +306,7 @@ export const GuideView: React.FC = () => {
 {`---
 id: REQ-001
 type: REQUIREMENT
+subType: SYSTEM
 status: draft
 layer: BUSINESS
 title: Generar graph-data.json
@@ -452,6 +453,7 @@ We will use JWT tokens for authentication...`}
 {`---
 id: CODE-auth-service
 type: CODE_ENTITY
+subType: Microservice
 status: in_progress
 layer: IMPLEMENTATION
 title: AuthService.ts

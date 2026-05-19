@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useStore } from '../store';
 import { ArtifactType } from '../types';
+import { getArtifactLayer, getArtifactOwner, getArtifactTeam } from '../utils/artifactUtils';
 import { AlertCircle, Search, Trash2, ChevronRight, FileText, ExternalLink, ShieldAlert, AlertTriangle, Info, Download } from 'lucide-react';
 import { generateGapsReport, downloadTextFile } from '../lib/reportUtils';
 
@@ -72,10 +73,13 @@ export const OrphansView: React.FC = () => {
     const filteredGaps = useMemo(() => {
         return gaps.filter(gap => {
             const art = gap.artifact;
+            const computedLayer = getArtifactLayer(art);
+            const computedOwner = getArtifactOwner(art, graph);
+            const computedTeam = getArtifactTeam(art, graph);
             
-            if (filterLayer !== 'ALL' && art.layer !== filterLayer) return false;
-            if (filterOwner !== 'ALL' && art.ownership?.owner !== filterOwner) return false;
-            if (filterTeam !== 'ALL' && art.ownership?.team !== filterTeam) return false;
+            if (filterLayer !== 'ALL' && computedLayer !== filterLayer) return false;
+            if (filterOwner !== 'ALL' && computedOwner !== filterOwner) return false;
+            if (filterTeam !== 'ALL' && computedTeam !== filterTeam) return false;
 
             if (selectedArtifactId && art.id !== selectedArtifactId) return false;
 
@@ -95,7 +99,7 @@ export const OrphansView: React.FC = () => {
         // Match the grouped keys in DocumentationView
         return [
             'REQUIREMENT', 'USE_CASE', 'DESIGN', 'COMPONENT', 
-            'CODE_ENTITY', 'TEST', 'DOCUMENTATION', 'INCIDENT', 
+            'CODE_ENTITY', 'TEST_CASE', 'DOCUMENTATION', 'INCIDENT', 
             'INFRASTRUCTURE', 'DEPLOYMENT', 'MONITORING', 'MAINTENANCE'
         ];
     }, []);
@@ -357,4 +361,3 @@ export const OrphansView: React.FC = () => {
         </div>
     );
 };
-

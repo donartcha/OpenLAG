@@ -1,16 +1,22 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { useStore } from '../store';
 import { Artifact } from '../types';
+import { getArtifactLayer, getArtifactOwner, getArtifactTeam } from '../utils/artifactUtils';
 import { Layers, FileText, FileCode2, ShieldCheck, ChevronRight, Search, GitPullRequest, Repeat, Box, Rocket, Activity, Wrench, Trash2, AlertCircle, Printer, Milestone, Bookmark, BookOpen } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
 const OwnershipBadge = ({ artifact }: { artifact: Artifact }) => {
-    if (!artifact.layer && !artifact.ownership?.owner && !artifact.ownership?.team) return null;
+    const { fullGraph } = useStore();
+    const computedLayer = getArtifactLayer(artifact);
+    const computedOwner = getArtifactOwner(artifact, fullGraph);
+    const computedTeam = getArtifactTeam(artifact, fullGraph);
+    
+    if (!computedLayer && !computedOwner && !computedTeam) return null;
     return (
         <div className="flex gap-2 mb-3 mt-1 pointer-events-none">
-            {artifact.layer && <span className="text-[9px] text-purple-400 border border-purple-400/20 bg-purple-400/5 px-1.5 py-0.5 rounded-sm font-mono tracking-tighter">LAYER: {artifact.layer}</span>}
-            {artifact.ownership?.owner && <span className="text-[9px] text-blue-400 border border-blue-400/20 bg-blue-400/5 px-1.5 py-0.5 rounded-sm font-mono tracking-tighter">OWNER: {artifact.ownership?.owner}</span>}
-            {artifact.ownership?.team && <span className="text-[9px] text-emerald-400 border border-emerald-400/20 bg-emerald-400/5 px-1.5 py-0.5 rounded-sm font-mono tracking-tighter">TEAM: {artifact.ownership?.team}</span>}
+            {computedLayer && <span className="text-[9px] text-purple-400 border border-purple-400/20 bg-purple-400/5 px-1.5 py-0.5 rounded-sm font-mono tracking-tighter">LAYER: {computedLayer}</span>}
+            {computedOwner && <span className="text-[9px] text-blue-400 border border-blue-400/20 bg-blue-400/5 px-1.5 py-0.5 rounded-sm font-mono tracking-tighter">OWNER: {computedOwner}</span>}
+            {computedTeam && <span className="text-[9px] text-emerald-400 border border-emerald-400/20 bg-emerald-400/5 px-1.5 py-0.5 rounded-sm font-mono tracking-tighter">TEAM: {computedTeam}</span>}
         </div>
     );
 };
@@ -20,15 +26,12 @@ const PHASES = [
   { id: 'req', title: 'Requirements / Analysis', icon: FileText, types: ['REQUIREMENT', 'USE_CASE'] },
   { id: 'design', title: 'Architecture & Design', icon: Layers, types: ['DESIGN', 'COMPONENT', 'API', 'DATABASE_ENTITY'] },
   { id: 'dev', title: 'Development', icon: FileCode2, types: ['CODE_ENTITY', 'LIBRARY', 'ENVIRONMENT'] },
-  { id: 'review', title: 'Code Review', icon: GitPullRequest, types: ['CODE_ENTITY'] },
-  { id: 'ci', title: 'Continuous Integration', icon: Repeat, types: ['INFRASTRUCTURE', 'PIPELINE'] },
-  { id: 'verif', title: 'Testing / QA', icon: ShieldCheck, types: ['TEST', 'TEST_CASE', 'CHECK', 'BUG'] },
-  { id: 'build', title: 'Build / Packaging', icon: Box, types: ['INFRASTRUCTURE'] },
+  { id: 'ci', title: 'Continuous Integration / Build', icon: Repeat, types: ['PIPELINE', 'INFRASTRUCTURE'] },
+  { id: 'verif', title: 'Testing / QA', icon: ShieldCheck, types: ['TEST_CASE', 'CHECK', 'BUG'] },
   { id: 'deploy', title: 'Deployment', icon: Rocket, types: ['DEPLOYMENT'] },
   { id: 'monitor', title: 'Monitoring & Feedback', icon: Activity, types: ['MONITORING', 'INCIDENT'] },
   { id: 'docs', title: 'Documentation', icon: BookOpen, types: ['DOCUMENTATION'] },
   { id: 'maint', title: 'Maintenance / Refactoring', icon: Wrench, types: ['MAINTENANCE'] },
-  { id: 'retire', title: 'Retirement / Replacement', icon: Trash2, types: ['MAINTENANCE'] },
   { id: 'versions', title: 'Releases & Versions', icon: Milestone, types: ['VERSION', 'SYSTEM_VERSION', 'CHANGE'] },
 ];
 
@@ -53,9 +56,9 @@ export const DocumentationView: React.FC = () => {
 
   const filterOptions = useMemo(() => {
      if (!graph || !graph.artifacts) return { layers: [], owners: [], teams: [] };
-     const layers = Array.from(new Set(graph.artifacts.map(a => a.layer).filter(Boolean))) as string[];
-     const owners = Array.from(new Set(graph.artifacts.map(a => a.ownership?.owner).filter(Boolean))) as string[];
-     const teams = Array.from(new Set(graph.artifacts.map(a => a.ownership?.team).filter(Boolean))) as string[];
+     const layers = Array.from(new Set(graph.artifacts.map(a => getArtifactLayer(a)).filter(Boolean))) as string[];
+     const owners = Array.from(new Set(graph.artifacts.map(a => getArtifactOwner(a, graph)).filter(Boolean))) as string[];
+     const teams = Array.from(new Set(graph.artifacts.map(a => getArtifactTeam(a, graph)).filter(Boolean))) as string[];
      return { layers, owners, teams };
   }, [graph]);
 
@@ -133,9 +136,12 @@ export const DocumentationView: React.FC = () => {
 
     const filterByLayerAndOwnership = (list: Artifact[] = []) => {
         return list.filter(a => {
-            if (filterLayer !== 'ALL' && a.layer !== filterLayer) return false;
-            if (filterOwner !== 'ALL' && a.ownership?.owner !== filterOwner) return false;
-            if (filterTeam !== 'ALL' && a.ownership?.team !== filterTeam) return false;
+            const computedLayer = getArtifactLayer(a);
+            const computedOwner = getArtifactOwner(a, graph);
+            const computedTeam = getArtifactTeam(a, graph);
+            if (filterLayer !== 'ALL' && computedLayer !== filterLayer) return false;
+            if (filterOwner !== 'ALL' && computedOwner !== filterOwner) return false;
+            if (filterTeam !== 'ALL' && computedTeam !== filterTeam) return false;
             return true;
         });
     };
@@ -155,31 +161,8 @@ export const DocumentationView: React.FC = () => {
         (filteredGroups[type] || [])
       );
 
-      if (phase.id === 'dev') {
-        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.subType !== 'Review');
-      } else if (phase.id === 'review') {
-        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.subType === 'Review');
-      } else if (phase.id === 'ci') {
-        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.type === 'PIPELINE' || (a.type === 'INFRASTRUCTURE' && a.subType?.includes('CI')));
-      } else if (phase.id === 'build') {
-        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.type === 'INFRASTRUCTURE' && (a.subType === 'Build' || a.subType === 'Package'));
-      } else if (phase.id === 'maint') {
-        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.type === 'MAINTENANCE' && a.subType !== 'Retirement');
-      } else if (phase.id === 'retire') {
-        filteredArtifactsInPhase = filteredArtifactsInPhase.filter(a => a.type === 'MAINTENANCE' && a.subType === 'Retirement');
-      }
-      
       const subTypes = Array.from(new Set(filteredArtifactsInPhase.map(a => a.subType).filter(Boolean))) as string[];
       
-      if (phase.id === 'design' && (filteredGroups['COMPONENT'] || []).length > 0) {
-          const compSubTypes = Array.from(new Set((filteredGroups['COMPONENT'] || []).map(a => a.subType).filter(Boolean))) as string[];
-          for (const s of compSubTypes) {
-              if (!subTypes.includes(s)) subTypes.push(s);
-          }
-          if (compSubTypes.length === 0 && !subTypes.includes('Component')) {
-              subTypes.push('Component');
-          }
-      }
       return {
          ...phase,
          count: filteredArtifactsInPhase.length,
@@ -486,26 +469,8 @@ export const DocumentationView: React.FC = () => {
                 
                 let phaseArtifacts = phase.types.flatMap(type => filteredGroups[type] || []);
 
-                if (phase.id === 'dev') {
-                    phaseArtifacts = phaseArtifacts.filter(a => a.subType !== 'Review');
-                } else if (phase.id === 'review') {
-                    phaseArtifacts = phaseArtifacts.filter(a => a.subType === 'Review');
-                } else if (phase.id === 'ci') {
-                    phaseArtifacts = phaseArtifacts.filter(a => a.type === 'PIPELINE' || (a.type === 'INFRASTRUCTURE' && a.subType?.includes('CI')));
-                } else if (phase.id === 'build') {
-                    phaseArtifacts = phaseArtifacts.filter(a => a.type === 'INFRASTRUCTURE' && (a.subType === 'Build' || a.subType === 'Package'));
-                } else if (phase.id === 'maint') {
-                    phaseArtifacts = phaseArtifacts.filter(a => a.type === 'MAINTENANCE' && a.subType !== 'Retirement');
-                } else if (phase.id === 'retire') {
-                    phaseArtifacts = phaseArtifacts.filter(a => a.type === 'MAINTENANCE' && a.subType === 'Retirement');
-                }
-
                 if (selectedSubType) {
-                    if (selectedSubType === 'Component') {
-                      phaseArtifacts = phaseArtifacts.filter(a => a.type === 'COMPONENT' && !a.subType);
-                    } else {
-                      phaseArtifacts = phaseArtifacts.filter(a => a.subType === selectedSubType);
-                    }
+                    phaseArtifacts = phaseArtifacts.filter(a => a.subType === selectedSubType);
                 }
 
                 if (!shouldShow(phaseArtifacts.length > 0)) return null;
@@ -513,7 +478,7 @@ export const DocumentationView: React.FC = () => {
 
                 return (
                     <section key={phase.id} className="mb-16">
-                        <h2 className="text-[10px] uppercase tracking-widest text-white/40 mb-6 bg-white/5 p-3 border-l-2 border-white/20">
+                        <h2 className="text-xl font-serif text-white mb-6 p-4 bg-white/5 border-l-4 border-emerald-500/50">
                             {idx + 1}. {phase.title}
                         </h2>
                         {phaseArtifacts.length === 0 && (
@@ -521,30 +486,66 @@ export const DocumentationView: React.FC = () => {
                                 No active artifacts for this phase.
                             </p>
                         )}
-                        <div className="space-y-4">
-                            {phaseArtifacts.map((artifact) => (
-                              <div key={artifact.id} id={artifact.id} className="mb-6 bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-emerald-500/50 hover:bg-white/[0.02] transition-colors relative group">
-                                <h3 className="font-serif text-lg text-white flex items-center gap-4 flex-wrap mb-4">
-                                  <button 
-                                    onClick={() => setSelectedArtifact(artifact.id)}
-                                    className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest transition-colors hover:border-emerald-500/50 ${selectedArtifactId === artifact.id ? 'text-emerald-400 border-emerald-500/50' : 'text-white/40'}`}
-                                  >
-                                      {artifact.id}
-                                  </button>
-                                  {artifact.subType && <span className="text-[10px] font-sans bg-white/5 text-white/60 px-2 py-1 border border-white/10 uppercase tracking-widest">{artifact.subType}</span>}
-                                  {orphanArtifactIds.has(artifact.id) && (
-                                    <span className="text-[10px] bg-red-500/10 text-red-400 px-2 py-1 border border-red-500/20 uppercase tracking-widest flex items-center gap-1">
-                                      <AlertCircle size={10} />
-                                      Traceability Gap
-                                    </span>
-                                  )}
-                                  <span>{artifact.title}</span>
-                                  {artifact.version && <span className="ml-auto text-xs font-mono text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 rounded">v{artifact.version}</span>}
-                                </h3>
-                                <OwnershipBadge artifact={artifact} />
-                                <MarkdownRenderer content={artifact.description} />
-                              </div>
-                            ))}
+                        <div className="space-y-12">
+                            {(() => {
+                                // Extract and group artifacts by subType
+                                const groupedBySubType: Record<string, Artifact[]> = {};
+                                const noSubTypeArtifacts: Artifact[] = [];
+                                
+                                phaseArtifacts.forEach(a => {
+                                    if (a.subType) {
+                                        if (!groupedBySubType[a.subType]) groupedBySubType[a.subType] = [];
+                                        groupedBySubType[a.subType].push(a);
+                                    } else {
+                                        noSubTypeArtifacts.push(a);
+                                    }
+                                });
+
+                                const renderArtifacts = (artifactsToRender: Artifact[]) => (
+                                    <div className="space-y-6">
+                                        {artifactsToRender.map(artifact => (
+                                          <div key={artifact.id} id={artifact.id} className="bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-emerald-500/50 hover:bg-white/[0.02] transition-colors relative group print-block-break-inside-avoid">
+                                            <h3 className="font-serif text-lg text-white flex items-center gap-4 flex-wrap mb-4">
+                                              <button 
+                                                onClick={() => setSelectedArtifact(artifact.id)}
+                                                className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest transition-colors hover:border-emerald-500/50 ${selectedArtifactId === artifact.id ? 'text-emerald-400 border-emerald-500/50' : 'text-white/40'}`}
+                                              >
+                                                  {artifact.id}
+                                              </button>
+                                              {artifact.subType && <span className="text-[10px] font-sans bg-white/5 text-white/60 px-2 py-1 border border-white/10 uppercase tracking-widest">{artifact.subType}</span>}
+                                              {orphanArtifactIds.has(artifact.id) && (
+                                                <span className="text-[10px] bg-red-500/10 text-red-400 px-2 py-1 border border-red-500/20 uppercase tracking-widest flex items-center gap-1">
+                                                  <AlertCircle size={10} />
+                                                  Traceability Gap
+                                                </span>
+                                              )}
+                                              <span>{artifact.title}</span>
+                                              {artifact.version && <span className="ml-auto text-xs font-mono text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 rounded">v{artifact.version}</span>}
+                                            </h3>
+                                            <OwnershipBadge artifact={artifact} />
+                                            <MarkdownRenderer content={artifact.description} />
+                                          </div>
+                                        ))}
+                                    </div>
+                                );
+
+                                return (
+                                    <>
+                                        {noSubTypeArtifacts.length > 0 && renderArtifacts(noSubTypeArtifacts)}
+                                        {Object.entries(groupedBySubType)
+                                            .sort(([a], [b]) => a.localeCompare(b))
+                                            .map(([subType, stArtifacts]) => (
+                                            <div key={subType} className="mt-8">
+                                                <h3 className="text-xs uppercase tracking-widest text-emerald-400/80 mb-4 flex items-center gap-2">
+                                                    <Layers size={14} />
+                                                    {subType}
+                                                </h3>
+                                                {renderArtifacts(stArtifacts)}
+                                            </div>
+                                        ))}
+                                    </>
+                                );
+                            })()}
                         </div>
                     </section>
                 );

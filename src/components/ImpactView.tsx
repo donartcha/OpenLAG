@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useStore } from '../store';
 import { Activity, ArrowRight, GitCommit, Search, ShieldAlert, Zap } from 'lucide-react';
 import { Artifact } from '../types';
+import { getArtifactLayer, getArtifactOwner, getArtifactTeam } from '../utils/artifactUtils';
 
 export const ImpactView: React.FC = () => {
   const { changes, versions, fullGraph: graph, systemVersions, globalFilters, setGlobalFilter } = useStore();
@@ -20,9 +21,9 @@ export const ImpactView: React.FC = () => {
 
   const filterOptions = useMemo(() => {
      if (!graph || !graph.artifacts) return { layers: [], owners: [], teams: [] };
-     const layers = Array.from(new Set(graph.artifacts.map(a => a.layer).filter(Boolean))) as string[];
-     const owners = Array.from(new Set(graph.artifacts.map(a => a.ownership?.owner).filter(Boolean))) as string[];
-     const teams = Array.from(new Set(graph.artifacts.map(a => a.ownership?.team).filter(Boolean))) as string[];
+     const layers = Array.from(new Set(graph.artifacts.map(a => getArtifactLayer(a)).filter(Boolean))) as string[];
+     const owners = Array.from(new Set(graph.artifacts.map(a => getArtifactOwner(a, graph)).filter(Boolean))) as string[];
+     const teams = Array.from(new Set(graph.artifacts.map(a => getArtifactTeam(a, graph)).filter(Boolean))) as string[];
      return { layers, owners, teams };
   }, [graph]);
 
@@ -42,9 +43,12 @@ export const ImpactView: React.FC = () => {
       const affectedLayerTeamOwner = (c.affects || []).some(id => {
          const artifact = graph?.artifacts.find(a => a.id === id);
          if (!artifact) return false;
-         const matchesLayer = filterLayer === 'ALL' || artifact.layer === filterLayer;
-         const matchesOwner = filterOwner === 'ALL' || artifact.ownership?.owner === filterOwner;
-         const matchesTeam = filterTeam === 'ALL' || artifact.ownership?.team === filterTeam;
+         const computedLayer = getArtifactLayer(artifact);
+         const computedOwner = getArtifactOwner(artifact, graph);
+         const computedTeam = getArtifactTeam(artifact, graph);
+         const matchesLayer = filterLayer === 'ALL' || computedLayer === filterLayer;
+         const matchesOwner = filterOwner === 'ALL' || computedOwner === filterOwner;
+         const matchesTeam = filterTeam === 'ALL' || computedTeam === filterTeam;
          return matchesLayer && matchesOwner && matchesTeam;
       });
 
