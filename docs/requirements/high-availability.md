@@ -1,7 +1,6 @@
 ---
 id: req-nfunc-1
-type: REQUIREMENT
-subType: Non-Functional Requirement
+type: NON_FUNCTIONAL_REQUIREMENT
 title: High Availability
 version: v-1
 ownership:

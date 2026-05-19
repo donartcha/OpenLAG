@@ -1,0 +1,139 @@
+import { Command } from 'commander';
+import { parseOpenLagDocs, ParsedRelation, ParsedArtifact } from '../core/parser.js';
+import { RelationRegistry } from '../../src/core/registry/RelationRegistry.js';
+import path from 'path';
+import { execSync } from 'child_process';
+
+// Bidirectional Graph Builder
+export class ImpactGraph {
+  public adj = new Map<string, Array<{ to: string, relation: string, direction: 'forward' | 'reverse' | 'both', weight: number }>>();
+  public artifacts = new Map<string, ParsedArtifact>();
+
+  constructor(artifacts: ParsedArtifact[], relations: ParsedRelation[]) {
+    for (const art of artifacts) {
+      this.artifacts.set(art.id, art);
+      this.adj.set(art.id, []);
+    }
+
+    for (const rel of relations) {
+      const contract = RelationRegistry.getContract(rel.type);
+      if (!contract) continue;
+      
+      const impactDef = contract.impact;
+      if (!impactDef || !impactDef.propagates) continue;
+
+      const directions = impactDef.directions || ['forward'];
+      const weight = impactDef.weight || 1.0;
+
+      if (directions.includes('forward') || directions.includes('both')) {
+          this.addEdge(rel.from, rel.to, rel.type, 'forward', weight);
+      }
+      if (directions.includes('reverse') || directions.includes('both')) {
+          this.addEdge(rel.to, rel.from, rel.type, 'reverse', weight);
+      }
+    }
+  }
+
+  private addEdge(from: string, to: string, relType: string, direction: 'forward' | 'reverse' | 'both', weight: number) {
+      if (!this.adj.has(from)) return;
+      this.adj.get(from)!.push({ to, relation: relType, direction, weight });
+  }
+
+  getImpactedSet(startId: string): string[] {
+      const visited = new Set<string>();
+      const queue = [startId];
+      visited.add(startId);
+
+      while (queue.length > 0) {
+          const curr = queue.shift()!;
+          const edges = this.adj.get(curr) || [];
+          for (const edge of edges) {
+              if (!visited.has(edge.to)) {
+                  visited.add(edge.to);
+                  queue.push(edge.to);
+              }
+          }
+      }
+      // Remove self
+      visited.delete(startId);
+      return Array.from(visited);
+  }
+}
+
+export function registerImpactCommand(program: Command) {
+    program
+    .command('impact')
+    .description('Analyze impact based on Contract-Driven relations')
+    .option('--artifact <id>', 'Analyze impact for a specific artifact ID')
+    .option('--file <path>', 'Analyze impact for a file based on source path')
+    .option('--from <ref>', 'Git base ref')
+    .option('--to <ref>', 'Git target ref (default HEAD)')
+    .option('--json', 'Output results in JSON format')
+    .action((options) => {
+        const data = parseOpenLagDocs(path.join(process.cwd(), 'docs'));
+        const graph = new ImpactGraph(data.artifacts, data.relations);
+
+        let targetIds: string[] = [];
+
+        if (options.artifact) {
+            targetIds.push(options.artifact);
+        } else if (options.file) {
+            const artifact = data.artifacts.find(a => options.file.includes(a.file));
+            if (artifact) targetIds.push(artifact.id);
+        } else if (options.from) {
+            const from = options.from;
+            const to = options.to || 'HEAD';
+            try {
+                const diffOut = execSync(`git diff --name-only ${from} ${to}`, { encoding: 'utf-8' });
+                const files = diffOut.split('\n').map(f => f.trim()).filter(f => f.length > 0 && f.endsWith('.md'));
+                
+                for (const file of files) {
+                    const artifact = data.artifacts.find(a => file.includes(a.file) || a.file.includes(file));
+                    if (artifact && !targetIds.includes(artifact.id)) {
+                        targetIds.push(artifact.id);
+                    }
+                }
+            } catch (err) {
+                console.error('Failed to run git diff:', err);
+                process.exit(1);
+            }
+        }
+
+        if (targetIds.length === 0) {
+            console.error('Please specify a valid --artifact, --file, or --from to evaluate impact.');
+            process.exit(1);
+        }
+
+        const allImpacted = new Set<string>();
+        for (const tId of targetIds) {
+            if (!graph.artifacts.has(tId)) {
+                console.error(`Warning: Artifact ${tId} not found in the parsed docs.`);
+                continue;
+            }
+            const impacted = graph.getImpactedSet(tId);
+            impacted.forEach(i => allImpacted.add(i));
+        }
+
+        const impactedArr = Array.from(allImpacted);
+        
+        if (options.json) {
+            console.log(JSON.stringify({
+                targets: targetIds,
+                impactedArtifacts: impactedArr
+            }, null, 2));
+        } else {
+            console.log(`# Impact Analysis for ${targetIds.join(', ')}`);
+            console.log(`\nBased on the contract-driven relation propagation rules, ${impactedArr.length} artifacts are potentially impacted.`);
+            
+            if (impactedArr.length > 0) {
+                console.log('\n## Impacted Artifacts');
+                impactedArr.forEach(id => {
+                    const art = graph.artifacts.get(id);
+                    console.log(`- **${id}** (${art?.type}): ${art?.title}`);
+                });
+            } else {
+                console.log('\nNo propagated impact detected.');
+            }
+        }
+    });
+}

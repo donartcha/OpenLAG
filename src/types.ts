@@ -4,7 +4,14 @@ export type { ArtifactType };
 export type RelationType = string;
 export type ChangeType = 'ERROR' | 'FEATURE' | 'EVOLUTION' | 'REFACTOR' | 'ADAPTATION';
 
-export type ArtifactLayer = 'BUSINESS' | 'ARCHITECTURE' | 'IMPLEMENTATION' | 'OPERATIONS' | 'DOCUMENTATION';
+export type ArtifactLayer =
+  | 'BUSINESS'
+  | 'ARCHITECTURE'
+  | 'IMPLEMENTATION'
+  | 'VERIFICATION'
+  | 'OPERATIONS'
+  | 'GOVERNANCE'
+  | 'DOCUMENTATION';
 export type RelationStrength = 'STRONG' | 'MEDIUM' | 'WEAK';
 export type RelationCategory = 'STRUCTURAL' | 'BEHAVIORAL' | 'OPERATIONAL' | 'SEMANTIC' | 'TRACEABILITY' | 'DEPENDENCY' | 'EVOLUTIONARY';
 
@@ -34,14 +41,14 @@ export interface SystemVersion {
 export interface Artifact {
   id: string;
   type: ArtifactType;
-  subType?: string;
   title: string;
   description: string;
   version: string;
   component?: string;
   releaseDate?: string;
   systemVersionId?: string;
-  layer?: ArtifactLayer;
+  subType?: string;
+  layer?: string;
   ownership?: Ownership;
   status?: string;
 }

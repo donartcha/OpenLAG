@@ -14,6 +14,14 @@ export function buildPortal() {
   const docsDir = path.join(process.cwd(), 'docs');
   const outputDir = path.join(process.cwd(), 'public');
 
+  console.log(chalk.blue('Generating contracts (artifacts & relations)...'));
+  try {
+    execFileSync('tsx', [path.join(packageRoot, 'scripts/generate-artifacts.ts')], { stdio: 'inherit', cwd: process.cwd() });
+    execFileSync('tsx', [path.join(packageRoot, 'scripts/generate-relations.ts')], { stdio: 'inherit', cwd: process.cwd() });
+  } catch (error) {
+    console.error(chalk.yellow('Warning: Could not regenerate contracts.'));
+  }
+
   generateData(docsDir, outputDir);
 
   console.log(chalk.blue('Building OpenLAG portal...'));

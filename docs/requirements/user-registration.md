@@ -1,7 +1,6 @@
 ---
 id: req-func-1
-type: REQUIREMENT
-subType: "Functional"
+type: FUNCTIONAL
 title: "User Registration Flow"
 version: v-1
 ownership:

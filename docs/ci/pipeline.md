@@ -1,7 +1,6 @@
 ---
 id: ci-pipeline-1
-type: INFRASTRUCTURE
-subType: CI/Pipeline
+type: CI_PIPELINE
 title: 'GitHub Actions Workflow: Core Build'
 version: v-2
 ownership:

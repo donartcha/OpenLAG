@@ -1,7 +1,6 @@
 ---
 id: ops-dep-1
 type: DEPLOYMENT
-subType: Deployment
 title: K8s Auth Deployment
 version: v-1
 ownership:
@@ -9,9 +8,9 @@ ownership:
   team: devops
 relations:
   - to: des-arq-1
-    type: IMPLEMENTS
+    type: RELATES_TO
   - to: impl-api-1
-    type: DEPLOYS
+    type: RELATES_TO
 ---
 Configuración de los archivos YAML de Kubernetes para el despliegue del servicio de Auth.
 Incluye HPA y Probes de salud.

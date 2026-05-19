@@ -13,6 +13,7 @@ import { generateData, watchData } from './generate.js';
 import { initProject } from './init.js';
 import { lintDocs } from './lint.js';
 import { resolveViteBin } from './vite-bin.js';
+import { registerImpactCommand } from './impact.js';
 
 const program = new Command();
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -108,5 +109,7 @@ program
       process.exit(1);
     }
   });
+
+registerImpactCommand(program);
 
 program.parse();

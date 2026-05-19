@@ -1,12 +1,11 @@
 ---
 id: depl-auth-prod
-type: DEPLOYMENT
-subType: GitHub Actions
+type: GITHUB_ACTIONS
 title: Auth Service Production Deployment
 version: v-1
 relations:
   - to: impl-ctr-1
-    type: DEPLOYS
+    type: RELATES_TO
 ownership:
   owner: pcaro
   team: architecture

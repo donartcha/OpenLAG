@@ -4,7 +4,7 @@ type: SYSTEM_VERSION
 component: Elasticsearch Node
 version: 8.12.1
 releaseDate: '2024-03-01'
-layer: OPERATIONS
+layer: GOVERNANCE
 title: Elasticsearch Nodes Version Tracker
 description: >-
   Tracks versions of Elasticsearch deployed. This extended description ensures

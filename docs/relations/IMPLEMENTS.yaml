@@ -1,8 +1,8 @@
 relation: IMPLEMENTS
 description: "Conecta implementación con necesidad funcional/técnica."
 category: TRACEABILITY
-allowedFrom: [CODE_ENTITY, COMPONENT, API, DATABASE_ENTITY, SYSTEM_VERSION]
-allowedTo: [REQUIREMENT, FEATURE, EPIC, DESIGN, USE_CASE, BUSINESS_RULE]
+allowedFrom: [CODE_ENTITY]
+allowedTo: [REQUIREMENT, FEATURE, BUG, API]
 multiplicity:
   from: many
   to: many

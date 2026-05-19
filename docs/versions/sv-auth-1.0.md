@@ -4,7 +4,7 @@ type: SYSTEM_VERSION
 component: Auth-Service
 version: 1.0.0
 releaseDate: '2026-05-06'
-layer: OPERATIONS
+layer: GOVERNANCE
 title: Auth Service System Version
 description: >-
   Handles authentication components version tracking. This extended description

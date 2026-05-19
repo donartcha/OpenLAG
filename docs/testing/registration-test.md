@@ -1,7 +1,6 @@
 ---
 id: test-reg-01
-type: TEST_CASE
-subType: Integration
+type: INTEGRATION
 title: Registration Integration Test
 version: v-1
 ownership:

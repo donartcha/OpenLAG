@@ -4,7 +4,7 @@ type: SYSTEM_VERSION
 component: PostgreSQL Engine
 version: 15.4
 releaseDate: '2023-08-10'
-layer: OPERATIONS
+layer: GOVERNANCE
 title: PostgreSQL Database Engine
 description: >-
   Tracks the current versions of postgres databases. This extended description

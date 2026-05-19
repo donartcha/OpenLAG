@@ -1,7 +1,6 @@
 ---
 id: impl-worker-notif
-type: CODE_ENTITY
-subType: Async Worker
+type: ASYNC_WORKER
 title: EmailDispatcher
 version: v-1
 systemVersionId: sv-notif-0.8

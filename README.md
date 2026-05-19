@@ -39,6 +39,8 @@ npx @donartcha/openlag build
 
 OpenLAG creates a `docs/` directory with starter architecture documents and relation definitions. `openlag generate` writes `public/graph-data.json`, and `openlag build` writes the static portal to `dist/`.
 
+`--name` sets the project display name in `metadata.json`; it does not create a nested folder. Existing relation and artifact contract files are preserved during initialization.
+
 ## CLI Usage
 
 Initialize a project:
@@ -77,6 +79,13 @@ Generate data and validate documentation together:
 openlag check
 ```
 
+Analyze propagated impact from an artifact, file, or Git diff:
+
+```bash
+openlag impact --artifact req-registration
+openlag impact --from main --to HEAD --json
+```
+
 Show the installed CLI version:
 
 ```bash
@@ -92,6 +101,7 @@ openlag dev        Start the portal dev server with live data refresh
 openlag build      Build the static portal
 openlag lint       Validate documentation and relations
 openlag check      Generate graph data and run OpenLAG lint
+openlag impact     Analyze propagated impact from contracts
 openlag preview    Preview the production build
 ```
 

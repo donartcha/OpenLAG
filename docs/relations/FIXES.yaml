@@ -1,8 +1,8 @@
 relation: FIXES
 description: "Conecta correcciones con bugs o incidentes."
 category: TRACEABILITY
-allowedFrom: [CHANGE, CODE_ENTITY, COMPONENT, SYSTEM_VERSION]
-allowedTo: [BUG, INCIDENT, RISK]
+allowedFrom: [CODE_ENTITY, CHANGE, DECISION]
+allowedTo: [BUG, INCIDENT]
 multiplicity:
   from: many
   to: many

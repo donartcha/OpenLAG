@@ -1,7 +1,6 @@
 ---
 id: impl-ui-button
-type: CODE_ENTITY
-subType: "Shared Component"
+type: SHARED_COMPONENT
 title: "PrimaryButton.tsx"
 version: v-1
 systemVersionId: sv-ui-lib-2.3
@@ -10,7 +9,7 @@ ownership:
   owner: alice
 relations:
   - to: des-cmp-1
-    type: IMPLEMENTS
+    type: RELATES_TO
 ---
 Componente de botón base utilizado en todo el frontend. Cumple con los estándares de accesibilidad WCAG 2.1.
 

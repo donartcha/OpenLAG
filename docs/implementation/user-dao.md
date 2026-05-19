@@ -1,7 +1,6 @@
 ---
 id: impl-dao-user
-type: CODE_ENTITY
-subType: "DAO"
+type: DAO
 title: "UserJdbcDAO.java"
 description: "Low-level Data Access Object that uses JDBC to execute direct SQL queries against the users table."
 version: v-1
@@ -11,11 +10,11 @@ ownership:
   owner: bob
 relations:
   - to: req-func-1
-    type: RELATES_TO
+    type: IMPLEMENTS
     strength: WEAK
     category: SEMANTIC
   - to: req-res-1
-    type: IMPLEMENTS
+    type: RELATES_TO
     strength: MEDIUM
     category: BEHAVIORAL
 ---

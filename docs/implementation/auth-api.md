@@ -1,7 +1,6 @@
 ---
 id: impl-api-1
-type: API
-subType: API Route
+type: API_ROUTE
 title: /api/v1/user/register
 version: v-1
 systemVersionId: sv-auth-1.0
@@ -12,9 +11,9 @@ ownership:
     - security-team
 relations:
   - to: req-func-1
-    type: IMPLEMENTS
+    type: RELATES_TO
   - to: des-reg-01
-    type: JUSTIFIES
+    type: RELATES_TO
 ---
 Implementación del endpoint de registro de usuarios. Utiliza Express y valida la entrada con Joi.
 

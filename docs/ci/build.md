@@ -1,7 +1,6 @@
 ---
 id: build-pkg-1
-type: INFRASTRUCTURE
-subType: Package
+type: PACKAGE
 title: Docker Image Multi-Arch
 version: v-2
 ownership:

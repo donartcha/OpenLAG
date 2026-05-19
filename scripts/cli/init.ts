@@ -28,12 +28,17 @@ export async function initProject(projectName?: string, projectDesc?: string, in
     const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
     metadata.name = name;
     metadata.description = desc;
+    if (!metadata.typeColors) metadata.typeColors = {};
     fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
     console.log(chalk.green('✅ Updated metadata.json'));
   } else {
     const metadata = {
       name: name,
-      description: desc
+      description: desc,
+      typeColors: {
+        "DAO": "text-emerald-400 border-emerald-500",
+        "DTO": "text-emerald-400 border-emerald-500"
+      }
     };
     fs.writeFileSync(metadataPath, JSON.stringify(metadata, null, 2));
     console.log(chalk.green('✅ Created metadata.json'));
@@ -77,6 +82,32 @@ export async function initProject(projectName?: string, projectDesc?: string, in
         fs.unlinkSync(path.join(relationsDir, file));
       }
     }
+  }
+
+  // 3.2 Initialize /docs/artifacts directory
+  const artifactsDir = path.join(docsDir, 'artifacts');
+  if (!fs.existsSync(artifactsDir)) {
+    fs.mkdirSync(artifactsDir);
+    console.log(chalk.green('✅ Created /docs/artifacts directory'));
+  }
+
+  const customSampleArtifact = {
+    name: 'CUSTOM_TYPE.yaml',
+    content: `type: CUSTOM_TYPE
+extends: CODE_ENTITY
+layer: IMPLEMENTATION
+description: "A custom template for code entities."
+requiredFields:
+  - id
+  - type
+  - title
+impactSeverityDefault: low`
+  };
+
+  const customArtifactPath = path.join(artifactsDir, customSampleArtifact.name);
+  if (!fs.existsSync(customArtifactPath)) {
+    fs.writeFileSync(customArtifactPath, customSampleArtifact.content);
+    console.log(chalk.green('✅ Created sample docs/artifacts/CUSTOM_TYPE.yaml'));
   }
 
   const mandatoryRelations = [

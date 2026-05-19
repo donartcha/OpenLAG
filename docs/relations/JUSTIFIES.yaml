@@ -1,8 +1,8 @@
 relation: JUSTIFIES
 description: "Conecta decisiones con aquello que justifican."
 category: SEMANTIC
-allowedFrom: [DECISION, BUSINESS_RULE, DOCUMENTATION, RISK]
-allowedTo: [DESIGN, REQUIREMENT, FEATURE, EPIC, PROJECT, CODE_ENTITY, COMPONENT, INFRASTRUCTURE, DEPLOYMENT, MAINTENANCE]
+allowedFrom: [DECISION]
+allowedTo: [DESIGN, REQUIREMENT, FEATURE, CODE_ENTITY, COMPONENT]
 multiplicity:
   from: many
   to: many

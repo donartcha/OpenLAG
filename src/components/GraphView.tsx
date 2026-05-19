@@ -14,6 +14,7 @@ const typeColors: Record<ArtifactType, string> = {
   DESIGN: 'text-purple-400 border-purple-400',
   COMPONENT: 'text-amber-400 border-amber-400',
   CODE_ENTITY: 'text-emerald-400 border-emerald-400',
+  TEST: 'text-rose-400 border-rose-400',
   DOCUMENTATION: 'text-slate-400 border-slate-400',
   INCIDENT: 'text-red-400 border-red-400',
   INFRASTRUCTURE: 'text-cyan-400 border-cyan-400',
@@ -64,14 +65,19 @@ const CompactMarkdown = ({ content }: { content: string }) => (
   </div>
 );
 
+import { ArtifactRegistry } from '../core/registry/ArtifactRegistry';
+
 const CustomNode = ({ data, selected }: any) => {
-  const colorClass = typeColors[data.type as ArtifactType] || 'text-white/40 border-white/40';
+  const baseType = ArtifactRegistry.getBaseType(data.type);
+  const metadataColors = data.metadataColors || {};
+  const activeTypeColors = { ...typeColors, ...metadataColors };
+  const colorClass = activeTypeColors[data.type as ArtifactType] || activeTypeColors[baseType as ArtifactType] || 'text-white/40 border-white/40';
   const isDimmed = data.dimmed;
   const isOrphan = data.isOrphan;
 
   return (
     <div className={`p-4 shadow-xl border bg-[#151515] w-[260px] cursor-pointer transition-all duration-300
-      ${selected ? 'ring-1 ring-white/50 border-white/50 z-10' : 'border-white/10 hover:border-white/30'} 
+      ${selected ? 'ring-1 ring-white/50 border-white/50 z-10' : 'border-white/10 hover:border-white/30'}
       ${isDimmed ? 'opacity-30 grayscale saturate-0' : 'opacity-100'}
       ${isOrphan ? 'border-red-500/50' : 'border-white/10'}
       border-l-[3px]`}
@@ -89,7 +95,7 @@ const CustomNode = ({ data, selected }: any) => {
                </div>
             )}
           </div>
-          {data.subType && <span className="text-[8px] font-sans uppercase tracking-wider opacity-60">{data.subType}</span>}
+
           {data.layer && <span className="text-[7px] font-mono tracking-wider opacity-40">{data.layer}</span>}
         </div>
         <span className="text-[10px] font-mono opacity-60 shrink-0 ml-2 border border-white/10 px-1">{data.id}</span>
@@ -116,7 +122,7 @@ const NODE_HEIGHT = 140;
 const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => {
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
-  
+
   // Aumentar la separación para reducir cruces y dar espacio a las etiquetas
   dagreGraph.setGraph({ rankdir: direction, align: 'UL', edgesep: 120, ranksep: 160, nodesep: 100 });
 
@@ -152,6 +158,8 @@ const getLayoutedElements = (nodes: Node[], edges: Edge[], direction = 'TB') => 
 };
 
 const Legend = () => {
+  const { metadata } = useStore();
+  const activeTypeColors = { ...typeColors, ...(metadata?.typeColors || metadata?.colors || {}) };
   const [isOpen, setIsOpen] = useState(false);
   return (
     <Panel position="bottom-center" className="m-4 z-50">
@@ -160,7 +168,7 @@ const Legend = () => {
             <span className="text-[10px] uppercase font-bold tracking-widest text-white/50 hover:text-white transition-colors">Legend</span>
             {isOpen ? <ChevronDown size={12} className="text-white/50" /> : <ChevronUp size={12} className="text-white/50" />}
           </div>
-          
+
           {isOpen && (
             <div className="flex flex-col gap-3 pt-2 border-t border-white/10 max-h-[60vh] overflow-y-auto" style={{ scrollbarWidth: 'thin' }}>
               <div className="flex flex-col gap-1.5">
@@ -193,7 +201,7 @@ const Legend = () => {
 
               <div className="flex flex-col gap-1.5">
                  <div className="text-[9px] uppercase font-bold text-white/30">Artifact Types</div>
-                 {Object.entries(typeColors).map(([type, colorClass]) => (
+                 {Object.entries(activeTypeColors).map(([type, colorClass]: [string, any]) => (
                    <div key={type} className="flex items-center gap-2">
                       <div className={`w-2 h-2 rounded-full border border-current bg-current ${colorClass.split(' ')[0]}`}></div>
                       <span className={`text-[9px] font-mono ${colorClass.split(' ')[0]}`}>{type}</span>
@@ -208,7 +216,7 @@ const Legend = () => {
 };
 
 const GraphFlow: React.FC = () => {
-  const { fullGraph, currentSubgraph: graph, selectedArtifactId, setSelectedArtifact, setView, settings, globalFilters, setGlobalFilter } = useStore();
+  const { fullGraph, currentSubgraph: graph, selectedArtifactId, setSelectedArtifact, setView, settings, globalFilters, setGlobalFilter, metadata } = useStore();
   const { setCenter } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
 
@@ -225,6 +233,8 @@ const GraphFlow: React.FC = () => {
     });
     return orphans;
   }, [fullGraph]);
+
+  const activeTypeColors: Record<string, string> = { ...typeColors, ...(metadata?.typeColors || metadata?.colors || {}) };
 
   const [searchTerm, setSearchTerm] = useState('');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -247,14 +257,14 @@ const GraphFlow: React.FC = () => {
   const filteredArtifacts = useMemo(() => {
     if (!graph) return [];
     return graph.artifacts.filter(a => {
-        // layer/owner are already filtered by projectSubgraph in the query layer, 
+        // layer/owner are already filtered by projectSubgraph in the query layer,
         // but we apply searchTerm here specifically.
         if (!searchTerm) return true;
-        
+
         const term = searchTerm.toLowerCase();
-        return a.title.toLowerCase().includes(term) || 
+        return a.title.toLowerCase().includes(term) ||
           a.type.toLowerCase().includes(term) ||
-          (a.subType && a.subType.toLowerCase().includes(term)) ||
+
           a.id.toLowerCase().includes(term);
     });
   }, [graph, searchTerm]);
@@ -277,15 +287,15 @@ const GraphFlow: React.FC = () => {
 
     if (selectedArtifactId) {
       connectedNodes.add(selectedArtifactId);
-      
+
       let currentLevelNodes = new Set<string>([selectedArtifactId]);
-      
+
       const maxDepth = settings.graphFocusDepth === 0 ? Infinity : settings.graphFocusDepth;
-      
+
       for (let depth = 0; depth < maxDepth; depth++) {
         let nextLevelNodes = new Set<string>();
         let edgesToAdd = new Set<string>();
-        
+
         graph.relations.forEach(r => {
           if (currentLevelNodes.has(r.from) || currentLevelNodes.has(r.to)) {
             edgesToAdd.add(r.id);
@@ -293,9 +303,9 @@ const GraphFlow: React.FC = () => {
             if (!connectedNodes.has(r.to)) nextLevelNodes.add(r.to);
           }
         });
-        
+
         if (nextLevelNodes.size === 0) break; // Optimization: stop if no new nodes
-        
+
         nextLevelNodes.forEach(n => connectedNodes.add(n));
         edgesToAdd.forEach(e => connectedEdges.add(e));
         currentLevelNodes = nextLevelNodes;
@@ -325,7 +335,7 @@ const GraphFlow: React.FC = () => {
         id: a.id,
         type: 'artifact',
         position: { x: 0, y: 0 },
-        data: { ...a, dimmed: isDimmed, isOrphan }
+        data: { ...a, dimmed: isDimmed, isOrphan, metadataColors: metadata?.typeColors || metadata?.colors || {} }
       };
     });
 
@@ -334,7 +344,7 @@ const GraphFlow: React.FC = () => {
       if (selectedArtifactId) {
           isConnectedToSelected = connectedEdges.has(r.id);
       }
-      
+
       const sourceNode = graph.artifacts.find(a => a.id === r.from);
       const targetNode = graph.artifacts.find(a => a.id === r.to);
       const sourceLayer = sourceNode ? getArtifactLayer(sourceNode) : undefined;
@@ -343,11 +353,11 @@ const GraphFlow: React.FC = () => {
       const targetOwner = targetNode ? getArtifactOwner(targetNode, fullGraph) : undefined;
       const sourceTeam = sourceNode ? getArtifactTeam(sourceNode, fullGraph) : undefined;
       const targetTeam = targetNode ? getArtifactTeam(targetNode, fullGraph) : undefined;
-      
+
       const isFilteredOut = (filterLayer !== 'ALL' && (sourceLayer !== filterLayer || targetLayer !== filterLayer)) ||
                             (filterOwner !== 'ALL' && (sourceOwner !== filterOwner || targetOwner !== filterOwner)) ||
                             (filterTeam !== 'ALL' && (sourceTeam !== filterTeam || targetTeam !== filterTeam));
-                            
+
       const isDimmed = isFilteredOut || (selectedArtifactId !== null && !isConnectedToSelected);
 
       const isWeak = r.strength === 'WEAK';
@@ -374,23 +384,23 @@ const GraphFlow: React.FC = () => {
           type: MarkerType.ArrowClosed,
           color: edgeColor
         },
-        style: { 
-          stroke: edgeColor, 
-          strokeWidth: isDimmed ? 1 : (selectedArtifactId && isConnectedToSelected ? (isStrong ? 3 : (isWeak ? 1.5 : 2.5)) : (isStrong ? 2 : (isWeak ? 1 : 1.5))), 
+        style: {
+          stroke: edgeColor,
+          strokeWidth: isDimmed ? 1 : (selectedArtifactId && isConnectedToSelected ? (isStrong ? 3 : (isWeak ? 1.5 : 2.5)) : (isStrong ? 2 : (isWeak ? 1 : 1.5))),
           strokeDasharray: isWeak ? '2 4' : (isStrong ? '0' : '5'),
           transition: 'all 0.3s ease'
         },
-        labelStyle: { 
-          fill: isDimmed ? 'transparent' : 'rgba(255,255,255,0.8)', 
-          fontSize: 8, 
-          fontWeight: isStrong ? 700 : 400, 
-          letterSpacing: '1px' 
+        labelStyle: {
+          fill: isDimmed ? 'transparent' : 'rgba(255,255,255,0.8)',
+          fontSize: 8,
+          fontWeight: isStrong ? 700 : 400,
+          letterSpacing: '1px'
         },
-        labelBgStyle: { 
-          fill: isDimmed ? 'transparent' : '#111111', 
-          opacity: isDimmed ? 0 : 1, 
-          stroke: isDimmed ? 'transparent' : 'rgba(255,255,255,0.1)', 
-          strokeWidth: 1 
+        labelBgStyle: {
+          fill: isDimmed ? 'transparent' : '#111111',
+          opacity: isDimmed ? 0 : 1,
+          stroke: isDimmed ? 'transparent' : 'rgba(255,255,255,0.1)',
+          strokeWidth: 1
         },
         labelBgBorderRadius: 4,
         labelBgPadding: [8, 4],
@@ -398,7 +408,7 @@ const GraphFlow: React.FC = () => {
     });
 
     const layouted = getLayoutedElements(initialNodes, initialEdges, 'TB');
-    
+
     setNodes(layouted.nodes);
     setEdges(layouted.edges);
   }, [graph, selectedArtifactId, settings.graphFocusDepth, setNodes, setEdges, orphanIds, filterLayer, filterOwner, filterTeam]);
@@ -444,8 +454,8 @@ const GraphFlow: React.FC = () => {
                 onFocus={() => setIsDropdownOpen(true)}
               />
               {selectedArtifactId && (
-                <button 
-                  onClick={() => { setSelectedArtifact(null); setSearchTerm(''); setIsDropdownOpen(false); }} 
+                <button
+                  onClick={() => { setSelectedArtifact(null); setSearchTerm(''); setIsDropdownOpen(false); }}
                   className="text-white/40 hover:text-emerald-400 transition-colors shrink-0 p-1"
                   title="Clear Selection"
                 >
@@ -453,11 +463,11 @@ const GraphFlow: React.FC = () => {
                 </button>
               )}
             </div>
-            
+
             {isDropdownOpen && (
               <div className="max-h-[50vh] overflow-y-auto flex flex-col mt-1 space-y-1 pr-1" style={{ scrollbarWidth: 'thin' }}>
                 {orphanIds.size > 0 && !searchTerm && (
-                   <button 
+                   <button
                     onClick={() => setView('orphans')}
                     className="flex items-center gap-2 p-2 bg-red-500/10 border border-red-500/20 text-red-400 text-[10px] rounded mb-2 hover:bg-red-500/20 transition-all uppercase tracking-widest font-bold"
                    >
@@ -472,7 +482,7 @@ const GraphFlow: React.FC = () => {
                     <button
                       key={a.id}
                       className={`text-left text-xs p-2 hover:bg-white/10 border-l-[3px] transition-colors flex flex-col gap-1 rounded-r-md
-                        ${selectedArtifactId === a.id ? `${typeColors[a.type]?.split(' ')[1] || 'border-emerald-500'} bg-white/5` : 'border-transparent hover:border-white/30'}`}
+                        ${selectedArtifactId === a.id ? `${(activeTypeColors[a.type] || activeTypeColors[ArtifactRegistry.getBaseType(a.type)])?.split(' ')[1] || 'border-emerald-500'} bg-white/5` : 'border-transparent hover:border-white/30'}`}
                       onClick={() => {
                           setSelectedArtifact(a.id);
                           setIsDropdownOpen(false);
@@ -481,24 +491,24 @@ const GraphFlow: React.FC = () => {
                       <div className="text-[9px] uppercase tracking-widest text-[#e0e0e0] opacity-50 font-bold flex justify-between">
                         <div className="flex flex-col gap-0.5">
                            <span>{a.type}</span>
-                           {a.subType && <span className="text-[8px] opacity-70">{a.subType}</span>}
+                           { ArtifactRegistry.getBaseType(a.type) !== a.type && <span className="text-[8px] opacity-70">{a.type}</span> }
                         </div>
                         <span className="font-mono">{a.id}</span>
                       </div>
-                      <div className={`truncate font-serif text-sm ${typeColors[a.type]?.split(' ')[0] || 'text-emerald-400'}`}>{a.title}</div>
+                      <div className={`truncate font-serif text-sm ${(activeTypeColors[a.type] || activeTypeColors[ArtifactRegistry.getBaseType(a.type)])?.split(' ')[0] || 'text-emerald-400'}`}>{a.title}</div>
                     </button>
                   ))
                 )}
               </div>
             )}
-            
+
             <div className="flex gap-1 pt-2">
                 <select
                     value={filterLayer}
                     onChange={(e) => setFilterLayer(e.target.value)}
                     className={`bg-transparent py-1 px-1 text-[8px] focus:outline-none cursor-pointer uppercase tracking-wider flex-1 text-center transition-all border rounded-sm ${
-                        filterLayer !== 'ALL' 
-                            ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold' 
+                        filterLayer !== 'ALL'
+                            ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold'
                             : 'border-white/10 text-white/50 hover:border-white/20'
                     }`}
                 >
@@ -511,8 +521,8 @@ const GraphFlow: React.FC = () => {
                     value={filterOwner}
                     onChange={(e) => setFilterOwner(e.target.value)}
                     className={`bg-transparent py-1 px-1 text-[8px] focus:outline-none cursor-pointer uppercase tracking-wider flex-1 text-center transition-all border rounded-sm ${
-                        filterOwner !== 'ALL' 
-                            ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold' 
+                        filterOwner !== 'ALL'
+                            ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold'
                             : 'border-white/10 text-white/50 hover:border-white/20'
                     }`}
                 >
@@ -525,8 +535,8 @@ const GraphFlow: React.FC = () => {
                     value={filterTeam}
                     onChange={(e) => setFilterTeam(e.target.value)}
                     className={`bg-transparent py-1 px-1 text-[8px] focus:outline-none cursor-pointer uppercase tracking-wider flex-1 text-center transition-all border rounded-sm ${
-                        filterTeam !== 'ALL' 
-                            ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold' 
+                        filterTeam !== 'ALL'
+                            ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold'
                             : 'border-white/10 text-white/50 hover:border-white/20'
                     }`}
                 >
@@ -539,13 +549,13 @@ const GraphFlow: React.FC = () => {
           </div>
         </Panel>
 
-        <MiniMap 
-          style={{ backgroundColor: '#0c0c0c', border: '1px solid rgba(255,255,255,0.1)' }} 
-          maskColor="rgba(0,0,0,0.5)" 
-          nodeColor="#333" 
+        <MiniMap
+          style={{ backgroundColor: '#0c0c0c', border: '1px solid rgba(255,255,255,0.1)' }}
+          maskColor="rgba(0,0,0,0.5)"
+          nodeColor="#333"
         />
-        <Controls 
-          style={{ backgroundColor: '#151515', border: '1px solid rgba(255,255,255,0.1)', fill: '#fff' }} 
+        <Controls
+          style={{ backgroundColor: '#151515', border: '1px solid rgba(255,255,255,0.1)', fill: '#fff' }}
         />
         <Background color="#ffffff" gap={20} size={1} style={{ opacity: 0.03 }} />
       </ReactFlow>
@@ -560,4 +570,3 @@ export const GraphView: React.FC = () => {
     </ReactFlowProvider>
   );
 };
-

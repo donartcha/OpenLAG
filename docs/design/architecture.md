@@ -1,7 +1,6 @@
 ---
 id: des-arq-1
-type: DESIGN
-subType: Architecture
+type: ARCHITECTURE
 title: Microservices Setup
 version: v-1
 relations:

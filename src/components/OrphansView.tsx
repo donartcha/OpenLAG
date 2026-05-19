@@ -21,7 +21,7 @@ export const OrphansView: React.FC = () => {
 
     const filterOptions = useMemo(() => {
         if (!graph || !graph.artifacts) return { layers: [], owners: [], teams: [] };
-        
+
         const layers = new Set<string>();
         const owners = new Set<string>();
         const teams = new Set<string>();
@@ -76,18 +76,18 @@ export const OrphansView: React.FC = () => {
             const computedLayer = getArtifactLayer(art);
             const computedOwner = getArtifactOwner(art, graph);
             const computedTeam = getArtifactTeam(art, graph);
-            
+
             if (filterLayer !== 'ALL' && computedLayer !== filterLayer) return false;
             if (filterOwner !== 'ALL' && computedOwner !== filterOwner) return false;
             if (filterTeam !== 'ALL' && computedTeam !== filterTeam) return false;
 
             if (selectedArtifactId && art.id !== selectedArtifactId) return false;
 
-            const matchesSearch = 
+            const matchesSearch =
                 art.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 art.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                 (art.description || '').toLowerCase().includes(searchQuery.toLowerCase());
-            
+
             const matchesType = typeFilter === 'ALL' || art.type === typeFilter;
             const matchesViolation = violationFilter === 'ALL' || gap.type === violationFilter;
 
@@ -98,8 +98,8 @@ export const OrphansView: React.FC = () => {
     const artifactTypes = useMemo(() => {
         // Match the grouped keys in DocumentationView
         return [
-            'REQUIREMENT', 'USE_CASE', 'DESIGN', 'COMPONENT', 
-            'CODE_ENTITY', 'TEST_CASE', 'DOCUMENTATION', 'INCIDENT', 
+            'REQUIREMENT', 'USE_CASE', 'DESIGN', 'COMPONENT',
+            'CODE_ENTITY', 'TEST_CASE', 'DOCUMENTATION', 'INCIDENT',
             'INFRASTRUCTURE', 'DEPLOYMENT', 'MONITORING', 'MAINTENANCE'
         ];
     }, []);
@@ -162,7 +162,7 @@ export const OrphansView: React.FC = () => {
                         <div className="flex gap-2 p-0.5 bg-white/5 border border-white/10 rounded-md w-full">
                             <div className="relative flex items-center flex-1">
                                 <Search className="absolute left-3 text-white/20" size={12} />
-                                <input 
+                                <input
                                     type="text"
                                     placeholder="Search..."
                                     value={searchQuery}
@@ -171,12 +171,12 @@ export const OrphansView: React.FC = () => {
                                 />
                             </div>
                             <div className="w-px h-4 bg-white/10 self-center" />
-                            <select 
+                            <select
                                 value={violationFilter}
                                 onChange={(e) => setViolationFilter(e.target.value)}
                                 className={`bg-transparent py-1.5 px-3 text-[10px] outline-none cursor-pointer uppercase tracking-widest transition-all border rounded-sm flex-1 ${
-                                    violationFilter !== 'ALL' 
-                                        ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold' 
+                                    violationFilter !== 'ALL'
+                                        ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold'
                                         : 'border-transparent border-l-white/10 text-white/50 hover:border-white/20'
                                 }`}
                             >
@@ -185,12 +185,12 @@ export const OrphansView: React.FC = () => {
                                     <option key={type} value={type} className="bg-[#0c0c0c] text-white font-normal">{type.replace('_', ' ')}</option>
                                 ))}
                             </select>
-                            <select 
+                            <select
                                 value={typeFilter}
                                 onChange={(e) => setTypeFilter(e.target.value)}
                                 className={`bg-transparent py-1.5 px-3 text-[10px] outline-none cursor-pointer uppercase tracking-widest transition-all border rounded-sm flex-1 ${
-                                    typeFilter !== 'ALL' 
-                                        ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold' 
+                                    typeFilter !== 'ALL'
+                                        ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold'
                                         : 'border-transparent border-l-white/10 text-white/50 hover:border-white/20'
                                 }`}
                             >
@@ -203,8 +203,8 @@ export const OrphansView: React.FC = () => {
                                 value={selectedArtifactId || ''}
                                 onChange={(e) => setSelectedArtifact(e.target.value || null)}
                                 className={`bg-transparent py-1.5 px-3 text-[10px] outline-none cursor-pointer tracking-widest transition-all border rounded-sm flex-1 font-mono max-w-[150px] ${
-                                    selectedArtifactId 
-                                        ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400 font-bold' 
+                                    selectedArtifactId
+                                        ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400 font-bold'
                                         : 'border-transparent border-l-white/10 text-white/50 hover:border-white/20'
                                 }`}
                             >
@@ -219,15 +219,15 @@ export const OrphansView: React.FC = () => {
                                     ))}
                             </select>
                         </div>
-                        
+
                         {/* Global Filters */}
                         <div className="flex gap-1 w-full lg:w-auto items-center">
                             <select
                                 value={filterLayer}
                                 onChange={(e) => setFilterLayer(e.target.value)}
                                 className={`bg-transparent py-1 px-1 text-[9px] focus:outline-none cursor-pointer uppercase tracking-wider flex-1 text-center transition-all border rounded-sm ${
-                                    filterLayer !== 'ALL' 
-                                        ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold' 
+                                    filterLayer !== 'ALL'
+                                        ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold'
                                         : 'border-white/10 text-white/50 hover:border-white/20'
                                 }`}
                             >
@@ -240,8 +240,8 @@ export const OrphansView: React.FC = () => {
                                 value={filterOwner}
                                 onChange={(e) => setFilterOwner(e.target.value)}
                                 className={`bg-transparent py-1 px-1 text-[9px] focus:outline-none cursor-pointer uppercase tracking-wider flex-1 text-center transition-all border rounded-sm ${
-                                    filterOwner !== 'ALL' 
-                                        ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold' 
+                                    filterOwner !== 'ALL'
+                                        ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold'
                                         : 'border-white/10 text-white/50 hover:border-white/20'
                                 }`}
                             >
@@ -254,8 +254,8 @@ export const OrphansView: React.FC = () => {
                                 value={filterTeam}
                                 onChange={(e) => setFilterTeam(e.target.value)}
                                 className={`bg-transparent py-1 px-1 text-[9px] focus:outline-none cursor-pointer uppercase tracking-wider flex-1 text-center transition-all border rounded-sm ${
-                                    filterTeam !== 'ALL' 
-                                        ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold' 
+                                    filterTeam !== 'ALL'
+                                        ? 'bg-blue-500/20 border-blue-500/40 text-blue-400 font-bold'
                                         : 'border-white/10 text-white/50 hover:border-white/20'
                                 }`}
                             >
@@ -264,7 +264,7 @@ export const OrphansView: React.FC = () => {
                                     <option key={team} value={team} className="bg-[#0c0c0c] text-white font-normal">{team}</option>
                                 ))}
                             </select>
-                            
+
                             <button
                                 onClick={handleGenerateReport}
                                 className="bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30 border border-emerald-500/40 font-mono text-[9px] uppercase tracking-widest px-3 py-1 flex items-center gap-1.5 rounded-sm transition-all h-full"
@@ -291,7 +291,7 @@ export const OrphansView: React.FC = () => {
                             return (
                             <div key={`${art.id}-${gap.type}-${idx}`} className={`border p-5 rounded-sm transition-all group relative overflow-hidden flex flex-col ${severityColor(gap.severity)}`}>
                                 <div className="absolute top-0 right-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <button 
+                                    <button
                                         onClick={() => goToDocs(art.id)}
                                         className="p-2 bg-white/5 hover:bg-emerald-500/20 text-white/40 hover:text-emerald-400 rounded transition-colors"
                                         title="View in Documentation"
@@ -337,14 +337,8 @@ export const OrphansView: React.FC = () => {
                                             <span className="text-[8px] uppercase tracking-tighter text-white/20">Artifact Type</span>
                                             <span className="text-[10px] text-white/60 font-mono">{art.type}</span>
                                         </div>
-                                        {art.subType && (
-                                            <div className="flex flex-col border-l border-white/10 pl-4">
-                                                <span className="text-[8px] uppercase tracking-tighter text-white/20">Subtype</span>
-                                                <span className="text-[10px] text-white/60 font-mono">{art.subType}</span>
-                                            </div>
-                                        )}
                                     </div>
-                                    <button 
+                                    <button
                                         onClick={() => goToDocs(art.id)}
                                         className="text-[10px] text-emerald-400/60 hover:text-emerald-400 font-bold uppercase tracking-widest flex items-center gap-1.5 transition-colors"
                                     >

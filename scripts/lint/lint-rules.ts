@@ -51,9 +51,22 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
   }
 
   // 3. Artifact type and minimal fields
-  for (const artifact of data.artifacts) {
+  for (const artifact of data.artifacts as any[]) {
     if (!ArtifactRegistry.isValid(artifact.type)) {
       addIssue('invalidArtifactType', `Invalid artifact type: ${artifact.type}`, artifact.file, artifact.id, artifact.status);
+    } else {
+      // Validate contract-defined requiredFields
+      const contract = ArtifactRegistry.getContract(artifact.type);
+      if (contract && contract.requiredFields) {
+        for (const field of contract.requiredFields) {
+          if (artifact.raw?.[field] === undefined) {
+             addIssue('missingRequiredFields', `Artifact requires field '${field}' according to its contract`, artifact.file, artifact.id, artifact.status);
+          }
+        }
+      }
+      if (artifact.raw?.layer && contract && contract.layer && artifact.raw.layer !== contract.layer) {
+        addIssue('invalidLayer', `Artifact specifies layer ${artifact.raw.layer} but contract requires ${contract.layer}`, artifact.file, artifact.id, artifact.status);
+      }
     }
     if (!artifact.type || !artifact.title) {
         addIssue('missingRequiredFields', `Artifact missing type or title`, artifact.file, artifact.id, artifact.status);
@@ -85,13 +98,15 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
         const targetArtifact = artifactMap.get(relation.to)?.[0];
 
         if (sourceArtifact && contract.allowedFrom && contract.allowedFrom.length > 0) {
-            if (!contract.allowedFrom.includes(sourceArtifact.type as any)) {
+            const isAllowedSrc = contract.allowedFrom.some(allowed => ArtifactRegistry.isCompatibleType(allowed, sourceArtifact.type));
+            if (!isAllowedSrc) {
                 addIssue('invalidRelationType', `Relation ${relation.type} is not allowed FROM ${sourceArtifact.type} (Artifact: ${relation.from}). Allowed sources: ${contract.allowedFrom.join(', ')}`, relation.file, relation.from, sourceArtifact.status);
             }
         }
 
         if (targetArtifact && contract.allowedTo && contract.allowedTo.length > 0) {
-            if (!contract.allowedTo.includes(targetArtifact.type as any)) {
+            const isAllowedDest = contract.allowedTo.some(allowed => ArtifactRegistry.isCompatibleType(allowed, targetArtifact.type));
+            if (!isAllowedDest) {
                 addIssue('invalidRelationType', `Relation ${relation.type} is not allowed TO ${targetArtifact.type} (Artifact: ${relation.to}). Allowed targets: ${contract.allowedTo.join(', ')}`, relation.file, relation.from, sourceArtifact?.status);
             }
         }
@@ -127,7 +142,7 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
 
     if (isDeprecated) continue; // Skip rules for deprecated except broken relations (already checked above)
 
-    if (artifact.type === 'REQUIREMENT') {
+    if (ArtifactRegistry.getBaseType(artifact.type) === 'REQUIREMENT') {
         const hasImplementation = implementationsByReq.has(artifact.id);
         const hasTest = testsByReq.has(artifact.id);
 
@@ -140,14 +155,14 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
         }
     }
 
-    if (artifact.type === 'CODE_ENTITY') {
+    if (ArtifactRegistry.getBaseType(artifact.type) === 'CODE_ENTITY') {
         const hasReq = reqsByCode.has(artifact.id);
         if (!hasReq) {
             addIssue('codeWithoutRequirement', `${artifact.id} has no requirement associated`, artifact.file, artifact.id, artifact.status);
         }
     }
 
-    if (artifact.type === 'TEST_CASE') {
+    if (ArtifactRegistry.getBaseType(artifact.type) === 'TEST_CASE') {
         const hasReq = reqsByTest.has(artifact.id);
         if (!hasReq) {
             addIssue('orphanArtifact', `${artifact.id} is a test without associated requirement`, artifact.file, artifact.id, artifact.status);
@@ -174,7 +189,7 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
         }
     }
     
-    if (artifact.type === 'API' && (!artifact.ownership || Object.keys(artifact.ownership).length === 0)) {
+    if (ArtifactRegistry.getBaseType(artifact.type) === 'API' && (!artifact.ownership || Object.keys(artifact.ownership).length === 0)) {
         addIssue('missingOwnership', `API ${artifact.id} should have ownership defined`, artifact.file, artifact.id, artifact.status);
     }
     

@@ -3,7 +3,6 @@ import { z } from "zod";
 export const ArtifactSchema = z.object({
   id: z.string(),
   type: z.string(),
-  subType: z.string().optional(),
   title: z.string(),
   version: z.string(),
   description: z.string(),

@@ -1,7 +1,6 @@
 ---
 id: des-con-1
-type: DOCUMENTATION
-subType: Service Contract
+type: SERVICE_CONTRACT
 title: User-Auth OpenAPI
 version: v-1
 relations:

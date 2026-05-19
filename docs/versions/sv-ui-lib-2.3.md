@@ -4,7 +4,7 @@ type: SYSTEM_VERSION
 component: Shared-UI-Lib
 version: 2.3.1
 releaseDate: '2026-04-15'
-layer: OPERATIONS
+layer: GOVERNANCE
 title: Shared UI Lib version tracking
 description: >-
   Handles shared UI components versioning. This extended description ensures we

@@ -1,7 +1,6 @@
 ---
 id: impl-repo-1
-type: CODE_ENTITY
-subType: Repository
+type: REPOSITORY
 title: UserRepository.java
 version: v-1
 systemVersionId: sv-db-pg-15

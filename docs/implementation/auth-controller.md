@@ -1,16 +1,15 @@
 ---
 id: impl-ctr-1
-type: CODE_ENTITY
-subType: Controller
+type: CONTROLLER
 title: AuthController.ts
 version: v-1
 relations:
   - to: des-con-1
-    type: IMPLEMENTS
+    type: RELATES_TO
   - to: impl-api-1
     type: IMPLEMENTS
   - to: req-br-1
-    type: VALIDATES
+    type: RELATES_TO
 ownership:
   owner: pcaro
   team: architecture

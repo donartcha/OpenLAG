@@ -4,6 +4,35 @@ All notable changes to OpenLAG are documented in this file.
 
 ## Unreleased
 
+## 0.3.0 - 2026-05-19
+
+### Breaking Changes
+- Promoted OpenLAG to Specification `v0.2`; the previous `v0.1` artifact model is deprecated and no longer considered valid for new projects.
+- Replaced loose `subType`-based modeling with contract-driven artifact types backed by generated artifact definitions.
+- Enforced relation `allowedFrom` and `allowedTo` contracts during linting, making invalid semantic edges visible according to the selected profile.
+
+### Added
+- Added contract-driven artifact registry generation through `scripts/generate-artifacts.ts` and `src/core/generated/artifact-definitions.ts`.
+- Added support for custom artifact contracts under `docs/artifacts/*.yaml`, including type extension, layer assignment, required fields, and default impact metadata.
+- Added `openlag impact` for contract-driven impact analysis by artifact id, source file, or Git diff range.
+- Added Markdown and JSON output modes for impact analysis, enabling local review and CI consumption.
+- Added bidirectional impact propagation based on relation contract metadata: `impact.propagates`, `impact.directions`, and `impact.weight`.
+- Added default metadata color override support through `metadata.json` `typeColors`.
+
+### Changed
+- Updated `openlag dev`, `openlag build`, `openlag generate`, and `npm run check` to regenerate artifact and relation contracts before running.
+- Updated `openlag init` scaffolding with artifact contract examples and default visual type colors.
+- Migrated sample documentation away from legacy `subType` fields to real contract-backed types such as `DAO`, `DTO`, `CONTROLLER`, `API_ROUTE`, `BUSINESS_RULE`, `INTEGRATION_TEST`, `KUBERNETES`, and `CI_PIPELINE`.
+- Normalized sample artifact statuses to the official lifecycle values: `draft`, `in_progress`, `ready`, `closed`, and `deprecated`.
+- Updated sample relation usage to satisfy stricter `allowedFrom` and `allowedTo` validation.
+- Refactored parser, normalizer, linter, UI grouping, graph colors, and visualization strategies to use dynamic artifact contracts and semantic layers.
+- Extended semantic layers with `VERIFICATION` and `GOVERNANCE` to support richer lifecycle and release modeling.
+- Updated `SPECIFICATION.md`, `DOCUMENTACION_OPENLAG.md`, and `README.md` to document contract-driven artifacts, relation enforcement, visualization strategies, and `openlag impact`.
+- Regenerated relation definitions from the updated YAML contracts.
+
+### Deprecated
+- Deprecated OpenLAG `v0.1` specification usage and the `0.1.x` package line. Projects should upgrade to `@donartcha/openlag@0.3.0` and migrate `subType` values to contract-backed `type` values.
+
 ## 0.2.0 - 2026-05-19
 
 ### Added

@@ -1,14 +1,6 @@
 import { ProjectionStrategy, StrategyResultGroup } from './types';
-import { Artifact, ArtifactType } from '../../types';
-
-const VALIDATION_ORDER: ArtifactType[] = [
-  'REQUIREMENT',
-  'FEATURE',
-  'TEST_CASE',
-  'BUG',
-  'CHANGE',
-  'INCIDENT'
-] as ArtifactType[];
+import { Artifact } from '../../types';
+import { getArtifactLayer } from '../../utils/artifactUtils';
 
 export const ValidationStrategy: ProjectionStrategy = {
   info: {
@@ -17,29 +9,20 @@ export const ValidationStrategy: ProjectionStrategy = {
     description: 'Visualizes validation traceability.'
   },
   project: (artifacts: Artifact[]): StrategyResultGroup[] => {
-    const groupsMap = new Map<ArtifactType, Artifact[]>();
-    VALIDATION_ORDER.forEach(type => {
-      groupsMap.set(type, []);
+    const filtered = artifacts.filter(a => getArtifactLayer(a) === 'VERIFICATION');
+    const typesMap = new Map<string, Artifact[]>();
+
+    filtered.forEach(a => {
+      if (!typesMap.has(a.type)) typesMap.set(a.type, []);
+      typesMap.get(a.type)!.push(a);
     });
 
-    artifacts.forEach(artifact => {
-      if (groupsMap.has(artifact.type)) {
-        groupsMap.get(artifact.type)!.push(artifact);
-      }
-    });
-
-    const results: StrategyResultGroup[] = [];
-    VALIDATION_ORDER.forEach(type => {
-      const arts = groupsMap.get(type);
-      if (arts && arts.length > 0) {
-        results.push({
-          id: `valid-${type}`,
-          title: type.replace(/_/g, ' '),
-          artifacts: arts
-        });
-      }
-    });
-
-    return results;
+    return Array.from(typesMap.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([type, arts]) => ({
+        id: `valid-${type}`,
+        title: type.replace(/_/g, ' '),
+        artifacts: arts
+      }));
   }
 };

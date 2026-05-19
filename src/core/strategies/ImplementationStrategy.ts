@@ -1,14 +1,6 @@
 import { ProjectionStrategy, StrategyResultGroup } from './types';
-import { Artifact, ArtifactType } from '../../types';
-
-const IMPLEMENTATION_ORDER: ArtifactType[] = [
-  'DECISION',
-  'DESIGN',
-  'COMPONENT',
-  'FEATURE',
-  'CODE_ENTITY',
-  'TEST_CASE'
-] as ArtifactType[];
+import { Artifact } from '../../types';
+import { getArtifactLayer } from '../../utils/artifactUtils';
 
 export const ImplementationStrategy: ProjectionStrategy = {
   info: {
@@ -17,30 +9,20 @@ export const ImplementationStrategy: ProjectionStrategy = {
     description: 'Shows what must be implemented first.'
   },
   project: (artifacts: Artifact[]): StrategyResultGroup[] => {
-    const groupsMap = new Map<ArtifactType, Artifact[]>();
-    
-    IMPLEMENTATION_ORDER.forEach(type => {
-      groupsMap.set(type, []);
+    const filtered = artifacts.filter(a => getArtifactLayer(a) === 'IMPLEMENTATION');
+    const typesMap = new Map<string, Artifact[]>();
+
+    filtered.forEach(a => {
+      if (!typesMap.has(a.type)) typesMap.set(a.type, []);
+      typesMap.get(a.type)!.push(a);
     });
 
-    artifacts.forEach(artifact => {
-      if (groupsMap.has(artifact.type)) {
-        groupsMap.get(artifact.type)!.push(artifact);
-      }
-    });
-
-    const results: StrategyResultGroup[] = [];
-    IMPLEMENTATION_ORDER.forEach(type => {
-      const arts = groupsMap.get(type);
-      if (arts && arts.length > 0) {
-        results.push({
-          id: `impl-${type}`,
-          title: type.replace(/_/g, ' '),
-          artifacts: arts
-        });
-      }
-    });
-
-    return results;
+    return Array.from(typesMap.entries())
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([type, arts]) => ({
+        id: `impl-${type}`,
+        title: type.replace(/_/g, ' '),
+        artifacts: arts
+      }));
   }
 };

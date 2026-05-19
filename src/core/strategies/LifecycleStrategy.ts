@@ -1,23 +1,16 @@
 import { ProjectionStrategy, StrategyResultGroup } from './types';
-import { Artifact, ArtifactType } from '../../types';
+import { Artifact, ArtifactType, ArtifactLayer } from '../../types';
+import { getArtifactLayer } from '../../utils/artifactUtils';
 
-const LIFECYCLE_ORDER: ArtifactType[] = [
-  'VISION', 
-  'PROJECT', 
-  'VERSION', 
-  'EPIC', 
-  'REQUIREMENT', 
-  'USE_CASE', 
-  'DECISION', 
-  'DESIGN', 
-  'COMPONENT', 
-  'FEATURE', 
-  'CODE_ENTITY', 
-  'TEST_CASE', 
-  'RISK', 
-  'CHANGE',
-  'CHANGELOG'
-] as ArtifactType[];
+const LAYER_ORDER: ArtifactLayer[] = [
+  'BUSINESS',
+  'ARCHITECTURE',
+  'IMPLEMENTATION',
+  'VERIFICATION',
+  'OPERATIONS',
+  'GOVERNANCE',
+  'DOCUMENTATION'
+];
 
 export const LifecycleStrategy: ProjectionStrategy = {
   info: {
@@ -26,54 +19,46 @@ export const LifecycleStrategy: ProjectionStrategy = {
     description: 'Natural evolution of the software from vision to changelog.'
   },
   project: (artifacts: Artifact[]): StrategyResultGroup[] => {
-    // Group by ArtifactType according to LIFECYCLE_ORDER
-    const groupsMap = new Map<ArtifactType, Artifact[]>();
+    // Group by Layer
+    const groupsMap = new Map<string, Artifact[]>();
     
-    // Process all known types first
-    LIFECYCLE_ORDER.forEach(type => {
-      groupsMap.set(type, []);
+    LAYER_ORDER.forEach(layer => {
+      groupsMap.set(layer, []);
     });
 
-    const otherGroup: Artifact[] = [];
-
     artifacts.forEach(artifact => {
-      if (groupsMap.has(artifact.type)) {
-        groupsMap.get(artifact.type)!.push(artifact);
+      const layer = getArtifactLayer(artifact) || 'UNKNOWN';
+      if (groupsMap.has(layer)) {
+        groupsMap.get(layer)!.push(artifact);
       } else {
-        otherGroup.push(artifact);
+        if (!groupsMap.has(layer)) groupsMap.set(layer, []);
+        groupsMap.get(layer)!.push(artifact);
       }
     });
 
     const results: StrategyResultGroup[] = [];
-    LIFECYCLE_ORDER.forEach(type => {
-      const arts = groupsMap.get(type);
+    LAYER_ORDER.forEach(layer => {
+      const arts = groupsMap.get(layer);
       if (arts && arts.length > 0) {
         results.push({
-          id: `lifecycle-${type}`,
-          title: type.replace(/_/g, ' '),
+          id: `lifecycle-layer-${layer}`,
+          title: layer.replace(/_/g, ' '),
           artifacts: arts
         });
       }
     });
 
-    if (otherGroup.length > 0) {
-      // Group others by their type
-      const otherMap = new Map<string, Artifact[]>();
-      otherGroup.forEach(a => {
-        if (!otherMap.has(a.type)) otherMap.set(a.type, []);
-        otherMap.get(a.type)!.push(a);
-      });
-
-      Array.from(otherMap.entries())
-        .sort((a, b) => a[0].localeCompare(b[0]))
-        .forEach(([type, arts]) => {
+    // Handle any unknown or custom layers
+    Array.from(groupsMap.entries())
+      .filter(([layer]) => !LAYER_ORDER.includes(layer as ArtifactLayer) && groupsMap.get(layer)!.length > 0)
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .forEach(([layer, arts]) => {
           results.push({
-            id: `lifecycle-other-${type}`,
-            title: type.replace(/_/g, ' '),
+            id: `lifecycle-other-${layer}`,
+            title: layer.replace(/_/g, ' '),
             artifacts: arts
           });
-        });
-    }
+      });
 
     return results;
   }

@@ -1,12 +1,11 @@
 ---
 id: depl-reg-01
-type: DEPLOYMENT
-subType: Kubernetes
+type: KUBERNETES
 title: Reg-Service K8s Deployment
 version: v-1
 relations:
   - to: impl-reg-01
-    type: DEPLOYS
+    type: RELATES_TO
 ownership:
   owner: pcaro
   team: architecture

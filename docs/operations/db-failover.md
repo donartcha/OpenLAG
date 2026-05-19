@@ -1,7 +1,6 @@
 ---
 id: ops-run-1
-type: DOCUMENTATION
-subType: Runbook
+type: RUNBOOK
 title: DB Failover Runbook
 version: v-1
 relations:

@@ -1,7 +1,6 @@
 ---
 id: ver-evi-1
-type: DOCUMENTATION
-subType: Evidence
+type: EVIDENCE
 title: Security Audit Approval
 version: v-1
 ownership:
