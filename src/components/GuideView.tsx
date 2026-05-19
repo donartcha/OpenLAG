@@ -321,7 +321,7 @@ tags:
   - graph
 relations:
   - type: IMPLEMENTS
-    target: CODE-001
+    to: CODE-001
     strength: STRONG
     category: TRACEABILITY
 ---
@@ -430,7 +430,7 @@ title: Auth Architecture
 version: v1
 relations:
   - type: IMPLEMENTS
-    target: REQ-001
+    to: REQ-001
     strength: STRONG
     category: TRACEABILITY
 ---
@@ -460,7 +460,7 @@ title: AuthService.ts
 version: v1
 relations:
   - type: IMPLEMENTS
-    target: DESIGN-auth
+    to: DESIGN-auth
     strength: STRONG
     category: TRACEABILITY
 ---

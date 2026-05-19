@@ -1,9 +1,28 @@
 {
   "name": "@donartcha/openlag",
-  "version": "0.1.7",
-  "description": "Architecture as Code traceability graph generator",
+  "version": "0.1.8",
+  "description": "Architecture as Code traceability graph generator and static documentation portal",
   "type": "module",
+  "author": "donartcha",
   "license": "MPL-2.0",
+  "keywords": [
+    "architecture-as-code",
+    "traceability",
+    "documentation",
+    "static-site-generator",
+    "software-architecture",
+    "graph",
+    "markdown",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/donartcha/OpenLAG.git"
+  },
+  "bugs": {
+    "url": "https://github.com/donartcha/OpenLAG/issues"
+  },
+  "homepage": "https://github.com/donartcha/OpenLAG#readme",
   "bin": {
     "openlag": "bin/openlag.js"
   },
@@ -15,7 +34,11 @@
     "index.html",
     "vite.config.ts",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md",
+    "SECURITY.md",
+    "CONTRIBUTING.md",
+    "SPECIFICATION.md"
   ],
   "scripts": {
     "dev": "tsx scripts/cli/openlag.ts dev",

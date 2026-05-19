@@ -14,7 +14,6 @@ const typeColors: Record<ArtifactType, string> = {
   DESIGN: 'text-purple-400 border-purple-400',
   COMPONENT: 'text-amber-400 border-amber-400',
   CODE_ENTITY: 'text-emerald-400 border-emerald-400',
-  TEST: 'text-rose-400 border-rose-400',
   DOCUMENTATION: 'text-slate-400 border-slate-400',
   INCIDENT: 'text-red-400 border-red-400',
   INFRASTRUCTURE: 'text-cyan-400 border-cyan-400',

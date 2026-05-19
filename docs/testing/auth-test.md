@@ -1,6 +1,6 @@
 ---
 id: test-auth-01
-type: TEST
+type: TEST_CASE
 subType: Integration Test
 title: AuthController Integration Test
 version: v-1

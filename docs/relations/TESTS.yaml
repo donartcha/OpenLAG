@@ -1,7 +1,7 @@
 relation: TESTS
 description: "Conecta tests con comportamiento validado."
 category: TRACEABILITY
-allowedFrom: [TEST_CASE, TEST]
+allowedFrom: [TEST_CASE]
 allowedTo: [REQUIREMENT, FEATURE, EPIC, CODE_ENTITY, COMPONENT, API, DATABASE_ENTITY, BUG, INCIDENT]
 multiplicity:
   from: many

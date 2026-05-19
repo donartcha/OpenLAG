@@ -379,7 +379,7 @@ tags:
   - graph
 relations:
   - type: IMPLEMENTS
-    target: CODE-001
+    to: CODE-001
 ---
 ```
 
@@ -521,9 +521,19 @@ Por ello, OpenLAG adopta las siguientes reglas de escalabilidad mediante un mode
 ### Principios Fundamentales
 - **El Grafo Completo es Base de Conocimiento, NO Interfaz Obligatoria**: OpenLAG procesa, valida y almacena el total del `GraphState`, pero no promete ni intenta renderizarlo visualmente todo de golpe.
 - **Subgraph Projection & Focus Mode**: El usuario explora vistas proyectadas controladas (Subgrafos). Por defecto, la experiencia visual se basa en seleccionar un artefacto foco y expandir la vecindad a una profundidad configurada (`depth = 1` o `2`). Las sub-ramas no solicitadas se recortan agresivamente.
+- **Semantic Graph Visualization Engine**: OpenLAG ha evolucionado de ser un simple explorador de documentos ("Document Graph Explorer") a un motor visual de análisis del ciclo de vida del software ("Software Lifecycle Visualization Engine"). El grafo base es inamovible, pero la visualización y ordenación se realiza de manera dinámica a través del *Ordering Strategy Registry* según la perspectiva (por defecto: Lifecycle Strategy).
 - **Weak Relation Hiding**: Las relaciones difusas o semánticas (`RELATES_TO`, `DOCUMENTS`, u otras categorizadas como `WEAK`) aumentan el ruido introduciendo dependencias cruzadas sin impacto arquitectónico crítico. Estarán ocultas por defecto en la UI (se pueden activar explícitamente mediante filtros si se requiere análisis transversal de trazabilidad).
 - **Hub Collapsing (Umbrales de Tolerancia)**: Existen límites duros de visualización (`MAX_RENDER_NODES = 150`, `MAX_RENDER_EDGES = 300`). Si un subgrafo sobrepasa estos umbrales generados (por ejemplo un proyecto gigantesco con cientos de features apuntando a un único componente `Auth`), la visualización truncará de forma segura el grafo y alertará al usuario indicando el uso de un filtro de profundidad/Layer.
 - **Análisis por Slices Semánticos**: El Impact Engine ya no recorre visualmente todos los nodos, sino que realiza consultas controladas directamente sobre el índice estructural de GraphQL/TypeScript construido en memoria del navegador antes de renderizar la solución.
+
+### Estrategias de Visualización (Proyección Semántica)
+
+El portal permite visualizar los artefactos bajo diferentes "Estrategias de Ordenación y Agrupación", resolviendo el grafo desde diferentes ópticas profesionales sin modificar el grafo mismo.
+
+1. **Lifecycle Strategy (Default)**: Visualización en orden natural evolutivo: VISION → PROJECT → VERSION → EPIC → REQUIREMENT → USE_CASE → DECISION → DESIGN → COMPONENT → FEATURE → CODE_ENTITY → TEST_CASE → RISK → CHANGE → CHANGELOG.
+2. **Implementation Strategy**: Orden de implementación (DECISION → DESIGN → COMPONENT → FEATURE → CODE_ENTITY → TEST_CASE).
+3. **Validation Strategy**: Trazabilidad de pruebas y validaciones (REQUIREMENT → FEATURE → TEST_CASE → BUG → CHANGE → INCIDENT).
+4. **Architecture / Governance / Release / Domains**: Proyecciones adicionales que enfatizan o aíslan segmentos según propósitos analíticos o políticas.
 
 ### Evolución del Static Graph Data (`graph-data.json`)
 - **Fase 1 (Actual)**: `graph-data.json` único + **GraphQueryLayer en Frontend**. Todos los índices (`artifactsById`, `relationsBySource`) se computan en la memoria local estática para luego derivar los subgrafos que consume la UI.

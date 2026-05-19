@@ -2,21 +2,44 @@
 
 OpenLAG is an Architecture as Code traceability graph generator.
 
-It reads versioned architecture documentation from Markdown and YAML files, validates the relationships between artifacts, generates a static graph data file, and builds a portal for exploring the resulting traceability graph.
+It reads versioned architecture documentation from Markdown and YAML files, validates relationships between artifacts, generates a static graph data file, and builds a portal for exploring the resulting traceability graph.
+
+The NPM package is published as `@donartcha/openlag`. The global CLI binary installed by the package is `openlag`.
+
+## Package Status
+
+OpenLAG is in active early development. The current release focuses on a clean CLI workflow, static portal generation, relation contracts, lint profiles, graph exploration, and public package documentation.
+
+The tool is designed to be static-first: documentation stays in your repository, OpenLAG generates `public/graph-data.json`, and the portal can be built as static assets.
 
 ## Install
+
+Install the CLI globally:
 
 ```bash
 npm install -g @donartcha/openlag
 ```
 
-You can also run it without a global install:
+Run without a global install:
 
 ```bash
 npx @donartcha/openlag init
 ```
 
-## Usage
+## Quick Start
+
+```bash
+mkdir my-architecture
+cd my-architecture
+npx @donartcha/openlag init --name "My System"
+npx @donartcha/openlag generate
+npx @donartcha/openlag lint
+npx @donartcha/openlag build
+```
+
+OpenLAG creates a `docs/` directory with starter architecture documents and relation definitions. `openlag generate` writes `public/graph-data.json`, and `openlag build` writes the static portal to `dist/`.
+
+## CLI Usage
 
 Initialize a project:
 
@@ -30,10 +53,10 @@ Generate graph data:
 openlag generate
 ```
 
-Validate architecture documentation:
+Start the development portal with live data regeneration:
 
 ```bash
-openlag lint
+openlag dev
 ```
 
 Build the static portal:
@@ -42,40 +65,102 @@ Build the static portal:
 openlag build
 ```
 
-Run generation and validation together:
+Validate architecture documentation:
+
+```bash
+openlag lint
+```
+
+Generate data and validate documentation together:
 
 ```bash
 openlag check
 ```
 
-## Minimal Example
+Show the installed CLI version:
 
 ```bash
-mkdir my-architecture
-cd my-architecture
-npx @donartcha/openlag init --name "My System"
-npx @donartcha/openlag generate
-npx @donartcha/openlag lint
-npx @donartcha/openlag build
+openlag --version
 ```
-
-OpenLAG creates a `docs/` directory with starter architecture documents and relation definitions. `openlag generate` writes `public/graph-data.json`, and `openlag build` writes the static portal to `dist/`.
 
 ## Commands
 
 ```text
-openlag init       Initialize docs and relation definitions
+openlag init       Initialize docs, metadata, and relation definitions
 openlag generate   Generate public/graph-data.json
-openlag lint       Validate documentation and relations
+openlag dev        Start the portal dev server with live data refresh
 openlag build      Build the static portal
+openlag lint       Validate documentation and relations
 openlag check      Generate graph data and run OpenLAG lint
-openlag dev        Start the portal dev server
 openlag preview    Preview the production build
 ```
 
-## Project Status
+## Lint Profiles
 
-OpenLAG is in early development. The first public NPM release is intended to establish the CLI workflow and package layout.
+```bash
+openlag lint --profile feature
+openlag lint --profile develop
+openlag lint --profile release --strict
+```
+
+- `feature`: relaxed profile for work in progress.
+- `develop`: default profile for day-to-day validation.
+- `release`: strict profile for release gates.
+
+## Artifact Example
+
+OpenLAG artifacts are Markdown files with YAML frontmatter. Relations use `to` for the destination artifact ID.
+
+```yaml
+---
+id: req-registration
+type: REQUIREMENT
+status: ready
+layer: BUSINESS
+title: User registration
+version: v-1
+description: Users must be able to create an account with validated data.
+ownership:
+  owner: product
+  team: identity
+relations:
+  - type: REFINES
+    to: epic-identity
+---
+```
+
+Use `to`, not `target`, in public examples and project documentation.
+
+## Relation Contracts
+
+Relation rules live in `docs/relations/*.yaml`. The default initialization creates the core relation contracts needed for traceability. Optional relation contracts can be added as the project model matures.
+
+Common relations include:
+
+- `IMPLEMENTS`: implementation satisfies a requirement, feature, bug, or API contract.
+- `TESTS`: a `TEST_CASE` validates a requirement, feature, code entity, API, bug, or incident.
+- `REFINES`: a more concrete artifact refines a broader artifact.
+- `FIXES`: a change, component, system version, or code entity fixes a bug, incident, or risk.
+- `DOCUMENTS`: documentation describes another artifact.
+- `JUSTIFIES`: a decision or rule justifies another artifact.
+
+## Generated Output
+
+```text
+public/graph-data.json  Static graph data generated from docs/
+dist/                   Static portal build output
+```
+
+The generated portal is static. Protect it appropriately if the source Markdown contains internal architecture, system names, incidents, vulnerabilities, or operational details.
+
+## Repository Documentation
+
+- [Specification](./SPECIFICATION.md): conceptual model, artifact types, relation model, and project structure.
+- [Changelog](./CHANGELOG.md): release history.
+- [Security](./SECURITY.md): security considerations and vulnerability reporting.
+- [Contributing](./CONTRIBUTING.md): local development and PR workflow.
+
+Internal audit notes are intentionally not published as NPM documentation.
 
 ## License
 

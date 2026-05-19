@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from 'react';
 import { useStore } from '../store';
 import { Artifact } from '../types';
 import { getArtifactLayer, getArtifactOwner, getArtifactTeam } from '../utils/artifactUtils';
+import { strategyRegistry } from '../core/strategies';
 import { Layers, FileText, FileCode2, ShieldCheck, ChevronRight, Search, GitPullRequest, Repeat, Box, Rocket, Activity, Wrench, Trash2, AlertCircle, Printer, Milestone, Bookmark, BookOpen } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
@@ -21,22 +22,9 @@ const OwnershipBadge = ({ artifact }: { artifact: Artifact }) => {
     );
 };
 
-const PHASES = [
-  { id: 'strategy', title: 'Strategy & Planning', icon: Bookmark, types: ['PROJECT', 'EPIC', 'FEATURE', 'BUSINESS_RULE', 'DECISION', 'GLOSSARY_TERM', 'RISK', 'PROCESS'] },
-  { id: 'req', title: 'Requirements / Analysis', icon: FileText, types: ['REQUIREMENT', 'USE_CASE'] },
-  { id: 'design', title: 'Architecture & Design', icon: Layers, types: ['DESIGN', 'COMPONENT', 'API', 'DATABASE_ENTITY'] },
-  { id: 'dev', title: 'Development', icon: FileCode2, types: ['CODE_ENTITY', 'LIBRARY', 'ENVIRONMENT'] },
-  { id: 'ci', title: 'Continuous Integration / Build', icon: Repeat, types: ['PIPELINE', 'INFRASTRUCTURE'] },
-  { id: 'verif', title: 'Testing / QA', icon: ShieldCheck, types: ['TEST_CASE', 'CHECK', 'BUG'] },
-  { id: 'deploy', title: 'Deployment', icon: Rocket, types: ['DEPLOYMENT'] },
-  { id: 'monitor', title: 'Monitoring & Feedback', icon: Activity, types: ['MONITORING', 'INCIDENT'] },
-  { id: 'docs', title: 'Documentation', icon: BookOpen, types: ['DOCUMENTATION'] },
-  { id: 'maint', title: 'Maintenance / Refactoring', icon: Wrench, types: ['MAINTENANCE'] },
-  { id: 'versions', title: 'Releases & Versions', icon: Milestone, types: ['VERSION', 'SYSTEM_VERSION', 'CHANGE'] },
-];
 
 export const DocumentationView: React.FC = () => {
-  const { fullGraph: graph, currentVersionId, versions, systemVersions, selectedArtifactId, setSelectedArtifact, settings, globalFilters, setGlobalFilter } = useStore();
+  const { fullGraph: graph, currentVersionId, versions, systemVersions, selectedArtifactId, setSelectedArtifact, settings, globalFilters, setGlobalFilter, currentStrategyId, setStrategy } = useStore();
   
   const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
   const [selectedSubType, setSelectedSubType] = useState<string | null>(null);
@@ -104,20 +92,9 @@ export const DocumentationView: React.FC = () => {
     return reachable;
   }, [selectedArtifactId, graph, settings.docsFocusDepth]);
 
-  const grouped = useMemo(() => {
-    const groups: Record<string, Artifact[]> = {};
-    if (graph && graph.artifacts) {
-      graph.artifacts.forEach(a => {
-        if (!groups[a.type]) {
-          groups[a.type] = [];
-        }
-        groups[a.type].push(a);
-      });
-    }
-    return groups;
-  }, [graph]);
-
-  const filteredGroups = useMemo(() => {
+  const filteredArtifacts = useMemo(() => {
+    if (!graph || !graph.artifacts) return [];
+    
     const filterBySearch = (list: Artifact[] = []) => {
       if (!searchQuery.trim()) return list;
       const term = searchQuery.toLowerCase();
@@ -147,29 +124,22 @@ export const DocumentationView: React.FC = () => {
     };
 
     const applyFilters = (list: Artifact[] = []) => filterByGraph(filterByLayerAndOwnership(filterBySearch(list)));
-    
-    const result: Record<string, Artifact[]> = {};
-    Object.keys(grouped).forEach(key => {
-      result[key] = applyFilters(grouped[key]);
-    });
-    return result;
-  }, [grouped, searchQuery, selectedArtifactId, reachableArtifactIds, isImpactFocusMode, filterLayer, filterOwner, filterTeam]);
+    return applyFilters(graph.artifacts);
+  }, [graph, searchQuery, selectedArtifactId, reachableArtifactIds, isImpactFocusMode, filterLayer, filterOwner, filterTeam]);
 
-  const phasesData = useMemo(() => {
-    return PHASES.map(phase => {
-      let filteredArtifactsInPhase = phase.types.flatMap(type => 
-        (filteredGroups[type] || [])
-      );
-
-      const subTypes = Array.from(new Set(filteredArtifactsInPhase.map(a => a.subType).filter(Boolean))) as string[];
-      
+  const strategyGroups = useMemo(() => {
+    const strategy = strategyRegistry.getStrategy(currentStrategyId);
+    const groups = strategy.project(filteredArtifacts);
+    return groups.map(group => {
+      const subTypes = Array.from(new Set(group.artifacts.map(a => a.subType).filter(Boolean))) as string[];
       return {
-         ...phase,
-         count: filteredArtifactsInPhase.length,
-         subTypes,
-      }
+        ...group,
+        icon: Bookmark, // Can be improved
+        count: group.artifacts.length,
+        subTypes,
+      };
     });
-  }, [filteredGroups]);
+  }, [filteredArtifacts, currentStrategyId]);
 
   useEffect(() => {
     if (selectedArtifactId) {
@@ -180,7 +150,7 @@ export const DocumentationView: React.FC = () => {
         }
       }, 100);
     }
-  }, [selectedArtifactId, filteredGroups]);
+  }, [selectedArtifactId, strategyGroups]);
 
   if (!graph) return <div className="p-8">Loading documentation...</div>;
 
@@ -231,7 +201,7 @@ export const DocumentationView: React.FC = () => {
               </button>
             )}
             
-            {phasesData.map((phase, idx) => {
+            {strategyGroups.map((phase, idx) => {
                 const Icon = phase.icon;
                 const isPhaseSelected = selectedPhase === phase.id;
                 
@@ -291,7 +261,7 @@ export const DocumentationView: React.FC = () => {
           <div className={`sticky top-0 z-30 transition-all duration-300 bg-[#0a0a0a]/80 backdrop-blur-md px-8 lg:px-16 border-b border-white/5 flex items-center justify-between print-hidden ${isHeaderMinified ? 'py-2' : 'py-8 pt-12 pb-4'}`}>
             <div className="flex items-center gap-4">
                <h1 className={`font-serif italic tracking-tight transition-all duration-300 ${isHeaderMinified ? 'text-lg' : 'text-3xl'}`}>
-               {selectedSubType ? `${selectedSubType} Documentation` : selectedPhase ? phasesData.find(p => p.id === selectedPhase)?.title : 'System Documentation'}
+               {selectedSubType ? `${selectedSubType} Documentation` : selectedPhase ? strategyGroups.find(p => p.id === selectedPhase)?.title : 'System Documentation'}
                </h1>
                <div className="h-4 w-px bg-white/10" />
                <button 
@@ -352,7 +322,7 @@ export const DocumentationView: React.FC = () => {
                                 }`}
                             >
                                 <option value="ALL" className="bg-[#0c0c0c] text-white">All Types</option>
-                                {Object.keys(grouped).map(type => (
+                                {Array.from(new Set((graph?.artifacts || []).map(a => a.type))).sort().map(type => (
                                     <option key={type} value={type} className="bg-[#0c0c0c] text-white">{type.replace('_', ' ')}</option>
                                 ))}
                             </select>
@@ -385,6 +355,19 @@ export const DocumentationView: React.FC = () => {
                         </button>
                     </div>
                     <div className="flex gap-1 w-full mt-2 lg:mt-0">
+                        <select
+                            value={currentStrategyId}
+                            onChange={(e) => {
+                                setStrategy(e.target.value);
+                                setSelectedPhase(null);
+                                setSelectedSubType(null);
+                            }}
+                            className={`bg-transparent py-1 px-2 text-[10px] focus:outline-none cursor-pointer uppercase tracking-wider text-center transition-all border rounded-sm bg-emerald-500/20 border-emerald-500/40 text-emerald-400 font-bold`}
+                        >
+                            {strategyRegistry.getAll().map(s => (
+                                <option key={s.id} value={s.id} className="bg-[#0c0c0c] text-white font-normal">{s.label}</option>
+                            ))}
+                        </select>
                         <select
                             value={filterLayer}
                             onChange={(e) => setFilterLayer(e.target.value)}
@@ -435,7 +418,7 @@ export const DocumentationView: React.FC = () => {
           <div className="px-8 lg:px-16 pt-4 shrink-0">
             <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-12 mb-8 mt-2 animate-in fade-in slide-in-from-top-1 duration-300">
                   <div className="text-xs font-mono text-white/40">
-                      SYS DOMAIN: <span className="text-emerald-400 font-bold tracking-widest">{selectedSubType ? `${selectedSubType} Documentation` : selectedPhase ? phasesData.find(p => p.id === selectedPhase)?.title : 'System Documentation'}</span><br/>
+                      SYS DOMAIN: <span className="text-emerald-400 font-bold tracking-widest">{selectedSubType ? `${selectedSubType} Documentation` : selectedPhase ? strategyGroups.find(p => p.id === selectedPhase)?.title : 'System Documentation'}</span><br/>
                       VERSION: <span className="text-white/80">{currentVersion?.name} ({currentVersionId})</span><br/>
                       DATE: {new Date().toISOString().split('T')[0]}
                   </div>
@@ -464,10 +447,10 @@ export const DocumentationView: React.FC = () => {
           </div>
           
           <div className="flex-1 overflow-y-auto px-8 lg:px-16 pb-12 custom-scrollbar">
-            {phasesData.map((phase, idx) => {
+            {strategyGroups.map((phase, idx) => {
                 if (selectedPhase && selectedPhase !== phase.id) return null;
                 
-                let phaseArtifacts = phase.types.flatMap(type => filteredGroups[type] || []);
+                let phaseArtifacts = phase.artifacts;
 
                 if (selectedSubType) {
                     phaseArtifacts = phaseArtifacts.filter(a => a.subType === selectedSubType);

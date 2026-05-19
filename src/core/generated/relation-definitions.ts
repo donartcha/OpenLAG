@@ -60,7 +60,6 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     ],
     "allowedTo": [
       "TEST_CASE",
-      "TEST",
       "API",
       "COMPONENT",
       "REQUIREMENT",
@@ -233,7 +232,6 @@ export const GENERATED_RELATIONS: RelationContract[] = [
       "COMPONENT",
       "API",
       "DATABASE_ENTITY",
-      "TEST",
       "DOCUMENTATION",
       "INCIDENT",
       "INFRASTRUCTURE",
@@ -461,7 +459,6 @@ export const GENERATED_RELATIONS: RelationContract[] = [
       "COMPONENT",
       "API",
       "DATABASE_ENTITY",
-      "TEST",
       "DOCUMENTATION",
       "INCIDENT",
       "INFRASTRUCTURE",
@@ -489,7 +486,6 @@ export const GENERATED_RELATIONS: RelationContract[] = [
       "COMPONENT",
       "API",
       "DATABASE_ENTITY",
-      "TEST",
       "DOCUMENTATION",
       "INCIDENT",
       "INFRASTRUCTURE",
@@ -546,8 +542,7 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "description": "Conecta tests con comportamiento validado.",
     "category": "TRACEABILITY",
     "allowedFrom": [
-      "TEST_CASE",
-      "TEST"
+      "TEST_CASE"
     ],
     "allowedTo": [
       "REQUIREMENT",

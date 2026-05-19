@@ -1,315 +1,685 @@
-# Análisis Arquitectónico y Documentación Técnica - OpenLAG
+# Documentacion tecnica validada - OpenLAG
 
-## 1. Executive Summary
-**OpenLAG** (*Open Living Architecture Graph*) es un motor de trazabilidad integral para el ciclo de vida del software construido sobre el paradigma de **Architecture as Code (AaC)**. Funciona extrayendo información estructurada de archivos Markdown y genera, de forma determinista, un portal estático interactivo. Este portal provee visibilidad de extremo a extremo: conectando requerimientos de negocio, diseño de arquitectura, entidades de código, y operaciones a lo largo del tiempo histórico del desarrollo. Al tratar la arquitectura, las decisiones y las dependencias como código versionable en el mismo repositorio que el software, genera un "grafo arquitectónico vivo" que refleja la complejidad y la verdad del sistema en cualquier versión dada.
+Documento validado contra el repositorio del proyecto y el paquete `@donartcha/openlag@0.1.8`.
 
-## 2. Objetivo del Sistema
-Resolver el riesgo clásico organizacional de tener "documentación muerta" o desincronizada mediante la materialización de la **Architecture as Code**. OpenLAG permite realizar:
-- Comprensión transversal del proyecto para *onboardings*, manteniendo la arquitectura tan cerca del código como sea posible.
-- Trazabilidad y validación de pruebas, demostrando enlaces determinísticos entre requerimientos y código de producción (Specs as Code).
-- Análisis de impacto real ("Si cambio esta entidad, ¿qué casos de uso impacta?").
-- Detección de "Huérfanos" (Requerimientos sin código asignado o código sin justificación de negocio).
+Fecha de validacion: 2026-05-19.
 
-## 3. Arquitectura General
-**Paradigma:** **Architecture as Code (AaC)** soportado por un pipeline de Generador Estático de Sitios (SSG) / Extracción documental acoplado a una Single Page Application (SPA).
-* **Capas y Flujo General:**
-  1. **Capa Data Source / Storage:** Base de datos basada en ficheros (estilo *Git-Ops*). Carpeta local repleta de definiciones en Markdown (usando YAML Frontmatter / bloques inyectados).
-  2. **Capa de Extracción (ETL):** Script CLI Node.js que escanea documentos, valida la descendencia versionada y consolida las serializaciones en un JSON final (grafo relacional).
-  3. **Capa de Presentación (Frontend):** Cliente puro React, estáticamente servido, que absorbe el JSON global y renderiza de forma condicional vistas complejas de jerarquía, nodos y grafos.
+## 1. Resumen ejecutivo
 
-## 4. Estructura del Repositorio
-El repositorio presenta un patrón modular híbrido simplificado:
-- `/bin/openlag.js`: Punto de entrada (CLI) oficial que expone todos los comandos del sistema (`init`, `dev`, `generate`, `lint`, `build`, `check`).
-- `/docs/`: Directorio raíz de datos ("Source of truth"). Los requerimientos, arquitectura, tests y diseño del cliente residen aquí y se versionan. Especial relevancia tienen los archivos en `/docs/versions/` (donde cada artefacto `VERSION` y `SYSTEM_VERSION` se define en su propio archivo markdown independiente). Estos exigen validación estructural estricta incluyendo campos obligatorios como `layer`, `title`, `description`, `ownership` (owner, team) y `relations` explícitas, para evitar problemas de trazabilidad.
-- `/scripts/cli/`: Contiene la lógica de implementación de cada subcomando de la CLI.
-- `/scripts/core/`: Motores de procesamiento agnósticos (Parser, Graph Engine).
-- `/src/`: Base de código de la interfaz gráfica React / Vite.
-  - `/src/store.ts`: Gestor de contexto y memoria de la aplicación (Zustand).
-  - `/src/types.ts`: Esquemas estables (Contratos / DTOs de Grafo, Versión, Sistemas, Impactos).
-  - `/src/components/`: Vistas de usuario renderizables (GraphView, ImpactEngine, Orphans, Documentation).
+OpenLAG, Open Living Architecture Graph, es una herramienta de Architecture as Code para convertir documentacion tecnica versionada en Markdown y contratos YAML en un grafo de trazabilidad navegable.
 
-## 5. Tecnologías Utilizadas
-- **Lenguaje:** TypeScript (Asegura estricto tipado del modelo de Dominio).
-- **Frontend Core:** React 19 + Vite (Rápido, Componentizado, Orientado al Cliente SPA).
-- **Gestión de Estado Central**: `zustand` (Minimiza el overhead de contexto vs Redux).
-- **Estilado:** TailwindCSS v4 acoplado con `lucide-react` para iteración acelerada.
-- **Renderización Grafo:** Dependencias listadas sugieren soporte para renderizado usando `dagre` o `@xyflow/react` (React Flow) para posicionamiento matemático de jerarquías.
-- **Parseo de Texto:** `js-yaml` + `gray-matter` (Lectura robusta de descriptores MarkDown).
-- **Dependencias No Utilizadas (Deuda/Futuro):** `@google/genai` figura listada, pero no está explícitamente acoplada a la generación de esta versión estática.
+El sistema lee los artefactos de `docs/`, extrae frontmatter y bloques YAML, genera `public/graph-data.json` y sirve una SPA React/Vite para explorar:
 
-## 6. Flujo de Ejecución
+- versiones del sistema,
+- artefactos arquitectonicos,
+- relaciones de trazabilidad,
+- huecos de cobertura,
+- impacto de cambios,
+- documentacion renderizada en Markdown y Mermaid.
 
-1. **Al arrancar (Build phase):**
-   - El desarrollador invoca `npm run dev` (que internamente hace `npm run generate`).
-   - Se ejecuta el CLI. Se leen los archivos bajo `/docs/versions/` extrayendo el listado jerárquico de versiones globales y versiones de componentes.
-   - El motor rastrea recursivamente `/docs`, parseando bloques condicionales YAML en cada Markdown y genera los Artefactos y Aristas (`Relations`).
-   - El compilador calcula la "herencia" (función `isDescendant()`) para vincular qué códigos o entidades existían retrospectivamente. Imprime todo el dump en `public/graph-data.json`.
-   - Inicia el webserver Vite.
-2. **Durante operación (Runtime):**
-   - El navegador ejecuta la SPA montada sobre `/src/main.tsx` -> `/src/App.tsx`.
-   - Se invoca `initializeStore()`, desencadenando un Fetch asíncrono puro directo a `graph-data.json` y cargando en memoria (Store Zustand).
-   - El usuario interactúa mutando selectores del top-bar del Header (`store.setVersionId`) re-renderizando las ramificaciones condicionalmente para ver la red (Graph) vs Documentos apilados.
+La premisa central es mantener la arquitectura cerca del codigo, dentro del repositorio, con IDs estables y relaciones explicitas.
 
-## 7. Gobernanza Semántica y Contratos de Relaciones
+## 2. Estado actual validado
 
-OpenLAG introduce relaciones como contratos explícitos, garantizando la gobernanza semántica. A diferencia de grafos de conocimiento libres, OpenLAG impone un diseño orientado a evitar la polución semántica.
+### Version y paquete
 
-### Human Relations vs Synthetic Relations
-El marco conceptual distingue dos orígenes de conexión:
-- **Human Relations:** Crean justificaciones del "por qué" operan así las cosas (ej: `IMPLEMENTS`, `TESTS`, `JUSTIFIES`, `REFINES`). Requieren de la intervención e intención humana y construyen trazabilidad.
-- **Synthetic Relations:** Definen estructuralmente "cómo" ensambla y opera el software (ej: `DEPENDS_ON`, `CALLS`, `IMPORTS`, `USES`). Resultan idóneas para, a largo plazo, ser inferidas estáticamente mediante tooling sin intervención humana.
+- Paquete NPM: `@donartcha/openlag`
+- Version local: `0.1.8`
+- Binario publicado: `openlag`
+- Licencia: `MPL-2.0`
+- Runtime soportado: Node.js `>=18`
+- Tipo de modulo: ESM (`"type": "module"`)
 
-### Estructura Registral
-La gobernanza asume dos pilares técnicos:
-1. **RelationRegistry (Dinámico y Configurable):** Las reglas arquitectónicas (relaciones) se definen de forma descentralizada mediante contratos explícitos en formato YAML ubicados en `/docs/relations/*.yaml`. Definen el propósito, multiplicidad, artefactos origen (`allowedFrom`) / destino (`allowedTo`), y severidad de validación. OpenLAG procesa instántaneamente estos contratos usándolos como las leyes del motor de validaciones sin depender de configuraciones 'hardcodeadas'.
-2. **ArtifactRegistry (Estable e Integral):** A diferencia de las reglas del grafo, el catálogo de Artefactos (ej: `REQUIREMENT`, `FEATURE`) reside bajo el núcleo del código. Los artefactos en sí documentados (las instancias) se redactan puramente como **archivos Markdown legibles por humanos (.md)**. De esta forma, nunca recargamos la capa física con puros archivos YAML limitando la experiencia del desarrollador, manteniendo la legibilidad transparente para Gitea/Github dentro de carpetas clásicas (`/docs/features`, `/docs/requirements`).
+### Validacion ejecutada
 
-### Prevención de Polución y Ciclo de Vida
-Este motor de contratos permite que el `ValidationEngine` exponga diagnósticos precisos ante inconsistencias arquitectónicas. Relaciones perezosas o sin carga descriptiva (como `RELATES_TO`) se encuentran etiquetadas como **DISCOURAGED** requiriendo validación explícitamente y limitando la creación colosal y redundante del grafo ("Spaghetti Graph"). Además, las relaciones de trazabilidad secundaria (`DOCUMENTS`, `JUSTIFIES`) están preparadas para no quebrar el esquema de estado final de los artefactos que se encuentren cerrados o liberados.
+Comandos de validacion ejecutados desde la raiz del proyecto:
 
-## 8. APIs y Contratos
-Actualmente el sistema no requiere persistencia online, colas de eventos (RabbitMQ) o API REST para ingesta concurrente.
-El único "Contrato" de Integración es de lectura:
-- **`graph-data.json`**: El contrato en bruto entre el Backend estático temporal y el Renderizado del Cliente. Sigue fielmente la estructura TypeScript `StaticState`.
+```bash
+npm run check
+npm run generate
+node --import tsx scripts/cli/openlag.ts check
+node bin/openlag.js --version
+npm pack --dry-run
+```
 
-## 9. Persistencia
-**Estrategias:** *Stateless Database / File-driven.* El estado completo de la Base de Datos es volátil y transitorio, ensamblándose íntegramente gracias al File System plano bajo Markdown.
-**Riesgos Inminentes:** Si un desarrollador tipea erróneamente un identificador (`ID` en YAML) o una relación (Target ID roto), el parser arrojará un "Huérfano" no detectable o causará roturas estáticas al ignorar `catch (e)` silenciosamente.
+Resultado actual:
 
-## 10. Gestión de Contexto y Agentes (Estado Actual de IA)
-**Verificación Estricta:** Tras el escrutinio profundo del repositorio, a pesar de incluir dependencias preparatorias como `@google/genai` en el `package.json`, **el sistema NO implementa actualmente Agentes Contextuales ni llamadas a LLMs**.
-- No existe memoria RAG o base de datos de Vectores (Vector DB).
-- No hay persistencia conversacional o lógica de "Copilot" inyectada.
-- **Hipótesis fundamentada:** La arquitectura fue construida para integrarse paralelamente a un Agente de IA, cuyo rol futuro será correr independientemente sobre un repositorio ajeno, e inferir/traducir las clases de Java/Go a estos archivos Markdown (`Artefactos`), pero el código actual refleja exclusivamente el Motor de Lifecycle que lo lee una vez hecho esto offline por humanos.
+- `npm run check` pasa correctamente.
+- `node bin/openlag.js --version` devuelve `0.1.8`.
+- `npm pack --dry-run` genera la tarball `donartcha-openlag-0.1.8.tgz` e incluye la documentacion publica esperada.
+- `DOCUMENTACION_OPENLAG.md` permanece excluido del paquete NPM.
 
-## 11. Seguridad
-La aplicación es cliente total (Static SPA), careciendo de capa de autenticación, JWT o roles RBAC. Si `/dist/` es desplegado a producción pública (por ej. NGINX), las IPs, vulnerabilidades, deuda técnica, nombres de nodos y diseños expuestos bajo los ficheros Markdown son públicos y representan un riesgo fatal de Seguridad Perimetral y de Ingeniería Inversa. Se recomienda estricto ocultamiento bajo VPN o Auth-Guard básico del servidor estático.
+Observaciones actuales:
 
-## 12. DevOps y Despliegue
-- El Pipeline de CI/CD subyacente que un administrador ejecutaría sería tan trivial como correr `npm install`, seguido de `npm run build` y trasladar los *assets* cacheados hacia artefactos o plataformas Dockerizadas (`FROM nginx:alpine`).
+- La inconsistencia publica `TEST` vs `TEST_CASE` fue corregida en artefactos de ejemplo, contratos de relacion, UI y definiciones generadas.
+- ESLint sigue mostrando warnings por imports o variables sin uso, pero no errores.
+- Vite advierte que algunos chunks superan 500 kB tras minificacion; no bloquea la release, pero queda como mejora futura.
 
-## 13. Calidad del Código (Auditoría)
-- **Mantenibilidad & Modularidad:** Alta en FrontEnd. El desacople del estado (Zustand puro vs Componentes con inyección de hooks) es excelente y limpio. `types.ts` evita duplicaciones peligrosas en variables mágicas.
-- **Cohesión vs Acoplamiento (Pipeline):** El motor de procesamiento (`scripts/core/parser.ts`) ha sido refactorizado para centralizar la lógica de extracción. Se recomienda seguir eliminando parseos manuales por Expresiones Regulares en favor de un parser Markdown robusto (AST) para evitar roturas estructurales inesperadas.
-- **Deuda y Robustez:** Fallos en `catch (e) { continue; }` para el procesamiento del data extractor son un "Smell code". Los errores de lectura deberían hacer abortar por prevención la compilación estática (Throw exception / Fail Fast).
+Conclusion: el paquete queda preparado para una release NPM `0.1.8` con documentacion publica coherente y validaciones principales en verde.
 
-## 14. Deuda Técnica (Lista Priorizada)
-1. **Silenciado de Errores Críticos (P1):** Fallos al parsear los metadatos YAML ocultan pérdidas de datos transaccionales, se requiere implementación `throw new Error(...)` en el Script Builder.
-2. **Dependencias Abruptas o "Zombie" (P2):** Retirar `@google/genai` del manifest de dependencias, reduciendo vulnerabilidades o bien efectuar de inmediato la integración planificada para ellas (Generación Autómoma por Agentes).
-3. **Pérdida de Features (P3):** Reciente parche de rollback eliminó librerías PDF que siguen acopladas y presentes en NPM como `jspdf` y `html-to-image`; limpiar dichas dependencias.
+## 3. Arquitectura general
 
-## 15. Riesgos Arquitectónicos (Escalabilidad en Producción mitigada)
-1. **Punto de Quiebre Memoria Cliente (OOM Frontend):** A nivel empresarial, el Grafo pasará rápidamente de 50 entidades a 10.000 entidades y 40.000 conectores. Descargar todo esto de golpe en `graph-data.json` a Memoria JS y representarlo con un SVG/Canvas mataría los navegadores. **Mitigación implementada**: Se ha introducido `GraphQueryLayer` (Focus Mode, límites de profundidad configurables, filtrado lógico por semántica y agrupación progresiva) asegurando que el renderizado se acote y manipule únicamente lo esencial para el ecosistema, recortando el resto.
-2. **Generación Monolítica JSON**: Aunque la parte interactiva del portal visualiza *sub-grafos*, actualmente sigue existiendo un `graph-data.json` gigante y global descargado inicialmente por el Frontend. Si la red se ralentiza, el Time To Interactive será severo. (Fase futura: fragmentación estática de slices de red).
+OpenLAG esta compuesto por tres zonas principales:
 
-## 16. Recomendaciones Técnicas (Mejoras Proactivas aplicadas y futuras)
-1. **Validación Estricta y Semántica:** Ya mitigado en gran medida; El Lint OpenLAG nativo valida enlaces y advierte errores si target IDs no existen o existen inconsistencias de Relaciones.
-2. **Exploración por Subgrafos (Aplicado):** El grafo ha dejado de renderizar todo ciegamente, moviéndose a un modelo de "Proyección de Subgrafo", ocultando uniones estáticas (weak links como RELATES_TO) y requiriendo acción explícita mediante profundidad (Neighborhood exploration) o Focus Node selectivo, soportando *Trimming de Hubs* mayores a 150 nodos simultáneos.
-3. **Backend BFF Opcional (Futuro):** Ante mega-grafos donde los metadatos pesen más de 50MB, se requerirá abandonar el enfoque "solo archivos S3/GitHub" e instanciar un pequeño backend GraphQL de OpenLAG.
-3. **Backend Ligero Híbrido:** Reactivar la dependencia `express`, montando un micro-servidor en lugar de leer un Static JSON. Esto preparará a la App para inyectar Gemini (Agente Generativo) permitiendo requerir consultas o grafos al vuelo reduciendo la carga final.
+1. **Fuente documental**
+   - Directorio `docs/`.
+   - Artefactos Markdown con YAML estructurado.
+   - Contratos de relaciones en `docs/relations/*.yaml`.
+   - Metadatos del portal en `metadata.json`.
 
-## 17. Roadmap Propuesto (Madurez a 1 año)
-- **Fase 1 (Corto Plazo): Core Enforcement**. Introducir esquemas de Zod al generador `ts`, sanear `package.json` de código muerto del "generador/pdf", y mejorar testing.
-- **Fase 2 (Mediano Plazo): Full-AI Integration Engine**. Montar el servidor `Express` usando la dependencia `@google/genai` persistente, donde el Engine no solo lea MD, sino que actúe en el *Post-Commit Hook* consumiendo el repositorio vivo y auto-traduciendo el Código a Artefactos MD y Relaciones automáticamente.
-- **Fase 3 (Largo Plazo): Graph Database Transition**. Evolución natural a uso de base de datos Grafo dedicada en memoria persistente de Backend (Neo4j, ArangoDB o Postgres Graph extensions) en lugar de ficheros locales con un Dashboard interactivo RBAC.
+2. **Motor local de generacion y validacion**
+   - CLI en `scripts/cli/openlag.ts`.
+   - Parser en `scripts/core/parser.ts` y modulos de `scripts/core/parser/`.
+   - Linter en `scripts/lint/`.
+   - Generador de contratos TypeScript en `scripts/generate-relations.ts`.
 
-## 18. Diagramas
+3. **Portal estatico**
+   - Frontend React 19 + Vite.
+   - Estado global con Zustand en `src/store.ts`.
+   - Grafo visual con `@xyflow/react` y `dagre`.
+   - Render Markdown/Mermaid en `src/components/MarkdownRenderer.tsx`.
+   - Consultas de subgrafo en `src/core/graph/GraphQueryLayer.ts`.
+   - Estrategias de proyeccion en `src/core/strategies/`.
 
-### Diagrama de Arquitectura de OpenLAG
+No hay backend persistente ni API REST. El contrato principal entre generador y frontend es `public/graph-data.json`.
+
+## 4. Estructura del repositorio
+
+```text
+OpenLAG/
+  bin/
+    openlag.js
+  docs/
+    architecture/
+    changes/
+    ci/
+    deployment/
+    design/
+    implementation/
+    incidents/
+    maintenance/
+    monitoring/
+    operations/
+    relations/
+    requirements/
+    testing/
+    versions/
+  public/
+    graph-data.json
+  scripts/
+    cli/
+    core/
+    lint/
+    generate-relations.ts
+  src/
+    components/
+    core/
+      generated/
+      graph/
+      registry/
+      semantic/
+      strategies/
+    lib/
+    utils/
+    App.tsx
+    store.ts
+    types.ts
+  tests/
+```
+
+Directorios clave:
+
+- `docs/versions/`: versiones globales (`VERSION`) y versiones de sistemas/componentes (`SYSTEM_VERSION`).
+- `docs/relations/`: contratos YAML de relaciones.
+- `scripts/cli/`: comandos `init`, `generate`, `dev`, `build`, `lint`, `preview`, `check`.
+- `scripts/core/parser.ts`: extraccion documental y normalizacion.
+- `scripts/lint/`: reglas, perfiles y reporte de validacion.
+- `src/core/registry/ArtifactRegistry.ts`: tipos oficiales de artefacto.
+- `src/core/registry/RelationRegistry.ts`: contratos de relaciones generados.
+- `src/core/generated/relation-definitions.ts`: archivo generado desde `docs/relations/*.yaml`.
+- `src/core/graph/GraphQueryLayer.ts`: indices y proyeccion de subgrafos.
+- `src/core/strategies/`: agrupaciones semanticas del portal.
+
+## 5. Comandos disponibles
+
+### CLI `openlag`
+
+```text
+openlag init       Inicializa docs, metadata y relaciones base.
+openlag generate   Genera public/graph-data.json.
+openlag dev        Genera datos, activa watcher de docs y arranca Vite.
+openlag build      Genera datos y construye el portal estatico.
+openlag lint       Valida documentacion y relaciones.
+openlag preview    Previsualiza dist/.
+openlag check      Ejecuta generate + lint de OpenLAG.
+```
+
+Opciones relevantes:
+
+```bash
+openlag init --name "Mi Sistema" --desc "Arquitectura del sistema"
+openlag init --all
+openlag generate --watch
+openlag lint --profile feature
+openlag lint --profile develop
+openlag lint --profile release --strict
+openlag lint --json
+openlag check --profile release --strict
+```
+
+### Scripts NPM del repositorio
+
+```text
+npm run dev                 Ejecuta tsx scripts/cli/openlag.ts dev.
+npm run generate            Ejecuta tsx scripts/cli/openlag.ts generate.
+npm run generate-relations  Regenera src/core/generated/relation-definitions.ts.
+npm run build               Regenera relaciones, construye web y CLI.
+npm run build:web           Ejecuta vite build.
+npm run build:cli           Compila la CLI con tsup.
+npm run lint                Ejecuta ESLint.
+npm run typecheck           Ejecuta tsc --noEmit.
+npm run test                Ejecuta node --import tsx --test tests/*.test.ts.
+npm run check               Ejecuta typecheck, lint, test y pack dry-run.
+npm run clean               Borra dist y public/graph-data.json.
+```
+
+Nota importante: no existen scripts `lint:openlag`, `lint:openlag:feature` ni `lint:openlag:release` en el `package.json` actual. Para lint de arquitectura se debe usar `openlag lint` o `tsx scripts/cli/openlag.ts lint`.
+
+## 6. Flujo de ejecucion
+
+### Desarrollo local
+
+```bash
+npm install
+npm run generate
+npm run dev
+```
+
+`openlag dev` hace lo siguiente:
+
+1. Resuelve `docs/` desde el proyecto donde se ejecuta.
+2. Genera `public/graph-data.json`.
+3. Activa un watcher con `chokidar` sobre `docs/`.
+4. Arranca Vite usando la configuracion del paquete.
+5. Inyecta `OPENLAG_PROJECT_ROOT` para que Vite opere contra el proyecto actual.
+
+### Generacion de datos
+
+`generateData()`:
+
+1. Llama a `parseOpenLagDocs(docsDir)`.
+2. Lee `metadata.json` si existe.
+3. Construye un estado estatico con:
+   - `versions`
+   - `systemVersions`
+   - `graphs`
+   - `changes`
+   - `metadata`
+4. Para cada version, filtra artefactos por:
+   - artefactos `VERSION`,
+   - artefactos `SYSTEM_VERSION`,
+   - artefactos con `version` igual a la version actual,
+   - artefactos heredados por `parentVersion`.
+5. Escribe `public/graph-data.json`.
+
+### Runtime del portal
+
+1. `src/main.tsx` monta `src/App.tsx`.
+2. `initializeStore()` hace `fetch('/graph-data.json')`.
+3. El estado se guarda en Zustand.
+4. Al seleccionar version, se construye un `GraphIndex`.
+5. `projectSubgraph()` calcula el subgrafo visible con filtros, foco y profundidad.
+6. Las vistas `GraphView`, `DocumentationView`, `ImpactView` y `OrphansView` consumen el estado.
+
+## 7. Contrato `graph-data.json`
+
+Forma conceptual:
+
+```ts
+interface StaticState {
+  versions: Version[];
+  systemVersions: SystemVersion[];
+  graphs: Record<string, GraphSnapshot>;
+  changes: Change[];
+  metadata?: {
+    name: string;
+    description: string;
+    [key: string]: unknown;
+  };
+}
+```
+
+Cada `GraphSnapshot` contiene:
+
+```ts
+interface GraphSnapshot {
+  artifacts: Artifact[];
+  relations: Relation[];
+}
+```
+
+Las relaciones usan `from` y `to`:
+
+```ts
+interface Relation {
+  id: string;
+  from: string;
+  to: string;
+  type: string;
+  strength?: 'STRONG' | 'MEDIUM' | 'WEAK';
+  category?: string;
+}
+```
+
+## 8. Formato oficial de artefactos Markdown
+
+El parser actual espera YAML con al menos:
+
+- `id`
+- `type`
+- `title`
+- `version`
+- `description`
+
+Campos recomendados:
+
+- `status`
+- `layer`
+- `ownership`
+- `relations`
+- `systemVersionId`
+- `subType`
+
+Ejemplo valido para el parser actual:
+
+```yaml
+---
+id: req-registration
+type: REQUIREMENT
+status: ready
+layer: BUSINESS
+title: User registration
+version: v-1
+description: Users must be able to create an account with validated data.
+ownership:
+  owner: product
+  team: identity
+relations:
+  - type: REFINES
+    to: epic-identity
+---
+```
+
+Importante: el parser usa `to` para el destino de una relacion. Tambien acepta relaciones como string o con `id`, pero la forma recomendada y consistente con `Relation` es `to`. No se debe documentar `target` como campo principal mientras `scripts/core/parser.ts` no lo procese.
+
+## 9. Tipos oficiales de artefacto
+
+Declarados en `src/core/registry/ArtifactRegistry.ts`:
+
+```text
+PROJECT
+EPIC
+FEATURE
+REQUIREMENT
+BUSINESS_RULE
+USE_CASE
+DESIGN
+DECISION
+CODE_ENTITY
+TEST_CASE
+CHANGE
+BUG
+RISK
+GLOSSARY_TERM
+COMPONENT
+API
+DATABASE_ENTITY
+DOCUMENTATION
+INCIDENT
+INFRASTRUCTURE
+DEPLOYMENT
+MONITORING
+MAINTENANCE
+SYSTEM_VERSION
+VERSION
+LIBRARY
+ENVIRONMENT
+CHECK
+PROCESS
+PIPELINE
+```
+
+Hallazgo resuelto para `0.1.8`: los contratos y artefactos publicos fueron normalizados para usar `TEST_CASE` como tipo oficial. `TEST` no forma parte del registry actual.
+
+## 10. Estados oficiales
+
+El esquema Zod acepta:
+
+```text
+draft
+in_progress
+ready
+closed
+deprecated
+```
+
+Efectos en lint:
+
+- `draft`: degrada varias reglas a `info`, excepto errores estructurales fuertes.
+- `in_progress`: degrada errores no estructurales a `warning`.
+- `closed`: exige mayor coherencia; por ejemplo, ownership y relaciones a artefactos no pendientes.
+- `deprecated`: se omiten reglas de trazabilidad, salvo validaciones ya calculadas de relaciones rotas.
+
+## 11. Modelo semantico
+
+### Capas
+
+```text
+BUSINESS
+ARCHITECTURE
+IMPLEMENTATION
+OPERATIONS
+DOCUMENTATION
+```
+
+### Ownership
+
+```yaml
+ownership:
+  owner: persona-o-rol
+  team: equipo
+  domain: dominio
+  maintainers:
+    - backend
+  reviewers:
+    - architecture
+  steward: governance
+```
+
+El linter actual exige ownership especialmente en APIs y artefactos `closed`.
+
+## 12. Relaciones y contratos
+
+Las relaciones se definen en `docs/relations/*.yaml`. Cada contrato incluye:
+
+- `type`
+- `description`
+- `category`
+- `strength`
+- `allowedFrom`
+- `allowedTo`
+- `multiplicity`
+- `validation.severity`
+
+El script `npm run generate-relations` transforma estos YAML en `src/core/generated/relation-definitions.ts`. El `RelationRegistry` lee ese archivo generado.
+
+Relaciones presentes actualmente:
+
+```text
+BLOCKS
+BREAKS
+CALLS
+DEFINES
+DEPENDS_ON
+DEPLOYS
+DERIVES_FROM
+DOCUMENTS
+FIXES
+IMPACTS
+IMPLEMENTS
+IMPORTS
+JUSTIFIES
+MONITORS
+REFINES
+RELATES_TO
+REPLACES
+TESTS
+USES
+VALIDATES
+```
+
+Uso recomendado:
+
+- `IMPLEMENTS`: codigo, componente, API o entidad tecnica implementa una necesidad.
+- `TESTS`: `TEST_CASE` valida requisito, feature, codigo, API, bug o incidente.
+- `REFINES`: descompone un artefacto en otro mas concreto.
+- `FIXES`: conecta una correccion con un bug, incidente o riesgo.
+- `DOCUMENTS`: conecta documentacion con lo descrito.
+- `JUSTIFIES`: conecta decisiones o reglas con el elemento justificado.
+- `DEPENDS_ON`, `USES`, `CALLS`, `IMPORTS`: modelan dependencias o uso estructural.
+- `RELATES_TO`: debe evitarse salvo justificacion clara.
+
+Limite actual: aunque los contratos declaran `allowedFrom` y `allowedTo`, las reglas de lint actuales validan tipo de relacion, destino existente y algunas reglas semanticas, pero no aplican de forma completa la matriz `allowedFrom`/`allowedTo`.
+
+## 13. Parser documental
+
+Entrada principal: `parseOpenLagDocs(docsDir)`.
+
+Componentes:
+
+- `scanDocs()`: descubre documentos.
+- `normalizeArtifact()`: normaliza casing y campos.
+- `ArtifactSchema`: valida estructura minima con Zod.
+- `DiagnosticEngine`: acumula errores y advertencias.
+- `RelationRegistry`: enriquece relaciones con categoria y fuerza.
+
+Comportamiento relevante:
+
+- YAML invalido lanza error critico.
+- Bloques sin `id` o `type` se registran como diagnostico invalido.
+- Relaciones sin `type` se omiten y generan warning.
+- `VERSION`, `SYSTEM_VERSION` y `CHANGE` se copian tambien a listas especializadas del estado.
+- El cuerpo Markdown posterior al bloque estructurado se conserva como `body`.
+
+## 14. Linter de arquitectura
+
+Perfiles:
+
+```text
+feature
+develop
+release
+```
+
+Reglas actuales:
+
+- `duplicateId`
+- `invalidYaml`
+- `brokenRelation`
+- `missingRequiredFields`
+- `requirementWithoutImplementation`
+- `requirementWithoutTest`
+- `codeWithoutRequirement`
+- `closedArtifactWithPendingRelations`
+- `orphanArtifact`
+- `invalidRelationType`
+- `invalidArtifactType`
+- `invalidLayerRelation`
+- `missingOwnership`
+
+`feature` es el perfil mas tolerante, `develop` es intermedio y `release` convierte mas huecos en errores.
+
+Comandos:
+
+```bash
+openlag lint --profile develop
+openlag lint --profile release --strict
+openlag lint --json
+```
+
+Si el binario global no esta instalado, se puede usar `npx @donartcha/openlag <comando>`.
+
+## 15. Frontend y exploracion de grafo
+
+### Vistas principales
+
+- `GraphView`: grafo interactivo con React Flow.
+- `DocumentationView`: documentacion agrupada por estrategia semantica.
+- `ImpactView`: analisis de impacto por relaciones.
+- `OrphansView`: deteccion de huecos y artefactos aislados.
+- `GuideView`: guia integrada.
+- `SettingsView`: idioma, profundidad y visibilidad de weak relations.
+
+### GraphQueryLayer
+
+`src/core/graph/GraphQueryLayer.ts` crea indices:
+
+- `artifactsById`
+- `relationsBySource`
+- `relationsByTarget`
+- `artifactsByType`
+- `artifactsByLayer`
+- `artifactsByStatus`
+- `artifactsByOwner`
+- `artifactsByTeam`
+
+Limites actuales:
+
+```text
+MAX_RENDER_NODES = 150
+MAX_RENDER_EDGES = 300
+DEFAULT_NEIGHBORHOOD_DEPTH = 1
+MAX_EXPANSION_DEPTH = 3
+HUB_COLLAPSE_THRESHOLD = 25
+WEAK_RELATIONS_VISIBLE_BY_DEFAULT = false
+```
+
+El sistema puede explorar el grafo completo como base de conocimiento, pero la UI trabaja con subgrafos proyectados para evitar ruido y problemas de rendimiento.
+
+### Estrategias de proyeccion
+
+Registradas en `src/core/strategies/index.ts`:
+
+- `lifecycle`
+- `dependencies`
+- `implementation`
+- `validation`
+- `architecture`
+- `governance`
+- `release`
+- `domain`
+
+Las estrategias agrupan artefactos para analizar el mismo grafo desde perspectivas diferentes. Algunas son implementaciones simples o placeholders funcionales, no ordenaciones topologicas completas.
+
+## 16. Seguridad y despliegue
+
+OpenLAG genera un portal estatico. No incluye autenticacion, RBAC ni cifrado de contenido.
+
+Riesgo principal: todo lo escrito en `docs/` puede quedar publicado si `dist/` se despliega en un hosting publico. Esto puede incluir arquitectura interna, componentes sensibles, vulnerabilidades, incidentes o nombres de sistemas.
+
+Recomendaciones:
+
+- Publicar el portal solo en entornos internos o protegidos.
+- Revisar `docs/` antes de desplegar.
+- No incluir secretos, tokens, contrasenas ni URLs privadas sensibles.
+- Usar VPN, autenticacion del servidor estatico o controles del hosting cuando el grafo describa sistemas reales.
+
+## 17. Calidad, deuda y riesgos actuales
+
+### P2
+
+- Decidir si `allowedFrom`/`allowedTo` deben ser reglas efectivas de lint.
+- Corregir warnings de trazabilidad del dataset de ejemplo:
+  - codigo sin requisito asociado,
+  - requisitos sin implementacion,
+  - requisitos sin test.
+- Vigilar que nuevos ejemplos publicos mantengan `relations[].to`.
+
+### P3
+
+- Revisar dependencias de exportacion/reporting (`jspdf`, `html-to-image`, `html2canvas`) y confirmar si siguen siendo necesarias.
+- Documentar el contrato de `openlag.config.yml`, ya que el linter lo carga pero la documentacion del archivo de configuracion es limitada.
+- Decidir si `npm run build` debe generar tambien `public/graph-data.json` en el flujo de paquete o si esa responsabilidad queda solo en `openlag build`.
+
+## 18. Guia rapida para crear documentacion trazable
+
+1. Crear o actualizar un artefacto en `docs/<categoria>/`.
+2. Incluir `id`, `type`, `title`, `version` y `description`.
+3. Usar `relations[].to`, no `target`.
+4. Mantener IDs estables.
+5. Preferir relaciones especificas sobre `RELATES_TO`.
+6. Ejecutar:
+
+```bash
+openlag generate
+openlag lint --profile develop
+```
+
+7. Para CI completo del repo:
+
+```bash
+npm run check
+```
+
+## 19. Diagramas
+
+### Pipeline principal
+
 ```mermaid
 graph TD
-    subgraph DataLayer [Source of Truth - Git / Local Storage]
-        MF("versions/versions.md")
-        MF("versions/components-versions.md")
-        REL("docs/relations/*.yaml")
-        DIR("docs/ Directorio Recursivo (*.md)")
-        MF -.-> DIR
-        REL -.-> DIR
-    end
-
-    subgraph Compiler [Local Build Engine / CLI]
-        CLI("openlag.js") -- "Subcommands" --> SUBS("scripts/cli/*.ts")
-        SUBS -- "Core Logic" --> CORE("scripts/core/*.ts")
-        CORE -- "Parser Engine" --> DIR
-        CORE -- "Graph Assembly" --> JSON("graph-data.json")
-    end
-
-    subgraph ClientApp [Frontend React - Vite SPA]
-        JSON == "Fetch API" ==> ZUS("Zustand Data Store")
-        ZUS --> GR("GraphView")
-        ZUS --> DC("Documentation Engine")
-        ZUS --> IMP("Impact Analysis")
-        ZUS --> ORP("Orphan Tracking")
-    end
-
-    ClientApp -. "No API, Solo Lectura JSON" .-> JSON
+    DOCS["docs/*.md + docs/relations/*.yaml"] --> PARSER["Parser + Normalizer"]
+    PARSER --> LINT["OpenLAG Lint"]
+    PARSER --> GEN["generateData"]
+    GEN --> JSON["public/graph-data.json"]
+    JSON --> STORE["Zustand Store"]
+    STORE --> QUERY["GraphQueryLayer"]
+    QUERY --> GRAPH["GraphView"]
+    QUERY --> DOCVIEW["DocumentationView"]
+    QUERY --> IMPACT["ImpactView"]
+    QUERY --> ORPHANS["OrphansView"]
 ```
 
-### Modelo Relacional Simplificado
+### Modelo conceptual
+
 ```mermaid
 erDiagram
-    VERSION ||--o{ ARTIFACT : "contiene versión y descendencia"
+    VERSION ||--o{ ARTIFACT : "contains_or_inherits"
+    ARTIFACT ||--o{ RELATION : "from"
+    RELATION }o--|| ARTIFACT : "to"
+    RELATION }o--|| RELATION_CONTRACT : "typed_by"
+
     VERSION {
-        string ID
-        string parentVersion
+        string id
         string name
+        string timestamp
+        string parentVersion
     }
-    ARTIFACT ||--o{ RELATION : produce
+
     ARTIFACT {
-        string ID
-        string Type
+        string id
+        string type
         string title
-        string description
+        string version
+        string status
+        string layer
     }
-    RELATION }o--|| ARTIFACT : "target ID"
+
     RELATION {
+        string id
         string from
         string to
-        string Type
+        string type
+        string strength
+        string category
+    }
+
+    RELATION_CONTRACT {
+        string type
+        string category
+        string strength
+        string allowedFrom
+        string allowedTo
     }
 ```
 
-## 19. Sistema de Linting (Architecture as Code Validator)
+## 20. Recomendaciones de cierre
 
-**Propósito:**
-OpenLAG incluye un motor de validación (Linter CLI) que asegura la trazabilidad, coherencia y calidad de la documentación "Architecture as Code" sin penalizar el flujo de trabajo ágil. Fue diseñado para ser progresivo: permite huecos de información en artefactos recientes (`draft`, `in_progress`) y penaliza estrictamente las carencias en fases de `release`.
+Antes de considerar OpenLAG listo para release:
 
-**Comandos y Casos de Uso:**
-```bash
-npm run lint:openlag           # Perfil 'develop' por defecto
-npm run lint:openlag:feature   # Perfil relajado
-npm run lint:openlag:release   # Perfil estricto
-
-# Ejecución manual en consola con reporte JSON:
-npx openlag lint --profile develop --json
-```
-
-**Perfiles de Severidad:**
-- **`feature`**: Relajado. Solo caen errores estructurales fuertes (esquemas rotos o IDs duplicados). Faltas de tests o implementación son alertas `info`.
-- **`develop`**: Intermedio. Penaliza con `warnings` requerimientos sin test o código huérfano.
-- **`release`**: Estricto. Exige trazabilidad completa y de ida y vuelta para todos los objetos marcando ausencias como `error`.
-
-**Diseño e Implementación:**
-1. **Separación Core-React**: La lógica de validación reside al 100% en `scripts/`, aislándola del frontend SPA en Vite. Garantiza ligereza de cómputo en integración continua (CI).
-2. **Parser Unificado**: Se rompió el monolito de `generate-static-data.ts`. Se extrajo la capa de lectura (ETL) a `scripts/core/parser.ts`. Ahora el motor de generación y el Linter consumen una misma verdad que recorre y normaliza los `.md`.
-3. **Máquina de Severidad Sensible a Estado**: El motor ajusta la severidad de las reglas dinámicamente si reconoce la propiedad `status:` del frontmatter. Los documentos en `status: draft` atenúan sus carencias estructurales.
-4. **API Agnóstica**: Retorna un objeto `LintReport` estructurado sin emitir logs de consola bloqueantes, permitiendo que otros módulos o pipelines consuman las validaciones directamente con `--json`.
-5. **Grafo Plano**: Las validaciones se ejecutan localmente mediante diccionarios y grafos planos indexados (estructuras `Map`), evitando árboles recursivos lentos y permitiendo validar el gran volumen documental en sub-milisegundos.
-6. **Registros Centralizados y Contratos Dinámicos**: El Linter ha delegado completamente los arrays de validación (hardcodes) evaluando los documentos contra el `RelationRegistry` (cargado dinámicamente de los *metadata contracts* `.yaml`) mientras avala la integridad de los tipos desde la fuente `ArtifactRegistry`.
-
-**Limitaciones Conocidas del Linter:**
-- Actualmente no parsea el contenido _cuerpo Markdown_ interno (Markdown AST) de los documentos para ver referencias en línea; solo el bloque estructurado o YAML FrontMatter.
-- La extensión y configuración de roles desde `openlag.config.yml` asume configuración perfecta por parte del usuario (Deuda técnica: requiere estricto parseo usando `Zod`).
-
-## 20. Guía de Uso del Proyecto NPM
-
-Para utilizar **OpenLAG** en tu entorno local de desarrollo, el proyecto está configurado como un proyecto Node.js estándar.
-
-### Requisitos Previos
-- Node.js instalado (v18 o superior recomendado)
-- `npm` (gestor de dependencias)
-
-### Comandos Principales (CLI)
-
-OpenLAG se gestiona a través de su propia CLI. Puedes ejecutar los comandos usando `npm run <command>` o directamente mediante `npx openlag <command>`.
-
-1. **Instalar dependencias:**
-   ```bash
-   npm install
-   ```
-
-2. **Desarrollo (Modo "Live"):**
-   Inicia el visualizador con recarga en vivo de datos. Regenera automáticamente el grafo cuando detecta cambios en `/docs`.
-   ```bash
-   npm run dev
-   # o
-   npx openlag dev
-   ```
-
-3. **Generación Manual de Datos:**
-   Si prefieres generar el JSON sin levantar el servidor o sincronizarlo manualmente:
-   ```bash
-   npm run generate
-   # o
-   npx openlag generate [--watch]
-   ```
-
-4. **Construcción (Producción):**
-   Genera los datos del grafo y compila la aplicación para despliegue estático en `dist/`.
-   ```bash
-   npm run build
-   # o
-   npx openlag build
-   ```
-
-5. **Linting y Validación:**
-   Evalúa la calidad de la documentación.
-   ```bash
-   npm run lint:openlag
-   # o
-   npx openlag lint --profile release --strict
-   ```
-
-6. **Chequeo Completo (CI/CD):**
-   Ejecuta typecheck, lint de código, tests y lint de arquitectura en un solo paso.
-   ```bash
-   npm run check
-   # o
-   npx openlag check
-   ```
-
-### Limpieza
-Para borrar los artefactos generados en la carpeta `dist/` y el caché de datos:
-```bash
-npm run clean
-```
-
-## 21. Generación y Gobernanza del Proyecto
-
-OpenLAG permite configurar y generar un portal de documentación interactivo para cualquier proyecto, imponiendo una semántica de inicialización progresiva y mínima.
-
-### Inicialización de Proyecto
-Si quieres empezar un nuevo portal desde cero (o reconfigurar el actual), puedes usar el comando `init` mediante la CLI de OpenLAG:
-
-```bash
-# Configuración rápida con valores por defecto (Solo Core Relations)
-npx openlag init
-
-# Inicialización completa (Con todas las relaciones opcionales/sintéticas)
-npx openlag init --all
-
-# Configuración personalizada con bandera:
-npx openlag init --name "Mi Sistema" --desc "Arquitectura de componentes"
-```
-
-**¿Qué hace este comando bajo el capó?**
-1. Actualiza `metadata.json` con el nombre y descripción de tu proyecto.
-2. Modifica el `<title>` en el `index.html`.
-3. Andamia la carpeta `/docs` (las versiones, artefactos base, etc.).
-4. **Bootstrapping Semántico:** Para prevenir complejidad cognitiva, crea *únicamente* los contratos base, englobando los **Mandatory Core Relations** en `/docs/relations/`:
-   - `IMPLEMENTS.yaml`
-   - `TESTS.yaml`
-   - `REFINES.yaml`
-   - `FIXES.yaml`
-   - `DOCUMENTS.yaml`
-   - `JUSTIFIES.yaml`
-
-El comando expurga silenciosamente contratos opcionales si encuentra polución de inicializaciones anteriores.
-
-### ¿Por qué solo 6 Relaciones Core? (Gobernanza Semántica)
-OpenLAG aplica el principio de *minimización cognitiva*. Inyectar a un nuevo equipo 18 tipos de vínculos (desde `DEPLOYS` hasta `RELATES_TO`) garantiza que los usuarios no adopten el modelo, optando por usar todos un vínculo perezoso y caótico.
-*   **Human Relations (CORE):** OpenLAG obliga inicialmente solo a dominar las relaciones "humanas" que justifican el "POR QUÉ" del código y de las decisiones.
-*   **Synthetic/Optional Relations:** Las de ámbito estructural ("CÓMO" opera, p.ej. `DEPENDS_ON`, `CALLS`, `USES`) pertenecen a las **Official Optional Relations**. El equipo decide incorporarlas con YAMLs manuales solo cuando su modelo documental madure y gane interés en ellas o bien pueda inferirlas automáticamente con herramientas.
-
-### Despliegue Independiente
-Una vez configurado y adaptado tu modelo documental base de arquitecturas en los `/docs`, la salida productiva ocurre unificando los chequeos:
-
-```bash
-npm run build     # o npx openlag build
-```
-
-Esto compila de forma transitoria los contratos desde tu registry, valida esquemas y vuelca en la carpeta `dist/` un portal SPA (Single Page Application) estático. Este portal es agnóstico del propio OpenLAG y puede publicarse en *Netlify, GitHub Pages, Vercel o S3*, facilitando un acceso puro de visualización en equipo:
-- Vizualizador del Grafo relacional.
-- Inspector interactivo por Artefactos (Markdown en modal render).
-- Navegación interconectada temporal de ramificaciones (`versions/`).
-- Engine de evaluación de impacto.
+1. Regenerar relaciones con `npm run generate-relations` si cambian los YAML de `docs/relations/`.
+2. Ejecutar `npm run typecheck`.
+3. Ejecutar `openlag check --profile release --strict` si se quiere validar la arquitectura documental como gate de release.
+4. Ejecutar `npm run check`.
+5. Ejecutar `node bin/openlag.js --version`.
+6. Ejecutar `npm pack --dry-run`.
+7. Actualizar esta documentacion si cambian los contratos, comandos o tipos oficiales.

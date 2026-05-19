@@ -29,9 +29,12 @@ interface StoreState {
   };
   metadata?: { name: string; description: string; [key: string]: any };
 
+  currentStrategyId: string;
+
   initializeStore: () => Promise<void>;
   setVersion: (versionId: string) => void;
   setView: (view: 'graph' | 'docs' | 'impact' | 'orphans' | 'guide' | 'settings') => void;
+  setStrategy: (strategyId: string) => void;
   setSelectedArtifact: (id: string | null) => void;
   updateSettings: (newSettings: Partial<Settings>) => void;
   setGlobalFilter: (filterType: 'layer' | 'owner' | 'team', value: string) => void;
@@ -57,6 +60,7 @@ export const useStore = create<StoreState>((set, get) => ({
   currentSubgraph: null,
   activeView: 'graph',
   selectedArtifactId: null,
+  currentStrategyId: 'lifecycle',
   isLoading: false,
   metadata: undefined,
   settings: {
@@ -143,6 +147,7 @@ export const useStore = create<StoreState>((set, get) => ({
   },
 
   setView: (view) => set({ activeView: view }),
+  setStrategy: (strategyId) => set({ currentStrategyId: strategyId }),
   setSelectedArtifact: (id) => {
       set({ selectedArtifactId: id });
       get().refreshSubgraph();

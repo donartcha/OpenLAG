@@ -11,5 +11,4 @@ public/graph-data.json
 *.local
 tests/
 DOCUMENTACION_OPENLAG.md
-SPECIFICATION.md
 fix2.ts

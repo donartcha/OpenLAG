@@ -1,6 +1,6 @@
 ---
 id: ver-tst-1
-type: TEST
+type: TEST_CASE
 subType: Test Case
 title: Auth Regression Suite
 version: v-1
