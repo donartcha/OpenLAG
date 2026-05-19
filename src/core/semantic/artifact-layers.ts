@@ -1,6 +1,6 @@
 import { ArtifactType, ArtifactLayer } from '../../types.js';
 
-export const LayerInferenceRules: Record<ArtifactType, ArtifactLayer> = {
+export const LayerInferenceRules: Partial<Record<ArtifactType, ArtifactLayer>> = {
   PROJECT: 'BUSINESS',
   EPIC: 'BUSINESS',
   FEATURE: 'BUSINESS',
@@ -16,7 +16,6 @@ export const LayerInferenceRules: Record<ArtifactType, ArtifactLayer> = {
   CODE_ENTITY: 'IMPLEMENTATION',
   DATABASE_ENTITY: 'IMPLEMENTATION',
   TEST_CASE: 'IMPLEMENTATION',
-  TEST: 'IMPLEMENTATION',
   CHANGE: 'IMPLEMENTATION',
   BUG: 'IMPLEMENTATION',
   RISK: 'IMPLEMENTATION',

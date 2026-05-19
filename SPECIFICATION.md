@@ -205,8 +205,9 @@ Términos compartidos y semántica del dominio.
 ### architecture/
 Documentación transversal del sistema.
 
-## 3. Tipos Oficiales de Artefacto
+## 4. Tipos Oficiales de Artefacto
 
+### Artefactos Base
 - **PROJECT**: Representa el sistema completo.
 - **EPIC**: Agrupación funcional o de negocio de alto nivel.
 - **FEATURE**: Funcionalidad concreta derivada de un EPIC.
@@ -216,7 +217,7 @@ Documentación transversal del sistema.
 - **DESIGN**: Diseño técnico o arquitectónico.
 - **DECISION**: Decisión técnica persistente o histórica.
 - **CODE_ENTITY**: Elemento implementado en código. Ejemplos: clase, módulo, endpoint, servicio, componente, script.
-- **TEST_CASE**: Caso de validación verificable.
+- **TEST_CASE**: Caso de validación o prueba verificable (agrupaciones u ocurrencias menores han de ser mapeadas a un test case real o suprimidas).
 - **CHANGE**: Cambio funcional o técnico registrado.
 - **BUG**: Defecto identificado.
 - **RISK**: Riesgo conocido.
@@ -224,7 +225,6 @@ Documentación transversal del sistema.
 - **COMPONENT**: Subconjunto arquitectónico del sistema.
 - **API**: Contrato de integración.
 - **DATABASE_ENTITY**: Entidad persistente.
-- **TEST**: Agrupación u ocurrencia genérica de validación.
 - **DOCUMENTATION**: Elemento descriptivo o de referencia.
 - **INCIDENT**: Incidencia o caída registrada en producción o entorno de ejecución.
 - **INFRASTRUCTURE**: Componente físico o cloud.
@@ -232,7 +232,11 @@ Documentación transversal del sistema.
 - **MONITORING**: Elemento de observabilidad, alerta o dashboard.
 - **MAINTENANCE**: Tarea de mantenimiento u operación.
 
-## 4. Estados Oficiales
+### Artefactos Temporales
+- **VERSION**: Representa un estado o hito del proyecto en el tiempo.
+- **SYSTEM_VERSION**: Versión específica de un componente o librería ajena o del sistema.
+
+## 5. Estados Oficiales
 
 ```text
 draft
@@ -268,7 +272,7 @@ Debe poseer trazabilidad fuerte:
 Elemento legado o reemplazado.
 No debería bloquear salvo inconsistencias críticas.
 
-## 5. Formal Relation Contracts
+## 6. Formal Relation Contracts
 
 Las relaciones se definen mediante contratos explícitos que garantizan la coherencia arquitectónica. Estos contratos se definen en archivos YAML individuales dentro de la carpeta `/docs/relations/`. 
 
@@ -282,18 +286,18 @@ El soporte de relaciones en OpenLAG se divide en niveles para gestionar la compl
 2. **Official Optional Relations:** Opcionales. Útiles para modelar el "cómo" y el despliegue del software de forma estructurada. 
 3. **Custom Relations:** Definibles por el usuario para casos internos específicos, documentándolas en `/docs/relations/`.
 
-### Mandatory Core Relations
+### Mandatory Core Relations Contracts
 
-Estas relaciones son el subconjunto oficial y obligatorio de OpenLAG. Son las únicas generadas por defecto para favorecer la adopción.
+Estas relaciones son el subconjunto oficial y obligatorio de OpenLAG. Son las únicas generadas por defecto para favorecer la adopción. Constituyen la base mínima para rastrear el "por qué" de las cosas.
 
-| Relation | Origin | Category | Default Strength | Purpose |
-|---|---|---|---|---|
-| IMPLEMENTS | Human | TRACEABILITY | STRONG | Conecta implementación con necesidad funcional/técnica. |
-| TESTS | Human | TRACEABILITY | STRONG | Conecta tests con comportamiento validado. |
-| REFINES | Human | TRACEABILITY | MEDIUM | Descompone artefactos en otros más concretos. |
-| FIXES | Human | TRACEABILITY | STRONG | Conecta correcciones con bugs. |
-| DOCUMENTS | Human | SEMANTIC | WEAK | Conecta documentación con el artefacto descrito. |
-| JUSTIFIES | Human | SEMANTIC | MEDIUM | Conecta decisiones con aquello que justifican. |
+| Relación | Allowed From | Allowed To | Categoría | Fuerza | Regla Semántica de Validación |
+|---|---|---|---|---|---|
+| **IMPLEMENTS** | `CODE_ENTITY` | `REQUIREMENT`, `FEATURE`, `BUG`, `API` | `TRACEABILITY` | `STRONG` | Toda `CODE_ENTITY` debe implementar directamente algún requerimiento de lógica, feature de negocio o solucionar un bug documentado, validando la ausencia de código huérfano. |
+| **TESTS** | `TEST_CASE` | `CODE_ENTITY`, `REQUIREMENT`, `FEATURE`, `BUG`, `USE_CASE` | `TRACEABILITY` | `STRONG` | Todo `TEST_CASE` tiene que verificar algo concreto, asegurando la existencia de pruebas que garantizan el correcto funcionamiento del sistema. |
+| **REFINES** | `EPIC`, `FEATURE`, `REQUIREMENT` | `EPIC`, `FEATURE`, `REQUIREMENT` | `TRACEABILITY` | `MEDIUM` | Descompone artefactos funcionales/de negocio en otros más concretos. El from debe ser de menor granularidad que el to (ej. FEATURE refines EPIC). |
+| **FIXES** | `CODE_ENTITY`, `CHANGE`, `DECISION` | `BUG`, `INCIDENT` | `TRACEABILITY` | `STRONG` | Conecta correcciones, cambios o decisiones que subsanan un defecto o incidencia directamente. |
+| **DOCUMENTS** | `DOCUMENTATION` | (Any) | `SEMANTIC` | `WEAK` | Conecta artefactos de documentación con las entidades que describen. |
+| **JUSTIFIES** | `DECISION` | `DESIGN`, `REQUIREMENT`, `FEATURE`, `CODE_ENTITY`, `ARCHITECTURE` | `SEMANTIC` | `MEDIUM` | Conecta decisiones de diseño/arquitectura con aquello que justifican o impactan directamente. |
 
 ### Official Optional Relations
 
@@ -354,13 +358,13 @@ Se exige que los artefactos persistan como **archivos Markdown legibles por huma
 - **develop**: `warn` en reglas `DISCOURAGED`, `error` en `INVALID`.
 - **release**: `error` en reglas `DISCOURAGED` e `INVALID`.
 
-## 6. Formato Oficial Markdown
+## 7. Formato Oficial Markdown
 
 ```yaml
 ---
 id: REQ-001
 type: REQUIREMENT
-subType: SYSTEM
+subType: Auth
 status: draft
 layer: BUSINESS
 title: Generar graph-data.json
@@ -376,8 +380,6 @@ tags:
 relations:
   - type: IMPLEMENTS
     target: CODE-001
-    strength: STRONG
-    category: TRACEABILITY
 ---
 ```
 
@@ -388,17 +390,12 @@ relations:
 - `title`
 
 ### Campos Opcionales
-- `layer`
-- `subType` (Opcional. Define una subcategoría estilística y estructural. Si se proporciona, la interfaz de OpenLAG agrupará y anidará automáticamente los artefactos de ese tipo bajo esta subcategoría. Además, existen valores reservados que mueven artefactos a fases específicas del modelo de ciclo de vida del frontend:
-  * `Review`: Mueve artefactos de la fase de Desarrollo a la fase de Revisión (Review).
-  * `CI`: Mueve artefactos de Infraestructura a la fase de Continuous Integration.
-  * `Build` / `Package`: Mueve artefactos de Infraestructura a la fase de Embalaje/Construcción (Build).
-  * `Retirement`: Mueve artefactos de Mantenimiento a la fase final de Retiro.
-  Cualquier otro valor (ej. `SYSTEM`, `Component`, `Security`) simplemente agrupará los artefactos dentro de su fase por defecto correspondiente).
+- `layer` (El valor de `layer` es siempre derivado implícitamente por el campo `type` según la taxonomía de capas semánticas. Solo se permite definir como un *override* manual pero está desaconsejado o sujeto a validación estricta).
+- `subType` (Opcional. Clasificación semántica de sub-dominio o especialización puramente taxonómica de un artefacto [ej. `Database`, `Microservice`]. No se le deben atribuir acciones de UI explícitas en el contrato).
 - `ownership` (puede incluir `owner`, `team`, `domain`, `maintainers`, `reviewers`, `steward`)
 - `tags`
 - `version`
-- `relations` (cada relación puede tener `strength` y `category`)
+- `relations` (cada relación debe declarar su `type` y `target`. Los valores `strength` y `category` son intrínsecos al contrato del tipo de relación, y agregarlos manualmente se considera un "override" avanzado prohibido por defecto).
 - `description`
 - `references`
 
@@ -407,7 +404,7 @@ relations:
 - Frontmatter YAML obligatorio.
 - Markdown libre debajo del bloque estructurado.
 
-## 7. Convenciones de IDs
+## 8. Convenciones de IDs
 
 ```text
 REQ-001
@@ -423,7 +420,7 @@ BUG-018
 - IDs deben ser estables temporalmente.
 - El prefijo define el tipo lógico.
 
-## 8. Modelo de Evolución
+## 9. Modelo de Evolución
 
 OpenLAG modela sistemas vivos.
 
@@ -441,7 +438,7 @@ La trazabilidad aumenta progresivamente.
 No se espera completitud inmediata.
 Los huecos representan conocimiento pendiente, no necesariamente errores.
 
-## 9. Semántica del Linter
+## 10. Semántica del Linter
 
 ### Profiles
 ```text
@@ -476,7 +473,7 @@ El linter no busca castigar, busca visibilizar.
 - código sin trazabilidad.
 - relaciones incompletas.
 
-## 10. Artefactos Huérfanos
+## 11. Artefactos Huérfanos
 
 Un huérfano es un artefacto sin relaciones significativas.
 
@@ -489,7 +486,7 @@ Los huérfanos:
 - pueden ser normales en `draft`,
 - representan riesgo en `release`.
 
-## 11. Análisis de Impacto
+## 12. Análisis de Impacto
 
 OpenLAG permite responder:
 - ¿Qué rompe este cambio?
@@ -499,7 +496,7 @@ OpenLAG permite responder:
 
 El impacto se calcula recorriendo relaciones del grafo.
 
-## 12. Versionado y Línea Temporal
+## 13. Versionado y Línea Temporal
 
 OpenLAG modela:
 - snapshots,
@@ -515,7 +512,7 @@ Los artefactos pueden:
 - reemplazarse,
 - o desaparecer.
 
-## 13. Graph Scalability and Exploration Model
+## 14. Graph Scalability and Exploration Model
 
 OpenLAG está diseñado bajo el principio Offline-First y Static-by-Default (Architecture as Code puro alojable en S3, GitHub Pages o Netlify). Sin embargo, cuando los proyectos crecen sustancialmente, intentar visualizar todo el sistema de una sola vez no es cognitivamente útil y provoca severos problemas de rendimiento en el frontend.
 
@@ -533,7 +530,7 @@ Por ello, OpenLAG adopta las siguientes reglas de escalabilidad mediante un mode
 - **Fase 2 (Fragmentación Estática)**: Descomposición opcional mediante compilación del generador en fragmentos estáticos (`/slices/*.json` o `/versions/*.json`) para evitar descargas monolíticas.
 - **Fase 3 (Backend Opcional Futuro)**: Despliegue de un Engine/BFF transitorio solo utilizado cuando el modelo base sobrepasa groseramente los 10,000 artefactos con uso ultra-asíncrono, búsquedas vectoriales, roles y permisos, mutaciones interactivas sobre Graph DB. Permanecerá **100% opcional**; OpenLAG debe seguir funcionando sin Backend como premisa.
 
-## 14. Integración CI/CD
+## 15. Integración CI/CD
 
 La CLI de OpenLAG está diseñada para integrarse en pipelines de integración continua.
 
@@ -568,7 +565,7 @@ jobs:
 - Mostrar deuda progresiva de trazabilidad.
 - Evitar inconsistencias estructurales antes de merge.
 
-### 15. Roadmap Conceptual
+## 16. Roadmap Conceptual
 
 #### Fase 1: Núcleo y Tooling (Completado/En curso)
 - **Parser Robusto**: Extracción centralizada de datos Markdown y YAML.
@@ -586,7 +583,7 @@ jobs:
 - **Asistentes IA**: Integración con modelos de lenguaje para sugerir trazabilidad y detectar inconsistencias.
 - **Generación Automática**: Puentes entre código real y documentación de arquitectura.
 
-## 16. Filosofía Final
+## 17. Filosofía Final
 
 OpenLAG no intenta representar una verdad absoluta.
 Intenta representar el estado observable y trazable del conocimiento técnico de un sistema en evolución.

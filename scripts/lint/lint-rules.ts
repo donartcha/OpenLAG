@@ -127,7 +127,7 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
         }
     }
 
-    if (artifact.type === 'TEST') {
+    if (artifact.type === 'TEST_CASE') {
         const hasReq = reqsByTest.has(artifact.id);
         if (!hasReq) {
             addIssue('orphanArtifact', `${artifact.id} is a test without associated requirement`, artifact.file, artifact.id, artifact.status);
