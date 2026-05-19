@@ -68,13 +68,33 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
   const reqsByTest = new Map<string, ParsedRelation[]>();
 
   for (const relation of data.relations) {
-    if (!RelationRegistry.isValid(relation.type)) {
+    const contract = RelationRegistry.getContract(relation.type);
+    
+    if (!contract) {
        addIssue('invalidRelationType', `Invalid relation type: ${relation.type}`, relation.file, relation.from);
     }
     
     // 4. Broken relations
     if (!targets.has(relation.to)) {
       addIssue('brokenRelation', `${relation.from} -> ${relation.to} target does not exist`, relation.file, relation.from);
+    }
+
+    // 4.1 Validate allowedFrom and allowedTo constraints
+    if (contract) {
+        const sourceArtifact = artifactMap.get(relation.from)?.[0];
+        const targetArtifact = artifactMap.get(relation.to)?.[0];
+
+        if (sourceArtifact && contract.allowedFrom && contract.allowedFrom.length > 0) {
+            if (!contract.allowedFrom.includes(sourceArtifact.type as any)) {
+                addIssue('invalidRelationType', `Relation ${relation.type} is not allowed FROM ${sourceArtifact.type} (Artifact: ${relation.from}). Allowed sources: ${contract.allowedFrom.join(', ')}`, relation.file, relation.from, sourceArtifact.status);
+            }
+        }
+
+        if (targetArtifact && contract.allowedTo && contract.allowedTo.length > 0) {
+            if (!contract.allowedTo.includes(targetArtifact.type as any)) {
+                addIssue('invalidRelationType', `Relation ${relation.type} is not allowed TO ${targetArtifact.type} (Artifact: ${relation.to}). Allowed targets: ${contract.allowedTo.join(', ')}`, relation.file, relation.from, sourceArtifact?.status);
+            }
+        }
     }
 
     // Populate relation graphs for rules
