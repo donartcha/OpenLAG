@@ -1,7 +1,6 @@
 ---
 id: req-br-1
-type: REQUIREMENT
-subType: Business Rule
+type: BUSINESS_RULE
 title: Age Restriction
 version: v-1
 ownership:

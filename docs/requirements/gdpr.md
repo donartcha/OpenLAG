@@ -1,7 +1,6 @@
 ---
 id: req-res-1
-type: REQUIREMENT
-subType: Constraint
+type: CONSTRAINT
 title: GDPR Compliance
 version: v-1
 ownership:

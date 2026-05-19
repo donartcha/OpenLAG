@@ -12,6 +12,7 @@ export interface RelationContract {
   allowedTo: ArtifactType[];
   multiplicity: { from: string; to: string };
   validation: { severity: string };
+  impact: { propagates: boolean; directions: ('forward' | 'reverse' | 'both')[]; weight: number };
 }
 
 export const GENERATED_RELATIONS: RelationContract[] = [
@@ -46,7 +47,14 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "error"
     },
-    "strength": "STRONG"
+    "strength": "STRONG",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "BREAKS",
@@ -60,6 +68,7 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     ],
     "allowedTo": [
       "TEST_CASE",
+      "TEST",
       "API",
       "COMPONENT",
       "REQUIREMENT",
@@ -72,7 +81,14 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "error"
     },
-    "strength": "STRONG"
+    "strength": "STRONG",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "CALLS",
@@ -92,7 +108,14 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "warn"
     },
-    "strength": "MEDIUM"
+    "strength": "MEDIUM",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "DEFINES",
@@ -120,7 +143,14 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "info"
     },
-    "strength": "WEAK"
+    "strength": "WEAK",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "DEPENDS_ON",
@@ -151,7 +181,14 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "warn"
     },
-    "strength": "MEDIUM"
+    "strength": "MEDIUM",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "DEPLOYS",
@@ -175,7 +212,14 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "error"
     },
-    "strength": "STRONG"
+    "strength": "STRONG",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "DERIVES_FROM",
@@ -204,15 +248,21 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "info"
     },
-    "strength": "WEAK"
+    "strength": "WEAK",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "DOCUMENTS",
     "description": "Conecta documentación con el artefacto descrito.",
     "category": "SEMANTIC",
     "allowedFrom": [
-      "DOCUMENTATION",
-      "GLOSSARY_TERM"
+      "DOCUMENTATION"
     ],
     "allowedTo": [
       "PROJECT",
@@ -239,7 +289,12 @@ export const GENERATED_RELATIONS: RelationContract[] = [
       "MONITORING",
       "MAINTENANCE",
       "SYSTEM_VERSION",
-      "VERSION"
+      "VERSION",
+      "LIBRARY",
+      "ENVIRONMENT",
+      "CHECK",
+      "PROCESS",
+      "PIPELINE"
     ],
     "multiplicity": {
       "from": "many",
@@ -248,22 +303,27 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "info"
     },
-    "strength": "WEAK"
+    "strength": "WEAK",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "FIXES",
     "description": "Conecta correcciones con bugs o incidentes.",
     "category": "TRACEABILITY",
     "allowedFrom": [
-      "CHANGE",
       "CODE_ENTITY",
-      "COMPONENT",
-      "SYSTEM_VERSION"
+      "CHANGE",
+      "DECISION"
     ],
     "allowedTo": [
       "BUG",
-      "INCIDENT",
-      "RISK"
+      "INCIDENT"
     ],
     "multiplicity": {
       "from": "many",
@@ -272,7 +332,14 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "error"
     },
-    "strength": "STRONG"
+    "strength": "STRONG",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "IMPACTS",
@@ -304,26 +371,27 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "warn"
     },
-    "strength": "MEDIUM"
+    "strength": "MEDIUM",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "IMPLEMENTS",
     "description": "Conecta implementación con necesidad funcional/técnica.",
     "category": "TRACEABILITY",
     "allowedFrom": [
-      "CODE_ENTITY",
-      "COMPONENT",
-      "API",
-      "DATABASE_ENTITY",
-      "SYSTEM_VERSION"
+      "CODE_ENTITY"
     ],
     "allowedTo": [
       "REQUIREMENT",
       "FEATURE",
-      "EPIC",
-      "DESIGN",
-      "USE_CASE",
-      "BUSINESS_RULE"
+      "BUG",
+      "API"
     ],
     "multiplicity": {
       "from": "many",
@@ -332,7 +400,14 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "error"
     },
-    "strength": "STRONG"
+    "strength": "STRONG",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "IMPORTS",
@@ -352,29 +427,28 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "warn"
     },
-    "strength": "MEDIUM"
+    "strength": "MEDIUM",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "JUSTIFIES",
     "description": "Conecta decisiones con aquello que justifican.",
     "category": "SEMANTIC",
     "allowedFrom": [
-      "DECISION",
-      "BUSINESS_RULE",
-      "DOCUMENTATION",
-      "RISK"
+      "DECISION"
     ],
     "allowedTo": [
       "DESIGN",
       "REQUIREMENT",
       "FEATURE",
-      "EPIC",
-      "PROJECT",
       "CODE_ENTITY",
-      "COMPONENT",
-      "INFRASTRUCTURE",
-      "DEPLOYMENT",
-      "MAINTENANCE"
+      "COMPONENT"
     ],
     "multiplicity": {
       "from": "many",
@@ -383,7 +457,14 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "warn"
     },
-    "strength": "MEDIUM"
+    "strength": "MEDIUM",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "MONITORS",
@@ -407,26 +488,28 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "info"
     },
-    "strength": "WEAK"
+    "strength": "WEAK",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "REFINES",
     "description": "Descompone artefactos en otros más concretos.",
     "category": "TRACEABILITY",
     "allowedFrom": [
+      "EPIC",
       "FEATURE",
-      "REQUIREMENT",
-      "BUG",
-      "RISK",
-      "DESIGN"
+      "REQUIREMENT"
     ],
     "allowedTo": [
       "EPIC",
       "FEATURE",
-      "PROJECT",
-      "BUSINESS_RULE",
-      "REQUIREMENT",
-      "DESIGN"
+      "REQUIREMENT"
     ],
     "multiplicity": {
       "from": "many",
@@ -435,7 +518,14 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "warn"
     },
-    "strength": "MEDIUM"
+    "strength": "MEDIUM",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "RELATES_TO",
@@ -466,7 +556,12 @@ export const GENERATED_RELATIONS: RelationContract[] = [
       "MONITORING",
       "MAINTENANCE",
       "SYSTEM_VERSION",
-      "VERSION"
+      "VERSION",
+      "LIBRARY",
+      "ENVIRONMENT",
+      "CHECK",
+      "PROCESS",
+      "PIPELINE"
     ],
     "allowedTo": [
       "PROJECT",
@@ -493,7 +588,12 @@ export const GENERATED_RELATIONS: RelationContract[] = [
       "MONITORING",
       "MAINTENANCE",
       "SYSTEM_VERSION",
-      "VERSION"
+      "VERSION",
+      "LIBRARY",
+      "ENVIRONMENT",
+      "CHECK",
+      "PROCESS",
+      "PIPELINE"
     ],
     "multiplicity": {
       "from": "many",
@@ -502,7 +602,14 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "warn"
     },
-    "strength": "MEDIUM"
+    "strength": "MEDIUM",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "REPLACES",
@@ -535,7 +642,14 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "info"
     },
-    "strength": "WEAK"
+    "strength": "WEAK",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "TESTS",
@@ -545,15 +659,11 @@ export const GENERATED_RELATIONS: RelationContract[] = [
       "TEST_CASE"
     ],
     "allowedTo": [
+      "CODE_ENTITY",
       "REQUIREMENT",
       "FEATURE",
-      "EPIC",
-      "CODE_ENTITY",
-      "COMPONENT",
-      "API",
-      "DATABASE_ENTITY",
       "BUG",
-      "INCIDENT"
+      "USE_CASE"
     ],
     "multiplicity": {
       "from": "many",
@@ -562,7 +672,14 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "error"
     },
-    "strength": "STRONG"
+    "strength": "STRONG",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "USES",
@@ -588,7 +705,14 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "warn"
     },
-    "strength": "MEDIUM"
+    "strength": "MEDIUM",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   },
   {
     "type": "VALIDATES",
@@ -612,6 +736,13 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "validation": {
       "severity": "info"
     },
-    "strength": "WEAK"
+    "strength": "WEAK",
+    "impact": {
+      "propagates": false,
+      "directions": [
+        "forward"
+      ],
+      "weight": 0.5
+    }
   }
 ];

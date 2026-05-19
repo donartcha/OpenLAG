@@ -1,13 +1,12 @@
 ---
 id: impl-dto-user
-type: CODE_ENTITY
-subType: DTO
+type: DTO
 title: UserRegistrationDTO.java
 description: Data Transfer Object used to capture user registration data from the API.
 version: v-1
 relations:
   - to: impl-api-1
-    type: DEFINES
+    type: RELATES_TO
 ownership:
   owner: pcaro
   team: architecture

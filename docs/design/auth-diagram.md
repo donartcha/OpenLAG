@@ -1,7 +1,6 @@
 ---
 id: des-cmp-1
-type: DESIGN
-subType: Component Diagram
+type: COMPONENT_DIAGRAM
 title: Auth Subsystem C4
 version: v-1
 relations:

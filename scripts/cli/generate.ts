@@ -38,7 +38,7 @@ export function generateData(docsDir: string, outputDir: string, silent = false)
   if (fs.existsSync(metadataPath)) {
     try {
       metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
-    } catch {
+    } catch (e) {
       if (!silent) console.warn(chalk.yellow("⚠️  Could not parse metadata.json"));
     }
   }

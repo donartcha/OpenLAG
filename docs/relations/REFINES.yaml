@@ -1,8 +1,8 @@
 relation: REFINES
 description: "Descompone artefactos en otros más concretos."
 category: TRACEABILITY
-allowedFrom: [FEATURE, REQUIREMENT, BUG, RISK, DESIGN]
-allowedTo: [EPIC, FEATURE, PROJECT, BUSINESS_RULE, REQUIREMENT, DESIGN]
+allowedFrom: [EPIC, FEATURE, REQUIREMENT]
+allowedTo: [EPIC, FEATURE, REQUIREMENT]
 multiplicity:
   from: many
   to: many

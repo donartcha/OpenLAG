@@ -1,7 +1,6 @@
 ---
 id: impl-cls-1
-type: CODE_ENTITY
-subType: Entity
+type: ENTITY
 title: UserEntity.java
 version: v-1
 ownership:

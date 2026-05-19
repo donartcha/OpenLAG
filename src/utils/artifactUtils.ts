@@ -1,7 +1,21 @@
 import { Artifact, ArtifactType, ArtifactLayer, GraphSnapshot } from '../types';
+import { ArtifactRegistry } from '../core/registry/ArtifactRegistry';
 
 export function getImplicitLayer(type: ArtifactType): ArtifactLayer | undefined {
-  switch (type) {
+  const contract = ArtifactRegistry.getContract(type);
+  if (contract && contract.layer) {
+    return contract.layer as ArtifactLayer;
+  }
+
+  // Try fallback to base type
+  const baseType = ArtifactRegistry.getBaseType(type);
+  const baseContract = ArtifactRegistry.getContract(baseType);
+  if (baseContract && baseContract.layer) {
+    return baseContract.layer as ArtifactLayer;
+  }
+
+  // Final manual fallback for legacy known types if registry somehow misses them
+  switch (baseType) {
     case 'PROJECT':
     case 'EPIC':
     case 'FEATURE':
@@ -43,7 +57,7 @@ export function getImplicitLayer(type: ArtifactType): ArtifactLayer | undefined 
 
 export function getArtifactLayer(artifact: Artifact): ArtifactLayer | undefined {
   if (artifact.layer) {
-    return artifact.layer;
+    return artifact.layer as ArtifactLayer;
   }
   return getImplicitLayer(artifact.type);
 }

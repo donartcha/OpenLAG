@@ -1,19 +1,42 @@
-export const CORE_ARTIFACT_TYPES = [
-  'PROJECT', 'EPIC', 'FEATURE', 'REQUIREMENT', 'BUSINESS_RULE', 'USE_CASE',
-  'DESIGN', 'DECISION', 'CODE_ENTITY', 'TEST_CASE', 'CHANGE', 'BUG', 'RISK',
-  'GLOSSARY_TERM', 'COMPONENT', 'API', 'DATABASE_ENTITY',
-  'DOCUMENTATION', 'INCIDENT', 'INFRASTRUCTURE', 'DEPLOYMENT', 'MONITORING',
-  'MAINTENANCE', 'SYSTEM_VERSION', 'VERSION', 'LIBRARY', 'ENVIRONMENT', 'CHECK', 'PROCESS', 'PIPELINE'
-] as const;
+import { ArtifactContract, GENERATED_ARTIFACTS } from '../generated/artifact-definitions.js';
 
-export type ArtifactType = typeof CORE_ARTIFACT_TYPES[number];
+export type ArtifactType = string;
 
 export class ArtifactRegistry {
-  static getValidTypes(): readonly string[] {
-    return CORE_ARTIFACT_TYPES;
+  private static artifactsMap = new Map<string, ArtifactContract>(
+    GENERATED_ARTIFACTS.map(art => [art.type, art])
+  );
+
+  static getValidTypes(): string[] {
+    return Array.from(this.artifactsMap.keys());
   }
 
-  static isValid(type: string): type is ArtifactType {
-    return CORE_ARTIFACT_TYPES.includes(type as ArtifactType);
+  static getContract(type: string): ArtifactContract | undefined {
+    return this.artifactsMap.get(type);
+  }
+
+  static isValid(type: string): boolean {
+    return this.artifactsMap.has(type);
+  }
+
+  static getBaseType(type: string): string {
+    const contract = this.artifactsMap.get(type);
+    if (contract && contract.extends) {
+      return this.getBaseType(contract.extends); // Support deep extends
+    }
+    return type;
+  }
+
+  static isCompatibleType(allowedType: string, actualType: string): boolean {
+    if (allowedType === actualType) return true;
+    const contract = this.artifactsMap.get(actualType);
+    if (contract && contract.extends) {
+      return this.isCompatibleType(allowedType, contract.extends);
+    }
+    return false;
+  }
+
+  static getAllContracts(): ArtifactContract[] {
+    return GENERATED_ARTIFACTS;
   }
 }

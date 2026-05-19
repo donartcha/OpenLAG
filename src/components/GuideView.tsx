@@ -9,7 +9,7 @@ export const GuideView: React.FC = () => {
     const t = {
         EN: {
             title: "Management Guide",
-            desc: "Instructions for maintaining the architectural graph, documenting artifacts, and managing the project lifecycle according to OpenLAG v0.1 Specification.",
+            desc: "Instructions for maintaining the architectural graph, documenting artifacts, and managing the project lifecycle according to OpenLAG v0.2 Specification.",
             langBtn: "Switch to Spanish",
             layerTaxonomy: "Layer Taxonomy & Artifacts",
             layerTaxonomyDesc: "OpenLAG classifies artifacts into semantic layers to understand their abstraction level and valid relations.",
@@ -39,7 +39,7 @@ export const GuideView: React.FC = () => {
             refactor: { label: "REFACTOR", desc: "Code restructurings without changing external behavior." },
             adaptation: { label: "ADAPTATION", desc: "Changes to adjust to new environmental/integration constraints." },
             frontmatter: "Official Markdown Format",
-            frontmatterDesc: "Each artifact requires a YAML frontmatter. Mandatory: id, type, status, title. Optional: subType (for taxonomic classification).",
+            frontmatterDesc: "Each artifact requires a YAML frontmatter. Mandatory: id, type, status, title. Specialized artifacts are modeled through contract-backed type values.",
             statusFlow: "Lifecycle Status Flow",
             statusFlowDesc: "Evolution of artifacts. The system tolerates missing relations in 'draft', but expects full traceability in 'closed'.",
             versions: "Project & System Versions",
@@ -63,7 +63,7 @@ export const GuideView: React.FC = () => {
         },
         ES: {
             title: "Guía de Gestión",
-            desc: "Instrucciones para mantener el grafo arquitectónico, documentar artefactos y gestionar el ciclo de vida según la Especificación OpenLAG v0.1.",
+            desc: "Instrucciones para mantener el grafo arquitectónico, documentar artefactos y gestionar el ciclo de vida según la Especificación OpenLAG v0.2.",
             langBtn: "Cambiar a Inglés",
             layerTaxonomy: "Taxonomía de Capas y Artefactos",
             layerTaxonomyDesc: "OpenLAG clasifica los artefactos en capas semánticas para entender su nivel de abstracción y relaciones válidas.",
@@ -93,7 +93,7 @@ export const GuideView: React.FC = () => {
             refactor: { label: "REFACTOR", desc: "Reestructuraciones sin alterar el comportamiento externo." },
             adaptation: { label: "ADAPTATION", desc: "Ajustes para nuevas integraciones o restricciones del entorno." },
             frontmatter: "Formato Oficial Markdown",
-            frontmatterDesc: "Cada artefacto requiere un YAML frontmatter. Campos obligatorios: id, type, status, title. Opcional: subType (clasificación taxonómica).",
+            frontmatterDesc: "Cada artefacto requiere un YAML frontmatter. Campos obligatorios: id, type, status, title. Los artefactos especializados se modelan mediante valores type respaldados por contratos.",
             statusFlow: "Estados y Ciclo de Vida",
             statusFlowDesc: "En estado 'draft' se permiten huérfanos, pero en 'closed' se exige trazabilidad completa.",
             versions: "Versiones del Sistema y Proyecto",
@@ -306,7 +306,6 @@ export const GuideView: React.FC = () => {
 {`---
 id: REQ-001
 type: REQUIREMENT
-subType: SYSTEM
 status: draft
 layer: BUSINESS
 title: Generar graph-data.json
@@ -320,9 +319,9 @@ tags:
   - parser
   - graph
 relations:
-  - type: IMPLEMENTS
-    to: CODE-001
-    strength: STRONG
+  - type: REFINES
+    to: EPIC-001
+    strength: MEDIUM
     category: TRACEABILITY
 ---
 
@@ -429,10 +428,10 @@ layer: ARCHITECTURE
 title: Auth Architecture
 version: v1
 relations:
-  - type: IMPLEMENTS
+  - type: DERIVES_FROM
     to: REQ-001
-    strength: STRONG
-    category: TRACEABILITY
+    strength: MEDIUM
+    category: SEMANTIC
 ---
 
 # Auth Design
@@ -452,15 +451,14 @@ We will use JWT tokens for authentication...`}
                                 <pre className="text-[11px] font-mono leading-relaxed text-emerald-400/80 bg-black/40 p-4 rounded border border-white/5 overflow-x-auto">
 {`---
 id: CODE-auth-service
-type: CODE_ENTITY
-subType: Microservice
+type: MICROSERVICE
 status: in_progress
 layer: IMPLEMENTATION
 title: AuthService.ts
 version: v1
 relations:
   - type: IMPLEMENTS
-    to: DESIGN-auth
+    to: REQ-auth
     strength: STRONG
     category: TRACEABILITY
 ---

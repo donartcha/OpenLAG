@@ -1,14 +1,13 @@
 ---
 id: ops-inc-fix-1
-type: CODE_ENTITY
-subType: Patch
+type: PATCH
 title: ConnectionPoolFix
 version: v-2
 relations:
   - to: ops-inc-1
     type: FIXES
   - to: impl-repo-1
-    type: IMPLEMENTS
+    type: RELATES_TO
 ownership:
   owner: pcaro
   team: architecture

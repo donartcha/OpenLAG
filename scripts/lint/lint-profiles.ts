@@ -1,6 +1,22 @@
 import { LintProfile } from './lint-types.js';
 
 export const defaultProfiles: Record<string, LintProfile> = {
+  draft: {
+    duplicateId: 'error',
+    invalidYaml: 'error',
+    brokenRelation: 'error',
+    missingRequiredFields: 'info',
+    requirementWithoutImplementation: 'info',
+    requirementWithoutTest: 'info',
+    codeWithoutRequirement: 'info',
+    closedArtifactWithPendingRelations: 'info',
+    orphanArtifact: 'info',
+    invalidRelationType: 'warning',
+    invalidArtifactType: 'error',
+    invalidLayer: 'info',
+    invalidLayerRelation: 'info',
+    missingOwnership: 'info',
+  },
   feature: {
     duplicateId: 'error',
     invalidYaml: 'error',
@@ -13,6 +29,7 @@ export const defaultProfiles: Record<string, LintProfile> = {
     orphanArtifact: 'info',
     invalidRelationType: 'error',
     invalidArtifactType: 'error',
+    invalidLayer: 'warning',
     invalidLayerRelation: 'info',
     missingOwnership: 'info',
   },
@@ -28,6 +45,7 @@ export const defaultProfiles: Record<string, LintProfile> = {
     orphanArtifact: 'warning',
     invalidRelationType: 'error',
     invalidArtifactType: 'error',
+    invalidLayer: 'warning',
     invalidLayerRelation: 'warning',
     missingOwnership: 'warning',
   },
@@ -43,6 +61,7 @@ export const defaultProfiles: Record<string, LintProfile> = {
     orphanArtifact: 'error',
     invalidRelationType: 'error',
     invalidArtifactType: 'error',
+    invalidLayer: 'error',
     invalidLayerRelation: 'error',
     missingOwnership: 'error',
   }

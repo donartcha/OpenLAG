@@ -1,7 +1,6 @@
 ---
 id: ver-res-1
-type: DOCUMENTATION
-subType: Test Results
+type: TEST_RESULTS
 title: Test Report v1.0
 version: v-1
 relations:

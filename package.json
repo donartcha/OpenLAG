@@ -1,6 +1,6 @@
 {
   "name": "@donartcha/openlag",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Architecture as Code traceability graph generator and static documentation portal",
   "type": "module",
   "author": "donartcha",
@@ -41,13 +41,15 @@
     "SPECIFICATION.md"
   ],
   "scripts": {
-    "dev": "tsx scripts/cli/openlag.ts dev",
-    "build": "npm run generate-relations && npm run build:web && npm run build:cli",
+    "dev": "npm run generate-contracts && tsx scripts/cli/openlag.ts dev",
+    "build": "npm run generate-contracts && npm run build:web && npm run build:cli",
     "build:web": "vite build",
     "build:cli": "tsup scripts/cli/openlag.ts --format esm --platform node --target node18 --out-dir dist/cli --clean false",
-    "check": "npm run typecheck && npm run lint && npm run build:cli && npm run test && npm run pack:dry-run",
-    "generate": "tsx scripts/cli/openlag.ts generate",
+    "check": "npm run generate-contracts && npm run typecheck && npm run lint && npm run build:cli && npm run test && npm run pack:dry-run",
+    "generate": "npm run generate-contracts && tsx scripts/cli/openlag.ts generate",
+    "generate-artifacts": "tsx scripts/generate-artifacts.ts",
     "generate-relations": "tsx scripts/generate-relations.ts",
+    "generate-contracts": "npm run generate-artifacts && npm run generate-relations",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "node --import tsx --test tests/*.test.ts",

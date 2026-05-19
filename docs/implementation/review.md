@@ -1,7 +1,6 @@
 ---
 id: impl-review-1
-type: CODE_ENTITY
-subType: Review
+type: REVIEW
 title: 'Revisión de Seguridad: Auth Pool Logic'
 version: v-2
 ownership:

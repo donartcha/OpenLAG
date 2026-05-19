@@ -1,4 +1,4 @@
-# OpenLAG Project Specification v0.1
+# OpenLAG Project Specification v0.2
 
 ## 1. OpenLAG Philosophy
 
@@ -57,6 +57,11 @@ The graph evolves alongside the software.
 - Validation must adapt to the development context.
 - The system must tolerate uncertainty and refactors.
 - Linting should help, not block unnecessarily.
+
+### Contract-Driven Impact Evolution
+OpenLAG implements a contract-driven artifact engine introduced to enhance observability:
+- True custom types via schemas: Standard artifacts or extensions defined through YAML schemas replacing loose free-text attributes.
+- Native propagation rules: Graph traversal powered bidirectional relation parsing explicitly designed to perform CI/CD impact analysis via `openlag impact`.
 
 ## 2. Semantic Layer Model
 
@@ -358,13 +363,14 @@ It is required that artifacts persist as **human-readable Markdown files (`.md`)
 - **develop**: `warn` on `DISCOURAGED` rules, `error` on `INVALID`.
 - **release**: `error` on `DISCOURAGED` and `INVALID` rules.
 
+Additionally, the linter now strictly enforces the `allowedFrom` and `allowedTo` rules declared in the contract. If a relationship is declared by a non-permitted artifact, the linter will throw an `invalidRelationType` error, blocking or warning depending on the profile.
+
 ## 7. Official Markdown Format
 
 ```yaml
 ---
 id: REQ-001
 type: REQUIREMENT
-subType: Auth
 status: draft
 layer: BUSINESS
 title: Generate graph-data.json
@@ -391,7 +397,6 @@ relations:
 
 ### Optional Fields
 - `layer` (The value of `layer` is always implicitly derived by the `type` field based on the semantic layer taxonomy. It is only allowed to be defined as a manual *override* but is discouraged or subject to strict validation).
-- `subType` (Optional. Semantic sub-domain classification or purely taxonomic specialization of an artifact [e.g., `Database`, `Microservice`]. It should not be attributed explicit UI actions in the contract).
 - `ownership` (can include `owner`, `team`, `domain`, `maintainers`, `reviewers`, `steward`)
 - `tags`
 - `version`
@@ -442,10 +447,15 @@ Gaps represent pending knowledge, not necessarily errors.
 
 ### Profiles
 ```text
+draft
 feature
 develop
 release
 ```
+
+### draft
+Very relaxed.
+Only blocks invalid IDs, YAML, artifact types, and explicitly broken relations. Everything else is mostly informational.
 
 ### feature
 Relaxed.
@@ -521,7 +531,9 @@ Therefore, OpenLAG adopts the following scalability rules through a "Subgraph Ex
 ### Fundamental Principles
 - **The Complete Graph is a Knowledge Base, NOT a Mandatory Interface**: OpenLAG processes, validates, and stores the total `GraphState`, but does not promise or attempt to visually render it all at once.
 - **Subgraph Projection & Focus Mode**: The user explores controlled projected views (Subgraphs). By default, the visual experience is based on selecting a focal artifact and expanding the neighborhood to a configured depth (`depth = 1` or `2`). Unrequested sub-branches are aggressively cropped.
-- **Semantic Graph Visualization Engine**: OpenLAG has evolved from being a simple "Document Graph Explorer" into a visual "Software Lifecycle Visualization Engine". The base graph is immovable, but visualization and ordering are done dynamically through the *Ordering Strategy Registry* depending on the perspective (default: Lifecycle Strategy).
+- **Extensibility via YAML Contracts**: Users can redefine or extend the global registry by simply adding or modifying `.yaml` payloads under `docs/artifacts/` and `docs/relations/`. The `openlag init`, `openlag dev` and `openlag build` scripts act as lifecycle hooks, recompiling the schemas into `src/core/generated/` and bootstrapping the internal registry before building the portal.
+- **Visual Palette Overrides & Fallback**: The UI assigns default aesthetic styles based on the core core-types mapping. When using dynamic derived schemas (e.g. `DAO` extending from `CODE_ENTITY`), it naturally fallbacks and leverages the parent's coloring schema. Custom palettes can be completely overridden and extended by providing a `typeColors` settings layer within the `metadata.json` payload, mapping specific artifact IDs or types to Tailwind utility classes.
+- **Semantic Graph Visualization Engine**: OpenLAG has evolved from being a simple "Document Graph Explorer" into a visual "Software Lifecycle Visualization Engine". The base graph is immovable, but visualization and ordering are done dynamically through the *Ordering Strategy Registry* depending on the perspective (default: Lifecycle Strategy). Furthermore, projection strategies dynamically map elements based on their user-defined or inherited `layer` parameters (BUSINESS, ARCHITECTURE, IMPLEMENTATION, etc.) declared within their `docs/artifacts/[type].yaml` config files. This guarantees that newly injected arbitrary extensions (e.g., `DAO` or `API_ROUTE`) cleanly render in the correct phase bin in the UI without modifying source code.
 - **Weak Relation Hiding**: Diffuse or semantic relations (`RELATES_TO`, `DOCUMENTS`, or others categorized as `WEAK`) increase noise by introducing cross-dependencies without critical architectural impact. They will be hidden by default in the UI (they can be explicitly activated using filters if transversal traceability analysis is required).
 - **Hub Collapsing (Tolerance Thresholds)**: There are hard rendering limits (`MAX_RENDER_NODES = 150`, `MAX_RENDER_EDGES = 300`). If a subgraph exceeds these generated thresholds (e.g., a massive project with hundreds of features pointing to a single `Auth` component), the visualization will safely truncate the graph and alert the user, suggesting the use of a depth/Layer filter.
 - **Semantic Slice Analysis**: The Impact Engine no longer visually traverses all nodes; instead, it performs controlled queries directly on the GraphQL/TypeScript structural index built in the browser's memory before rendering the solution.

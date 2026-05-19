@@ -1,10 +1,12 @@
 # Documentacion tecnica validada - OpenLAG
 
-Documento validado contra el repositorio del proyecto y el paquete `@donartcha/openlag@0.1.8`.
+Documento validado contra el repositorio del proyecto y el paquete `@donartcha/openlag@0.3.0`.
 
 Fecha de validacion: 2026-05-19.
 
 ## 1. Resumen ejecutivo
+
+**Evolución Reciente**: Se ha integrado la especificación *Contract-Driven Impact Evolution*, migrando los tipos anidados y sub-tipos a contratos formales YAML ubicados en `/docs/artifacts/` que configuran la herencia, las validaciones de linter dinámicas, y las direcciones de propagación que ahora son explotadas por el nuevo comando `openlag impact` (permitiendo análisis via git diff nativo sobre CLI).
 
 OpenLAG, Open Living Architecture Graph, es una herramienta de Architecture as Code para convertir documentacion tecnica versionada en Markdown y contratos YAML en un grafo de trazabilidad navegable.
 
@@ -24,7 +26,7 @@ La premisa central es mantener la arquitectura cerca del codigo, dentro del repo
 ### Version y paquete
 
 - Paquete NPM: `@donartcha/openlag`
-- Version local: `0.1.8`
+- Version local: `0.3.0`
 - Binario publicado: `openlag`
 - Licencia: `MPL-2.0`
 - Runtime soportado: Node.js `>=18`
@@ -45,8 +47,8 @@ npm pack --dry-run
 Resultado actual:
 
 - `npm run check` pasa correctamente.
-- `node bin/openlag.js --version` devuelve `0.1.8`.
-- `npm pack --dry-run` genera la tarball `donartcha-openlag-0.1.8.tgz` e incluye la documentacion publica esperada.
+- `node bin/openlag.js --version` devuelve `0.3.0`.
+- `npm pack --dry-run` genera la tarball `donartcha-openlag-0.3.0.tgz` e incluye la documentacion publica esperada.
 - `DOCUMENTACION_OPENLAG.md` permanece excluido del paquete NPM.
 
 Observaciones actuales:
@@ -55,7 +57,7 @@ Observaciones actuales:
 - ESLint sigue mostrando warnings por imports o variables sin uso, pero no errores.
 - Vite advierte que algunos chunks superan 500 kB tras minificacion; no bloquea la release, pero queda como mejora futura.
 
-Conclusion: el paquete queda preparado para una release NPM `0.1.8` con documentacion publica coherente y validaciones principales en verde.
+Conclusion: el paquete queda preparado para una release NPM `0.3.0` con documentacion publica coherente y validaciones principales en verde.
 
 ## 3. Arquitectura general
 
@@ -288,7 +290,6 @@ Campos recomendados:
 - `ownership`
 - `relations`
 - `systemVersionId`
-- `subType`
 
 Ejemplo valido para el parser actual:
 
@@ -349,7 +350,7 @@ PROCESS
 PIPELINE
 ```
 
-Hallazgo resuelto para `0.1.8`: los contratos y artefactos publicos fueron normalizados para usar `TEST_CASE` como tipo oficial. `TEST` no forma parte del registry actual.
+Hallazgo resuelto para `0.3.0`: los contratos y artefactos publicos fueron normalizados para usar tipos respaldados por contrato. `subType` y `TEST` no forman parte del modelo recomendado de la especificacion v0.2.
 
 ## 10. Estados oficiales
 
@@ -449,7 +450,7 @@ Uso recomendado:
 - `DEPENDS_ON`, `USES`, `CALLS`, `IMPORTS`: modelan dependencias o uso estructural.
 - `RELATES_TO`: debe evitarse salvo justificacion clara.
 
-Limite actual: aunque los contratos declaran `allowedFrom` y `allowedTo`, las reglas de lint actuales validan tipo de relacion, destino existente y algunas reglas semanticas, pero no aplican de forma completa la matriz `allowedFrom`/`allowedTo`.
+Las reglas de lint validan el tipo de relación, la existencia del destino, algunas reglas semánticas y aseguran de forma estricta la matriz `allowedFrom`/`allowedTo` definida en los contratos. Si una relación se realiza desde o hacia un artefacto no permitido, el *linter* lo informará como un error o *warning*, dependiendo del perfil.
 
 ## 13. Parser documental
 
@@ -476,6 +477,7 @@ Comportamiento relevante:
 Perfiles:
 
 ```text
+draft
 feature
 develop
 release
@@ -497,7 +499,7 @@ Reglas actuales:
 - `invalidLayerRelation`
 - `missingOwnership`
 
-`feature` es el perfil mas tolerante, `develop` es intermedio y `release` convierte mas huecos en errores.
+`draft` es el perfil más permisivo (solo bloquea errores críticos como IDs duplicados y YAML inválido), `feature` es tolerante, `develop` es intermedio y `release` convierte mas huecos en errores.
 
 Comandos:
 
@@ -546,6 +548,46 @@ WEAK_RELATIONS_VISIBLE_BY_DEFAULT = false
 
 El sistema puede explorar el grafo completo como base de conocimiento, pero la UI trabaja con subgrafos proyectados para evitar ruido y problemas de rendimiento.
 
+### Personalización de Artefactos (Nuevos Tipos)
+
+OpenLAG define alrededor de 30 artefactos arquitectónicos por defecto. Sin embargo, su diseño permite a cada organización inyectar nuevos tipos a medida.
+
+Para añadir un nuevo contrato de artefacto:
+
+1. Crea un fichero `.yaml` en el directorio `docs/artifacts/` del proyecto.
+2. Define los campos necesarios. Es posible extender de un tipo base conocido mediante la directiva `extends`:
+
+```yaml
+type: CUSTOM_TYPE
+extends: CODE_ENTITY
+layer: IMPLEMENTATION
+description: "Un artefacto personalizado."
+requiredFields:
+  - id
+  - type
+  - title
+impactSeverityDefault: low
+```
+
+3. Cada vez que inicias los scripts de la CLI (`openlag dev` o `openlag build`), OpenLAG regenera los contratos (`src/core/generated/artifact-definitions.ts` y `relation-definitions.ts`) recompilando el framework con las aportaciones y herencias solicitadas. De igual forma para las relaciones: los nuevos conectores semánticos deben emplazarse en `docs/relations/`.
+
+### Personalización Visual (Paleta de Colores)
+
+La vista de grafo (GraphView) asigna colores semánticos a los nodos basándose en su tipo central definidos internamente. Cuando se utiliza un tipo extendido (por ejemplo, `type: DAO` que extiende de `CODE_ENTITY`), el motor hereda el color del ancestro base automáticamente.
+
+Es posible sobrescribir o añadir colores a esta paleta de configuración mediante el archivo `metadata.json`. Agregando la propiedad `typeColors` o `colors`, se puede forzar el estilo de un tipo específico mediante clases de Tailwind (típicamente de texto y borde):
+
+```json
+{
+  "name": "Mi Proyecto",
+  "description": "...",
+  "typeColors": {
+    "DAO": "text-yellow-400 border-yellow-400",
+    "CUSTOM_TYPE": "text-pink-500 border-pink-500"
+  }
+}
+```
+
 ### Estrategias de proyeccion
 
 Registradas en `src/core/strategies/index.ts`:
@@ -559,7 +601,11 @@ Registradas en `src/core/strategies/index.ts`:
 - `release`
 - `domain`
 
-Las estrategias agrupan artefactos para analizar el mismo grafo desde perspectivas diferentes. Algunas son implementaciones simples o placeholders funcionales, no ordenaciones topologicas completas.
+Las estrategias agrupan artefactos para analizar el mismo grafo desde perspectivas diferentes. Con la introducción de **contratos YAML dinámicos**, estas estrategias ya no dependen de un listado cerrado de tipos (`ArtifactType`); en su lugar, leen la propiedad `layer` (fase o capa arquitectónica, por ejemplo, `BUSINESS`, `ARCHITECTURE`, `IMPLEMENTATION`, `VERIFICATION`, `OPERATIONS`, `GOVERNANCE`) declarada en los archivos `.yaml` ubicados bajo `docs/artifacts/`.
+
+Esto asegura que cuando una organización introduzca sus propios artefactos (ej. `API_ROUTE`, `ASYNC_WORKER`), el artefacto caerá naturalmente en la Categoría o Fase correcta del *Sidebar* de visualización dependiendo del `layer` que se le haya asignado en su contrato, y los conteos de la UI englobarán de forma exacta los nuevos sub-tipos inyectados.
+
+Algunas son implementaciones simples o placeholders funcionales, no ordenaciones topologicas completas.
 
 ## 16. Seguridad y despliegue
 
@@ -578,7 +624,6 @@ Recomendaciones:
 
 ### P2
 
-- Decidir si `allowedFrom`/`allowedTo` deben ser reglas efectivas de lint.
 - Corregir warnings de trazabilidad del dataset de ejemplo:
   - codigo sin requisito asociado,
   - requisitos sin implementacion,

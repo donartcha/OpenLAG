@@ -1,7 +1,6 @@
 ---
 id: retire-old-api-1
-type: MAINTENANCE
-subType: Retirement
+type: RETIREMENT
 title: Depreciación de API v0.9 (Legacy)
 version: v-2
 ownership:

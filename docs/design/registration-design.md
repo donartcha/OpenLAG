@@ -1,7 +1,6 @@
 ---
 id: des-reg-01
-type: DESIGN
-subType: Architecture
+type: ARCHITECTURE
 title: Registration Service Design
 version: v-1
 ownership:

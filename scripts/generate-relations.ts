@@ -20,7 +20,8 @@ files.forEach(file => {
       allowedTo: parsed.allowedTo || [],
       multiplicity: parsed.multiplicity || { from: 'many', to: 'many' },
       validation: parsed.validation || { severity: 'error' },
-      strength: parsed.validation?.severity === 'error' ? 'STRONG' : (parsed.validation?.severity === 'warn' ? 'MEDIUM' : 'WEAK')
+      strength: parsed.validation?.severity === 'error' ? 'STRONG' : (parsed.validation?.severity === 'warn' ? 'MEDIUM' : 'WEAK'),
+      impact: parsed.impact || { propagates: false, directions: ['forward'], weight: 0.5 }
     });
   }
 });
@@ -39,6 +40,7 @@ export interface RelationContract {
   allowedTo: ArtifactType[];
   multiplicity: { from: string; to: string };
   validation: { severity: string };
+  impact: { propagates: boolean; directions: ('forward' | 'reverse' | 'both')[]; weight: number };
 }
 
 export const GENERATED_RELATIONS: RelationContract[] = ${JSON.stringify(relations, null, 2)};

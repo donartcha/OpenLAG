@@ -1,4 +1,4 @@
-import { spawn } from 'child_process';
+import { spawn, execFileSync } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -14,6 +14,14 @@ export function runDevServer() {
   const projectRoot = process.cwd();
   const docsDir = path.join(projectRoot, 'docs');
   const outputDir = path.join(projectRoot, 'public');
+
+  console.log(chalk.blue('Generating contracts (artifacts & relations)...'));
+  try {
+    execFileSync('tsx', [path.join(packageRoot, 'scripts/generate-artifacts.ts')], { stdio: 'inherit', cwd: projectRoot });
+    execFileSync('tsx', [path.join(packageRoot, 'scripts/generate-relations.ts')], { stdio: 'inherit', cwd: projectRoot });
+  } catch (error) {
+    console.error(chalk.yellow('Warning: Could not regenerate contracts.'));
+  }
 
   generateData(docsDir, outputDir);
   watchData(docsDir, outputDir);

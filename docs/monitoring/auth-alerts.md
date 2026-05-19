@@ -1,7 +1,6 @@
 ---
 id: mon-auth-99
-type: MONITORING
-subType: Alert
+type: ALERT
 title: Auth Error Rate > 5%
 version: v-1
 relations:
