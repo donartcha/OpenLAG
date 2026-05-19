@@ -47,6 +47,20 @@ node --import tsx scripts/cli/openlag.ts check --profile develop
 node --import tsx scripts/cli/openlag.ts check --profile release --strict
 ```
 
+## Branch Policy
+
+The `main` branch is protected.
+
+Contributors must:
+
+1. Fork the repository or create a feature branch.
+2. Open a Pull Request targeting `main`.
+3. Wait for CI to pass.
+4. Wait for maintainer review.
+5. Never push directly to `main`.
+
+Only maintainers may approve and merge Pull Requests.
+
 ## Pull Requests
 
 Please keep pull requests focused and include:

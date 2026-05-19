@@ -45,7 +45,7 @@
     "build": "npm run generate-relations && npm run build:web && npm run build:cli",
     "build:web": "vite build",
     "build:cli": "tsup scripts/cli/openlag.ts --format esm --platform node --target node18 --out-dir dist/cli --clean false",
-    "check": "npm run typecheck && npm run lint && npm run test && npm run pack:dry-run",
+    "check": "npm run typecheck && npm run lint && npm run build:cli && npm run test && npm run pack:dry-run",
     "generate": "tsx scripts/cli/openlag.ts generate",
     "generate-relations": "tsx scripts/generate-relations.ts",
     "lint": "eslint .",

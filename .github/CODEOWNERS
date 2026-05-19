@@ -1,0 +1,18 @@
+# Default owner for all repository changes
+* @donartcha
+
+# Core package and CLI
+/package.json @donartcha
+/bin/ @donartcha
+/scripts/ @donartcha
+/src/ @donartcha
+
+# Public documentation
+/README.md @donartcha
+/SPECIFICATION.md @donartcha
+/CHANGELOG.md @donartcha
+/SECURITY.md @donartcha
+/CONTRIBUTING.md @donartcha
+
+# GitHub automation
+/.github/ @donartcha
