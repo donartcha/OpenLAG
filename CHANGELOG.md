@@ -4,12 +4,15 @@ All notable changes to OpenLAG are documented in this file.
 
 ## Unreleased
 
-### Added
+## 0.2.0 - 2026-05-19
 
+### Added
 - Added GitHub collaboration governance with CODEOWNERS, pull request and issue templates, and mandatory CI for `main`.
 
 ### Changed
-
+- Translated `SPECIFICATION.md` to English and expanded architectural definitions, scalability guidelines, CI/CD integration, and timeline versioning rules.
+- Refined relational contracts (`IMPLEMENTS`, `TESTS`, `REFINES`, `FIXES`, `JUSTIFIES`, `DOCUMENTS`) with stricter mappings aligned to the new specification.
+- Updated `ALLOWED_TO` and `ALLOWED_FROM` constraints on core traceability relations to reduce semantic pollution and tighten graph validation.
 - Documented the protected `main` branch policy for contributors.
 - Made `npm run check` build the CLI before tests so validation works in clean CI checkouts.
 
