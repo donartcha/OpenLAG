@@ -520,7 +520,14 @@ export const DocumentationView: React.FC = () => {
                                                 </span>
                                               )}
                                               <span>{artifact.title}</span>
-                                              {artifact.version && <span className="ml-auto text-xs font-mono text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 rounded">v{artifact.version}</span>}
+                                              {artifact.version && artifact.version !== 'v-1' && (
+                                                <span className="ml-auto text-xs font-mono text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 rounded">
+                                                  {(() => {
+                                                      const vName = versions.find(v => v.id === artifact.version)?.name || artifact.version;
+                                                      return vName.toLowerCase().startsWith('v') ? vName : `v${vName}`;
+                                                  })()}
+                                                </span>
+                                              )}
                                             </h3>
                                             <OwnershipBadge artifact={artifact} />
                                             <MarkdownRenderer content={artifact.description} />
