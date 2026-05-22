@@ -37,7 +37,7 @@ npx @donartcha/openlag lint
 npx @donartcha/openlag build
 ```
 
-OpenLAG creates a `docs/` directory with starter architecture documents and relation definitions. `openlag generate` writes `public/graph-data.json`, and `openlag build` writes the static portal to `dist/`.
+OpenLAG creates a `docs/` directory with starter architecture documents, artifact contracts, and relation definitions. `openlag generate` writes `public/graph-data.json`, `public/artifact-definitions.json`, and `public/relation-definitions.json`; `openlag build` writes the static portal to `dist/`.
 
 `--name` sets the project display name in `metadata.json`; it does not create a nested folder. Existing relation and artifact contract files are preserved during initialization.
 
@@ -95,7 +95,7 @@ openlag --version
 ## Commands
 
 ```text
-openlag init       Initialize docs, metadata, and relation definitions
+openlag init       Initialize docs, metadata, artifact contracts, and relation definitions
 openlag generate   Generate public/graph-data.json
 openlag dev        Start the portal dev server with live data refresh
 openlag build      Build the static portal
@@ -157,8 +157,10 @@ Common relations include:
 ## Generated Output
 
 ```text
-public/graph-data.json  Static graph data generated from docs/
-dist/                   Static portal build output
+public/graph-data.json           Static graph data generated from docs/
+public/artifact-definitions.json Project artifact contracts for the portal
+public/relation-definitions.json Project relation contracts for the portal
+dist/                          Static portal build output
 ```
 
 The generated portal is static. Protect it appropriately if the source Markdown contains internal architecture, system names, incidents, vulnerabilities, or operational details.

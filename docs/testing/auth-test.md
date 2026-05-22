@@ -4,6 +4,8 @@ type: INTEGRATION_TEST
 title: AuthController Integration Test
 version: v-1
 relations:
+  - to: req-nfunc-1
+    type: TESTS
   - to: impl-ctr-1
     type: TESTS
 ownership:

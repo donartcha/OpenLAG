@@ -7,6 +7,10 @@ ownership:
   owner: pcaro
   team: qa-team
 relations:
+  - to: req-func-1
+    type: TESTS
+  - to: req-res-1
+    type: TESTS
   - to: impl-reg-01
     type: TESTS
 ---

@@ -25,7 +25,7 @@ export class DiagnosticEngine {
     }
 
     getErrors(): ParseError[] {
-        return this.diagnostics.map(d => ({ file: d.file, message: `[${d.severity}] ${d.message}` }));
+        return this.diagnostics.map(d => ({ file: d.file, message: d.message }));
     }
     
     hasCritical(): boolean {

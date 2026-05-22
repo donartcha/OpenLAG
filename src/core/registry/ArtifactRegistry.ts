@@ -1,11 +1,18 @@
 import { ArtifactContract, GENERATED_ARTIFACTS } from '../generated/artifact-definitions.js';
 
 export type ArtifactType = string;
+export type { ArtifactContract };
 
 export class ArtifactRegistry {
   private static artifactsMap = new Map<string, ArtifactContract>(
     GENERATED_ARTIFACTS.map(art => [art.type, art])
   );
+
+  static configure(contracts: ArtifactContract[]): void {
+    this.artifactsMap = new Map<string, ArtifactContract>(
+      contracts.filter(art => art.type).map(art => [art.type, art])
+    );
+  }
 
   static getValidTypes(): string[] {
     return Array.from(this.artifactsMap.keys());
@@ -37,6 +44,6 @@ export class ArtifactRegistry {
   }
 
   static getAllContracts(): ArtifactContract[] {
-    return GENERATED_ARTIFACTS;
+    return Array.from(this.artifactsMap.values());
   }
 }

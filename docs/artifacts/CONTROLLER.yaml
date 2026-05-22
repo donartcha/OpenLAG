@@ -1,0 +1,8 @@
+type: CONTROLLER
+extends: CODE_ENTITY
+layer: IMPLEMENTATION
+description: "Controller implementation artifact."
+requiredFields:
+  - id
+  - type
+  - title

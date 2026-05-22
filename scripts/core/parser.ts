@@ -109,8 +109,21 @@ export function parseOpenLagDocs(docsDir: string): OpenLagData {
                   }
                 });
               }
-            } catch (e) {
-                diag.add(fullPath, `Schema validation error: ${(e as Error).message}`, Severity.INVALID);
+            } catch (e: any) {
+                let msg = e.message;
+                if (e.errors && Array.isArray(e.errors)) {
+                    msg = e.errors.map((err: any) => `\`${err.path.join('.')}\`: ${err.message}`).join(', ');
+                } else {
+                  try {
+                    const parsed = JSON.parse(e.message);
+                    if (Array.isArray(parsed)) {
+                      msg = parsed.map((err: any) => `\`${err.path.join('.')}\`: ${err.message}`).join(', ');
+                    }
+                  } catch {
+                    msg = e.message;
+                  }
+                }
+                diag.add(fullPath, `Schema validation failed.\n\n${msg}`, Severity.INVALID);
             }
 
           } else if (parsed && typeof parsed === 'object') {

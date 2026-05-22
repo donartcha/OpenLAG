@@ -17,435 +17,698 @@ export const GENERATED_ARTIFACTS: ArtifactContract[] = [
   {
     "type": "ADR",
     "extends": "DECISION",
-    "description": "Extended artifact for ADR",
-    "requiredFields": [],
+    "layer": "ARCHITECTURE",
+    "description": "Architecture decision record.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "ALERT",
     "extends": "MONITORING",
-    "description": "Extended artifact for ALERT",
-    "requiredFields": [],
+    "layer": "OPERATIONS",
+    "description": "Operational alert artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "API",
-    "layer": "IMPLEMENTATION",
-    "description": "Base artifact for API",
-    "requiredFields": [],
+    "layer": "ARCHITECTURE",
+    "description": "Standard API artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "API_ROUTE",
     "extends": "API",
-    "description": "Extended artifact for API_ROUTE",
-    "requiredFields": [],
+    "layer": "ARCHITECTURE",
+    "description": "HTTP API route or endpoint.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "ARCHITECTURE",
     "extends": "DESIGN",
-    "description": "Extended artifact for ARCHITECTURE",
-    "requiredFields": [],
+    "layer": "ARCHITECTURE",
+    "description": "Architecture-level design artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "ASYNC_WORKER",
     "extends": "CODE_ENTITY",
-    "description": "Extended artifact for ASYNC_WORKER",
-    "requiredFields": [],
+    "layer": "IMPLEMENTATION",
+    "description": "Asynchronous worker implementation.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "BUG",
-    "layer": "GOVERNANCE",
-    "description": "Base artifact for BUG",
-    "requiredFields": [],
+    "layer": "IMPLEMENTATION",
+    "description": "Standard BUG artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "BUSINESS_RULE",
     "layer": "BUSINESS",
-    "description": "Base artifact for BUSINESS_RULE",
-    "requiredFields": [],
+    "description": "Standard BUSINESS_RULE artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "CHANGE",
-    "layer": "GOVERNANCE",
-    "description": "Base artifact for CHANGE",
-    "requiredFields": [],
+    "layer": "IMPLEMENTATION",
+    "description": "Standard CHANGE artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "CHECK",
-    "layer": "VERIFICATION",
-    "description": "Base artifact for CHECK",
-    "requiredFields": [],
+    "layer": "OPERATIONS",
+    "description": "Standard CHECK artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "CI_PIPELINE",
     "extends": "PIPELINE",
-    "description": "Extended artifact for CI_PIPELINE",
-    "requiredFields": [],
+    "layer": "OPERATIONS",
+    "description": "Continuous integration pipeline.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "CODE_ENTITY",
     "layer": "IMPLEMENTATION",
-    "description": "Base artifact for CODE_ENTITY",
-    "requiredFields": [],
+    "description": "Standard CODE_ENTITY artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "COMPONENT",
-    "layer": "IMPLEMENTATION",
-    "description": "Base artifact for COMPONENT",
-    "requiredFields": [],
+    "layer": "ARCHITECTURE",
+    "description": "Standard COMPONENT artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "COMPONENT_DIAGRAM",
     "extends": "DESIGN",
-    "description": "Extended artifact for COMPONENT_DIAGRAM",
-    "requiredFields": [],
+    "layer": "ARCHITECTURE",
+    "description": "Component diagram design artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "CONSTRAINT",
-    "extends": "BUSINESS_RULE",
-    "description": "Extended artifact for CONSTRAINT",
-    "requiredFields": [],
+    "extends": "REQUIREMENT",
+    "layer": "BUSINESS",
+    "description": "Constraint requirement.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "CONTROLLER",
     "extends": "CODE_ENTITY",
-    "description": "Extended artifact for CONTROLLER",
-    "requiredFields": [],
+    "layer": "IMPLEMENTATION",
+    "description": "Controller implementation artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "CUSTOM_TYPE",
+    "extends": "CODE_ENTITY",
+    "layer": "IMPLEMENTATION",
+    "description": "A custom template for code entities.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impactSeverityDefault": "low",
     "impact": {}
   },
   {
     "type": "DAO",
     "extends": "CODE_ENTITY",
-    "description": "Extended artifact for DAO",
-    "requiredFields": [],
+    "layer": "IMPLEMENTATION",
+    "description": "Data access object implementation.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "DASHBOARDS",
     "extends": "MONITORING",
-    "description": "Extended artifact for DASHBOARDS",
-    "requiredFields": [],
+    "layer": "OPERATIONS",
+    "description": "Monitoring dashboard artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "DATABASE_ENTITY",
     "layer": "IMPLEMENTATION",
-    "description": "Base artifact for DATABASE_ENTITY",
-    "requiredFields": [],
+    "description": "Standard DATABASE_ENTITY artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "DECISION",
     "layer": "ARCHITECTURE",
-    "description": "Base artifact for DECISION",
-    "requiredFields": [],
+    "description": "Standard DECISION artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "DEPLOYMENT",
     "layer": "OPERATIONS",
-    "description": "Base artifact for DEPLOYMENT",
-    "requiredFields": [],
+    "description": "Standard DEPLOYMENT artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "DESIGN",
     "layer": "ARCHITECTURE",
-    "description": "Base artifact for DESIGN",
-    "requiredFields": [],
+    "description": "Standard DESIGN artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "DOCUMENTATION",
-    "layer": "ARCHITECTURE",
-    "description": "Base artifact for DOCUMENTATION",
-    "requiredFields": [],
+    "layer": "DOCUMENTATION",
+    "description": "Standard DOCUMENTATION artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "DTO",
     "extends": "CODE_ENTITY",
-    "description": "Extended artifact for DTO",
-    "requiredFields": [],
+    "layer": "IMPLEMENTATION",
+    "description": "Data transfer object implementation.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "ENTITY",
     "extends": "CODE_ENTITY",
-    "description": "Extended artifact for ENTITY",
-    "requiredFields": [],
+    "layer": "IMPLEMENTATION",
+    "description": "Domain or persistence entity implementation.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "ENVIRONMENT",
     "layer": "OPERATIONS",
-    "description": "Base artifact for ENVIRONMENT",
-    "requiredFields": [],
+    "description": "Standard ENVIRONMENT artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "EPIC",
     "layer": "BUSINESS",
-    "description": "Base artifact for EPIC",
-    "requiredFields": [],
+    "description": "Standard EPIC artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "EVIDENCE",
     "extends": "DOCUMENTATION",
-    "description": "Extended artifact for EVIDENCE",
-    "requiredFields": [],
+    "layer": "DOCUMENTATION",
+    "description": "Verification or audit evidence.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "FEATURE",
     "layer": "BUSINESS",
-    "description": "Base artifact for FEATURE",
-    "requiredFields": [],
+    "description": "Standard FEATURE artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "FUNCTIONAL",
     "extends": "REQUIREMENT",
-    "description": "Extended artifact for FUNCTIONAL",
-    "requiredFields": [],
+    "layer": "BUSINESS",
+    "description": "Functional requirement.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "GITHUB_ACTIONS",
-    "extends": "PIPELINE",
-    "description": "Extended artifact for GITHUB_ACTIONS",
-    "requiredFields": [],
+    "extends": "DEPLOYMENT",
+    "layer": "OPERATIONS",
+    "description": "GitHub Actions deployment workflow.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "GLOSSARY_TERM",
-    "layer": "ARCHITECTURE",
-    "description": "Base artifact for GLOSSARY_TERM",
-    "requiredFields": [],
+    "layer": "DOCUMENTATION",
+    "description": "Standard GLOSSARY_TERM artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "INCIDENT",
-    "layer": "GOVERNANCE",
-    "description": "Base artifact for INCIDENT",
-    "requiredFields": [],
+    "layer": "OPERATIONS",
+    "description": "Standard INCIDENT artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "INFRASTRUCTURE",
     "layer": "OPERATIONS",
-    "description": "Base artifact for INFRASTRUCTURE",
-    "requiredFields": [],
+    "description": "Standard INFRASTRUCTURE artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "INTEGRATION",
     "extends": "TEST_CASE",
-    "description": "Extended artifact for INTEGRATION",
-    "requiredFields": [],
+    "layer": "IMPLEMENTATION",
+    "description": "Integration test case.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "INTEGRATION_TEST",
     "extends": "TEST_CASE",
-    "description": "Extended artifact for INTEGRATION_TEST",
-    "requiredFields": [],
+    "layer": "IMPLEMENTATION",
+    "description": "Integration test case.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "KUBERNETES",
-    "extends": "INFRASTRUCTURE",
-    "description": "Extended artifact for KUBERNETES",
-    "requiredFields": [],
+    "extends": "DEPLOYMENT",
+    "layer": "OPERATIONS",
+    "description": "Kubernetes deployment artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "LIBRARY",
     "layer": "IMPLEMENTATION",
-    "description": "Base artifact for LIBRARY",
-    "requiredFields": [],
+    "description": "Standard LIBRARY artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "MAINTENANCE",
-    "layer": "GOVERNANCE",
-    "description": "Base artifact for MAINTENANCE",
-    "requiredFields": [],
-    "impact": {}
-  },
-  {
-    "type": "METHOD",
-    "extends": "CODE_ENTITY",
-    "description": "Extended artifact for METHOD",
-    "requiredFields": [],
-    "impact": {}
-  },
-  {
-    "type": "MICROSERVICE",
-    "extends": "COMPONENT",
-    "description": "Extended artifact for MICROSERVICE",
-    "requiredFields": [],
+    "layer": "OPERATIONS",
+    "description": "Standard MAINTENANCE artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "MONITORING",
     "layer": "OPERATIONS",
-    "description": "Base artifact for MONITORING",
-    "requiredFields": [],
+    "description": "Standard MONITORING artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "NON_FUNCTIONAL_REQUIREMENT",
     "extends": "REQUIREMENT",
-    "description": "Extended artifact for NON_FUNCTIONAL_REQUIREMENT",
-    "requiredFields": [],
+    "layer": "BUSINESS",
+    "description": "Non-functional requirement.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "PACKAGE",
-    "extends": "LIBRARY",
-    "description": "Extended artifact for PACKAGE",
-    "requiredFields": [],
+    "extends": "CHANGE",
+    "layer": "IMPLEMENTATION",
+    "description": "Package or distributable artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "PATCH",
     "extends": "CHANGE",
-    "description": "Extended artifact for PATCH",
-    "requiredFields": [],
+    "layer": "IMPLEMENTATION",
+    "description": "Patch change artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "PIPELINE",
     "layer": "OPERATIONS",
-    "description": "Base artifact for PIPELINE",
-    "requiredFields": [],
+    "description": "Standard PIPELINE artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "PROCESS",
-    "layer": "VERIFICATION",
-    "description": "Base artifact for PROCESS",
-    "requiredFields": [],
+    "layer": "DOCUMENTATION",
+    "description": "Standard PROCESS artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "PROJECT",
     "layer": "BUSINESS",
-    "description": "Base artifact for PROJECT",
-    "requiredFields": [],
+    "description": "Standard PROJECT artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "REPOSITORY",
     "extends": "CODE_ENTITY",
-    "description": "Extended artifact for REPOSITORY",
-    "requiredFields": [],
+    "layer": "IMPLEMENTATION",
+    "description": "Repository implementation artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "REQUIREMENT",
     "layer": "BUSINESS",
-    "description": "Base artifact for REQUIREMENT",
-    "requiredFields": [],
+    "description": "Standard REQUIREMENT artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "RETIREMENT",
     "extends": "MAINTENANCE",
-    "description": "Extended artifact for RETIREMENT",
-    "requiredFields": [],
+    "layer": "OPERATIONS",
+    "description": "Retirement or deprecation activity.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "REVIEW",
     "extends": "DOCUMENTATION",
-    "description": "Extended artifact for REVIEW",
-    "requiredFields": [],
+    "layer": "DOCUMENTATION",
+    "description": "Review documentation artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "RISK",
-    "layer": "GOVERNANCE",
-    "description": "Base artifact for RISK",
-    "requiredFields": [],
+    "layer": "DOCUMENTATION",
+    "description": "Standard RISK artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "RUNBOOK",
     "extends": "DOCUMENTATION",
-    "description": "Extended artifact for RUNBOOK",
-    "requiredFields": [],
+    "layer": "DOCUMENTATION",
+    "description": "Operational runbook.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "SERVICE_CONTRACT",
-    "extends": "DOCUMENTATION",
-    "description": "Extended artifact for SERVICE_CONTRACT",
-    "requiredFields": [],
+    "extends": "API",
+    "layer": "ARCHITECTURE",
+    "description": "Service API contract.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "SHARED_COMPONENT",
-    "extends": "COMPONENT",
-    "description": "Extended artifact for SHARED_COMPONENT",
-    "requiredFields": [],
-    "impact": {}
-  },
-  {
-    "type": "SYNC_WORKER",
     "extends": "CODE_ENTITY",
-    "description": "Extended artifact for SYNC_WORKER",
-    "requiredFields": [],
+    "layer": "IMPLEMENTATION",
+    "description": "Shared UI or application component.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "SYSTEM_VERSION",
-    "layer": "GOVERNANCE",
-    "description": "Base artifact for SYSTEM_VERSION",
-    "requiredFields": [],
+    "layer": "OPERATIONS",
+    "description": "Standard SYSTEM_VERSION artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title",
+      "component",
+      "version",
+      "releaseDate"
+    ],
     "impact": {}
   },
   {
     "type": "TEST_CASE",
-    "layer": "VERIFICATION",
-    "description": "Base artifact for TEST_CASE",
-    "requiredFields": [],
+    "layer": "IMPLEMENTATION",
+    "description": "Standard TEST_CASE artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "TEST_RESULTS",
     "extends": "DOCUMENTATION",
-    "description": "Extended artifact for TEST_RESULTS",
-    "requiredFields": [],
+    "layer": "DOCUMENTATION",
+    "description": "Test result documentation.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "USE_CASE",
     "layer": "BUSINESS",
-    "description": "Base artifact for USE_CASE",
-    "requiredFields": [],
+    "description": "Standard USE_CASE artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
     "type": "VERSION",
-    "layer": "GOVERNANCE",
-    "description": "Base artifact for VERSION",
-    "requiredFields": [],
+    "layer": "DOCUMENTATION",
+    "description": "Standard VERSION artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title",
+      "name",
+      "timestamp",
+      "parentVersion"
+    ],
     "impact": {}
   }
 ];

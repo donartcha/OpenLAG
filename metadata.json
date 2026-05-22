@@ -1,4 +1,5 @@
 {
   "name": "My OpenLAG Project",
-  "description": "Living Architecture documentation for my system."
+  "description": "Living Architecture documentation for my system.",
+  "typeColors": {}
 }

@@ -1,15 +1,20 @@
 import fs from "fs";
 import path from "path";
 import { parseOpenLagDocs } from "../core/parser.js";
+import { loadArtifactContracts } from "../core/artifact-contracts.js";
+import { loadRelationContracts } from "../core/relation-contracts.js";
 import { Version, Change, SystemVersion, GraphSnapshot } from "../../src/types.js";
 import chokidar from "chokidar";
 import chalk from "chalk";
+import { runLintRules } from "../lint/lint-rules.js";
+import { defaultProfiles } from "../lint/lint-profiles.js";
 
 interface StaticState {
   versions: Version[];
   systemVersions: SystemVersion[];
   graphs: Record<string, GraphSnapshot>;
   changes: Change[];
+  lintReports: Record<string, any>;
   metadata?: { name: string; description: string; [key: string]: any };
 }
 
@@ -31,6 +36,8 @@ function isDescendant(currentVersionId: string, artifactVersionId: string, versi
 export function generateData(docsDir: string, outputDir: string, silent = false) {
   if (!silent) console.log(chalk.blue("🚀 Generating OpenLAG Static Data..."));
 
+  const artifactContracts = loadArtifactContracts(path.join(docsDir, 'artifacts'));
+  const relationContracts = loadRelationContracts(path.join(docsDir, 'relations'));
   const parsedData = parseOpenLagDocs(docsDir);
 
   let metadata = { name: "OpenLAG Project", description: "Architecture documentation." };
@@ -43,11 +50,20 @@ export function generateData(docsDir: string, outputDir: string, silent = false)
     }
   }
 
+  const lintReports: Record<string, any> = {};
+  for (const profileName of ['draft', 'develop', 'feature', 'release']) {
+    const profile = defaultProfiles[profileName];
+    if (profile) {
+      lintReports[profileName] = { issues: runLintRules(parsedData, profile) };
+    }
+  }
+
   const state: StaticState = {
     versions: parsedData.versions,
     systemVersions: parsedData.systemVersions,
     graphs: {},
     changes: parsedData.changes,
+    lintReports,
     metadata
   };
 
@@ -65,6 +81,20 @@ export function generateData(docsDir: string, outputDir: string, silent = false)
   });
 
   if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+
+  if (artifactContracts.length > 0) {
+    fs.writeFileSync(
+      path.join(outputDir, 'artifact-definitions.json'),
+      JSON.stringify(artifactContracts, null, 2)
+    );
+  }
+
+  if (relationContracts.length > 0) {
+    fs.writeFileSync(
+      path.join(outputDir, 'relation-definitions.json'),
+      JSON.stringify(relationContracts, null, 2)
+    );
+  }
 
   fs.writeFileSync(
     path.join(outputDir, 'graph-data.json'),

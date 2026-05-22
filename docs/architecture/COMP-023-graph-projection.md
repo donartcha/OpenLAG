@@ -3,7 +3,7 @@ id: COMP-023
 type: COMPONENT
 version: VERSION-001
 status: draft
-layer: IMPLEMENTATION
+layer: ARCHITECTURE
 title: Graph Projection Engine
 description: |
   Wraps the raw parsed graph and executes the selected strategy (from the registry) to output rendering-friendly artifacts and groupings.

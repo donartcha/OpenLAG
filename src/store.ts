@@ -1,6 +1,8 @@
 import { create } from 'zustand';
-import { Version, Change, GraphSnapshot, Artifact, Relation, SystemVersion } from './types';
+import { Version, Change, GraphSnapshot, SystemVersion } from './types';
 import { GraphIndex, buildGraphIndex, projectSubgraph, GraphQueryOptions, DEFAULT_NEIGHBORHOOD_DEPTH } from './core/graph/GraphQueryLayer';
+import { ArtifactContract, ArtifactRegistry } from './core/registry/ArtifactRegistry';
+import { RelationContract, RelationRegistry } from './core/registry/RelationRegistry';
 
 interface Settings {
   graphFocusDepth: number;
@@ -8,6 +10,7 @@ interface Settings {
   defaultDocsFocusMode: boolean;
   showWeakRelations: boolean;
   language: 'EN' | 'ES';
+  lintProfile?: string;
 }
 
 interface StoreState {
@@ -28,6 +31,7 @@ interface StoreState {
     team: string;
   };
   metadata?: { name: string; description: string; [key: string]: any };
+  lintReports: Record<string, any>;
 
   currentStrategyId: string;
 
@@ -47,8 +51,43 @@ let cachedData: {
   systemVersions: SystemVersion[];
   changes: Change[];
   graphs: Record<string, GraphSnapshot>;
+  lintReports: Record<string, any>;
   metadata?: { name: string; description: string; [key: string]: any };
 } | null = null;
+
+async function loadProjectArtifactContracts(): Promise<void> {
+  try {
+    const response = await fetch('/artifact-definitions.json');
+    if (!response.ok) return;
+
+    const text = await response.text();
+    if (text.startsWith('<')) return; // Fallback to index.html in dev server means missing
+
+    const contracts = JSON.parse(text) as ArtifactContract[];
+    if (Array.isArray(contracts) && contracts.length > 0) {
+      ArtifactRegistry.configure(contracts);
+    }
+  } catch (error) {
+    console.warn('OpenLAG Warning: Could not load project artifact contracts; using bundled defaults.', error);
+  }
+}
+
+async function loadProjectRelationContracts(): Promise<void> {
+  try {
+    const response = await fetch('/relation-definitions.json');
+    if (!response.ok) return;
+
+    const text = await response.text();
+    if (text.startsWith('<')) return;
+
+    const contracts = JSON.parse(text) as RelationContract[];
+    if (Array.isArray(contracts) && contracts.length > 0) {
+      RelationRegistry.configure(contracts);
+    }
+  } catch (error) {
+    console.warn('OpenLAG Warning: Could not load project relation contracts; using bundled defaults.', error);
+  }
+}
 
 export const useStore = create<StoreState>((set, get) => ({
   versions: [],
@@ -63,12 +102,14 @@ export const useStore = create<StoreState>((set, get) => ({
   currentStrategyId: 'lifecycle',
   isLoading: false,
   metadata: undefined,
+  lintReports: {},
   settings: {
     graphFocusDepth: DEFAULT_NEIGHBORHOOD_DEPTH,
     docsFocusDepth: 1,
     defaultDocsFocusMode: true,
     showWeakRelations: false,
     language: 'EN',
+    lintProfile: 'draft',
   },
   globalFilters: {
     layer: 'ALL',
@@ -114,14 +155,17 @@ export const useStore = create<StoreState>((set, get) => ({
       if (!response.ok) throw new Error("Failed to load graph data");
       
       cachedData = await response.json();
+      await loadProjectArtifactContracts();
+      await loadProjectRelationContracts();
       
       if (cachedData) {
-        const { versions, systemVersions, changes, metadata } = cachedData;
+        const { versions, systemVersions, changes, metadata, lintReports } = cachedData;
         set({ 
           versions, 
           systemVersions: systemVersions || [],
           changes,
           metadata,
+          lintReports: lintReports || {},
           isLoading: false
         });
         

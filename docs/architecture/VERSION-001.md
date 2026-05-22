@@ -4,7 +4,8 @@ type: VERSION
 name: Baseline VERSION-001
 timestamp: 2026-05-18
 parentVersion: null
-layer: GOVERNANCE
+layer: DOCUMENTATION
+title: "mcp-memory 1.0.0 snapshot"
 ownership:
   owner: donartcha
   team: architecture

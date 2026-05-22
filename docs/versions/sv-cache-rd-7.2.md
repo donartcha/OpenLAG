@@ -4,7 +4,7 @@ type: SYSTEM_VERSION
 component: Redis Cache
 version: 7.2.4
 releaseDate: '2024-02-15'
-layer: GOVERNANCE
+layer: OPERATIONS
 title: Redis Cache System
 description: >-
   Cache engine cluster versions. This extended description ensures we pass the

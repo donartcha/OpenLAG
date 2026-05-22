@@ -1,0 +1,8 @@
+type: ASYNC_WORKER
+extends: CODE_ENTITY
+layer: IMPLEMENTATION
+description: "Asynchronous worker implementation."
+requiredFields:
+  - id
+  - type
+  - title

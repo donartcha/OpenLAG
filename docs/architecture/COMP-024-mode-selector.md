@@ -3,7 +3,7 @@ id: COMP-024
 type: COMPONENT
 version: VERSION-001
 status: in_progress
-layer: IMPLEMENTATION
+layer: ARCHITECTURE
 title: Visualization Mode Selector
 description: |
   React component providing the dropdown/toggles to swap between projection strategies.

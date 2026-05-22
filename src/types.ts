@@ -4,14 +4,7 @@ export type { ArtifactType };
 export type RelationType = string;
 export type ChangeType = 'ERROR' | 'FEATURE' | 'EVOLUTION' | 'REFACTOR' | 'ADAPTATION';
 
-export type ArtifactLayer =
-  | 'BUSINESS'
-  | 'ARCHITECTURE'
-  | 'IMPLEMENTATION'
-  | 'VERIFICATION'
-  | 'OPERATIONS'
-  | 'GOVERNANCE'
-  | 'DOCUMENTATION';
+export type ArtifactLayer = 'BUSINESS' | 'ARCHITECTURE' | 'IMPLEMENTATION' | 'OPERATIONS' | 'DOCUMENTATION' | 'VERIFICATION' | 'GOVERNANCE';
 export type RelationStrength = 'STRONG' | 'MEDIUM' | 'WEAK';
 export type RelationCategory = 'STRUCTURAL' | 'BEHAVIORAL' | 'OPERATIONAL' | 'SEMANTIC' | 'TRACEABILITY' | 'DEPENDENCY' | 'EVOLUTIONARY';
 
@@ -47,7 +40,6 @@ export interface Artifact {
   component?: string;
   releaseDate?: string;
   systemVersionId?: string;
-  subType?: string;
   layer?: string;
   ownership?: Ownership;
   status?: string;
@@ -81,4 +73,5 @@ export interface AppState {
   versions: Version[];
   changes: Change[];
   graphs: Record<string, GraphSnapshot>;
+  lintReports: Record<string, any>;
 }

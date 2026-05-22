@@ -1,0 +1,8 @@
+type: ADR
+extends: DECISION
+layer: ARCHITECTURE
+description: "Architecture decision record."
+requiredFields:
+  - id
+  - type
+  - title

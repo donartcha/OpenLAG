@@ -4,6 +4,22 @@ All notable changes to OpenLAG are documented in this file.
 
 ## Unreleased
 
+## 0.4.0 - 2026-05-22
+
+### Added
+- Added project-local artifact contract loading from `docs/artifacts/*.yaml`, including generated runtime payloads in `public/artifact-definitions.json`.
+- Added relation contract runtime payload generation in `public/relation-definitions.json` for static portal consumption.
+- Added richer lint report data to generated graph output for `draft`, `develop`, `feature`, and `release` profiles.
+- Added default and optional artifact contract scaffolding to `openlag init`, including a `CUSTOM_TYPE` example for user-defined contracts.
+- Added support for `openlag init --all` to scaffold optional official artifact contracts alongside optional relations.
+
+### Changed
+- Updated `openlag generate`, `openlag lint`, `openlag check`, and portal initialization to resolve artifact and relation contracts from the active project.
+- Updated portal artifact grouping, settings, orphan detection, documentation views, and type coloring to use dynamic contract metadata and runtime JSON payloads.
+- Refined relation defaults so `DOCUMENTS` targets the base artifact universe by default and expands when optional contracts are generated.
+- Updated Specification `v0.3` and Spanish project documentation with the contract runtime model, static JSON payloads, lint diagnostics, and `init` behavior.
+- Removed a stray temporary `fix2.ts` file from the package workspace.
+
 ## 0.3.0 - 2026-05-19
 
 ### Breaking Changes

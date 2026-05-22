@@ -1,0 +1,8 @@
+type: PACKAGE
+extends: CHANGE
+layer: IMPLEMENTATION
+description: "Package or distributable artifact."
+requiredFields:
+  - id
+  - type
+  - title

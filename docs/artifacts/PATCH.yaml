@@ -1,0 +1,8 @@
+type: PATCH
+extends: CHANGE
+layer: IMPLEMENTATION
+description: "Patch change artifact."
+requiredFields:
+  - id
+  - type
+  - title

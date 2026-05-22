@@ -48,6 +48,25 @@ export const SettingsView: React.FC = () => {
                   <option value="ES" className="bg-black text-white">Español</option>
                 </select>
               </div>
+
+              <div className="flex justify-between items-start border-t border-white/5 pt-4">
+                <div>
+                  <h3 className="font-medium text-sm">Linter Profile</h3>
+                  <p className="text-xs text-white/50 mt-1 max-w-sm">
+                    Select the default strictness profile used to evaluate compliance rules and violations in the Orphans/Gaps view.
+                  </p>
+                </div>
+                <select 
+                  value={settings.lintProfile || 'draft'} 
+                  onChange={(e) => updateSettings({ lintProfile: e.target.value })}
+                  className="bg-black text-white border border-white/20 rounded px-3 py-1.5 text-sm outline-none focus:border-indigo-500 transition-colors uppercase"
+                >
+                  <option value="draft" className="bg-black text-white">Draft</option>
+                  <option value="develop" className="bg-black text-white">Develop</option>
+                  <option value="feature" className="bg-black text-white">Feature</option>
+                  <option value="release" className="bg-black text-white">Release</option>
+                </select>
+              </div>
             </div>
           </section>
 
