@@ -186,13 +186,25 @@ git push origin develop
 
 ## NPM Publication
 
-Before publishing, verify the package contents:
+OpenLAG publishes to NPM from GitHub Actions to avoid local OTP prompts during release work.
+
+Repository maintainers must configure the GitHub repository secret `NPM_TOKEN` with an npm automation token that has publish access to `@donartcha/openlag`. A classic login/session token can still trigger OTP prompts locally; use an automation token for CI publication.
+
+The publish workflow is `.github/workflows/publish-npm.yml`. It runs when a release tag such as `v0.4.0` is pushed and can also be run manually from GitHub Actions with `expected_version` set to the package version.
+
+Before publishing, the workflow verifies:
+
+- `package.json` version matches the tag or manual `expected_version`.
+- The exact package version is not already present in the npm registry.
+- `npm ci`, `npm run check`, `node bin/openlag.js --version`, and `npm pack --dry-run` pass.
+
+For local package inspection before triggering the workflow, run:
 
 ```bash
 npm pack --dry-run
 ```
 
-Publish the package:
+Manual publication from a developer machine is now a fallback only:
 
 ```bash
 npm publish --access public
