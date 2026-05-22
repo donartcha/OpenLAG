@@ -1,0 +1,83 @@
+name: Publish npm
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      expected_version:
+        description: "Package version to publish, for example 0.4.0"
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Publish npm package
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+          scope: "@donartcha"
+
+      - name: Resolve package version
+        id: package
+        shell: bash
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Validate requested version
+        shell: bash
+        run: |
+          expected="${{ github.event.inputs.expected_version }}"
+          if [ -z "$expected" ] && [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            expected="${GITHUB_REF_NAME#v}"
+          fi
+
+          if [ -z "$expected" ]; then
+            echo "No expected version was provided." >&2
+            exit 1
+          fi
+
+          if [ "$expected" != "${{ steps.package.outputs.version }}" ]; then
+            echo "Expected version $expected but package.json is ${{ steps.package.outputs.version }}." >&2
+            exit 1
+          fi
+
+      - name: Check npm version availability
+        shell: bash
+        run: |
+          if npm view "@donartcha/openlag@${{ steps.package.outputs.version }}" version --registry=https://registry.npmjs.org >/dev/null 2>&1; then
+            echo "@donartcha/openlag@${{ steps.package.outputs.version }} is already published." >&2
+            exit 1
+          fi
+
+      - name: Check npm automation token
+        shell: bash
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NODE_AUTH_TOKEN" ]; then
+            echo "GitHub secret NPM_TOKEN is not configured." >&2
+            exit 1
+          fi
+
+      - run: npm ci
+      - run: npm run check
+      - run: node bin/openlag.js --version
+      - run: npm pack --dry-run
+
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance --registry=https://registry.npmjs.org/
