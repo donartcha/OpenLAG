@@ -3,7 +3,7 @@ id: COMP-020
 type: COMPONENT
 version: VERSION-001
 status: in_progress
-layer: IMPLEMENTATION
+layer: ARCHITECTURE
 title: Ordering Strategy Registry
 description: |
   A central registry where all visualization modes register themselves.

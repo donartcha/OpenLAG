@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { Version, Change, GraphSnapshot, SystemVersion } from './types';
 import { GraphIndex, buildGraphIndex, projectSubgraph, GraphQueryOptions, DEFAULT_NEIGHBORHOOD_DEPTH } from './core/graph/GraphQueryLayer';
 import { ArtifactContract, ArtifactRegistry } from './core/registry/ArtifactRegistry';
+import { RelationContract, RelationRegistry } from './core/registry/RelationRegistry';
 
 interface Settings {
   graphFocusDepth: number;

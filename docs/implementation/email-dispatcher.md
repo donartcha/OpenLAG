@@ -8,6 +8,8 @@ ownership:
   owner: pcaro
   team: architecture
 relations:
+  - type: IMPLEMENTS
+    to: req-nfunc-1
   - type: RELATES_TO
     to: arch-overview
 ---

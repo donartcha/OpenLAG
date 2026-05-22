@@ -57,7 +57,6 @@ export const OrphansView: React.FC = () => {
             let sev: 'HIGH' | 'MEDIUM' | 'LOW' = 'LOW';
             if (issue.severity === 'error') sev = 'HIGH';
             else if (issue.severity === 'warning') sev = 'MEDIUM';
-            else sev = 'LOW';
 
             // Find artifact (could be from ID or file)
             let art = graph.artifacts.find(a => a.id === issue.artifactId);

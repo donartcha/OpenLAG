@@ -1,0 +1,8 @@
+type: REPOSITORY
+extends: CODE_ENTITY
+layer: IMPLEMENTATION
+description: "Repository implementation artifact."
+requiredFields:
+  - id
+  - type
+  - title

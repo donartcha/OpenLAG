@@ -1,0 +1,8 @@
+type: EVIDENCE
+extends: DOCUMENTATION
+layer: DOCUMENTATION
+description: "Verification or audit evidence."
+requiredFields:
+  - id
+  - type
+  - title

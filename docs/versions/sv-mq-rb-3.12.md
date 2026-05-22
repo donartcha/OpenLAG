@@ -4,7 +4,7 @@ type: SYSTEM_VERSION
 component: RabbitMQ Cluster
 version: 3.12.0
 releaseDate: '2024-01-20'
-layer: GOVERNANCE
+layer: OPERATIONS
 title: RabbitMQ Cluster Versions
 description: >-
   Handles message queue cluster definitions. This extended description ensures
