@@ -1,6 +1,8 @@
 import fs from "fs";
 import path from "path";
 import { parseOpenLagDocs } from "../core/parser.js";
+import { loadArtifactContracts } from "../core/artifact-contracts.js";
+import { loadRelationContracts } from "../core/relation-contracts.js";
 import { Version, Change, SystemVersion, GraphSnapshot } from "../../src/types.js";
 import chokidar from "chokidar";
 import chalk from "chalk";
@@ -34,6 +36,8 @@ function isDescendant(currentVersionId: string, artifactVersionId: string, versi
 export function generateData(docsDir: string, outputDir: string, silent = false) {
   if (!silent) console.log(chalk.blue("🚀 Generating OpenLAG Static Data..."));
 
+  const artifactContracts = loadArtifactContracts(path.join(docsDir, 'artifacts'));
+  const relationContracts = loadRelationContracts(path.join(docsDir, 'relations'));
   const parsedData = parseOpenLagDocs(docsDir);
 
   let metadata = { name: "OpenLAG Project", description: "Architecture documentation." };
@@ -77,6 +81,20 @@ export function generateData(docsDir: string, outputDir: string, silent = false)
   });
 
   if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
+
+  if (artifactContracts.length > 0) {
+    fs.writeFileSync(
+      path.join(outputDir, 'artifact-definitions.json'),
+      JSON.stringify(artifactContracts, null, 2)
+    );
+  }
+
+  if (relationContracts.length > 0) {
+    fs.writeFileSync(
+      path.join(outputDir, 'relation-definitions.json'),
+      JSON.stringify(relationContracts, null, 2)
+    );
+  }
 
   fs.writeFileSync(
     path.join(outputDir, 'graph-data.json'),

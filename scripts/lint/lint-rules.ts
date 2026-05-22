@@ -59,12 +59,12 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
       const contract = ArtifactRegistry.getContract(artifact.type);
       if (contract && contract.requiredFields) {
         for (const field of contract.requiredFields) {
-          if (artifact.raw[field] === undefined) {
+          if (artifact.raw?.[field] === undefined) {
              addIssue('missingRequiredFields', `Missing required field \`${field}\` (Required by \`${artifact.type}\` contract).`, artifact.file, artifact.id, artifact.status);
           }
         }
       }
-      if (artifact.raw.layer && contract && contract.layer && artifact.raw.layer !== contract.layer) {
+      if (artifact.raw?.layer && contract && contract.layer && artifact.raw.layer !== contract.layer) {
         addIssue('invalidLayer', `Artifact specifies layer \`${artifact.raw.layer}\` but contract \`${artifact.type}\` requires \`${contract.layer}\`.\n\nChange layer to \`${contract.layer}\`.`, artifact.file, artifact.id, artifact.status);
       }
     }

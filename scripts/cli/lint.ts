@@ -1,12 +1,15 @@
 import path from 'path';
 import { runLint, printHumanReport, loadConfig } from '../lint/lint-engine.js';
-import chalk from 'chalk';
+import { loadArtifactContracts } from '../core/artifact-contracts.js';
+import { loadRelationContracts } from '../core/relation-contracts.js';
 
 export function lintDocs(profile: string, jsonOutput = false, strictWarnings = false) {
   const docsDir = path.join(process.cwd(), 'docs');
   const configPath = path.join(process.cwd(), 'openlag.config.yml');
 
   const config = loadConfig(configPath);
+  loadArtifactContracts(path.join(docsDir, 'artifacts'));
+  loadRelationContracts(path.join(docsDir, 'relations'));
   
   const report = runLint(docsDir, configPath, profile);
 

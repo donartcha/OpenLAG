@@ -1,0 +1,7 @@
+type: PROCESS
+layer: DOCUMENTATION
+description: "Standard PROCESS artifact."
+requiredFields:
+  - id
+  - type
+  - title

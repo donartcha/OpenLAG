@@ -1,6 +1,7 @@
 import { create } from 'zustand';
-import { Version, Change, GraphSnapshot, Artifact, Relation, SystemVersion } from './types';
+import { Version, Change, GraphSnapshot, SystemVersion } from './types';
 import { GraphIndex, buildGraphIndex, projectSubgraph, GraphQueryOptions, DEFAULT_NEIGHBORHOOD_DEPTH } from './core/graph/GraphQueryLayer';
+import { ArtifactContract, ArtifactRegistry } from './core/registry/ArtifactRegistry';
 
 interface Settings {
   graphFocusDepth: number;
@@ -52,6 +53,40 @@ let cachedData: {
   lintReports: Record<string, any>;
   metadata?: { name: string; description: string; [key: string]: any };
 } | null = null;
+
+async function loadProjectArtifactContracts(): Promise<void> {
+  try {
+    const response = await fetch('/artifact-definitions.json');
+    if (!response.ok) return;
+
+    const text = await response.text();
+    if (text.startsWith('<')) return; // Fallback to index.html in dev server means missing
+
+    const contracts = JSON.parse(text) as ArtifactContract[];
+    if (Array.isArray(contracts) && contracts.length > 0) {
+      ArtifactRegistry.configure(contracts);
+    }
+  } catch (error) {
+    console.warn('OpenLAG Warning: Could not load project artifact contracts; using bundled defaults.', error);
+  }
+}
+
+async function loadProjectRelationContracts(): Promise<void> {
+  try {
+    const response = await fetch('/relation-definitions.json');
+    if (!response.ok) return;
+
+    const text = await response.text();
+    if (text.startsWith('<')) return;
+
+    const contracts = JSON.parse(text) as RelationContract[];
+    if (Array.isArray(contracts) && contracts.length > 0) {
+      RelationRegistry.configure(contracts);
+    }
+  } catch (error) {
+    console.warn('OpenLAG Warning: Could not load project relation contracts; using bundled defaults.', error);
+  }
+}
 
 export const useStore = create<StoreState>((set, get) => ({
   versions: [],
@@ -119,6 +154,8 @@ export const useStore = create<StoreState>((set, get) => ({
       if (!response.ok) throw new Error("Failed to load graph data");
       
       cachedData = await response.json();
+      await loadProjectArtifactContracts();
+      await loadProjectRelationContracts();
       
       if (cachedData) {
         const { versions, systemVersions, changes, metadata, lintReports } = cachedData;

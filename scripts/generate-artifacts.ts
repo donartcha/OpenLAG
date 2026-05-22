@@ -4,6 +4,7 @@ import yaml from 'js-yaml';
 
 const artifactsDir = path.join(process.cwd(), 'docs/artifacts');
 const outputFile = path.join(process.cwd(), 'src/core/generated/artifact-definitions.ts');
+const publicOutputFile = path.join(process.cwd(), 'public/artifact-definitions.json');
 
 const files = fs.existsSync(artifactsDir) ? fs.readdirSync(artifactsDir) : [];
 const artifacts: any[] = [];
@@ -29,6 +30,13 @@ files.forEach(file => {
   }
 });
 
+if (!fs.existsSync(path.dirname(publicOutputFile))) {
+    fs.mkdirSync(path.dirname(publicOutputFile), { recursive: true });
+}
+
+fs.writeFileSync(publicOutputFile, JSON.stringify(artifacts, null, 2));
+console.log('Artifact definitions JSON generated.');
+
 const fileContent = `
 // GENERATED FILE - DO NOT EDIT MANUALLY
 
@@ -47,9 +55,24 @@ export interface ArtifactContract {
 export const GENERATED_ARTIFACTS: ArtifactContract[] = ${JSON.stringify(artifacts, null, 2)};
 `;
 
-if (!fs.existsSync(path.dirname(outputFile))) {
+const packageJsonPath = path.join(process.cwd(), 'package.json');
+let isOpenLagSourcePackage = false;
+if (fs.existsSync(packageJsonPath)) {
+  try {
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+    isOpenLagSourcePackage = packageJson.name === '@donartcha/openlag';
+  } catch {
+    isOpenLagSourcePackage = false;
+  }
+}
+
+const shouldWriteGeneratedTs = isOpenLagSourcePackage || fs.existsSync(outputFile);
+
+if (shouldWriteGeneratedTs && !fs.existsSync(path.dirname(outputFile))) {
     fs.mkdirSync(path.dirname(outputFile), { recursive: true });
 }
 
-fs.writeFileSync(outputFile, fileContent);
-console.log('Artifact definitions generated.');
+if (shouldWriteGeneratedTs) {
+  fs.writeFileSync(outputFile, fileContent);
+  console.log('Artifact definitions TypeScript generated.');
+}

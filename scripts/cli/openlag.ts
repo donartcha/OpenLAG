@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { execFileSync } from 'child_process';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -16,6 +17,7 @@ import { registerImpactCommand } from './impact.js';
 
 const program = new Command();
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+const packageJson = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf-8'));
 
 function runVitePreview() {
   const viteBin = resolveViteBin(import.meta.url);
@@ -29,7 +31,7 @@ function runVitePreview() {
   });
 }
 
-program.name('openlag').description('Architecture as Code traceability graph generator').version('0.1.0');
+program.name('openlag').description('Architecture as Code traceability graph generator').version(packageJson.version);
 
 program
   .command('init')

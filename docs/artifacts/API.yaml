@@ -1,0 +1,7 @@
+type: API
+layer: ARCHITECTURE
+description: "Standard API artifact."
+requiredFields:
+  - id
+  - type
+  - title

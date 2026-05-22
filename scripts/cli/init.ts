@@ -152,6 +152,16 @@ requiredFields:
   - title`
     },
     {
+      name: 'USE_CASE.yaml',
+      content: `type: USE_CASE
+layer: BUSINESS
+description: "Standard USE_CASE artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
       name: 'DESIGN.yaml',
       content: `type: DESIGN
 layer: ARCHITECTURE
@@ -206,6 +216,16 @@ requiredFields:
       content: `type: BUG
 layer: IMPLEMENTATION
 description: "Standard BUG artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'INCIDENT.yaml',
+      content: `type: INCIDENT
+layer: OPERATIONS
+description: "Standard INCIDENT artifact."
 requiredFields:
   - id
   - type
@@ -284,6 +304,46 @@ requiredFields:
   });
   console.log(chalk.green('✅ Created default artifacts in docs/artifacts/'));
 
+  const baseDocumentableArtifactTypes = [
+    'PROJECT',
+    'EPIC',
+    'FEATURE',
+    'REQUIREMENT',
+    'USE_CASE',
+    'DESIGN',
+    'DECISION',
+    'CODE_ENTITY',
+    'TEST_CASE',
+    'CHANGE',
+    'BUG',
+    'INCIDENT',
+    'COMPONENT',
+    'API',
+    'DATABASE_ENTITY',
+    'DOCUMENTATION',
+    'SYSTEM_VERSION',
+    'VERSION',
+  ];
+
+  const optionalDocumentableArtifactTypes = [
+    'BUSINESS_RULE',
+    'RISK',
+    'GLOSSARY_TERM',
+    'INFRASTRUCTURE',
+    'DEPLOYMENT',
+    'MONITORING',
+    'MAINTENANCE',
+    'LIBRARY',
+    'ENVIRONMENT',
+    'CHECK',
+    'PROCESS',
+    'PIPELINE',
+  ];
+
+  const documentableArtifactTypes = includeAllRelations
+    ? [...baseDocumentableArtifactTypes, ...optionalDocumentableArtifactTypes]
+    : baseDocumentableArtifactTypes;
+
   const mandatoryRelations = [
     {
       name: 'IMPLEMENTS.yaml',
@@ -343,7 +403,7 @@ validation:
 description: "Conecta documentación con el artefacto descrito."
 category: SEMANTIC
 allowedFrom: [DOCUMENTATION]
-allowedTo: [PROJECT, EPIC, FEATURE, REQUIREMENT, BUSINESS_RULE, USE_CASE, DESIGN, DECISION, CODE_ENTITY, TEST_CASE, CHANGE, BUG, RISK, GLOSSARY_TERM, COMPONENT, API, DATABASE_ENTITY, DOCUMENTATION, INCIDENT, INFRASTRUCTURE, DEPLOYMENT, MONITORING, MAINTENANCE, SYSTEM_VERSION, VERSION, LIBRARY, ENVIRONMENT, CHECK, PROCESS, PIPELINE]
+allowedTo: [${documentableArtifactTypes.join(', ')}]
 multiplicity:
   from: many
   to: many
@@ -580,26 +640,6 @@ requiredFields:
   - title`
     },
     {
-      name: 'USE_CASE.yaml',
-      content: `type: USE_CASE
-layer: BUSINESS
-description: "Standard USE_CASE artifact."
-requiredFields:
-  - id
-  - type
-  - title`
-    },
-    {
-      name: 'TEST.yaml',
-      content: `type: TEST
-layer: IMPLEMENTATION
-description: "Standard TEST artifact."
-requiredFields:
-  - id
-  - type
-  - title`
-    },
-    {
       name: 'RISK.yaml',
       content: `type: RISK
 layer: DOCUMENTATION
@@ -614,16 +654,6 @@ requiredFields:
       content: `type: GLOSSARY_TERM
 layer: DOCUMENTATION
 description: "Standard GLOSSARY_TERM artifact."
-requiredFields:
-  - id
-  - type
-  - title`
-    },
-    {
-      name: 'INCIDENT.yaml',
-      content: `type: INCIDENT
-layer: OPERATIONS
-description: "Standard INCIDENT artifact."
 requiredFields:
   - id
   - type

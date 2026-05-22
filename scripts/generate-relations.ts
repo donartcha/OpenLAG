@@ -1,30 +1,20 @@
 import fs from 'fs';
 import path from 'path';
-import yaml from 'js-yaml';
+
+import { readRelationContracts } from './core/relation-contracts.js';
 
 const relationsDir = path.join(process.cwd(), 'docs/relations');
 const outputFile = path.join(process.cwd(), 'src/core/generated/relation-definitions.ts');
+const publicOutputFile = path.join(process.cwd(), 'public/relation-definitions.json');
 
-const files = fs.readdirSync(relationsDir);
-const relations: any[] = [];
+const relations = readRelationContracts(relationsDir);
 
-files.forEach(file => {
-  if (file.endsWith('.yaml')) {
-    const content = fs.readFileSync(path.join(relationsDir, file), 'utf-8');
-    const parsed = yaml.load(content) as any;
-    relations.push({
-      type: parsed.relation,
-      description: parsed.description,
-      category: parsed.category,
-      allowedFrom: parsed.allowedFrom || [],
-      allowedTo: parsed.allowedTo || [],
-      multiplicity: parsed.multiplicity || { from: 'many', to: 'many' },
-      validation: parsed.validation || { severity: 'error' },
-      strength: parsed.validation?.severity === 'error' ? 'STRONG' : (parsed.validation?.severity === 'warn' ? 'MEDIUM' : 'WEAK'),
-      impact: parsed.impact || { propagates: false, directions: ['forward'], weight: 0.5 }
-    });
-  }
-});
+if (!fs.existsSync(path.dirname(publicOutputFile))) {
+    fs.mkdirSync(path.dirname(publicOutputFile), { recursive: true });
+}
+
+fs.writeFileSync(publicOutputFile, JSON.stringify(relations, null, 2));
+console.log('Relation definitions JSON generated.');
 
 const fileContent = `
 // GENERATED FILE - DO NOT EDIT MANUALLY
@@ -46,10 +36,24 @@ export interface RelationContract {
 export const GENERATED_RELATIONS: RelationContract[] = ${JSON.stringify(relations, null, 2)};
 `;
 
-if (!fs.existsSync(path.dirname(outputFile))) {
+const packageJsonPath = path.join(process.cwd(), 'package.json');
+let isOpenLagSourcePackage = false;
+if (fs.existsSync(packageJsonPath)) {
+  try {
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf-8'));
+    isOpenLagSourcePackage = packageJson.name === '@donartcha/openlag';
+  } catch {
+    isOpenLagSourcePackage = false;
+  }
+}
+
+const shouldWriteGeneratedTs = isOpenLagSourcePackage || fs.existsSync(outputFile);
+
+if (shouldWriteGeneratedTs && !fs.existsSync(path.dirname(outputFile))) {
     fs.mkdirSync(path.dirname(outputFile), { recursive: true });
 }
 
-fs.writeFileSync(outputFile, fileContent);
-console.log('Relation definitions generated.');
-
+if (shouldWriteGeneratedTs) {
+  fs.writeFileSync(outputFile, fileContent);
+  console.log('Relation definitions TypeScript generated.');
+}

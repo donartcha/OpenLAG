@@ -1,0 +1,7 @@
+type: BUSINESS_RULE
+layer: BUSINESS
+description: "Standard BUSINESS_RULE artifact."
+requiredFields:
+  - id
+  - type
+  - title

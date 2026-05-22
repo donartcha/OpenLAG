@@ -1,9 +1,17 @@
 import { RelationContract, GENERATED_RELATIONS } from '../generated/relation-definitions.js';
 
+export type { RelationContract };
+
 export class RelationRegistry {
   private static relationsMap = new Map<string, RelationContract>(
     GENERATED_RELATIONS.map(rel => [rel.type, rel])
   );
+
+  static configure(contracts: RelationContract[]): void {
+    this.relationsMap = new Map<string, RelationContract>(
+      contracts.filter(rel => rel.type).map(rel => [rel.type, rel])
+    );
+  }
 
   static getValidTypes(): string[] {
     return Array.from(this.relationsMap.keys());
@@ -18,10 +26,10 @@ export class RelationRegistry {
   }
 
   static getRelationsByCategory(category: string): RelationContract[] {
-    return GENERATED_RELATIONS.filter(rel => rel.category === category);
+    return Array.from(this.relationsMap.values()).filter(rel => rel.category === category);
   }
 
   static getAllContracts(): RelationContract[] {
-    return GENERATED_RELATIONS;
+    return Array.from(this.relationsMap.values());
   }
 }

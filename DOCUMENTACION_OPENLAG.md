@@ -132,12 +132,15 @@ OpenLAG/
 Directorios clave:
 
 - `docs/versions/`: versiones globales (`VERSION`) y versiones de sistemas/componentes (`SYSTEM_VERSION`).
+- `docs/artifacts/`: contratos YAML de tipos de artefacto, incluyendo extensiones personalizadas.
 - `docs/relations/`: contratos YAML de relaciones.
 - `scripts/cli/`: comandos `init`, `generate`, `dev`, `build`, `lint`, `preview`, `check`.
 - `scripts/core/parser.ts`: extraccion documental y normalizacion.
 - `scripts/lint/`: reglas, perfiles y reporte de validacion.
 - `src/core/registry/ArtifactRegistry.ts`: tipos oficiales de artefacto.
 - `src/core/registry/RelationRegistry.ts`: contratos de relaciones generados.
+- `public/artifact-definitions.json`: contratos de artefacto del proyecto activo para el portal estatico.
+- `public/relation-definitions.json`: contratos de relacion del proyecto activo para diagnostico y trazabilidad estatica.
 - `src/core/generated/relation-definitions.ts`: archivo generado desde `docs/relations/*.yaml`.
 - `src/core/graph/GraphQueryLayer.ts`: indices y proyeccion de subgrafos.
 - `src/core/strategies/`: agrupaciones semanticas del portal.
@@ -147,7 +150,7 @@ Directorios clave:
 ### CLI `openlag`
 
 ```text
-openlag init       Inicializa docs, metadata y relaciones base.
+openlag init       Inicializa docs, metadata, relaciones base y contratos de artefacto.
 openlag generate   Genera public/graph-data.json.
 openlag dev        Genera datos, activa watcher de docs y arranca Vite.
 openlag build      Genera datos y construye el portal estatico.
@@ -361,6 +364,52 @@ PIPELINE
 
 Hallazgo resuelto para `0.3.0`: los contratos y artefactos publicos fueron normalizados para usar tipos respaldados por contrato. `subType` y `TEST` no forman parte del modelo recomendado de la especificacion v0.2.
 
+### Contratos generados por `openlag init`
+
+`openlag init` genera los contratos base necesarios para el portal, versionado, documentacion y relaciones obligatorias:
+
+```text
+PROJECT
+EPIC
+FEATURE
+REQUIREMENT
+USE_CASE
+DESIGN
+DECISION
+CODE_ENTITY
+TEST_CASE
+CHANGE
+BUG
+INCIDENT
+COMPONENT
+API
+DATABASE_ENTITY
+DOCUMENTATION
+SYSTEM_VERSION
+VERSION
+```
+
+`USE_CASE` e `INCIDENT` son base porque las relaciones obligatorias pueden apuntar a ellos directamente: `TESTS` puede validar un caso de uso, y `FIXES` puede remediar un incidente.
+
+`openlag init --all` agrega contratos oficiales opcionales:
+
+```text
+BUSINESS_RULE
+RISK
+GLOSSARY_TERM
+INFRASTRUCTURE
+DEPLOYMENT
+MONITORING
+MAINTENANCE
+LIBRARY
+ENVIRONMENT
+CHECK
+PROCESS
+PIPELINE
+```
+
+`TEST` no se genera ni se recomienda como contrato. Los artefactos de prueba deben modelarse con `TEST_CASE`.
+
 ## 10. Estados oficiales
 
 El esquema Zod acepta:
@@ -447,6 +496,8 @@ TESTS
 USES
 VALIDATES
 ```
+
+`openlag init` genera por defecto solo las relaciones obligatorias: `IMPLEMENTS`, `TESTS`, `REFINES`, `FIXES`, `DOCUMENTS` y `JUSTIFIES`. `openlag init --all` agrega las relaciones opcionales oficiales. En el modo base, `DOCUMENTS` queda acotada a los contratos base; con `--all`, su matriz `allowedTo` se expande para incluir tambien los artefactos opcionales.
 
 Uso recomendado:
 
@@ -561,6 +612,8 @@ El sistema puede explorar el grafo completo como base de conocimiento, pero la U
 
 OpenLAG define alrededor de 30 artefactos arquitectónicos por defecto. Sin embargo, su diseño permite a cada organización inyectar nuevos tipos a medida.
 
+Al ejecutar `openlag init`, el scaffold crea `docs/artifacts/CUSTOM_TYPE.yaml` como ejemplo intencional de contrato personalizado. No es un tipo oficial del dominio OpenLAG ni un artefacto obligatorio del modelo; sirve para mostrar la sintaxis minima de extension (`extends`, `layer`, `requiredFields`) y puede renombrarse, modificarse o eliminarse cuando el proyecto defina sus tipos reales.
+
 Para añadir un nuevo contrato de artefacto:
 
 1. Crea un fichero `.yaml` en el directorio `docs/artifacts/` del proyecto.
@@ -578,7 +631,7 @@ requiredFields:
 impactSeverityDefault: low
 ```
 
-3. Cada vez que inicias los scripts de la CLI (`openlag dev` o `openlag build`), OpenLAG regenera los contratos (`src/core/generated/artifact-definitions.ts` y `relation-definitions.ts`) recompilando el framework con las aportaciones y herencias solicitadas. De igual forma para las relaciones: los nuevos conectores semánticos deben emplazarse en `docs/relations/`.
+3. Cada vez que inicias los scripts de la CLI (`openlag generate`, `openlag dev` o `openlag build`), OpenLAG carga los contratos del proyecto activo y emite datos estaticos en `public/artifact-definitions.json` y `public/relation-definitions.json`. El portal consume estos contratos de artefacto desde `public/` y conserva los contratos empaquetados como fallback. De igual forma para las relaciones: los nuevos conectores semánticos deben emplazarse en `docs/relations/`.
 
 ### Personalización Visual (Paleta de Colores)
 

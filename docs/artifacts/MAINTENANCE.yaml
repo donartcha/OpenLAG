@@ -1,0 +1,7 @@
+type: MAINTENANCE
+layer: OPERATIONS
+description: "Standard MAINTENANCE artifact."
+requiredFields:
+  - id
+  - type
+  - title
