@@ -68,11 +68,17 @@ OpenLAG implements a contract-driven artifact engine introduced to enhance obser
 OpenLAG classifies artifacts into different semantic layers (Layers) to understand at what level of abstraction they operate and what kind of relationships are valid between them.
 
 ### Layer Taxonomy
-1. **Business Layer**: Defines what should be built and why. (Purpose: Align business; Limits: Does not dictate implementation; Artifacts: `PROJECT`, `EPIC`, `FEATURE`, `REQUIREMENT`).
-2. **Architecture Layer**: Defines the design and technical boundaries of the system. (Purpose: Design and constraints; Artifacts: `DESIGN`, `DECISION`, `API`, `COMPONENT`).
-3. **Implementation Layer**: Models code, tests, and their traceability. (Purpose: Concrete code; Artifacts: `CODE_ENTITY`, `TEST_CASE`, `DATABASE_ENTITY`, `CHANGE`, `BUG`).
-4. **Operations Layer**: Models infrastructure, deployment, and runtime health. (Purpose: Observability and delivery; Artifacts: `INFRASTRUCTURE`, `DEPLOYMENT`, `MONITORING`, `INCIDENT`).
-5. **Documentation Layer**: All transversal additional knowledge. (Purpose: Context; Artifacts: `GLOSSARY_TERM`, `DOCUMENTATION`).
+The official semantic layers are:
+
+```text
+BUSINESS
+ARCHITECTURE
+IMPLEMENTATION
+VERIFICATION
+OPERATIONS
+GOVERNANCE
+DOCUMENTATION
+```
 
 ### Ownership Model
 The OpenLAG engine supports assigning semantic responsibility (Ownership) with different roles:
@@ -118,7 +124,7 @@ docs/
 The `versions/` directory controls the life cycle, grouping the defining files over time.
 
 #### Version Artifacts (VERSION)
-Defined in individual markdown files within `docs/versions/` (e.g., `v-1.md`). It defines the global timeline and iterations of the system. Artifacts must have `type: VERSION`. In addition to their specific fields (`id`, `name`, `timestamp`, `parentVersion`), as traceability and structural quality are required, they **must** specify common fields such as `layer`, `title`, `description`, `ownership` (minimum `owner` and `team`), and `relations`.
+Defined in individual markdown files within `docs/versions/` (e.g., `v-1.md`). It defines the global timeline and iterations of the system. Artifacts must have `type: VERSION`. In addition to their specific fields (`id`, `name`, `timestamp`, `parentVersion`), they should include the minimum structural fields and recommended lifecycle metadata such as `title`, `description`, `ownership` (minimum `owner` and `team`), and `relations`. The `layer` is resolved from the artifact contract; examples may show it explicitly for clarity.
 
 Example of its structure:
 
@@ -142,7 +148,7 @@ relations:
 ```
 
 #### Component and Library Artifacts (SYSTEM_VERSION)
-File for artifacts in separate files within `docs/versions/` (e.g., `sv-db-1.md`) documenting versions of components or external libraries of the system. Artifacts here have the type `SYSTEM_VERSION` and contain attributes like `component`, `version`, and `releaseDate`. They must also include the common structural fields to avoid *linter* warnings.
+File for artifacts in separate files within `docs/versions/` (e.g., `sv-db-1.md`) documenting versions of components or external libraries of the system. Artifacts here have the type `SYSTEM_VERSION` and contain attributes like `component`, `version`, and `releaseDate`. They must also include the common structural fields to avoid *linter* warnings; contract-resolved fields such as `layer` do not normally need to be repeated in Markdown.
 
 ```yaml
 ---
@@ -292,6 +298,42 @@ PIPELINE
 
 `TEST` is not an official artifact contract. Test-related artifacts must use `TEST_CASE`.
 
+Projects may define verification-oriented contracts by extending `TEST_CASE` and assigning them to the `VERIFICATION` layer.
+
+Example:
+
+```yaml
+type: VERIFICATION_TEST
+extends: TEST_CASE
+layer: VERIFICATION
+description: "Verification-oriented test artifact."
+requiredFields:
+  - id
+  - type
+  - title
+```
+
+`TEST` is not an official artifact type and should not be reintroduced.
+
+### Contract Resolution Model
+
+OpenLAG resolves artifacts using a contract-driven model:
+
+- `type` identifies the concrete artifact contract.
+- `extends` defines inheritance from another contract.
+- `layer` defines the semantic architectural classification used for:
+  - lint validation,
+  - graph projection,
+  - impact analysis,
+  - visualization strategies.
+
+Official artifact contracts provide predefined layers.
+
+Custom contracts may:
+- override layer semantics,
+- inherit layers,
+- or define specialized semantic projections.
+
 ## 5. Official Statuses
 
 ```text
@@ -417,6 +459,15 @@ Artifact contract YAML files under `/docs/artifacts/` define type metadata, inhe
 
 OpenLAG treats project contracts as project data. During CLI generation, relation and artifact contracts are loaded from the active project and emitted as static JSON files under `public/` (`artifact-definitions.json` and `relation-definitions.json`). The portal can consume the project artifact contracts from this static payload, falling back to bundled defaults when the file is absent.
 
+Artifact and relation contracts are loaded from:
+
+- `docs/artifacts/*.yaml`
+- `docs/relations/*.yaml`
+
+The CLI resolves these contracts and emits static runtime payloads under `public/`.
+
+Generated TypeScript files are considered implementation artifacts and not the canonical project contract source.
+
 ### Severity per Profile
 - **feature**: Only `error` on `INVALID` rules.
 - **develop**: `warn` on `DISCOURAGED` rules, `error` on `INVALID`.
@@ -448,14 +499,29 @@ relations:
 ---
 ```
 
-### Mandatory Fields
+### Minimum Structural Fields
 - `id`
 - `type`
-- `status`
 - `title`
 
+### Recommended Lifecycle Fields
+- `status`
+- `version`
+- `description`
+- `ownership`
+- `relations`
+
+Artifact contracts may extend required fields through `requiredFields`.
+
 ### Optional Fields
-- `layer` (The value of `layer` is always implicitly derived by the `type` field based on the semantic layer taxonomy. It is only allowed to be defined as a manual *override* but is discouraged or subject to strict validation).
+- `layer` is resolved from the artifact contract.
+
+For official artifact types, OpenLAG provides predefined layer mappings.
+For custom artifact types, `layer` may be declared directly in the contract or inherited through `extends`.
+
+Markdown artifacts should not normally repeat `layer`; if they do, it is treated as an override and must match the resolved contract layer unless explicitly allowed.
+
+The previous `subType` model has been replaced by contract inheritance through `extends`.
 - `ownership` (can include `owner`, `team`, `domain`, `maintainers`, `reviewers`, `steward`)
 - `tags`
 - `version`
@@ -598,11 +664,11 @@ Therefore, OpenLAG adopts the following scalability rules through a "Subgraph Ex
 ### Fundamental Principles
 - **The Complete Graph is a Knowledge Base, NOT a Mandatory Interface**: OpenLAG processes, validates, and stores the total `GraphState`, but does not promise or attempt to visually render it all at once.
 - **Subgraph Projection & Focus Mode**: The user explores controlled projected views (Subgraphs). By default, the visual experience is based on selecting a focal artifact and expanding the neighborhood to a configured depth (`depth = 1` or `2`). Unrequested sub-branches are aggressively cropped.
-- **Extensibility via YAML Contracts**: Users can redefine or extend the global registry by simply adding or modifying `.yaml` payloads under `docs/artifacts/` and `docs/relations/`. The `openlag init`, `openlag dev` and `openlag build` scripts act as lifecycle hooks, recompiling the schemas into `src/core/generated/` and bootstrapping the internal registry before building the portal.
+- **Extensibility via YAML Contracts**: Users can redefine or extend the project contract registry by adding or modifying `.yaml` payloads under `docs/artifacts/` and `docs/relations/`. The CLI resolves those contracts into runtime payloads consumed by the portal.
 - **Visual Palette Overrides & Fallback**: The UI assigns default aesthetic styles based on the core core-types mapping. When using dynamic derived schemas (e.g. `DAO` extending from `CODE_ENTITY`), it naturally fallbacks and leverages the parent's coloring schema. Custom palettes can be completely overridden and extended by providing a `typeColors` settings layer within the `metadata.json` payload, mapping specific artifact IDs or types to Tailwind utility classes.
 - **Semantic Graph Visualization Engine**: OpenLAG has evolved from being a simple "Document Graph Explorer" into a visual "Software Lifecycle Visualization Engine". The base graph is immovable, but visualization and ordering are done dynamically through the *Ordering Strategy Registry* depending on the perspective (default: Lifecycle Strategy). Furthermore, projection strategies dynamically map elements based on their user-defined or inherited `layer` parameters (BUSINESS, ARCHITECTURE, IMPLEMENTATION, etc.) declared within their `docs/artifacts/[type].yaml` config files. This guarantees that newly injected arbitrary extensions (e.g., `DAO` or `API_ROUTE`) cleanly render in the correct phase bin in the UI without modifying source code.
 - **Weak Relation Hiding**: Diffuse or semantic relations (`RELATES_TO`, `DOCUMENTS`, or others categorized as `WEAK`) increase noise by introducing cross-dependencies without critical architectural impact. They will be hidden by default in the UI (they can be explicitly activated using filters if transversal traceability analysis is required).
-- **Hub Collapsing (Tolerance Thresholds)**: There are hard rendering limits (`MAX_RENDER_NODES = 150`, `MAX_RENDER_EDGES = 300`). If a subgraph exceeds these generated thresholds (e.g., a massive project with hundreds of features pointing to a single `Auth` component), the visualization will safely truncate the graph and alert the user, suggesting the use of a depth/Layer filter.
+- **Hub Collapsing (Tolerance Thresholds)**: The current portal implementation applies rendering thresholds to avoid cognitive overload and browser performance degradation. These thresholds are implementation details and may evolve independently from the OpenLAG specification. For example, the portal may truncate oversized subgraphs and suggest the use of a depth or layer filter.
 - **Semantic Slice Analysis**: The Impact Engine no longer visually traverses all nodes; instead, it performs controlled queries directly on the GraphQL/TypeScript structural index built in the browser's memory before rendering the solution.
 
 ### Visualization Strategies (Semantic Projection)

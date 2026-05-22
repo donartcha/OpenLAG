@@ -93,6 +93,7 @@ OpenLAG/
     openlag.js
   docs/
     architecture/
+    artifacts/
     changes/
     ci/
     deployment/
@@ -107,7 +108,9 @@ OpenLAG/
     testing/
     versions/
   public/
+    artifact-definitions.json
     graph-data.json
+    relation-definitions.json
   scripts/
     cli/
     core/
@@ -144,6 +147,20 @@ Directorios clave:
 - `src/core/generated/relation-definitions.ts`: archivo generado desde `docs/relations/*.yaml`.
 - `src/core/graph/GraphQueryLayer.ts`: indices y proyeccion de subgrafos.
 - `src/core/strategies/`: agrupaciones semanticas del portal.
+
+Jerarquia de contratos y consumo runtime:
+
+```text
+YAML Contracts
+    ↓
+CLI Resolution
+    ↓
+Generated Runtime JSON
+    ↓
+Portal Consumption
+```
+
+Los YAML en `docs/artifacts/*.yaml` y `docs/relations/*.yaml` son la fuente de verdad. Los JSON en `public/` son proyecciones runtime para el portal. Los TypeScript generados son artefactos de implementacion, no la fuente canonica de contratos del proyecto.
 
 ## 5. Comandos disponibles
 
@@ -287,21 +304,34 @@ interface Relation {
 
 ## 8. Formato oficial de artefactos Markdown
 
-El parser actual espera YAML con al menos:
+El parser requiere un conjunto minimo de campos estructurales, aunque los contratos YAML pueden ampliar los campos obligatorios mediante `requiredFields`.
+
+Campos estructurales minimos:
 
 - `id`
 - `type`
 - `title`
-- `version`
-- `description`
 
-Campos recomendados:
+Campos recomendados de ciclo de vida:
 
 - `status`
-- `layer`
+- `version`
+- `description`
 - `ownership`
 - `relations`
 - `systemVersionId`
+
+Campos recomendados:
+
+`layer` ya no debe entenderse como un sustituto textual del antiguo `subType`.
+
+En OpenLAG v0.3:
+
+- `type` representa el tipo concreto del artefacto.
+- `extends` representa herencia contractual.
+- `layer` representa la clasificacion semantica arquitectonica utilizada para validacion, proyeccion y visualizacion.
+
+El valor de `layer` normalmente se resuelve desde el contrato YAML del tipo (`docs/artifacts/*.yaml`) y no necesita repetirse en cada artefacto Markdown.
 
 Ejemplo valido para el parser actual:
 
@@ -362,7 +392,26 @@ PROCESS
 PIPELINE
 ```
 
-Hallazgo resuelto para `0.3.0`: los contratos y artefactos publicos fueron normalizados para usar tipos respaldados por contrato. `subType` y `TEST` no forman parte del modelo recomendado de la especificacion v0.2.
+Hallazgo resuelto para OpenLAG v0.3: los contratos y artefactos publicos fueron normalizados para usar tipos respaldados por contrato. `subType` y `TEST` no forman parte del modelo legacy v0.2.
+
+### Modelo de resolucion de contratos
+
+OpenLAG resuelve artefactos mediante un modelo guiado por contratos:
+
+- `type` identifica el contrato concreto del artefacto.
+- `extends` define herencia desde otro contrato.
+- `layer` define la clasificacion semantica arquitectonica utilizada para:
+  - validacion de lint,
+  - proyeccion del grafo,
+  - analisis de impacto,
+  - estrategias de visualizacion.
+
+Los contratos oficiales proporcionan capas predefinidas.
+
+Los contratos personalizados pueden:
+- redefinir la semantica de capa,
+- heredar capas,
+- o definir proyecciones semanticas especializadas.
 
 ### Contratos generados por `openlag init`
 
@@ -437,7 +486,9 @@ Efectos en lint:
 BUSINESS
 ARCHITECTURE
 IMPLEMENTATION
+VERIFICATION
 OPERATIONS
+GOVERNANCE
 DOCUMENTATION
 ```
 
@@ -470,7 +521,9 @@ Las relaciones se definen en `docs/relations/*.yaml`. Cada contrato incluye:
 - `multiplicity`
 - `validation.severity`
 
-El script `npm run generate-relations` transforma estos YAML en `src/core/generated/relation-definitions.ts`. El `RelationRegistry` lee ese archivo generado.
+Los contratos YAML de `docs/relations/*.yaml` son la fuente de verdad para relaciones. La CLI resuelve esos contratos y emite proyecciones runtime en `public/relation-definitions.json`.
+
+Los archivos TypeScript generados, como `src/core/generated/relation-definitions.ts`, son detalles de implementacion derivados y no sustituyen a los YAML canonicos.
 
 Relaciones presentes actualmente:
 
@@ -614,6 +667,10 @@ OpenLAG define alrededor de 30 artefactos arquitectónicos por defecto. Sin emba
 
 Al ejecutar `openlag init`, el scaffold crea `docs/artifacts/CUSTOM_TYPE.yaml` como ejemplo intencional de contrato personalizado. No es un tipo oficial del dominio OpenLAG ni un artefacto obligatorio del modelo; sirve para mostrar la sintaxis minima de extension (`extends`, `layer`, `requiredFields`) y puede renombrarse, modificarse o eliminarse cuando el proyecto defina sus tipos reales.
 
+Las extensiones dinamicas permiten reclasificar semanticamente tipos derivados.
+
+Por ejemplo, un proyecto puede extender `TEST_CASE` para crear contratos especializados dentro de la capa `VERIFICATION` sin reintroducir el antiguo tipo `TEST`.
+
 Para añadir un nuevo contrato de artefacto:
 
 1. Crea un fichero `.yaml` en el directorio `docs/artifacts/` del proyecto.
@@ -632,6 +689,20 @@ impactSeverityDefault: low
 ```
 
 3. Cada vez que inicias los scripts de la CLI (`openlag generate`, `openlag dev` o `openlag build`), OpenLAG carga los contratos del proyecto activo y emite datos estaticos en `public/artifact-definitions.json` y `public/relation-definitions.json`. El portal consume estos contratos de artefacto desde `public/` y conserva los contratos empaquetados como fallback. De igual forma para las relaciones: los nuevos conectores semánticos deben emplazarse en `docs/relations/`.
+
+Flujo de generacion contractual:
+
+```text
+YAML Contracts
+    ↓
+CLI Resolution
+    ↓
+Generated Runtime JSON
+    ↓
+Portal Consumption
+```
+
+Los YAML son la fuente de verdad; los JSON publicos son la proyeccion runtime; los TypeScript generados son detalles de implementacion.
 
 ### Personalización Visual (Paleta de Colores)
 
@@ -663,7 +734,7 @@ Registradas en `src/core/strategies/index.ts`:
 - `release`
 - `domain`
 
-Las estrategias agrupan artefactos para analizar el mismo grafo desde perspectivas diferentes. Con la introducción de **contratos YAML dinámicos**, estas estrategias ya no dependen de un listado cerrado de tipos (`ArtifactType`); en su lugar, leen la propiedad `layer` (fase o capa arquitectónica, por ejemplo, `BUSINESS`, `ARCHITECTURE`, `IMPLEMENTATION`, `VERIFICATION`, `OPERATIONS`, `GOVERNANCE`) declarada en los archivos `.yaml` ubicados bajo `docs/artifacts/`.
+Las estrategias agrupan artefactos para analizar el mismo grafo desde perspectivas diferentes. Con la introducción de **contratos YAML dinámicos**, estas estrategias ya no dependen de un listado cerrado de tipos (`ArtifactType`); en su lugar, leen la propiedad `layer` (fase o capa arquitectónica, por ejemplo, `BUSINESS`, `ARCHITECTURE`, `IMPLEMENTATION`, `VERIFICATION`, `OPERATIONS`, `GOVERNANCE`, `DOCUMENTATION`) declarada en los archivos `.yaml` ubicados bajo `docs/artifacts/`.
 
 Esto asegura que cuando una organización introduzca sus propios artefactos (ej. `API_ROUTE`, `ASYNC_WORKER`), el artefacto caerá naturalmente en la Categoría o Fase correcta del *Sidebar* de visualización dependiendo del `layer` que se le haya asignado en su contrato, y los conteos de la UI englobarán de forma exacta los nuevos sub-tipos inyectados.
 
