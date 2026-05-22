@@ -4,9 +4,13 @@ on:
   pull_request:
     branches:
       - main
+      - develop
+      - "develop/**"
   push:
     branches:
       - main
+      - develop
+      - "develop/**"
 
 jobs:
   validate:
