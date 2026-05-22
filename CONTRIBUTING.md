@@ -196,7 +196,7 @@ Repository maintainers must configure npm package access for `@donartcha/openlag
 - Workflow filename: `publish-npm.yml`
 - Allowed action: `npm publish`
 
-The workflow does not require `NPM_TOKEN`. Keep `permissions: id-token: write` in the workflow so GitHub Actions can request the OIDC token that npm validates.
+The workflow does not require `NPM_TOKEN`. Keep `permissions: id-token: write` in the workflow so GitHub Actions can request the OIDC token that npm validates. Trusted Publisher requires npm CLI `11.5.1` or later, so the workflow runs on Node.js 24.
 
 The publish workflow is `.github/workflows/publish-npm.yml`. It runs when a release tag such as `v0.4.0` is pushed and can also be run manually from GitHub Actions with `expected_version` set to the package version.
 
