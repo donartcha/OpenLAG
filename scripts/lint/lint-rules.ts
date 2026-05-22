@@ -46,30 +46,30 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
   // 2. Duplicate IDs
   for (const [id, artifacts] of artifactMap.entries()) {
     if (artifacts.length > 1) {
-      addIssue('duplicateId', `${id} appears in ${artifacts.length} files`, artifacts[0].file, id);
+      addIssue('duplicateId', `Artifact appears in ${artifacts.length} files.`, artifacts[0].file, id);
     }
   }
 
   // 3. Artifact type and minimal fields
   for (const artifact of data.artifacts as any[]) {
     if (!ArtifactRegistry.isValid(artifact.type)) {
-      addIssue('invalidArtifactType', `Invalid artifact type: ${artifact.type}`, artifact.file, artifact.id, artifact.status);
+      addIssue('invalidArtifactType', `Invalid artifact type \`${artifact.type}\`.`, artifact.file, artifact.id, artifact.status);
     } else {
       // Validate contract-defined requiredFields
       const contract = ArtifactRegistry.getContract(artifact.type);
       if (contract && contract.requiredFields) {
         for (const field of contract.requiredFields) {
-          if (artifact.raw?.[field] === undefined) {
-             addIssue('missingRequiredFields', `Artifact requires field '${field}' according to its contract`, artifact.file, artifact.id, artifact.status);
+          if (artifact.raw[field] === undefined) {
+             addIssue('missingRequiredFields', `Missing required field \`${field}\` (Required by \`${artifact.type}\` contract).`, artifact.file, artifact.id, artifact.status);
           }
         }
       }
-      if (artifact.raw?.layer && contract && contract.layer && artifact.raw.layer !== contract.layer) {
-        addIssue('invalidLayer', `Artifact specifies layer ${artifact.raw.layer} but contract requires ${contract.layer}`, artifact.file, artifact.id, artifact.status);
+      if (artifact.raw.layer && contract && contract.layer && artifact.raw.layer !== contract.layer) {
+        addIssue('invalidLayer', `Artifact specifies layer \`${artifact.raw.layer}\` but contract \`${artifact.type}\` requires \`${contract.layer}\`.\n\nChange layer to \`${contract.layer}\`.`, artifact.file, artifact.id, artifact.status);
       }
     }
     if (!artifact.type || !artifact.title) {
-        addIssue('missingRequiredFields', `Artifact missing type or title`, artifact.file, artifact.id, artifact.status);
+        addIssue('missingRequiredFields', `Artifact is missing type or title. Check YAML frontmatter.`, artifact.file, artifact.id, artifact.status);
     }
   }
 
@@ -84,12 +84,12 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
     const contract = RelationRegistry.getContract(relation.type);
     
     if (!contract) {
-       addIssue('invalidRelationType', `Invalid relation type: ${relation.type}`, relation.file, relation.from);
+       addIssue('invalidRelationType', `Invalid relation type: \`${relation.type}\``, relation.file, relation.from);
     }
     
     // 4. Broken relations
     if (!targets.has(relation.to)) {
-      addIssue('brokenRelation', `${relation.from} -> ${relation.to} target does not exist`, relation.file, relation.from);
+      addIssue('brokenRelation', `Relation target \`${relation.to}\` does not exist.`, relation.file, relation.from);
     }
 
     // 4.1 Validate allowedFrom and allowedTo constraints
@@ -100,14 +100,14 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
         if (sourceArtifact && contract.allowedFrom && contract.allowedFrom.length > 0) {
             const isAllowedSrc = contract.allowedFrom.some(allowed => ArtifactRegistry.isCompatibleType(allowed, sourceArtifact.type));
             if (!isAllowedSrc) {
-                addIssue('invalidRelationType', `Relation ${relation.type} is not allowed FROM ${sourceArtifact.type} (Artifact: ${relation.from}). Allowed sources: ${contract.allowedFrom.join(', ')}`, relation.file, relation.from, sourceArtifact.status);
+                addIssue('invalidRelationType', `Relation \`${relation.type}\` starting from type \`${sourceArtifact.type}\` is NOT ALLOWED.\n\nTry using one of allowed sources: \`${contract.allowedFrom.join(', ')}\` or change relation type.`, relation.file, relation.from, sourceArtifact.status);
             }
         }
 
         if (targetArtifact && contract.allowedTo && contract.allowedTo.length > 0) {
             const isAllowedDest = contract.allowedTo.some(allowed => ArtifactRegistry.isCompatibleType(allowed, targetArtifact.type));
             if (!isAllowedDest) {
-                addIssue('invalidRelationType', `Relation ${relation.type} is not allowed TO ${targetArtifact.type} (Artifact: ${relation.to}). Allowed targets: ${contract.allowedTo.join(', ')}`, relation.file, relation.from, sourceArtifact?.status);
+                addIssue('invalidRelationType', `Relation \`${relation.type}\` targeting \`${targetArtifact.type}\` is NOT ALLOWED.\n\nAllowed targets for \`${relation.type}\` are: \`${contract.allowedTo.join(', ')}\`.`, relation.file, relation.from, sourceArtifact?.status);
             }
         }
     }
@@ -147,25 +147,25 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
         const hasTest = testsByReq.has(artifact.id);
 
         if (!hasImplementation) {
-             addIssue('requirementWithoutImplementation', `${artifact.id} lacks implementation`, artifact.file, artifact.id, artifact.status);
+             addIssue('requirementWithoutImplementation', `Requirement lacks implementation.`, artifact.file, artifact.id, artifact.status);
         }
         
         if (!hasTest) {
-             addIssue('requirementWithoutTest', `${artifact.id} has no tests linked`, artifact.file, artifact.id, artifact.status);
+             addIssue('requirementWithoutTest', `Requirement has no tests linked.`, artifact.file, artifact.id, artifact.status);
         }
     }
 
     if (ArtifactRegistry.getBaseType(artifact.type) === 'CODE_ENTITY') {
         const hasReq = reqsByCode.has(artifact.id);
         if (!hasReq) {
-            addIssue('codeWithoutRequirement', `${artifact.id} has no requirement associated`, artifact.file, artifact.id, artifact.status);
+            addIssue('codeWithoutRequirement', `Code entity has no requirement associated.`, artifact.file, artifact.id, artifact.status);
         }
     }
 
     if (ArtifactRegistry.getBaseType(artifact.type) === 'TEST_CASE') {
         const hasReq = reqsByTest.has(artifact.id);
         if (!hasReq) {
-            addIssue('orphanArtifact', `${artifact.id} is a test without associated requirement`, artifact.file, artifact.id, artifact.status);
+            addIssue('orphanArtifact', `Test without associated requirement.`, artifact.file, artifact.id, artifact.status);
         }
     }
 
@@ -178,19 +178,19 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
                  if (targetStatus === 'draft' || targetStatus === 'in_progress') {
                      // Check relation rules: RELATES_TO, DOCUMENTS, JUSTIFIES don't break closed state
                      if (rel.type !== 'RELATES_TO' && rel.type !== 'DOCUMENTS' && rel.type !== 'JUSTIFIES') {
-                         addIssue('closedArtifactWithPendingRelations', `${artifact.id} is closed but links to ${targetStatus} artifact ${rel.to} via ${rel.type}`, artifact.file, artifact.id, artifact.status);
+                         addIssue('closedArtifactWithPendingRelations', `Artifact is closed but links to \`${targetStatus}\` artifact \`${rel.to}\` via \`${rel.type}\`.`, artifact.file, artifact.id, artifact.status);
                      }
                  }
              }
         }
         
         if (!artifact.ownership || Object.keys(artifact.ownership).length === 0) {
-            addIssue('missingOwnership', `${artifact.id} is closed but has no ownership defined`, artifact.file, artifact.id, artifact.status);
+            addIssue('missingOwnership', `Artifact is closed but has no ownership defined.`, artifact.file, artifact.id, artifact.status);
         }
     }
     
     if (ArtifactRegistry.getBaseType(artifact.type) === 'API' && (!artifact.ownership || Object.keys(artifact.ownership).length === 0)) {
-        addIssue('missingOwnership', `API ${artifact.id} should have ownership defined`, artifact.file, artifact.id, artifact.status);
+        addIssue('missingOwnership', `API should have ownership defined.`, artifact.file, artifact.id, artifact.status);
     }
     
     // Check layer semantics
@@ -199,7 +199,7 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
         for (const rel of outgoing) {
             const relSemantics = rel.category;
             if (relSemantics === 'OPERATIONAL') {
-                addIssue('invalidLayerRelation', `Business layer artifact ${artifact.id} should not have OPERATIONAL relations (${rel.type})`, artifact.file, artifact.id, artifact.status);
+                addIssue('invalidLayerRelation', `Business layer artifact should not have OPERATIONAL relations (\`${rel.type}\`).`, artifact.file, artifact.id, artifact.status);
             }
         }
     }

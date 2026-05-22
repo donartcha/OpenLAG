@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 import { execFileSync } from 'child_process';
-import { readFileSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -17,7 +16,6 @@ import { registerImpactCommand } from './impact.js';
 
 const program = new Command();
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
-const pkg = JSON.parse(readFileSync(path.join(packageRoot, 'package.json'), 'utf8')) as { version: string };
 
 function runVitePreview() {
   const viteBin = resolveViteBin(import.meta.url);
@@ -31,7 +29,7 @@ function runVitePreview() {
   });
 }
 
-program.name('openlag').description('Architecture as Code traceability graph generator').version(pkg.version);
+program.name('openlag').description('Architecture as Code traceability graph generator').version('0.1.0');
 
 program
   .command('init')
@@ -75,7 +73,7 @@ program
 program
   .command('lint')
   .description('Validate architecture documentation')
-  .option('-p, --profile <profile>', 'Lint profile (develop, feature, release)', 'develop')
+  .option('-p, --profile <profile>', 'Lint profile (draft, develop, feature, release)', 'develop')
   .option('--json', 'Output report in JSON format')
   .option('--strict', 'Fail on warnings')
   .action((options) => {
@@ -92,7 +90,7 @@ program
 program
   .command('check')
   .description('Generate graph data and validate architecture documentation')
-  .option('-p, --profile <profile>', 'Lint profile (develop, feature, release)', 'develop')
+  .option('-p, --profile <profile>', 'Lint profile (draft, develop, feature, release)', 'develop')
   .option('--strict', 'Fail on warnings')
   .action((options) => {
     console.log(chalk.blue('Running OpenLAG checks...'));

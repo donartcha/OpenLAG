@@ -1,4 +1,4 @@
-# OpenLAG Project Specification v0.2
+# OpenLAG Project Specification v0.3
 
 ## 1. OpenLAG Philosophy
 
@@ -468,6 +468,14 @@ Detects debt and gaps.
 ### release
 Strict.
 Requires strong traceability.
+
+### Linter Reports and Diagnostics
+The `openlag lint` command now provides highly contextualized and actionable console diagnostic reports, prioritizing developer experience:
+- **Contextual Attribution**: Infractions clearly indicate the exact artifact ID or source file name.
+- **Detailed Reasoning**: Explicitly explains the broken contract (e.g., mismatching layers, unauthorized relations).
+- **Proposed Fixes**: Includes actionable suggestions directly in the console message (e.g., listing the allowed relation sources/targets or the expected architectural layer for a specific type) to accelerate debugging.
+- Full support out-of-the-box for different strictness profiles, now including `draft`, `develop`, `feature`, and `release`.
+- Comprehensive internal JSDoc documentation on core utilities (`artifactUtils.ts`) that orchestrate layer overriding and ownership traversals.
 
 ### Philosophy
 The linter doesn't aim to punish, it aims to make visible.

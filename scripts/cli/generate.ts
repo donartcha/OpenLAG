@@ -4,12 +4,15 @@ import { parseOpenLagDocs } from "../core/parser.js";
 import { Version, Change, SystemVersion, GraphSnapshot } from "../../src/types.js";
 import chokidar from "chokidar";
 import chalk from "chalk";
+import { runLintRules } from "../lint/lint-rules.js";
+import { defaultProfiles } from "../lint/lint-profiles.js";
 
 interface StaticState {
   versions: Version[];
   systemVersions: SystemVersion[];
   graphs: Record<string, GraphSnapshot>;
   changes: Change[];
+  lintReports: Record<string, any>;
   metadata?: { name: string; description: string; [key: string]: any };
 }
 
@@ -43,11 +46,20 @@ export function generateData(docsDir: string, outputDir: string, silent = false)
     }
   }
 
+  const lintReports: Record<string, any> = {};
+  for (const profileName of ['draft', 'develop', 'feature', 'release']) {
+    const profile = defaultProfiles[profileName];
+    if (profile) {
+      lintReports[profileName] = { issues: runLintRules(parsedData, profile) };
+    }
+  }
+
   const state: StaticState = {
     versions: parsedData.versions,
     systemVersions: parsedData.systemVersions,
     graphs: {},
     changes: parsedData.changes,
+    lintReports,
     metadata
   };
 

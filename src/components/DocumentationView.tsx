@@ -24,10 +24,9 @@ const OwnershipBadge = ({ artifact }: { artifact: Artifact }) => {
 
 
 export const DocumentationView: React.FC = () => {
-  const { fullGraph: graph, currentVersionId, versions, systemVersions, selectedArtifactId, setSelectedArtifact, settings, globalFilters, setGlobalFilter, currentStrategyId, setStrategy } = useStore();
+  const { fullGraph: graph, currentVersionId, versions, systemVersions, selectedArtifactId, setSelectedArtifact, settings, updateSettings, lintReports, globalFilters, setGlobalFilter, currentStrategyId, setStrategy } = useStore();
   
   const [selectedPhase, setSelectedPhase] = useState<string | null>(null);
-  const [selectedSubType, setSelectedSubType] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const filterLayer = globalFilters.layer;
   const filterOwner = globalFilters.owner;
@@ -50,19 +49,22 @@ export const DocumentationView: React.FC = () => {
      return { layers, owners, teams };
   }, [graph]);
 
-  const orphanArtifactIds = useMemo(() => {
-    if (!graph) return new Set<string>();
-    const linked = new Set<string>();
-    graph.relations.forEach(rel => {
-      linked.add(rel.from);
-      linked.add(rel.to);
+  const activeProfile = settings.lintProfile || 'draft';
+  
+  const artifactViolationsCount = useMemo(() => {
+    const issuesMap = new Map<string, number>();
+    if (!lintReports) return issuesMap;
+    const report = lintReports[activeProfile];
+    if (!report || !report.issues) return issuesMap;
+    
+    report.issues.forEach((issue: any) => {
+      // Exclude 'off' severity if applicable, maybe we only want error/warning/info
+      if (issue.severity === 'off' || !issue.artifactId) return;
+      const count = issuesMap.get(issue.artifactId) || 0;
+      issuesMap.set(issue.artifactId, count + 1);
     });
-    const orphans = new Set<string>();
-    graph.artifacts.forEach(art => {
-      if (!linked.has(art.id)) orphans.add(art.id);
-    });
-    return orphans;
-  }, [graph]);
+    return issuesMap;
+  }, [lintReports, activeProfile]);
 
   const reachableArtifactIds = useMemo(() => {
     if (!selectedArtifactId || !graph) return new Set<string>();
@@ -101,8 +103,7 @@ export const DocumentationView: React.FC = () => {
       return list.filter(a => 
           a.title.toLowerCase().includes(term) || 
           a.description.toLowerCase().includes(term) ||
-          a.id.toLowerCase().includes(term) ||
-          (a.subType && a.subType.toLowerCase().includes(term))
+          a.id.toLowerCase().includes(term)
       );
     };
 
@@ -132,13 +133,11 @@ export const DocumentationView: React.FC = () => {
     const groups = strategy.project(filteredArtifacts);
     return groups.map(group => {
       const sortedArtifacts = [...group.artifacts].sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' }));
-      const subTypes = Array.from(new Set(sortedArtifacts.map(a => a.subType).filter(Boolean))) as string[];
       return {
         ...group,
         artifacts: sortedArtifacts,
         icon: Bookmark, // Can be improved
         count: sortedArtifacts.length,
-        subTypes,
       };
     });
   }, [filteredArtifacts, currentStrategyId]);
@@ -159,21 +158,10 @@ export const DocumentationView: React.FC = () => {
   const currentVersion = versions.find(v => v.id === currentVersionId);
 
   const handlePhaseClick = (phaseId: string) => {
-      if (selectedPhase === phaseId && !selectedSubType) {
+      if (selectedPhase === phaseId) {
           setSelectedPhase(null);
       } else {
           setSelectedPhase(phaseId);
-          setSelectedSubType(null);
-      }
-  };
-
-  const handleSubTypeClick = (phaseId: string, subType: string) => {
-      if (selectedSubType === subType) {
-          setSelectedSubType(null);
-          setSelectedPhase(phaseId);
-      } else {
-          setSelectedPhase(phaseId);
-          setSelectedSubType(subType);
       }
   };
 
@@ -197,7 +185,7 @@ export const DocumentationView: React.FC = () => {
             {!isSidebarCollapsed && (
               <button 
                   className={`w-full text-left px-4 py-2 text-xs font-semibold uppercase tracking-widest rounded transition-colors mb-2 ${!selectedPhase ? 'bg-white/10 text-white' : 'text-white/40 hover:bg-white/5 hover:text-white/80'}`}
-                  onClick={() => { setSelectedPhase(null); setSelectedSubType(null); }}
+                  onClick={() => { setSelectedPhase(null); }}
               >
                   All Assets
               </button>
@@ -228,29 +216,14 @@ export const DocumentationView: React.FC = () => {
                         <button 
                             onClick={() => handlePhaseClick(phase.id)}
                             className={`w-full text-left px-3 py-2 text-xs transition-colors rounded-sm flex items-center justify-between group
-                                ${isPhaseSelected && !selectedSubType ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'text-white/60 hover:bg-white/5 border border-transparent'}`}
+                                ${isPhaseSelected ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'text-white/60 hover:bg-white/5 border border-transparent'}`}
                         >
                             <div className="flex items-center gap-3">
-                                <Icon size={14} className={isPhaseSelected && !selectedSubType ? "text-emerald-400" : "text-white/40 group-hover:text-white/70"} />
+                                <Icon size={14} className={isPhaseSelected ? "text-emerald-400" : "text-white/40 group-hover:text-white/70"} />
                                 <span>{idx + 1}. {phase.title}</span>
                             </div>
                             <span className="text-[9px] bg-white/10 px-1.5 py-0.5 rounded-sm tabular-nums opacity-60 group-hover:opacity-100">{phase.count}</span>
                         </button>
-                        
-                        {(isPhaseSelected || selectedPhase === phase.id) && phase.subTypes.length > 0 && (
-                            <div className="flex flex-col ml-6 mt-1 space-y-0.5 border-l border-white/10 pl-2">
-                                {phase.subTypes.map(st => (
-                                    <button 
-                                        key={st}
-                                        onClick={() => handleSubTypeClick(phase.id, st)}
-                                        className={`text-left px-2 py-1.5 text-[10px] uppercase tracking-widest transition-colors rounded-sm
-                                            ${selectedSubType === st ? 'text-white bg-white/10 font-bold' : 'text-white/40 hover:text-white/80 hover:bg-white/5'}`}
-                                    >
-                                        {st}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
                     </div>
                 );
             })}
@@ -263,7 +236,7 @@ export const DocumentationView: React.FC = () => {
           <div className={`sticky top-0 z-30 transition-all duration-300 bg-[#0a0a0a]/80 backdrop-blur-md px-8 lg:px-16 border-b border-white/5 flex items-center justify-between print-hidden ${isHeaderMinified ? 'py-2' : 'py-8 pt-12 pb-4'}`}>
             <div className="flex items-center gap-4">
                <h1 className={`font-serif italic tracking-tight transition-all duration-300 ${isHeaderMinified ? 'text-lg' : 'text-3xl'}`}>
-               {selectedSubType ? `${selectedSubType} Documentation` : selectedPhase ? strategyGroups.find(p => p.id === selectedPhase)?.title : 'System Documentation'}
+               {selectedPhase ? strategyGroups.find(p => p.id === selectedPhase)?.title : 'System Documentation'}
                </h1>
                <div className="h-4 w-px bg-white/10" />
                <button 
@@ -358,11 +331,24 @@ export const DocumentationView: React.FC = () => {
                     </div>
                     <div className="flex gap-1 w-full mt-2 lg:mt-0">
                         <select
+                            value={activeProfile}
+                            onChange={(e) => updateSettings({ lintProfile: e.target.value })}
+                            className={`bg-transparent py-1 px-2 text-[10px] focus:outline-none cursor-pointer uppercase tracking-wider text-center transition-all border rounded-sm ${
+                                activeProfile !== 'draft' 
+                                    ? 'bg-amber-500/20 border-amber-500/40 text-amber-400 font-bold' 
+                                    : 'border-white/10 text-white/50 hover:border-white/20'
+                            }`}
+                        >
+                            <option value="draft" className="bg-[#0c0c0c] text-white font-normal">DRAFT</option>
+                            <option value="develop" className="bg-[#0c0c0c] text-white font-normal">DEVELOP</option>
+                            <option value="feature" className="bg-[#0c0c0c] text-white font-normal">FEATURE</option>
+                            <option value="release" className="bg-[#0c0c0c] text-white font-normal">RELEASE</option>
+                        </select>
+                        <select
                             value={currentStrategyId}
                             onChange={(e) => {
                                 setStrategy(e.target.value);
                                 setSelectedPhase(null);
-                                setSelectedSubType(null);
                             }}
                             className={`bg-transparent py-1 px-2 text-[10px] focus:outline-none cursor-pointer uppercase tracking-wider text-center transition-all border rounded-sm bg-emerald-500/20 border-emerald-500/40 text-emerald-400 font-bold`}
                         >
@@ -420,7 +406,7 @@ export const DocumentationView: React.FC = () => {
           <div className="px-8 lg:px-16 pt-4 shrink-0">
             <div className="flex flex-col md:flex-row md:items-start gap-4 md:gap-12 mb-8 mt-2 animate-in fade-in slide-in-from-top-1 duration-300">
                   <div className="text-xs font-mono text-white/40">
-                      SYS DOMAIN: <span className="text-emerald-400 font-bold tracking-widest">{selectedSubType ? `${selectedSubType} Documentation` : selectedPhase ? strategyGroups.find(p => p.id === selectedPhase)?.title : 'System Documentation'}</span><br/>
+                      SYS DOMAIN: <span className="text-emerald-400 font-bold tracking-widest">{selectedPhase ? strategyGroups.find(p => p.id === selectedPhase)?.title : 'System Documentation'}</span><br/>
                       VERSION: <span className="text-white/80">{currentVersion?.name} ({currentVersionId})</span><br/>
                       DATE: {new Date().toISOString().split('T')[0]}
                   </div>
@@ -454,12 +440,8 @@ export const DocumentationView: React.FC = () => {
                 
                 let phaseArtifacts = phase.artifacts;
 
-                if (selectedSubType) {
-                    phaseArtifacts = phaseArtifacts.filter(a => a.subType === selectedSubType);
-                }
-
                 if (!shouldShow(phaseArtifacts.length > 0)) return null;
-                if (phaseArtifacts.length === 0 && selectedPhase !== phase.id && !selectedSubType) return null;
+                if (phaseArtifacts.length === 0 && selectedPhase !== phase.id) return null;
 
                 return (
                     <section key={phase.id} className="mb-16">
@@ -472,72 +454,40 @@ export const DocumentationView: React.FC = () => {
                             </p>
                         )}
                         <div className="space-y-12">
-                            {(() => {
-                                // Extract and group artifacts by subType
-                                const groupedBySubType: Record<string, Artifact[]> = {};
-                                const noSubTypeArtifacts: Artifact[] = [];
-                                
-                                phaseArtifacts.forEach(a => {
-                                    if (a.subType) {
-                                        if (!groupedBySubType[a.subType]) groupedBySubType[a.subType] = [];
-                                        groupedBySubType[a.subType].push(a);
-                                    } else {
-                                        noSubTypeArtifacts.push(a);
-                                    }
-                                });
-
-                                const renderArtifacts = (artifactsToRender: Artifact[]) => (
-                                    <div className="space-y-6">
-                                        {artifactsToRender.map(artifact => (
-                                          <div key={artifact.id} id={artifact.id} className="bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-emerald-500/50 hover:bg-white/[0.02] transition-colors relative group print-block-break-inside-avoid">
-                                            <h3 className="font-serif text-lg text-white flex items-center gap-4 flex-wrap mb-4">
-                                              <button 
-                                                onClick={() => setSelectedArtifact(artifact.id)}
-                                                className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest transition-colors hover:border-emerald-500/50 ${selectedArtifactId === artifact.id ? 'text-emerald-400 border-emerald-500/50' : 'text-white/40'}`}
-                                              >
-                                                  {artifact.id}
-                                              </button>
-                                              {artifact.subType && <span className="text-[10px] font-sans bg-white/5 text-white/60 px-2 py-1 border border-white/10 uppercase tracking-widest">{artifact.subType}</span>}
-                                              {orphanArtifactIds.has(artifact.id) && (
-                                                <span className="text-[10px] bg-red-500/10 text-red-400 px-2 py-1 border border-red-500/20 uppercase tracking-widest flex items-center gap-1">
-                                                  <AlertCircle size={10} />
-                                                  Traceability Gap
-                                                </span>
-                                              )}
-                                              <span>{artifact.title}</span>
-                                              {artifact.version && artifact.version !== 'v-1' && (
-                                                <span className="ml-auto text-xs font-mono text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 rounded">
-                                                  {(() => {
-                                                      const vName = versions.find(v => v.id === artifact.version)?.name || artifact.version;
-                                                      return vName.toLowerCase().startsWith('v') ? vName : `v${vName}`;
-                                                  })()}
-                                                </span>
-                                              )}
-                                            </h3>
-                                            <OwnershipBadge artifact={artifact} />
-                                            <MarkdownRenderer content={artifact.description} />
-                                          </div>
-                                        ))}
-                                    </div>
-                                );
-
-                                return (
-                                    <>
-                                        {noSubTypeArtifacts.length > 0 && renderArtifacts(noSubTypeArtifacts)}
-                                        {Object.entries(groupedBySubType)
-                                            .sort(([a], [b]) => a.localeCompare(b))
-                                            .map(([subType, stArtifacts]) => (
-                                            <div key={subType} className="mt-8">
-                                                <h3 className="text-xs uppercase tracking-widest text-emerald-400/80 mb-4 flex items-center gap-2">
-                                                    <Layers size={14} />
-                                                    {subType}
-                                                </h3>
-                                                {renderArtifacts(stArtifacts)}
-                                            </div>
-                                        ))}
-                                    </>
-                                );
-                            })()}
+                                <div className="space-y-6">
+                                    {phaseArtifacts.map(artifact => (
+                                      <div key={artifact.id} id={artifact.id} className="bg-[#0c0c0c] border border-white/10 p-5 pl-6 border-l-[3px] border-l-emerald-500/50 hover:bg-white/[0.02] transition-colors relative group print-block-break-inside-avoid">
+                                        <h3 className="font-serif text-lg text-white flex items-center gap-4 flex-wrap mb-4">
+                                          <button 
+                                            onClick={() => setSelectedArtifact(artifact.id)}
+                                            className={`text-[10px] font-mono bg-black px-2 py-1 border border-white/5 uppercase tracking-widest transition-colors hover:border-emerald-500/50 ${selectedArtifactId === artifact.id ? 'text-emerald-400 border-emerald-500/50' : 'text-white/40'}`}
+                                          >
+                                              {artifact.id}
+                                          </button>
+                                          {artifactViolationsCount.has(artifact.id) && (
+                                            <span 
+                                              className="text-[10px] bg-amber-500/10 text-amber-500 px-2 py-1 border border-amber-500/20 uppercase tracking-widest flex items-center gap-1 cursor-help"
+                                              title={`${artifactViolationsCount.get(artifact.id)} violations found in ${activeProfile.toUpperCase()} profile`}
+                                            >
+                                              <AlertCircle size={10} />
+                                              {artifactViolationsCount.get(artifact.id)} Violations
+                                            </span>
+                                          )}
+                                          <span>{artifact.title}</span>
+                                          {artifact.version && artifact.version !== 'v-1' && (
+                                            <span className="ml-auto text-xs font-mono text-emerald-400 border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 rounded">
+                                              {(() => {
+                                                  const vName = versions.find(v => v.id === artifact.version)?.name || artifact.version;
+                                                  return vName.toLowerCase().startsWith('v') ? vName : `v${vName}`;
+                                              })()}
+                                            </span>
+                                          )}
+                                        </h3>
+                                        <OwnershipBadge artifact={artifact} />
+                                        <MarkdownRenderer content={artifact.description} />
+                                      </div>
+                                    ))}
+                                </div>
                         </div>
                     </section>
                 );

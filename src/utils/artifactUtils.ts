@@ -1,12 +1,20 @@
 import { Artifact, ArtifactType, ArtifactLayer, GraphSnapshot } from '../types';
 import { ArtifactRegistry } from '../core/registry/ArtifactRegistry';
 
+/**
+ * Derives the implicit or default architectural layer for a given ArtifactType.
+ * It first consults the dynamic ArtifactRegistry contracts. If not found,
+ * it checks the base type contract or falls back to legacy known categorizations.
+ * 
+ * @param type The artifact type (e.g., 'API', 'DAO', 'CODE_ENTITY')
+ * @returns The resolved ArtifactLayer (e.g., 'IMPLEMENTATION', 'ARCHITECTURE') or undefined.
+ */
 export function getImplicitLayer(type: ArtifactType): ArtifactLayer | undefined {
   const contract = ArtifactRegistry.getContract(type);
   if (contract && contract.layer) {
     return contract.layer as ArtifactLayer;
   }
-
+  
   // Try fallback to base type
   const baseType = ArtifactRegistry.getBaseType(type);
   const baseContract = ArtifactRegistry.getContract(baseType);
@@ -55,6 +63,14 @@ export function getImplicitLayer(type: ArtifactType): ArtifactLayer | undefined 
   }
 }
 
+/**
+ * Returns the declared architectural layer of an artifact. Let's first check if
+ * a `layer` was explicitly overridden in the artifact YAML payload. Otherwise,
+ * falls back to the implicit layer bound to the type's contract.
+ *
+ * @param artifact The fully parsed artifact object.
+ * @returns The resolved overarching layer.
+ */
 export function getArtifactLayer(artifact: Artifact): ArtifactLayer | undefined {
   if (artifact.layer) {
     return artifact.layer as ArtifactLayer;
@@ -62,7 +78,15 @@ export function getArtifactLayer(artifact: Artifact): ArtifactLayer | undefined 
   return getImplicitLayer(artifact.type);
 }
 
-// Traverse up REFINES or IMPLEMENTS relations to find inherited ownership
+/**
+ * Traverses up REFINES or IMPLEMENTS relations recursively to find 
+ * inherited ownership boundaries (owner or team).
+ *
+ * @param artifactId The starting node to ascend from.
+ * @param graph The whole parsed topological graph.
+ * @param visited Mechanism to avoid cyclical lookup explosions.
+ * @returns An object containing owner and/or team if found in ancestor path.
+ */
 function findInheritedOwnership(
   artifactId: string,
   graph: GraphSnapshot,
@@ -94,12 +118,26 @@ function findInheritedOwnership(
   return {};
 }
 
+/**
+ * Returns the explicit owner of an artifact, or its inherited owner if omitted.
+ *
+ * @param artifact The artifact object.
+ * @param graph The whole architecture graph (needed for traversal).
+ * @returns The resolved owner name, or undefined.
+ */
 export function getArtifactOwner(artifact: Artifact, graph: GraphSnapshot | null): string | undefined {
   if (artifact.ownership?.owner) return artifact.ownership.owner;
   if (!graph) return undefined;
   return findInheritedOwnership(artifact.id, graph, new Set()).owner;
 }
 
+/**
+ * Returns the explicit owning team of an artifact, or its inherited team if omitted.
+ *
+ * @param artifact The artifact object.
+ * @param graph The whole architecture graph (needed for traversal).
+ * @returns The resolved team name, or undefined.
+ */
 export function getArtifactTeam(artifact: Artifact, graph: GraphSnapshot | null): string | undefined {
   if (artifact.ownership?.team) return artifact.ownership.team;
   if (!graph) return undefined;

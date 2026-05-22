@@ -8,6 +8,7 @@ interface Settings {
   defaultDocsFocusMode: boolean;
   showWeakRelations: boolean;
   language: 'EN' | 'ES';
+  lintProfile?: string;
 }
 
 interface StoreState {
@@ -28,6 +29,7 @@ interface StoreState {
     team: string;
   };
   metadata?: { name: string; description: string; [key: string]: any };
+  lintReports: Record<string, any>;
 
   currentStrategyId: string;
 
@@ -47,6 +49,7 @@ let cachedData: {
   systemVersions: SystemVersion[];
   changes: Change[];
   graphs: Record<string, GraphSnapshot>;
+  lintReports: Record<string, any>;
   metadata?: { name: string; description: string; [key: string]: any };
 } | null = null;
 
@@ -63,12 +66,14 @@ export const useStore = create<StoreState>((set, get) => ({
   currentStrategyId: 'lifecycle',
   isLoading: false,
   metadata: undefined,
+  lintReports: {},
   settings: {
     graphFocusDepth: DEFAULT_NEIGHBORHOOD_DEPTH,
     docsFocusDepth: 1,
     defaultDocsFocusMode: true,
     showWeakRelations: false,
     language: 'EN',
+    lintProfile: 'draft',
   },
   globalFilters: {
     layer: 'ALL',
@@ -116,12 +121,13 @@ export const useStore = create<StoreState>((set, get) => ({
       cachedData = await response.json();
       
       if (cachedData) {
-        const { versions, systemVersions, changes, metadata } = cachedData;
+        const { versions, systemVersions, changes, metadata, lintReports } = cachedData;
         set({ 
           versions, 
           systemVersions: systemVersions || [],
           changes,
           metadata,
+          lintReports: lintReports || {},
           isLoading: false
         });
         

@@ -110,6 +110,180 @@ impactSeverityDefault: low`
     console.log(chalk.green('✅ Created sample docs/artifacts/CUSTOM_TYPE.yaml'));
   }
 
+  const defaultArtifacts = [
+    {
+      name: 'PROJECT.yaml',
+      content: `type: PROJECT
+layer: BUSINESS
+description: "Standard PROJECT artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'EPIC.yaml',
+      content: `type: EPIC
+layer: BUSINESS
+description: "Standard EPIC artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'FEATURE.yaml',
+      content: `type: FEATURE
+layer: BUSINESS
+description: "Standard FEATURE artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'REQUIREMENT.yaml',
+      content: `type: REQUIREMENT
+layer: BUSINESS
+description: "Standard REQUIREMENT artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'DESIGN.yaml',
+      content: `type: DESIGN
+layer: ARCHITECTURE
+description: "Standard DESIGN artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'DECISION.yaml',
+      content: `type: DECISION
+layer: ARCHITECTURE
+description: "Standard DECISION artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'CODE_ENTITY.yaml',
+      content: `type: CODE_ENTITY
+layer: IMPLEMENTATION
+description: "Standard CODE_ENTITY artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'TEST_CASE.yaml',
+      content: `type: TEST_CASE
+layer: IMPLEMENTATION
+description: "Standard TEST_CASE artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'CHANGE.yaml',
+      content: `type: CHANGE
+layer: IMPLEMENTATION
+description: "Standard CHANGE artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'BUG.yaml',
+      content: `type: BUG
+layer: IMPLEMENTATION
+description: "Standard BUG artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'COMPONENT.yaml',
+      content: `type: COMPONENT
+layer: ARCHITECTURE
+description: "Standard COMPONENT artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'API.yaml',
+      content: `type: API
+layer: ARCHITECTURE
+description: "Standard API artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'DATABASE_ENTITY.yaml',
+      content: `type: DATABASE_ENTITY
+layer: IMPLEMENTATION
+description: "Standard DATABASE_ENTITY artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'DOCUMENTATION.yaml',
+      content: `type: DOCUMENTATION
+layer: DOCUMENTATION
+description: "Standard DOCUMENTATION artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'SYSTEM_VERSION.yaml',
+      content: `type: SYSTEM_VERSION
+layer: OPERATIONS
+description: "Standard SYSTEM_VERSION artifact."
+requiredFields:
+  - id
+  - type
+  - title
+  - component
+  - version
+  - releaseDate`
+    },
+    {
+      name: 'VERSION.yaml',
+      content: `type: VERSION
+layer: DOCUMENTATION
+description: "Standard VERSION artifact."
+requiredFields:
+  - id
+  - type
+  - title
+  - name
+  - timestamp
+  - parentVersion`
+    },
+  ];
+  defaultArtifacts.forEach(art => {
+    const p = path.join(artifactsDir, art.name);
+    if (!fs.existsSync(p)) fs.writeFileSync(p, art.content);
+  });
+  console.log(chalk.green('✅ Created default artifacts in docs/artifacts/'));
+
   const mandatoryRelations = [
     {
       name: 'IMPLEMENTS.yaml',
@@ -393,6 +567,164 @@ validation:
       fs.writeFileSync(path.join(relationsDir, rel.name), rel.content);
     });
     console.log(chalk.green('✅ Created Official Optional Relations'));
+
+    const optionalArtifacts = [
+    {
+      name: 'BUSINESS_RULE.yaml',
+      content: `type: BUSINESS_RULE
+layer: BUSINESS
+description: "Standard BUSINESS_RULE artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'USE_CASE.yaml',
+      content: `type: USE_CASE
+layer: BUSINESS
+description: "Standard USE_CASE artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'TEST.yaml',
+      content: `type: TEST
+layer: IMPLEMENTATION
+description: "Standard TEST artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'RISK.yaml',
+      content: `type: RISK
+layer: DOCUMENTATION
+description: "Standard RISK artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'GLOSSARY_TERM.yaml',
+      content: `type: GLOSSARY_TERM
+layer: DOCUMENTATION
+description: "Standard GLOSSARY_TERM artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'INCIDENT.yaml',
+      content: `type: INCIDENT
+layer: OPERATIONS
+description: "Standard INCIDENT artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'INFRASTRUCTURE.yaml',
+      content: `type: INFRASTRUCTURE
+layer: OPERATIONS
+description: "Standard INFRASTRUCTURE artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'DEPLOYMENT.yaml',
+      content: `type: DEPLOYMENT
+layer: OPERATIONS
+description: "Standard DEPLOYMENT artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'MONITORING.yaml',
+      content: `type: MONITORING
+layer: OPERATIONS
+description: "Standard MONITORING artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'MAINTENANCE.yaml',
+      content: `type: MAINTENANCE
+layer: OPERATIONS
+description: "Standard MAINTENANCE artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'LIBRARY.yaml',
+      content: `type: LIBRARY
+layer: IMPLEMENTATION
+description: "Standard LIBRARY artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'ENVIRONMENT.yaml',
+      content: `type: ENVIRONMENT
+layer: OPERATIONS
+description: "Standard ENVIRONMENT artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'CHECK.yaml',
+      content: `type: CHECK
+layer: OPERATIONS
+description: "Standard CHECK artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'PROCESS.yaml',
+      content: `type: PROCESS
+layer: DOCUMENTATION
+description: "Standard PROCESS artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    {
+      name: 'PIPELINE.yaml',
+      content: `type: PIPELINE
+layer: OPERATIONS
+description: "Standard PIPELINE artifact."
+requiredFields:
+  - id
+  - type
+  - title`
+    },
+    ];
+    optionalArtifacts.forEach(art => {
+      const p = path.join(artifactsDir, art.name);
+      if (!fs.existsSync(p)) fs.writeFileSync(p, art.content);
+    });
+    console.log(chalk.green('✅ Created optional artifacts in docs/artifacts/'));
   }
 
 

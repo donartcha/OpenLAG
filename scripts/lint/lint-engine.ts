@@ -74,7 +74,8 @@ export function printHumanReport(report: LintReport) {
           const sevColor = issue.severity === 'error' ? chalk.red : (issue.severity === 'warning' ? chalk.yellow : chalk.cyan);
           const severityLabel = issue.severity.toUpperCase().padEnd(7);
           const ruleLabel = issue.rule.padEnd(30);
-          console.log(`${sevColor(severityLabel)} ${chalk.dim(ruleLabel)} ${issue.message}`);
+          const context = issue.artifactId ? chalk.magenta(`[${issue.artifactId}] `) : (issue.file ? chalk.magenta(`[${path.basename(issue.file)}] `) : '');
+          console.log(`${sevColor(severityLabel)} ${chalk.dim(ruleLabel)} ${context}${issue.message}`);
       }
   }
 

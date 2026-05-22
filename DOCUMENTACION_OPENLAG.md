@@ -163,6 +163,7 @@ openlag init --name "Mi Sistema" --desc "Arquitectura del sistema"
 openlag init --all
 openlag generate --watch
 openlag lint --profile feature
+openlag lint --profile draft
 openlag lint --profile develop
 openlag lint --profile release --strict
 openlag lint --json
@@ -184,6 +185,14 @@ npm run test                Ejecuta node --import tsx --test tests/*.test.ts.
 npm run check               Ejecuta typecheck, lint, test y pack dry-run.
 npm run clean               Borra dist y public/graph-data.json.
 ```
+
+### Reportes del Linter
+El flujo de reporte vía `openlag lint` provee mensajes ricos, detallados y contextualizados enfocados en la experiencia de desarrollo (DX):
+- **Atribución Clara**: Cada infracción etiqueta su ID de artefacto o archivo fuente.
+- **Detalle Contractual**: Expone la regla del contrato YAML que falló, indicando si los atributos, relaciones o capas no coinciden.
+- **Sugerencias y Soluciones**: La CLI imprime sugerencias accionables directamente en la consola (listado restrictivo de orígenes o destinos en relaciones, capas esperadas por subtipo).
+- Soporte oficial y ayuda documentada para nuevos perfiles de entorno, destacando `--profile draft`.
+- Además, en esta evolución se ha instrumentado amplia documentación JSDoc a nivel de backend dentro de `src/utils/artifactUtils.ts` para esclarecer métodos internos de resolución dinámica contractual, *layers*, y ascendencia.
 
 Nota importante: no existen scripts `lint:openlag`, `lint:openlag:feature` ni `lint:openlag:release` en el `package.json` actual. Para lint de arquitectura se debe usar `openlag lint` o `tsx scripts/cli/openlag.ts lint`.
 
