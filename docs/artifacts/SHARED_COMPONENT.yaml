@@ -1,0 +1,8 @@
+type: SHARED_COMPONENT
+extends: CODE_ENTITY
+layer: IMPLEMENTATION
+description: "Shared UI or application component."
+requiredFields:
+  - id
+  - type
+  - title

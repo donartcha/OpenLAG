@@ -3,7 +3,7 @@ id: COMP-021
 type: COMPONENT
 version: VERSION-001
 status: in_progress
-layer: IMPLEMENTATION
+layer: ARCHITECTURE
 title: Lifecycle Strategy Engine
 description: |
   A default engine implementing the lifecycle sorting logic:

@@ -119,7 +119,9 @@ export function parseOpenLagDocs(docsDir: string): OpenLagData {
                     if (Array.isArray(parsed)) {
                       msg = parsed.map((err: any) => `\`${err.path.join('.')}\`: ${err.message}`).join(', ');
                     }
-                  } catch (ignore) {}
+                  } catch {
+                    msg = e.message;
+                  }
                 }
                 diag.add(fullPath, `Schema validation failed.\n\n${msg}`, Severity.INVALID);
             }

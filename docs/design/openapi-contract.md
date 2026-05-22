@@ -4,7 +4,7 @@ type: SERVICE_CONTRACT
 title: User-Auth OpenAPI
 version: v-1
 relations:
-  - type: DOCUMENTS
+  - type: RELATES_TO
     to: impl-api-1
 ownership:
   owner: pcaro

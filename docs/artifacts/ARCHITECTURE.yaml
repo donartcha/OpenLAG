@@ -1,0 +1,8 @@
+type: ARCHITECTURE
+extends: DESIGN
+layer: ARCHITECTURE
+description: "Architecture-level design artifact."
+requiredFields:
+  - id
+  - type
+  - title

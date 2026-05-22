@@ -4,6 +4,8 @@ type: CONTROLLER
 title: RegistrationController.ts
 version: v-1
 relations:
+  - to: req-func-1
+    type: IMPLEMENTS
   - to: des-reg-01
     type: RELATES_TO
 ownership:

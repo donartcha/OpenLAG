@@ -8,6 +8,8 @@ ownership:
   owner: pcaro
   team: backend-team
 relations:
+  - to: req-res-1
+    type: IMPLEMENTS
   - to: impl-cls-1
     type: USES
   - to: impl-dao-user

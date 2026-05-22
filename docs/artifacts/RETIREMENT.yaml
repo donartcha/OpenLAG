@@ -1,0 +1,8 @@
+type: RETIREMENT
+extends: MAINTENANCE
+layer: OPERATIONS
+description: "Retirement or deprecation activity."
+requiredFields:
+  - id
+  - type
+  - title

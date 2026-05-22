@@ -7,6 +7,8 @@ ownership:
   owner: pcaro
   team: architecture
 relations:
+  - type: IMPLEMENTS
+    to: req-res-1
   - type: RELATES_TO
     to: arch-overview
 ---

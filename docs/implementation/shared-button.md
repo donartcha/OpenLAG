@@ -8,6 +8,8 @@ ownership:
   team: frontend-team
   owner: alice
 relations:
+  - to: req-func-1
+    type: IMPLEMENTS
   - to: des-cmp-1
     type: RELATES_TO
 ---

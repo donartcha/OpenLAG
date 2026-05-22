@@ -4,7 +4,7 @@ type: SYSTEM_VERSION
 component: Notification-Worker
 version: 0.8.5-beta
 releaseDate: "2026-05-10"
-layer: GOVERNANCE
+layer: OPERATIONS
 title: "Notification Worker Version Log"
 description: "Records the notification worker subsystem release details."
 ownership:

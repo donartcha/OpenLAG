@@ -4,7 +4,7 @@ type: SYSTEM_VERSION
 component: "Core System"
 version: "1.0.0"
 releaseDate: "2026-05-17"
-layer: GOVERNANCE
+layer: OPERATIONS
 title: "Core System v1.0"
 description: "Base framework."
 ownership:

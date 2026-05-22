@@ -1,0 +1,8 @@
+type: RUNBOOK
+extends: DOCUMENTATION
+layer: DOCUMENTATION
+description: "Operational runbook."
+requiredFields:
+  - id
+  - type
+  - title
