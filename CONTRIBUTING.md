@@ -186,9 +186,17 @@ git push origin develop
 
 ## NPM Publication
 
-OpenLAG publishes to NPM from GitHub Actions to avoid local OTP prompts during release work.
+OpenLAG publishes to NPM from GitHub Actions with npm Trusted Publisher. This uses OpenID Connect (OIDC) instead of a long-lived npm token and avoids local OTP prompts during release work.
 
-Repository maintainers must configure the GitHub repository secret `NPM_TOKEN` with an npm automation token that has publish access to `@donartcha/openlag`. A classic login/session token can still trigger OTP prompts locally; use an automation token for CI publication.
+Repository maintainers must configure npm package access for `@donartcha/openlag`:
+
+- Publisher: GitHub Actions
+- Organization or user: `donartcha`
+- Repository: `OpenLAG`
+- Workflow filename: `publish-npm.yml`
+- Allowed action: `npm publish`
+
+The workflow does not require `NPM_TOKEN`. Keep `permissions: id-token: write` in the workflow so GitHub Actions can request the OIDC token that npm validates.
 
 The publish workflow is `.github/workflows/publish-npm.yml`. It runs when a release tag such as `v0.4.0` is pushed and can also be run manually from GitHub Actions with `expected_version` set to the package version.
 
@@ -255,7 +263,7 @@ git merge --no-ff hotfix/0.4.1
 git tag -a v0.4.1 -m "Release v0.4.1"
 git push origin main --tags
 
-npm publish --access public
+# GitHub Actions publishes the tag through npm Trusted Publisher.
 
 git checkout develop
 git merge --no-ff main

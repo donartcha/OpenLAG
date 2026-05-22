@@ -62,22 +62,10 @@ jobs:
             exit 1
           fi
 
-      - name: Check npm automation token
-        shell: bash
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          if [ -z "$NODE_AUTH_TOKEN" ]; then
-            echo "GitHub secret NPM_TOKEN is not configured." >&2
-            exit 1
-          fi
-
       - run: npm ci
       - run: npm run check
       - run: node bin/openlag.js --version
       - run: npm pack --dry-run
 
       - name: Publish to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public --provenance --registry=https://registry.npmjs.org/
