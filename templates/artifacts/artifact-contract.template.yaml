@@ -1,0 +1,7 @@
+type: CUSTOM_TYPE
+extends: CODE_ENTITY
+layer: IMPLEMENTATION
+requiredFields:
+  - id
+  - type
+  - title
