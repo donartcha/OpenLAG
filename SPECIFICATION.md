@@ -69,6 +69,29 @@ The canonical 0.5.x scope baseline is maintained in [`OPENLAG_0.5.x_SCOPE_BASELI
 
 That document is the source of truth for current 0.5.x implementation boundaries, the contradiction matrix across prior plans, and the distinction between implemented behavior and PROPOSED roadmap items. This specification must not describe roadmap items such as documentation freeze/export, PDF generation, Playwright screenshots, expanded governance findings, mass authoring tooling, or evolved impact reporting as implemented until their phase-specific work lands.
 
+### 0.5.x Governance Boundary (Implemented vs Proposed)
+
+Governance-related artifact contracts already implemented in the repository include:
+
+```text
+RISK
+CHECK
+REVIEW
+EVIDENCE
+INCIDENT
+```
+
+The following governance finding families are currently PROPOSED and must not be presented as implemented behavior until explicit contract and CLI support lands:
+
+```text
+GAP
+VIOLATION
+DEBT
+OBSERVATION
+```
+
+Any future governance evolution must preserve compatibility with existing contract folders (`docs/artifacts/*.yaml`, `docs/relations/*.yaml`) and current lint profile semantics.
+
 ## 2. Semantic Layer Model
 
 OpenLAG classifies artifacts into different semantic layers (Layers) to understand at what level of abstraction they operate and what kind of relationships are valid between them.

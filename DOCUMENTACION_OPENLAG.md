@@ -65,6 +65,25 @@ La baseline canonica de alcance 0.5.x esta en [`OPENLAG_0.5.x_SCOPE_BASELINE.md`
 
 Ese documento separa comportamiento implementado de trabajo PROPOSED para 0.5.x. Hasta que las fases correspondientes aterricen, no se debe presentar como implementado: `openlag freeze` / exportacion documental, PDF, Playwright para screenshots, nuevas familias de hallazgos de governance, tooling masivo de autoria o evolucion avanzada del impact engine.
 
+### Limite de governance 0.5.x (implementado vs propuesto)
+
+Familias de governance implementadas hoy mediante contratos YAML:
+
+- `RISK`
+- `CHECK`
+- `REVIEW`
+- `EVIDENCE`
+- `INCIDENT`
+
+Familias de hallazgos de governance que siguen en estado PROPOSED:
+
+- `GAP`
+- `VIOLATION`
+- `DEBT`
+- `OBSERVATION`
+
+La evolucion de governance no debe romper compatibilidad con `docs/artifacts/*.yaml`, `docs/relations/*.yaml` ni con los perfiles de lint actuales (`draft`, `feature`, `develop`, `release`).
+
 La documentacion humana debe seguir usando Markdown, los contratos canonicos siguen en `docs/artifacts/*.yaml` y `docs/relations/*.yaml`, y OpenLAG debe conservar el modo static-first sin backend obligatorio.
 
 ## 3. Arquitectura general

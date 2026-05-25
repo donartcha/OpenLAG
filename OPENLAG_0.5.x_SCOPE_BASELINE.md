@@ -15,7 +15,7 @@ It separates shipped behavior from proposed 0.5.x behavior so the roadmap does n
 | Impact analysis | `openlag impact` for artifact, file, staged changes, and git ranges | P7 may evolve report semantics, severity, ownership, and CI behavior. |
 | Lint profiles | `draft`, `feature`, `develop`, `release` | Existing lint semantics must not regress during 0.5.x work. |
 | Governance artifacts | Current official artifact contracts include `RISK`, `CHECK`, `REVIEW`, `EVIDENCE`, `INCIDENT`, and operational/process artifacts | New GAP/VIOLATION/DEBT/OBSERVATION-style findings remain proposed until P5 implements or documents them explicitly. |
-| Portal validation | Manual/local build validation only | Playwright smoke and screenshot validation are proposed for P3. |
+| Portal validation | Playwright smoke tests and deterministic screenshot workflow | Implemented in P3 via `test:e2e` and `docs:screenshots`. |
 | Documentation export | `openlag freeze` Markdown MVP | Export profiles live under `docs/export-profiles/*.yaml`; PDF is deferred to P2. |
 
 ## 0.5.x Proposed Scope
@@ -25,7 +25,7 @@ It separates shipped behavior from proposed 0.5.x behavior so the roadmap does n
 | P0 Alignment and Scope Lock | Documentation only | Keep this baseline, contradiction matrix, and cross-references current. |
 | P1 Freeze/Export MVP | Implemented Markdown MVP | Deterministic Markdown documentation snapshot from the OpenLAG graph and export profiles. |
 | P2 PDF Export | Proposed after P1 | Optional PDF generation sourced from the Markdown/export model, not from React portal printing. |
-| P3 Playwright Portal Validation | Proposed implementation | Portal smoke tests and deterministic screenshot workflow. |
+| P3 Playwright Portal Validation | Implemented | Portal smoke tests and deterministic screenshot workflow. |
 | P4 Dashboard Public/Technical Views | Proposed implementation | Public-safe and technical views with explicit redaction/defaults. |
 | P5 Governance Model Evolution | Proposed design and implementation | Clear implemented/proposed governance boundary plus compatible finding model. |
 | P6 Mass Authoring Tooling | Proposed implementation | Optional generators/templates that still preserve project-owned contracts. |
@@ -67,3 +67,17 @@ P0 adopts this draft policy for documentation consistency:
 - Do not require a backend for core OpenLAG usage.
 - Prefer specific relation contracts over generic `RELATES_TO`.
 - Do not claim proposed features as shipped behavior in README, SPECIFICATION, or Spanish documentation.
+
+## P5 Governance Compatibility Matrix
+
+| Governance family | Current state | Source of truth |
+| --- | --- | --- |
+| RISK | IMPLEMENTED | `docs/artifacts/RISK.yaml` |
+| CHECK | IMPLEMENTED | `docs/artifacts/CHECK.yaml` |
+| REVIEW | IMPLEMENTED | `docs/artifacts/REVIEW.yaml` |
+| EVIDENCE | IMPLEMENTED | `docs/artifacts/EVIDENCE.yaml` |
+| INCIDENT | IMPLEMENTED | `docs/artifacts/INCIDENT.yaml` |
+| GAP | PROPOSED | Pending explicit contract + CLI semantics in future phase |
+| VIOLATION | PROPOSED | Pending explicit contract + CLI semantics in future phase |
+| DEBT | PROPOSED | Pending explicit contract + CLI semantics in future phase |
+| OBSERVATION | PROPOSED | Pending explicit contract + CLI semantics in future phase |
