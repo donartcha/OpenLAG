@@ -4,6 +4,9 @@ All notable changes to OpenLAG are documented in this file.
 
 ## Unreleased
 
+### Changed
+- Documented the automated npm release flow where merges to `main` trigger GitHub Actions validation, release tag creation, and Trusted Publisher publication.
+
 ## 0.4.0 - 2026-05-22
 
 ### Added
