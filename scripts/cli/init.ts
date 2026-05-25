@@ -69,6 +69,108 @@ export async function initProject(projectName?: string, projectDesc?: string, in
     console.log(chalk.green('✅ Created /docs directory'));
   }
 
+  // 3.0 Initialize export profiles used by openlag freeze
+  const exportProfilesDir = path.join(docsDir, 'export-profiles');
+  if (!fs.existsSync(exportProfilesDir)) {
+    fs.mkdirSync(exportProfilesDir);
+    console.log(chalk.green('âœ… Created /docs/export-profiles directory'));
+  }
+
+  const architectureProfilePath = path.join(exportProfilesDir, 'architecture.yaml');
+  if (!fs.existsSync(architectureProfilePath)) {
+    const architectureProfile = `id: architecture
+name: Architecture Documentation Freeze
+description: >
+  Generates a deterministic Markdown architecture snapshot from the current
+  OpenLAG graph.
+defaultFormat: markdown
+
+includeArtifactTypes:
+  - PROJECT
+  - VERSION
+  - EPIC
+  - REQUIREMENT
+  - USE_CASE
+  - DECISION
+  - DESIGN
+  - ARCHITECTURE
+  - COMPONENT
+  - FEATURE
+  - CODE_ENTITY
+  - API
+  - DATABASE_ENTITY
+  - TEST_CASE
+  - RISK
+  - CHANGE
+  - DOCUMENTATION
+
+includeRelations:
+  - DEFINES
+  - REFINES
+  - IMPLEMENTS
+  - TESTS
+  - VALIDATES
+  - DOCUMENTS
+  - JUSTIFIES
+  - DEPENDS_ON
+  - IMPACTS
+  - FIXES
+
+sections:
+  - id: overview
+    title: Project and Versions
+    artifactTypes:
+      - PROJECT
+      - VERSION
+
+  - id: requirements
+    title: Requirements and Use Cases
+    artifactTypes:
+      - EPIC
+      - REQUIREMENT
+      - USE_CASE
+
+  - id: architecture
+    title: Architecture and Decisions
+    artifactTypes:
+      - DECISION
+      - DESIGN
+      - ARCHITECTURE
+      - COMPONENT
+
+  - id: implementation
+    title: Implementation
+    artifactTypes:
+      - FEATURE
+      - CODE_ENTITY
+      - API
+      - DATABASE_ENTITY
+
+  - id: verification
+    title: Verification and Risk
+    artifactTypes:
+      - TEST_CASE
+      - RISK
+      - CHANGE
+
+  - id: documentation
+    title: Documentation
+    artifactTypes:
+      - DOCUMENTATION
+
+ordering:
+  strategy: lifecycle
+  fallback: title
+
+rendering:
+  includeTableOfContents: true
+  includeRelationTables: true
+  includeSourceMetadata: true
+`;
+    fs.writeFileSync(architectureProfilePath, architectureProfile);
+    console.log(chalk.green('âœ… Created docs/export-profiles/architecture.yaml'));
+  }
+
   // 3.1 Initialize /docs/relations with Mandatory Core Relations
   const relationsDir = path.join(docsDir, 'relations');
   if (!fs.existsSync(relationsDir)) {

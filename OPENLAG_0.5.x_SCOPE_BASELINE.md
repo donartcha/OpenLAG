@@ -8,7 +8,7 @@ It separates shipped behavior from proposed 0.5.x behavior so the roadmap does n
 
 | Area | Implemented in current repository | Notes |
 | --- | --- | --- |
-| CLI lifecycle | `init`, `generate`, `dev`, `build`, `lint`, `check`, `impact`, `preview` | There is no implemented `freeze` or `export` command yet. |
+| CLI lifecycle | `init`, `generate`, `dev`, `build`, `lint`, `check`, `impact`, `freeze`, `preview` | `freeze` currently supports Markdown output only. |
 | Artifact contracts | Dynamic YAML artifact contracts under `docs/artifacts/*.yaml` | Project-local contracts are resolved into runtime JSON for the portal. |
 | Relation contracts | YAML relation contracts under `docs/relations/*.yaml` | Existing contracts remain the source of relation semantics. |
 | Static output | `public/graph-data.json`, `public/artifact-definitions.json`, `public/relation-definitions.json`, static portal build in `dist/` | OpenLAG remains static-first and has no mandatory backend. |
@@ -16,14 +16,14 @@ It separates shipped behavior from proposed 0.5.x behavior so the roadmap does n
 | Lint profiles | `draft`, `feature`, `develop`, `release` | Existing lint semantics must not regress during 0.5.x work. |
 | Governance artifacts | Current official artifact contracts include `RISK`, `CHECK`, `REVIEW`, `EVIDENCE`, `INCIDENT`, and operational/process artifacts | New GAP/VIOLATION/DEBT/OBSERVATION-style findings remain proposed until P5 implements or documents them explicitly. |
 | Portal validation | Manual/local build validation only | Playwright smoke and screenshot validation are proposed for P3. |
-| Documentation export | Not implemented | Markdown-first freeze/export MVP is proposed for P1; PDF is deferred to P2. |
+| Documentation export | `openlag freeze` Markdown MVP | Export profiles live under `docs/export-profiles/*.yaml`; PDF is deferred to P2. |
 
 ## 0.5.x Proposed Scope
 
 | Phase | Status boundary | Proposed outcome |
 | --- | --- | --- |
 | P0 Alignment and Scope Lock | Documentation only | Keep this baseline, contradiction matrix, and cross-references current. |
-| P1 Freeze/Export MVP | Proposed implementation | Deterministic Markdown documentation snapshot from the OpenLAG graph and export profiles. |
+| P1 Freeze/Export MVP | Implemented Markdown MVP | Deterministic Markdown documentation snapshot from the OpenLAG graph and export profiles. |
 | P2 PDF Export | Proposed after P1 | Optional PDF generation sourced from the Markdown/export model, not from React portal printing. |
 | P3 Playwright Portal Validation | Proposed implementation | Portal smoke tests and deterministic screenshot workflow. |
 | P4 Dashboard Public/Technical Views | Proposed implementation | Public-safe and technical views with explicit redaction/defaults. |
@@ -37,7 +37,7 @@ It separates shipped behavior from proposed 0.5.x behavior so the roadmap does n
 
 | Topic | Conflicting inputs | Canonical P0 baseline |
 | --- | --- | --- |
-| Command naming | Plans mention both `openlag freeze` and `openlag export`. | Draft policy: use `openlag freeze` as the canonical command name for the documentation snapshot concept. Do not document it as implemented until P1 lands. Keep `export` available only as a future alias discussion unless the command decision changes. |
+| Command naming | Plans mention both `openlag freeze` and `openlag export`. | Use `openlag freeze` as the canonical command name for the documentation snapshot concept. Keep `export` available only as a future alias discussion unless the command decision changes. |
 | Governance scope | Some plans treat GAP/RISK/VIOLATION/DEBT/OBSERVATION as implemented; current contracts only implement part of that family. | Treat existing contracts as implemented. Treat new governance finding families as PROPOSED until P5 defines compatibility and contract behavior. |
 | Contract locations | Older proposals mention legacy contract paths; the repository uses `docs/artifacts` and `docs/relations`. | `docs/artifacts/*.yaml` and `docs/relations/*.yaml` are canonical. Do not introduce a parallel contract folder without a migration decision. |
 | PDF timing | Strategic plans ask for PDF; implementation instructions recommend Markdown-first. | P1 is Markdown-first. P2 may add optional PDF only after the export model and Markdown output are stable. |
@@ -53,7 +53,7 @@ The pending command decision is `openlag-0-5x-open-freeze-command`.
 P0 adopts this draft policy for documentation consistency:
 
 1. Use `freeze` as the concept name for a deterministic documentation snapshot.
-2. Do not list `openlag freeze` in implemented command tables until P1 implements it.
+2. List `openlag freeze` as implemented only for Markdown output after P1.
 3. Treat `export` as terminology for the internal/export model or as a possible future alias, not as the primary command.
 4. Keep generated freeze outputs under `dist/openlag/exports/` unless P1 discovers a stronger implementation constraint.
 5. Keep PDF support out of P1 unless Markdown freeze is already stable.

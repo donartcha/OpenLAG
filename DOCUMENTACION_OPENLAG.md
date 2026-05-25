@@ -182,6 +182,8 @@ openlag build      Genera datos y construye el portal estatico.
 openlag lint       Valida documentacion y relaciones.
 openlag preview    Previsualiza dist/.
 openlag check      Ejecuta generate + lint de OpenLAG.
+openlag impact     Analiza impacto por artefacto, archivo o rango Git.
+openlag freeze     Genera una congelacion documental Markdown determinista.
 ```
 
 Opciones relevantes:
@@ -196,7 +198,19 @@ openlag lint --profile develop
 openlag lint --profile release --strict
 openlag lint --json
 openlag check --profile release --strict
+openlag impact --artifact req-registration
+openlag impact --from main --to HEAD --json
+openlag freeze --profile architecture --format markdown
+openlag freeze --profile architecture --dry-run
 ```
+
+### Documentation freeze
+
+`openlag freeze` genera una instantanea documental Markdown desde el grafo local y un perfil de exportacion.
+
+El perfil por defecto esta en `docs/export-profiles/architecture.yaml` y la salida se escribe en `dist/openlag/exports/<profile>/` salvo que se use `--output`.
+
+PDF queda como fase posterior y debe partir del modelo/export Markdown, no de imprimir el portal React.
 
 ### Scripts NPM del repositorio
 

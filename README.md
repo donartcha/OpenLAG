@@ -92,6 +92,13 @@ openlag impact --artifact req-registration
 openlag impact --from main --to HEAD --json
 ```
 
+Generate a deterministic Markdown documentation freeze:
+
+```bash
+openlag freeze --profile architecture --format markdown
+openlag freeze --profile architecture --dry-run
+```
+
 Show the installed CLI version:
 
 ```bash
@@ -108,8 +115,23 @@ openlag build      Build the static portal
 openlag lint       Validate documentation and relations
 openlag check      Generate graph data and run OpenLAG lint
 openlag impact     Analyze propagated impact from contracts
+openlag freeze     Generate deterministic Markdown documentation snapshots
 openlag preview    Preview the production build
 ```
+
+## Documentation Freeze
+
+OpenLAG can generate a Markdown-first documentation freeze from the local graph model and an export profile.
+
+The default profile lives at `docs/export-profiles/architecture.yaml`. Generated files go to `dist/openlag/exports/<profile>/` unless `--output` is provided.
+
+```bash
+openlag freeze --profile architecture --format markdown
+openlag freeze --profile architecture --output dist/openlag/exports/architecture
+openlag freeze --profile architecture --dry-run
+```
+
+PDF generation is intentionally not part of the Markdown-first MVP. It is tracked as a later phase and must consume the export model or generated Markdown rather than printing the React portal.
 
 ## Lint Profiles
 

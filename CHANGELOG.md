@@ -4,6 +4,9 @@ All notable changes to OpenLAG are documented in this file.
 
 ## Unreleased
 
+### Added
+- Added the Markdown-first `openlag freeze` MVP with export profiles, dry-run support, deterministic Markdown output, and default output under `dist/openlag/exports/`.
+
 ### Changed
 - Documented the automated npm release flow where merges to `main` trigger GitHub Actions validation, release tag creation, and Trusted Publisher publication.
 - Added a canonical 0.5.x scope baseline and contradiction matrix that separates implemented behavior from proposed roadmap work.

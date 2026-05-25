@@ -726,6 +726,21 @@ jobs:
 - Show progressive traceability debt.
 - Avoid structural inconsistencies before merge.
 
+## 15.1 Documentation Freeze
+
+`openlag freeze` creates a deterministic Markdown documentation snapshot from the local OpenLAG graph and an export profile.
+
+The Markdown-first MVP uses profiles in `docs/export-profiles/*.yaml` and writes to `dist/openlag/exports/<profile>/` by default. Export profiles are documentation-as-code inputs: they select artifact types, relation types, sections, ordering, and rendering flags without replacing artifact contracts or relation contracts.
+
+The current implemented format is `markdown`:
+
+```bash
+openlag freeze --profile architecture --format markdown
+openlag freeze --profile architecture --dry-run
+```
+
+PDF remains a planned optional phase. It must be generated from the export model or generated Markdown, not from React portal printing.
+
 ## 16. Conceptual Roadmap
 
 The detailed 0.5.x roadmap baseline and contradiction matrix live in [`OPENLAG_0.5.x_SCOPE_BASELINE.md`](./OPENLAG_0.5.x_SCOPE_BASELINE.md). The roadmap below is conceptual; implemented/proposed boundaries are governed by that baseline.

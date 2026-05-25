@@ -14,6 +14,7 @@ import { initProject } from './init.js';
 import { lintDocs } from './lint.js';
 import { resolveViteBin } from './vite-bin.js';
 import { registerImpactCommand } from './impact.js';
+import { registerFreezeCommand } from './freeze.js';
 
 const program = new Command();
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
@@ -111,5 +112,6 @@ program
   });
 
 registerImpactCommand(program);
+registerFreezeCommand(program);
 
 program.parse();
