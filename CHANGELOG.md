@@ -6,6 +6,7 @@ All notable changes to OpenLAG are documented in this file.
 
 ### Changed
 - Documented the automated npm release flow where merges to `main` trigger GitHub Actions validation, release tag creation, and Trusted Publisher publication.
+- Added a canonical 0.5.x scope baseline and contradiction matrix that separates implemented behavior from proposed roadmap work.
 
 ## 0.4.0 - 2026-05-22
 

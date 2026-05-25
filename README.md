@@ -12,6 +12,12 @@ OpenLAG is in active early development. The current release focuses on a clean C
 
 The tool is designed to be static-first: documentation stays in your repository, OpenLAG generates `public/graph-data.json`, and the portal can be built as static assets.
 
+## 0.5.x Scope Baseline
+
+The canonical 0.5.x scope baseline is documented in [OPENLAG_0.5.x_SCOPE_BASELINE.md](./OPENLAG_0.5.x_SCOPE_BASELINE.md).
+
+That baseline separates implemented behavior from proposed 0.5.x work. In particular, `openlag freeze` / documentation export, PDF generation, Playwright screenshots, expanded governance findings, mass authoring tooling, and evolved impact reports are roadmap items until their implementation phases land.
+
 ## Install
 
 Install the CLI globally:
@@ -168,6 +174,7 @@ The generated portal is static. Protect it appropriately if the source Markdown 
 ## Repository Documentation
 
 - [Specification](./SPECIFICATION.md): conceptual model, artifact types, relation model, and project structure.
+- [0.5.x Scope Baseline](./OPENLAG_0.5.x_SCOPE_BASELINE.md): canonical scope, contradiction matrix, and implemented vs proposed boundaries.
 - [Changelog](./CHANGELOG.md): release history.
 - [Security](./SECURITY.md): security considerations and vulnerability reporting.
 - [Contributing](./CONTRIBUTING.md): local development and PR workflow.

@@ -59,6 +59,14 @@ Observaciones actuales:
 
 Conclusion: el paquete queda preparado para una release NPM `0.3.0` con documentacion publica coherente y validaciones principales en verde.
 
+## 2.1 Baseline canonica 0.5.x
+
+La baseline canonica de alcance 0.5.x esta en [`OPENLAG_0.5.x_SCOPE_BASELINE.md`](./OPENLAG_0.5.x_SCOPE_BASELINE.md).
+
+Ese documento separa comportamiento implementado de trabajo PROPOSED para 0.5.x. Hasta que las fases correspondientes aterricen, no se debe presentar como implementado: `openlag freeze` / exportacion documental, PDF, Playwright para screenshots, nuevas familias de hallazgos de governance, tooling masivo de autoria o evolucion avanzada del impact engine.
+
+La documentacion humana debe seguir usando Markdown, los contratos canonicos siguen en `docs/artifacts/*.yaml` y `docs/relations/*.yaml`, y OpenLAG debe conservar el modo static-first sin backend obligatorio.
+
 ## 3. Arquitectura general
 
 OpenLAG esta compuesto por tres zonas principales:
@@ -861,3 +869,4 @@ Antes de considerar OpenLAG listo para release:
 5. Ejecutar `node bin/openlag.js --version`.
 6. Ejecutar `npm pack --dry-run`.
 7. Actualizar esta documentacion si cambian los contratos, comandos o tipos oficiales.
+8. Revisar la baseline 0.5.x en `OPENLAG_0.5.x_SCOPE_BASELINE.md` antes de documentar cualquier capacidad nueva como implementada.
