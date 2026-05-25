@@ -10,3 +10,4 @@ coverage/
 .env*
 /public
 checklist.md
+docs/assets/screenshots/generated/

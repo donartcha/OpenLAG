@@ -44,6 +44,7 @@ export default function App() {
             onClick={() => setView('graph')}
             className={`transition-all hover:text-white hover:opacity-100 ${activeView === 'graph' ? 'text-white opacity-100' : 'opacity-40'}`}
             title="Graph View"
+            data-testid="nav-graph"
           >
             <Network size={20} strokeWidth={1.5} />
           </button>
@@ -51,6 +52,7 @@ export default function App() {
              onClick={() => setView('docs')}
              className={`transition-all hover:text-white hover:opacity-100 ${activeView === 'docs' ? 'text-white opacity-100' : 'opacity-40'}`}
              title="Documentation Engine"
+             data-testid="nav-docs"
           >
             <FileText size={20} strokeWidth={1.5} />
           </button>
@@ -58,6 +60,7 @@ export default function App() {
              onClick={() => setView('impact')}
              className={`transition-all hover:text-white hover:opacity-100 ${activeView === 'impact' ? 'text-white opacity-100' : 'opacity-40'}`}
              title="Impact Analysis"
+             data-testid="nav-impact"
           >
             <GitPullRequest size={20} strokeWidth={1.5} />
           </button>
@@ -65,6 +68,7 @@ export default function App() {
              onClick={() => setView('orphans')}
              className={`transition-all hover:text-white hover:opacity-100 ${activeView === 'orphans' ? 'text-red-400 opacity-100' : 'opacity-40'}`}
              title="Traceability GAPs"
+             data-testid="nav-orphans"
           >
             <AlertCircle size={20} strokeWidth={1.5} />
           </button>
@@ -72,6 +76,7 @@ export default function App() {
              onClick={() => setView('guide')}
              className={`transition-all hover:text-white hover:opacity-100 ${activeView === 'guide' ? 'text-amber-400 opacity-100' : 'opacity-40'}`}
              title="Usage Guide"
+             data-testid="nav-guide"
           >
             <BookOpen size={20} strokeWidth={1.5} />
           </button>
@@ -82,6 +87,7 @@ export default function App() {
             onClick={() => setView('settings')}
             className={`transition-all hover:text-white hover:opacity-100 ${activeView === 'settings' ? 'text-white opacity-100' : 'opacity-40'}`}
             title="Settings"
+            data-testid="nav-settings"
           >
             <Settings size={20} strokeWidth={1.5} />
           </button>
@@ -151,7 +157,7 @@ export default function App() {
         </header>
 
         {/* View Renderer */}
-        <main className="flex-1 relative overflow-hidden">
+        <main className="flex-1 relative overflow-hidden" data-testid={`view-${activeView}`}>
           {isLoading && !currentVersionId ? (
             <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm z-50">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
