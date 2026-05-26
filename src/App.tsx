@@ -109,6 +109,7 @@ export default function App() {
                 <span className="text-[10px] opacity-40 uppercase tracking-widest">Doc Snapshot</span>
               </div>
               <select 
+                data-testid="version-select"
                 value={currentVersionId || ''} 
                 onChange={(e) => setVersion(e.target.value)}
                 className="bg-[#0c0c0c] border border-white/20 text-xs font-mono text-emerald-400 rounded-sm px-3 py-1.5 outline-none cursor-pointer hover:bg-white/5 transition-colors focus:border-emerald-400"
