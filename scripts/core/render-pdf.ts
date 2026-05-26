@@ -14,6 +14,11 @@ const browser = await chromium.launch({ headless: true });
 try {
   const page = await browser.newPage();
   await page.goto(pathToFileURL(path.resolve(htmlPath)).toString(), { waitUntil: 'networkidle' });
+  await page.waitForFunction(() => {
+    const state = document.documentElement.dataset.mermaid;
+    return state === 'ready' || state === 'unavailable' || state === 'error';
+  }, { timeout: 5000 }).catch(() => undefined);
+  await page.waitForTimeout(100);
   await page.pdf({
     path: pdfPath,
     format: 'A4',

@@ -9,6 +9,7 @@ export function registerFreezeCommand(program: Command) {
     .description('Generate a deterministic documentation freeze from the OpenLAG graph')
     .option('-p, --profile <profile>', 'Export profile from docs/contracts/export-profiles', 'architecture')
     .option('--format <format>', 'Output format (markdown, json, html, pdf)', 'markdown')
+    .option('--template <template>', 'Freeze HTML/PDF template id or path override')
     .option('-o, --output <path>', 'Output directory or .md file')
     .option('--dry-run', 'Preview what would be exported without writing files')
     .action((options) => {
@@ -17,6 +18,7 @@ export function registerFreezeCommand(program: Command) {
           projectRoot: process.cwd(),
           profile: options.profile,
           format: options.format,
+          template: options.template,
           output: options.output,
           dryRun: options.dryRun,
         });

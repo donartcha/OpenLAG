@@ -4,7 +4,14 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 
-import { createDocumentationFreeze, loadExportProfile } from '../scripts/core/freeze.js';
+import {
+  createDocumentationFreeze,
+  inlineOfflineTemplateVendors,
+  loadExportProfile,
+  REQUIRED_TEMPLATE_PLACEHOLDERS,
+  REQUIRED_TEMPLATE_SLOTS,
+  validateFreezeTemplateSource,
+} from '../scripts/core/freeze.js';
 
 function writeFile(filePath: string, content: string) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
@@ -19,16 +26,30 @@ function createFixture() {
     '<html lang="en">',
     '<head>',
     '<meta charset="utf-8" />',
-    '<style>.cover{padding:1rem}.artifact-card{border:1px solid #ddd}.footer{font-size:.8rem}</style>',
+    '<style>.cover{padding:1rem}.artifact-card{border:1px solid #ddd;break-inside:avoid;page-break-inside:avoid}.footer{font-size:.8rem}@media print{.artifact-card{break-inside:avoid;page-break-inside:avoid}}</style>',
+    '<script id="openlag-vendor-marked">/* __OPENLAG_INLINE_MARKED_BUNDLE__ */</script>',
+    '<script id="openlag-vendor-mermaid">/* __OPENLAG_INLINE_MERMAID_BUNDLE__ */</script>',
+    '<script>document.documentElement.dataset.mermaid="ready";</script>',
     '</head>',
     '<body>',
-    '<span data-template="cover.title">Template title</span>',
-    '<span data-template="executiveSummary.purpose">Template purpose</span>',
-    '<main class="document"></main>',
+    '<main class="document">',
+    '<section class="cover">',
+    '<img data-template-src="branding.logo" alt="logo">',
+    ...REQUIRED_TEMPLATE_PLACEHOLDERS.map((name) => `<span data-template="${name}">${name}</span>`),
+    '</section>',
+    ...REQUIRED_TEMPLATE_SLOTS.map((name) => `<div data-slot="${name}"></div>`),
+    '</main>',
     '</body>',
     '</html>',
     '',
   ].join('\n'));
+
+  for (const templateName of ['technical-manual.html', 'executive-brief.html', 'audit-dossier.html', 'knowledge-map.html']) {
+    writeFile(
+      path.join(projectRoot, 'templates', 'freeze', templateName),
+      fs.readFileSync(path.join(process.cwd(), 'templates', 'freeze', templateName), 'utf-8')
+    );
+  }
 
   writeFile(path.join(projectRoot, 'OpenLAG-logo-t.png'), 'not-a-real-png');
 
@@ -222,12 +243,75 @@ test('renders professional HTML from the freeze template contract', () => {
   assert.match(content, /Executive Summary/);
   assert.match(content, /data:image\/png;base64/);
   assert.match(content, /class="artifact-card"/);
+  assert.match(content, /id="openlag-vendor-marked"/);
+  assert.match(content, /id="openlag-vendor-mermaid"/);
+  assert.match(content, /data-openlag-markdown-body/);
   assert.match(content, /Outgoing relations/);
   assert.match(content, /Incoming relations/);
   assert.match(content, /IMPLEMENTS/);
   assert.match(content, /propósito frágil evolución contraseña auditoría diseño integración/);
   assert.doesNotMatch(content, /data-template=/);
   assert.doesNotMatch(content, /id: req-a\s+type: REQUIREMENT/);
+});
+
+test('inlines offline vendors in memory without requiring source template mutation', () => {
+  const source = [
+    '<script id="openlag-vendor-marked">',
+    '/* __OPENLAG_INLINE_MARKED_BUNDLE__ */',
+    '</script>',
+    '<script id="openlag-vendor-mermaid">',
+    '/* __OPENLAG_INLINE_MERMAID_BUNDLE__ */',
+    '</script>',
+  ].join('\n');
+
+  const rendered = inlineOfflineTemplateVendors(source, process.cwd());
+
+  assert.doesNotMatch(rendered, /__OPENLAG_INLINE_MARKED_BUNDLE__/);
+  assert.doesNotMatch(rendered, /__OPENLAG_INLINE_MERMAID_BUNDLE__/);
+  assert.match(rendered, /OpenLAG inline vendor: marked/);
+  assert.match(rendered, /OpenLAG inline vendor: mermaid/);
+});
+
+test('bundled freeze templates comply with the shared template contract', () => {
+  const templateNames = [
+    'freeze-template.html',
+    'technical-manual.html',
+    'executive-brief.html',
+    'audit-dossier.html',
+    'knowledge-map.html',
+  ];
+
+  for (const templateName of templateNames) {
+    const template = fs.readFileSync(path.join(process.cwd(), 'templates', 'freeze', templateName), 'utf-8');
+    const validation = validateFreezeTemplateSource(template);
+
+    assert.deepStrictEqual(validation.issues, [], templateName);
+    assert.doesNotMatch(template, /OpenLAG inline vendor|marked v\d|__esbuild_esm_mermaid/i);
+    assert.match(template, /__OPENLAG_INLINE_MARKED_BUNDLE__/);
+    assert.match(template, /__OPENLAG_INLINE_MERMAID_BUNDLE__/);
+  }
+});
+
+test('all freeze templates preserve documentation coverage from the same model', () => {
+  const projectRoot = createFixture();
+  const templateNames = ['freeze-template', 'technical-manual', 'executive-brief', 'audit-dossier', 'knowledge-map'];
+  const outputs = templateNames.map((templateName) => (
+    String(createDocumentationFreeze({ projectRoot, profile: 'architecture', format: 'html', template: templateName, dryRun: true }).content)
+  ));
+
+  for (const content of outputs) {
+    assert.match(content, /project-a/);
+    assert.match(content, /req-a/);
+    assert.match(content, /cmp-a/);
+    assert.match(content, /Overview/);
+    assert.match(content, /Requirements/);
+    assert.match(content, /Architecture/);
+    assert.match(content, /IMPLEMENTS/);
+    assert.match(content, /architecture/);
+    assert.doesNotMatch(content, /__OPENLAG_INLINE_/);
+    assert.match(content, /OpenLAG inline vendor: marked/);
+    assert.match(content, /OpenLAG inline vendor: mermaid/);
+  }
 });
 
 test('keeps markdown and json compatibility with extended export profiles', () => {

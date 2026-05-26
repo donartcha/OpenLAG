@@ -12,6 +12,8 @@ All notable changes to OpenLAG are documented in this file.
 - Added Playwright lifecycle stabilization through an explicit test runner so portal smoke tests and documentation screenshots terminate cleanly.
 - Added OpenLAG logo and favicon assets to the generated Vite portal and package metadata.
 - Added professional freeze template rendering for HTML and PDF exports, including branded cover pages, executive summary text from export profiles, artifact cards, relation lists, and UTF-8-safe documentary output.
+- Added in-memory offline vendor injection for Marked and Mermaid so exported HTML/PDF documentary outputs do not depend on CDN, internet access, ESM imports, or a local server while keeping the source freeze template editable.
+- Added a parameterized freeze template system with technical manual, executive brief, audit dossier, and knowledge map documentary layouts that share the same rendering contract and offline export pipeline.
 
 ### Changed
 - Promoted the stabilized OpenLAG 0.5.0 runtime model: lightweight core, optional governance, optional impact engine, optional authoring tooling, and official freeze/export.

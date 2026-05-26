@@ -129,6 +129,7 @@ export interface FreezeOptions {
   projectRoot: string;
   profile?: string;
   format?: string;
+  template?: string;
   output?: string;
   dryRun?: boolean;
 }
@@ -143,6 +144,84 @@ export interface FreezeResult {
   relationCount: number;
   dryRun: boolean;
   format: FreezeFormat;
+}
+
+export const REQUIRED_TEMPLATE_PLACEHOLDERS = [
+  'branding.productName',
+  'branding.subtitle',
+  'cover.eyebrow',
+  'cover.title',
+  'cover.description',
+  'summary.artifactCount',
+  'summary.relationCount',
+  'summary.sectionCount',
+  'profile.id',
+  'profile.name',
+  'profile.description',
+  'document.language',
+  'document.title',
+  'document.generatedAt',
+  'document.formatVersion',
+  'executiveSummary.title',
+  'executiveSummary.purposeTitle',
+  'executiveSummary.purpose',
+  'executiveSummary.scopeTitle',
+  'executiveSummary.scope',
+  'executiveSummary.audienceTitle',
+  'executiveSummary.audience',
+  'footer.left',
+  'footer.right',
+];
+
+export const REQUIRED_TEMPLATE_ASSET_PLACEHOLDERS = ['branding.logo'];
+
+export const REQUIRED_TEMPLATE_SLOTS = [
+  'openlag.tableOfContents',
+  'openlag.sidebarNavigation',
+  'openlag.sections',
+  'openlag.artifacts',
+  'openlag.relations',
+  'openlag.technicalMetadata',
+];
+
+export interface FreezeTemplateContext {
+  branding: {
+    logo?: string;
+    productName: string;
+    subtitle: string;
+  };
+  document: {
+    language: string;
+    title: string;
+    generatedAt: string;
+    formatVersion: string;
+  };
+  cover: {
+    eyebrow: string;
+    title: string;
+    description: string;
+  };
+  profile: {
+    id: string;
+    name: string;
+    description: string;
+  };
+  summary: FrozenDocument['summary'];
+  executiveSummary: {
+    title: string;
+    purposeTitle: string;
+    purpose: string;
+    scopeTitle: string;
+    scope: string;
+    audienceTitle: string;
+    audience: string;
+  };
+  rendering: NonNullable<ExportProfile['rendering']>;
+  sections: FrozenSection[];
+  footer: {
+    left: string;
+    right: string;
+  };
 }
 
 function ensureArray(value: unknown): string[] {
@@ -228,10 +307,31 @@ function resolveOutputFile(projectRoot: string, profile: ExportProfile, format: 
   };
   const ext = extensionByFormat[format];
   const defaultDir = path.join(projectRoot, 'dist', 'openlag', 'exports', profile.id);
-  if (!output) return path.join(defaultDir, `openlag-${profile.id}${ext}`);
+  if (!output) {
+    const templateId = profile.template?.id;
+    const suffix = templateId && templateId !== 'professional-document-v1' ? `-${slug(templateId)}` : '';
+    return path.join(defaultDir, `openlag-${profile.id}${suffix}${ext}`);
+  }
 
   const resolved = path.isAbsolute(output) ? output : path.join(projectRoot, output);
   return path.extname(resolved) ? resolved : path.join(resolved, `openlag-${profile.id}${ext}`);
+}
+
+function resolveTemplateOverride(template: string): ExportProfile['template'] {
+  const pathLike = template.endsWith('.html') || template.includes('/') || template.includes('\\');
+  const templatePath = pathLike ? template : `templates/freeze/${template}.html`;
+  return {
+    id: slug(path.basename(template, '.html')),
+    path: templatePath,
+  };
+}
+
+function applyTemplateOverride(profile: ExportProfile, template?: string): ExportProfile {
+  if (!template) return profile;
+  return {
+    ...profile,
+    template: resolveTemplateOverride(template),
+  };
 }
 
 function displayFile(filePath: string): string {
@@ -456,14 +556,15 @@ export function renderJsonFreeze(document: FrozenDocument): string {
   return `${JSON.stringify(document, null, 2)}\n`;
 }
 
-function normalizeTemplatePath(projectRoot: string, templatePath?: string): string {
+function normalizeTemplatePath(projectRoot: string, template?: ExportProfile['template']): string {
   const defaultTemplate = path.join(projectRoot, 'templates', 'freeze', 'freeze-template.html');
+  const templatePath = template?.path || (template?.id ? `templates/freeze/${template.id}.html` : undefined);
   if (!templatePath) return defaultTemplate;
   return path.isAbsolute(templatePath) ? templatePath : path.join(projectRoot, templatePath);
 }
 
 function loadDocumentaryTemplate(projectRoot: string, profile: ExportProfile | FrozenDocument['profile']): string {
-  const templatePath = normalizeTemplatePath(projectRoot, profile.template?.path);
+  const templatePath = normalizeTemplatePath(projectRoot, profile.template);
   if (fs.existsSync(templatePath)) return fs.readFileSync(templatePath, 'utf-8');
 
   if (profile.template?.path) {
@@ -484,8 +585,56 @@ function loadDocumentaryTemplate(projectRoot: string, profile: ExportProfile | F
   ].join('\n');
 }
 
+function resolveNodeModuleVendor(projectRoot: string, segments: string[]): string | undefined {
+  const candidates = [
+    path.join(projectRoot, 'node_modules', ...segments),
+    path.join(process.cwd(), 'node_modules', ...segments),
+  ];
+  return candidates.find((candidate) => fs.existsSync(candidate));
+}
+
+function readClassicVendorBundle(projectRoot: string, label: string, segments: string[]): string {
+  const vendorPath = resolveNodeModuleVendor(projectRoot, segments);
+  if (!vendorPath) {
+    throw new Error(`Missing ${label} browser bundle. Run npm install before exporting offline freeze HTML/PDF.`);
+  }
+
+  const bundle = fs.readFileSync(vendorPath, 'utf-8').trim();
+  if (/^\s*(import|export)\s/m.test(bundle)) {
+    throw new Error(`${label} bundle must be a classic browser script, not ESM: ${vendorPath}`);
+  }
+
+  return [
+    `/* OpenLAG inline vendor: ${label}`,
+    ` * Source: ${path.relative(projectRoot, vendorPath).replace(/\\/g, '/')}`,
+    ' * Injected in memory during freeze export.',
+    ' */',
+    bundle.replace(/<\/script/gi, '<\\/script'),
+  ].join('\n');
+}
+
+export function inlineOfflineTemplateVendors(template: string, projectRoot: string): string {
+  if (!template.includes('__OPENLAG_INLINE_MARKED_BUNDLE__') && !template.includes('__OPENLAG_INLINE_MERMAID_BUNDLE__')) {
+    return template;
+  }
+
+  return template
+    .replace(
+      '/* __OPENLAG_INLINE_MARKED_BUNDLE__ */',
+      () => readClassicVendorBundle(projectRoot, 'marked', ['marked', 'lib', 'marked.umd.js'])
+    )
+    .replace(
+      '/* __OPENLAG_INLINE_MERMAID_BUNDLE__ */',
+      () => readClassicVendorBundle(projectRoot, 'mermaid', ['mermaid', 'dist', 'mermaid.min.js'])
+    );
+}
+
 function extractTemplateStyle(template: string): string {
   return template.match(/<style[^>]*>[\s\S]*?<\/style>/i)?.[0] || '';
+}
+
+function extractTemplateScripts(template: string): string {
+  return (template.match(/<script\b(?![^>]*\btype=["']module["'])[\s\S]*?<\/script>/gi) || []).join('\n');
 }
 
 function resolveLogoDataUri(projectRoot: string, logoPath?: string): string | undefined {
@@ -613,7 +762,8 @@ function renderArtifactCard(artifact: FrozenArtifact, anchors: Set<string>, docu
     artifact.source ? `<div class="metadata-item"><span>Source</span><strong>${escapeHtml(artifact.source)}</strong></div>` : '',
     '</div>',
     artifact.description ? `<p>${escapeHtml(artifact.description)}</p>` : '',
-    `<div class="markdown">${markdownToHtml(artifact.markdownBody)}</div>`,
+    `<div class="markdown" data-openlag-markdown-body>${escapeHtml(artifact.markdownBody?.trim() || 'No body content.')}</div>`,
+    `<noscript><div class="markdown">${markdownToHtml(artifact.markdownBody)}</div></noscript>`,
     includeRelations ? [
       '<div class="relations">',
       '<div class="relation-box">',
@@ -687,9 +837,10 @@ function renderSidebar(document: FrozenDocument, logoDataUri?: string): string {
   ].filter(Boolean).join('\n');
 }
 
-function renderDocumentaryHtml(document: FrozenDocument, projectRoot: string): string {
-  const template = loadDocumentaryTemplate(projectRoot, document.profile);
+export function renderDocumentaryHtml(document: FrozenDocument, projectRoot: string): string {
+  const template = inlineOfflineTemplateVendors(loadDocumentaryTemplate(projectRoot, document.profile), projectRoot);
   const style = extractTemplateStyle(template);
+  const scripts = extractTemplateScripts(template);
   const branding = document.profile.branding || {};
   const doc = document.profile.document || {};
   const executiveSummary = document.profile.executiveSummary || {};
@@ -770,6 +921,7 @@ function renderDocumentaryHtml(document: FrozenDocument, projectRoot: string): s
     '<meta name="viewport" content="width=device-width, initial-scale=1" />',
     `<title>${escapeHtml(title)}</title>`,
     style,
+    scripts,
     '</head>',
     '<body>',
     '<div class="app-shell">',
@@ -792,8 +944,235 @@ function renderDocumentaryHtml(document: FrozenDocument, projectRoot: string): s
   return html.replace(/\sdata-template="[^"]*"/g, '');
 }
 
+export interface FreezeTemplateValidationResult {
+  valid: boolean;
+  issues: string[];
+}
+
+export function validateFreezeTemplateSource(template: string): FreezeTemplateValidationResult {
+  const issues: string[] = [];
+  for (const placeholder of REQUIRED_TEMPLATE_PLACEHOLDERS) {
+    if (!template.includes(`data-template="${placeholder}"`)) issues.push(`Missing placeholder: ${placeholder}`);
+  }
+  for (const placeholder of REQUIRED_TEMPLATE_ASSET_PLACEHOLDERS) {
+    if (!template.includes(`data-template-src="${placeholder}"`)) issues.push(`Missing asset placeholder: ${placeholder}`);
+  }
+  for (const slot of REQUIRED_TEMPLATE_SLOTS) {
+    if (!template.includes(`data-slot="${slot}"`)) issues.push(`Missing slot: ${slot}`);
+  }
+  if (!/<!doctype html>/i.test(template) || !/<html\b/i.test(template) || !/<head\b/i.test(template) || !/<body\b/i.test(template)) {
+    issues.push('Template must contain doctype, html, head, and body structure.');
+  }
+  if (!/<meta[^>]+charset=["']?utf-8/i.test(template)) issues.push('Template must declare UTF-8 charset.');
+  if (/https?:\/\//i.test(template) || /\b(cdn|unpkg|jsdelivr)\b/i.test(template)) issues.push('Template must not contain internet/CDN dependencies.');
+  if (/OpenLAG inline vendor|marked v\d|__esbuild_esm_mermaid|mermaid\.version/i.test(template)) issues.push('Source template must not contain embedded vendor bundles.');
+  if (!/@media\s+print/i.test(template)) issues.push('Template must define print CSS.');
+  if (!/break-inside\s*:\s*avoid/i.test(template)) issues.push('Template must avoid card breaks in print.');
+  if (!/page-break-inside\s*:\s*avoid/i.test(template)) issues.push('Template must avoid legacy page breaks in print.');
+  if (/fake artifact|demo artifact|template title|template purpose/i.test(template)) issues.push('Template must not contain fake demo artifacts.');
+  return { valid: issues.length === 0, issues };
+}
+
+function getContextValue(context: FreezeTemplateContext, pathExpression: string): string {
+  const value = pathExpression.split('.').reduce<unknown>((current, key) => (
+    current && typeof current === 'object' ? (current as Record<string, unknown>)[key] : undefined
+  ), context);
+  return value === undefined || value === null ? '' : String(value);
+}
+
+export function buildFreezeTemplateContext(document: FrozenDocument, projectRoot: string): FreezeTemplateContext {
+  const branding = document.profile.branding || {};
+  const doc = document.profile.document || {};
+  const executiveSummary = document.profile.executiveSummary || {};
+  const footer = document.profile.footer || {};
+  return {
+    branding: {
+      logo: resolveLogoDataUri(projectRoot, branding.logo),
+      productName: branding.productName || 'OpenLAG',
+      subtitle: branding.subtitle || 'Documentation Freeze',
+    },
+    document: {
+      language: doc.language || 'en',
+      title: doc.title || document.profile.name,
+      generatedAt: document.generatedAt,
+      formatVersion: document.formatVersion,
+    },
+    cover: {
+      eyebrow: doc.eyebrow || 'Generated Architecture Snapshot',
+      title: doc.title || document.profile.name,
+      description: doc.description || document.profile.description || 'Deterministic architecture documentation generated from the current OpenLAG graph.',
+    },
+    profile: {
+      id: document.profile.id,
+      name: document.profile.name,
+      description: document.profile.description || '',
+    },
+    summary: document.summary,
+    executiveSummary: {
+      title: executiveSummary.title || 'Executive Summary',
+      purposeTitle: executiveSummary.purposeTitle || 'Document purpose',
+      purpose: executiveSummary.purpose || document.profile.description || 'This document provides a stable, reviewable snapshot of the architecture knowledge captured by OpenLAG.',
+      scopeTitle: executiveSummary.scopeTitle || 'Scope',
+      scope: executiveSummary.scope || 'The content is selected by the active export profile.',
+      audienceTitle: executiveSummary.audienceTitle || 'Intended audience',
+      audience: executiveSummary.audience || 'Architecture, governance and engineering teams.',
+    },
+    rendering: document.profile.rendering || {},
+    sections: document.sections,
+    footer: {
+      left: footer.left || 'Generated by OpenLAG freeze',
+      right: footer.right || `Document template ${document.profile.template?.id || 'professional-document-v1'}`,
+    },
+  };
+}
+
+export function renderSidebarNavigation(context: FreezeTemplateContext): string {
+  return [
+    '<p class="nav-title">Document</p>',
+    context.rendering.includeCover === false ? '' : '<a class="nav-link" href="#cover">Cover</a>',
+    context.rendering.includeExecutiveSummary === false ? '' : '<a class="nav-link" href="#executive-summary">Executive Summary</a>',
+    context.rendering.includeTableOfContents === false ? '' : '<a class="nav-link" href="#toc">Table of Contents</a>',
+    '<p class="nav-title">Sections</p>',
+    ...context.sections.map((section) => `<a class="nav-link" href="#section-${escapeAttribute(slug(section.id))}">${escapeHtml(section.title)}</a>`),
+  ].filter(Boolean).join('\n');
+}
+
+export function renderTableOfContents(context: FreezeTemplateContext): string {
+  if (context.rendering.includeTableOfContents === false) return '';
+  return [
+    '<ul class="toc">',
+    ...context.sections.map((section, index) => (
+      `<li><a href="#section-${escapeAttribute(slug(section.id))}"><span class="toc-number">${String(index + 1).padStart(2, '0')}</span> ${escapeHtml(section.title)}</a></li>`
+    )),
+    '</ul>',
+  ].join('\n');
+}
+
+export function renderRelations(context: FreezeTemplateContext): string {
+  if (context.rendering.includeRelationTables === false) return '';
+  const relations = context.sections.flatMap((section) => section.artifacts.flatMap((artifact) => artifact.relations.outgoing));
+  if (relations.length === 0) return '<p class="empty-state">No relations matched this export profile.</p>';
+  return [
+    '<table class="relation-matrix">',
+    '<thead><tr><th>From</th><th>Relation</th><th>To</th></tr></thead>',
+    '<tbody>',
+    ...relations.map((relation) => `<tr><td>${escapeHtml(relation.from)}</td><td>${escapeHtml(relation.type)}</td><td>${escapeHtml(relation.to)}</td></tr>`),
+    '</tbody>',
+    '</table>',
+  ].join('\n');
+}
+
+export function renderTechnicalMetadata(context: FreezeTemplateContext): string {
+  if (context.rendering.includeTechnicalMetadata !== true) return '';
+  return `<pre class="json-block">${escapeHtml(JSON.stringify({
+    profile: context.profile,
+    summary: context.summary,
+    generatedAt: context.document.generatedAt,
+    formatVersion: context.document.formatVersion,
+  }, null, 2))}</pre>`;
+}
+
+function documentFromContext(context: FreezeTemplateContext): FrozenDocument {
+  return {
+    id: 'TEMPLATE-CONTEXT',
+    generatedAt: context.document.generatedAt,
+    formatVersion: 'openlag.freeze.v1',
+    profile: {
+      id: context.profile.id,
+      name: context.profile.name,
+      description: context.profile.description,
+      rendering: context.rendering,
+    },
+    summary: context.summary,
+    sections: context.sections,
+  };
+}
+
+export function renderArtifactCards(context: FreezeTemplateContext): string {
+  const anchors = new Set(context.sections.flatMap((section) => section.artifacts.map((artifact) => artifact.id)));
+  const doc = documentFromContext(context);
+  return context.sections.flatMap((section) => section.artifacts).map((artifact) => renderArtifactCard(artifact, anchors, doc)).join('\n');
+}
+
+export function renderSections(context: FreezeTemplateContext): string {
+  const anchors = new Set(context.sections.flatMap((section) => section.artifacts.map((artifact) => artifact.id)));
+  const doc = documentFromContext(context);
+  return context.sections.map((section, index) => renderSection(section, index, anchors, doc)).join('\n');
+}
+
+function renderExecutiveSummary(context: FreezeTemplateContext): string {
+  if (context.rendering.includeExecutiveSummary === false) return '';
+  return [
+    '<div class="summary-grid">',
+    '<div class="panel">',
+    `<h3>${escapeHtml(context.executiveSummary.purposeTitle)}</h3>`,
+    `<p>${escapeHtml(context.executiveSummary.purpose)}</p>`,
+    `<h3>${escapeHtml(context.executiveSummary.scopeTitle)}</h3>`,
+    `<p>${escapeHtml(context.executiveSummary.scope)}</p>`,
+    '</div>',
+    '<div class="panel">',
+    `<h3>${escapeHtml(context.executiveSummary.audienceTitle)}</h3>`,
+    `<p>${escapeHtml(context.executiveSummary.audience)}</p>`,
+    '</div>',
+    '</div>',
+  ].join('\n');
+}
+
+function replaceElementContent(html: string, attribute: string, values: Record<string, string>): string {
+  let rendered = html;
+  for (const [name, value] of Object.entries(values)) {
+    const pattern = new RegExp(`(<([a-zA-Z][\\w:-]*)\\b[^>]*\\s${attribute}="${name}"[^>]*>)([\\s\\S]*?)(<\\/\\2>)`, 'g');
+    rendered = rendered.replace(pattern, (_match, openTag: string, _tag: string, _content: string, closeTag: string) => (
+      `${openTag.replace(new RegExp(`\\s${attribute}="${name}"`), '')}${value}${closeTag}`
+    ));
+  }
+  return rendered;
+}
+
+function replaceAssetPlaceholders(html: string, context: FreezeTemplateContext): string {
+  return html.replace(/<([a-zA-Z][\w:-]*)\b([^>]*?)\sdata-template-src="([^"]+)"([^>]*)>/g, (_match, tag: string, before: string, pathExpression: string, after: string) => {
+    const value = getContextValue(context, pathExpression);
+    const attributes = `${before}${after}`.replace(/\ssrc="[^"]*"/, '');
+    return `<${tag}${attributes} src="${escapeAttribute(value)}">`;
+  });
+}
+
+function applyTemplateContext(template: string, context: FreezeTemplateContext): string {
+  const placeholders = Object.fromEntries(REQUIRED_TEMPLATE_PLACEHOLDERS.map((name) => [name, escapeHtml(getContextValue(context, name))]));
+  const slots: Record<string, string> = {
+    'openlag.tableOfContents': renderTableOfContents(context),
+    'openlag.sidebarNavigation': renderSidebarNavigation(context),
+    'openlag.sections': renderSections(context),
+    'openlag.artifacts': renderArtifactCards(context),
+    'openlag.relations': renderRelations(context),
+    'openlag.technicalMetadata': renderTechnicalMetadata(context),
+  };
+  let html = template.replace(/<html\b([^>]*)>/i, (_match, attributes: string) => (
+    `<html${attributes.replace(/\slang="[^"]*"/i, '')} lang="${escapeAttribute(context.document.language)}">`
+  ));
+  html = html.replace(/<title>[\s\S]*?<\/title>/i, `<title>${escapeHtml(context.document.title)}</title>`);
+  html = replaceAssetPlaceholders(html, context);
+  html = replaceElementContent(html, 'data-template', placeholders);
+  html = replaceElementContent(html, 'data-slot', slots);
+  html = replaceElementContent(html, 'data-openlag-executive-summary', { summary: renderExecutiveSummary(context) });
+  if (context.rendering.includeCover === false) html = html.replace(/<header\b[^>]*id="cover"[\s\S]*?<\/header>/i, '');
+  if (context.rendering.includeExecutiveSummary === false) html = html.replace(/<section\b[^>]*id="executive-summary"[\s\S]*?<\/section>/i, '');
+  if (context.rendering.includeFooter === false) html = html.replace(/<footer\b[\s\S]*?<\/footer>/i, '');
+  return html;
+}
+
+function renderTemplateDocumentaryHtml(document: FrozenDocument, projectRoot: string): string {
+  const sourceTemplate = loadDocumentaryTemplate(projectRoot, document.profile);
+  const validation = validateFreezeTemplateSource(sourceTemplate);
+  if (!validation.valid) {
+    throw new Error(`Invalid freeze template ${document.profile.template?.path || document.profile.template?.id || 'freeze-template'}:\n- ${validation.issues.join('\n- ')}`);
+  }
+  const context = buildFreezeTemplateContext(document, projectRoot);
+  return `${inlineOfflineTemplateVendors(applyTemplateContext(sourceTemplate, context), projectRoot)}\n`;
+}
+
 export function renderHtmlFreeze(document: FrozenDocument, projectRoot = process.cwd()): string {
-  return renderDocumentaryHtml(document, projectRoot);
+  return renderTemplateDocumentaryHtml(document, projectRoot);
 }
 
 function pdfEscape(value: string): string {
@@ -848,7 +1227,7 @@ function renderPlainPdfFreeze(document: FrozenDocument): Buffer {
 }
 
 export function renderPdfFreeze(document: FrozenDocument, projectRoot = process.cwd()): Buffer {
-  const html = renderDocumentaryHtml(document, projectRoot);
+  const html = renderTemplateDocumentaryHtml(document, projectRoot);
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'openlag-freeze-pdf-'));
   const htmlPath = path.join(tempDir, 'freeze.html');
   const pdfPath = path.join(tempDir, 'freeze.pdf');
@@ -882,7 +1261,7 @@ function renderFreeze(document: FrozenDocument, format: FreezeFormat, projectRoo
 
 export function createDocumentationFreeze(options: FreezeOptions): FreezeResult {
   const projectRoot = path.resolve(options.projectRoot);
-  const profile = loadExportProfile(projectRoot, options.profile || 'architecture');
+  const profile = applyTemplateOverride(loadExportProfile(projectRoot, options.profile || 'architecture'), options.template);
   const format = normalizeFormat(options.format, profile.defaultFormat || 'markdown');
 
   const docsDir = path.join(projectRoot, 'docs');
