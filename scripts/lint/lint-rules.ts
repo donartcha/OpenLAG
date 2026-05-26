@@ -1,5 +1,5 @@
 import { LintIssue, LintProfile } from './lint-types.js';
-import { OpenLagData, ParsedArtifact, ParsedRelation, ParseError } from '../core/parser.js';
+import { OpenLagData, ParsedArtifact } from '../core/parser.js';
 import { ArtifactRegistry } from '../../src/core/registry/ArtifactRegistry.js';
 import { RelationRegistry } from '../../src/core/registry/RelationRegistry.js';
 import { RuleRegistry } from '../../src/core/registry/RuleRegistry.js';
@@ -7,8 +7,23 @@ import { RuleRegistry } from '../../src/core/registry/RuleRegistry.js';
 export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue[] {
   const issues: LintIssue[] = [];
 
+  const normalizeSeverity = (severity: string | undefined): 'error' | 'warning' | 'info' | 'off' | undefined => {
+      if (severity === 'warn') return 'warning';
+      if (severity === 'error' || severity === 'warning' || severity === 'info' || severity === 'off') return severity;
+      return undefined;
+  };
+
+  const getByPath = (value: unknown, path: string): unknown => {
+      return path.split('.').reduce<unknown>((current, segment) => {
+          if (current && typeof current === 'object' && segment in current) {
+              return (current as Record<string, unknown>)[segment];
+          }
+          return undefined;
+      }, value);
+  };
+
   const getSeverity = (rule: keyof LintProfile | string, artifactStatus?: string, defaultSeverity: 'error' | 'warning' | 'info' = 'error') => {
-      let severity = profile[rule as keyof LintProfile] as string | undefined || defaultSeverity;
+      let severity = normalizeSeverity(profile[rule as keyof LintProfile] as string | undefined) || defaultSeverity;
       if (severity === 'off') return 'off';
       
       // Downgrade severities based on drafting status
@@ -117,8 +132,12 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
     if (isDeprecated) continue;
 
     const artifactOutgoingRelations = data.relations.filter(r => r.from === artifact.id);
+    const artifactIncomingRelations = data.relations.filter(r => r.to === artifact.id);
 
     for (const rule of dynamicRules) {
+        const profileSeverity = normalizeSeverity(profile[rule.id]);
+        if (!profileSeverity || profileSeverity === 'off') continue;
+
         // Evaluate Match Node
         if (rule.matchNode) {
             if (rule.matchNode.type) {
@@ -135,16 +154,23 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
         if (rule.conditions) {
             if (rule.conditions.requiredRelations) {
                 for (const req of rule.conditions.requiredRelations) {
-                    const match = artifactOutgoingRelations.some(rel => {
+                    const direction = req.direction || 'outgoing';
+                    const candidateRelations = direction === 'incoming'
+                        ? artifactIncomingRelations
+                        : direction === 'both'
+                            ? [...artifactOutgoingRelations, ...artifactIncomingRelations]
+                            : artifactOutgoingRelations;
+
+                    const match = candidateRelations.some(rel => {
                         if (rel.type !== req.type) return false;
                         if (req.toType) {
-                            const target = artifactMap.get(rel.to)?.[0];
+                            const target = artifactMap.get(direction === 'incoming' ? rel.from : rel.to)?.[0];
                             if (!target) return false;
                             const matchTypes = Array.isArray(req.toType) ? req.toType : [req.toType];
                             if (!matchTypes.some(mt => ArtifactRegistry.isCompatibleType(mt, target.type))) return false;
                         }
                         if (req.toLayer) {
-                             const target = artifactMap.get(rel.to)?.[0];
+                             const target = artifactMap.get(direction === 'incoming' ? rel.from : rel.to)?.[0];
                              if (!target) return false;
                              const matchLayers = Array.isArray(req.toLayer) ? req.toLayer : [req.toLayer];
                              if (!matchLayers.includes(target.layer || '')) return false;
@@ -153,23 +179,30 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
                     });
                     
                     if (!match) {
-                        addIssue(rule.id, req.message || `Violates required relation rule: ${rule.id}`, artifact.file, artifact.id, artifact.status, rule.severity as 'error' | 'warning' | 'info');
+                        addIssue(rule.id, req.message || `Violates required relation rule: ${rule.id}`, artifact.file, artifact.id, artifact.status, profileSeverity);
                     }
                 }
             }
 
             if (rule.conditions.forbiddenRelations) {
                 for (const fb of rule.conditions.forbiddenRelations) {
-                     const match = artifactOutgoingRelations.find(rel => {
+                     const direction = fb.direction || 'outgoing';
+                     const candidateRelations = direction === 'incoming'
+                        ? artifactIncomingRelations
+                        : direction === 'both'
+                            ? [...artifactOutgoingRelations, ...artifactIncomingRelations]
+                            : artifactOutgoingRelations;
+
+                     const match = candidateRelations.find(rel => {
                         if (rel.type !== fb.type) return false;
                         if (fb.toType) {
-                            const target = artifactMap.get(rel.to)?.[0];
+                            const target = artifactMap.get(direction === 'incoming' ? rel.from : rel.to)?.[0];
                             if (!target) return false;
                             const matchTypes = Array.isArray(fb.toType) ? fb.toType : [fb.toType];
                             if (!matchTypes.some(mt => ArtifactRegistry.isCompatibleType(mt, target.type))) return false;
                         }
                         if (fb.toLayer) {
-                             const target = artifactMap.get(rel.to)?.[0];
+                             const target = artifactMap.get(direction === 'incoming' ? rel.from : rel.to)?.[0];
                              if (!target) return false;
                              const matchLayers = Array.isArray(fb.toLayer) ? fb.toLayer : [fb.toLayer];
                              if (!matchLayers.includes(target.layer || '')) return false;
@@ -178,21 +211,21 @@ export function runLintRules(data: OpenLagData, profile: LintProfile): LintIssue
                     });
                     
                     if (match) {
-                        addIssue(rule.id, fb.message || `Violates forbidden relation rule: ${rule.id}`, artifact.file, artifact.id, artifact.status, rule.severity as 'error' | 'warning' | 'info');
+                        addIssue(rule.id, fb.message || `Violates forbidden relation rule: ${rule.id}`, artifact.file, artifact.id, artifact.status, profileSeverity);
                     }
                 }
             }
             
             if (rule.conditions.allowedLayers && artifact.layer) {
                 if (!rule.conditions.allowedLayers.includes(artifact.layer)) {
-                    addIssue(rule.id, `Violates allowed layers: ${rule.id}`, artifact.file, artifact.id, artifact.status, rule.severity as 'error' | 'warning' | 'info');
+                    addIssue(rule.id, `Violates allowed layers: ${rule.id}`, artifact.file, artifact.id, artifact.status, profileSeverity);
                 }
             }
 
             if (rule.conditions.requiredFields) {
                 for (const field of rule.conditions.requiredFields) {
-                    if ((artifact as any).raw?.[field] === undefined) {
-                         addIssue(rule.id, `Missing required field \`${field}\` (Required by rule \`${rule.id}\`).`, artifact.file, artifact.id, artifact.status, rule.severity as 'error' | 'warning' | 'info');
+                    if (getByPath((artifact as any).raw, field) === undefined) {
+                         addIssue(rule.id, `Missing required field \`${field}\` (Required by rule \`${rule.id}\`).`, artifact.file, artifact.id, artifact.status, profileSeverity);
                     }
                 }
             }

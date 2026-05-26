@@ -4,7 +4,7 @@
 export interface RuleContract {
   id: string;
   description: string;
-  severity: "error" | "warn" | "info";
+  severity: "error" | "warn" | "warning" | "info";
   matchNode?: {
     type?: string | string[];
     layer?: string | string[];
@@ -12,12 +12,14 @@ export interface RuleContract {
   conditions?: {
     requiredRelations?: {
       type: string;
+      direction?: "outgoing" | "incoming" | "both";
       toType?: string | string[];
       toLayer?: string | string[];
       message?: string;
     }[];
     forbiddenRelations?: {
       type: string;
+      direction?: "outgoing" | "incoming" | "both";
       toType?: string | string[];
       toLayer?: string | string[];
       message?: string;
@@ -41,7 +43,6 @@ export const generatedRules: RuleContract[] = [
           "type": "IMPLEMENTS",
           "toType": [
             "REQUIREMENT",
-            "EPIC",
             "FEATURE",
             "BUG",
             "API"
@@ -142,7 +143,6 @@ export const generatedRules: RuleContract[] = [
     "matchNode": {
       "type": [
         "REQUIREMENT",
-        "EPIC",
         "FEATURE",
         "USE_CASE"
       ]
@@ -151,6 +151,7 @@ export const generatedRules: RuleContract[] = [
       "requiredRelations": [
         {
           "type": "IMPLEMENTS",
+          "direction": "incoming",
           "message": "Requirement lacks implementation."
         }
       ]
@@ -163,7 +164,6 @@ export const generatedRules: RuleContract[] = [
     "matchNode": {
       "type": [
         "REQUIREMENT",
-        "EPIC",
         "FEATURE",
         "USE_CASE"
       ]
@@ -172,6 +172,7 @@ export const generatedRules: RuleContract[] = [
       "requiredRelations": [
         {
           "type": "TESTS",
+          "direction": "incoming",
           "message": "Requirement has no tests linked."
         }
       ]

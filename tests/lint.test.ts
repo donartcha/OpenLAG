@@ -3,6 +3,7 @@ import test from 'node:test';
 import { runLintRules } from '../scripts/lint/lint-rules.js';
 import { defaultProfiles } from '../scripts/lint/lint-profiles.js';
 import { OpenLagData, ParsedArtifact, ParsedRelation } from '../scripts/core/parser.js';
+import { RuleRegistry } from '../src/core/registry/RuleRegistry.js';
 
 function createMockData(): OpenLagData {
   return {
@@ -109,3 +110,28 @@ test('closed requirement blocks when linking to draft', () => {
     assert.strictEqual(pendingRel.severity, 'warning'); // Develop profile warns on this
 });
 
+test('dynamic rules are profile-gated and normalize warn severity', () => {
+    const data = createMockData();
+    data.artifacts.push(createMockArtifact('CODE-1', 'CODE_ENTITY', 'ready'));
+
+    const originalGetAll = RuleRegistry.getAll;
+    (RuleRegistry as any).getAll = () => [{
+        id: 'customOwnershipRule',
+        description: 'Requires ownership owner',
+        severity: 'warn',
+        matchNode: { type: 'CODE_ENTITY' },
+        conditions: { requiredFields: ['ownership.owner'] }
+    }];
+
+    try {
+        let issues = runLintRules(data, defaultProfiles['release']);
+        assert.equal(issues.some(i => i.rule === 'customOwnershipRule'), false);
+
+        issues = runLintRules(data, { ...defaultProfiles['release'], customOwnershipRule: 'warn' });
+        const issue = issues.find(i => i.rule === 'customOwnershipRule');
+        assert.ok(issue);
+        assert.equal(issue.severity, 'warning');
+    } finally {
+        (RuleRegistry as any).getAll = originalGetAll;
+    }
+});

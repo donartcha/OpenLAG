@@ -7,6 +7,7 @@ import { OrphansView } from './components/OrphansView';
 import { GuideView } from './components/GuideView';
 import { SettingsView } from './components/SettingsView';
 import { Network, FileText, GitPullRequest, Settings, Database, AlertCircle, BookOpen } from 'lucide-react';
+import faviconUrl from './assets/favicon.png';
 
 export default function App() {
   const { 
@@ -35,8 +36,8 @@ export default function App() {
     <div className="flex h-screen w-screen overflow-hidden bg-[#0a0a0a] text-[#e0e0e0] font-sans selection:bg-emerald-500/30 print-block">
       {/* Sidebar Nav */}
       <nav className="w-16 flex flex-col items-center py-6 bg-[#0c0c0c] text-white/40 border-r border-white/10 shrink-0">
-        <div className="w-8 h-8 bg-white flex items-center justify-center rounded-sm mb-8">
-          <div className="w-4 h-4 border-2 border-black rotate-45"></div>
+        <div className="w-10 h-10 flex items-center justify-center rounded-sm mb-8">
+          <img src={faviconUrl} alt="OpenLAG" className="h-9 w-9 object-contain" />
         </div>
         
         <div className="flex flex-col gap-6 w-full items-center">

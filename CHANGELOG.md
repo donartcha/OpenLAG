@@ -2,19 +2,30 @@
 
 All notable changes to OpenLAG are documented in this file.
 
-## Unreleased
+## 0.5.0 - 2026-05-26
 
 ### Added
-- Added the Markdown-first `openlag freeze` MVP with export profiles, dry-run support, deterministic Markdown output, and default output under `dist/openlag/exports/`.
+- Added the official `openlag freeze` subsystem with export profiles, dry-run support, deterministic frozen document model generation, and `markdown`, `json`, `html`, and `pdf` output under `dist/openlag/exports/`.
+- Added executable rule contracts under `docs/contracts/rules/*.yaml`, generated rule registries, profile-gated runtime validation, and normalized `warn`/`warning` severity handling.
+- Added bundled profile/template assets for `core`, `governance`, `mvc`, `hexagonal`, and related profile packs, including deterministic `openlag profile add` and `openlag profile validate` workflows.
+- Added invalid validation fixtures under `tests/fixtures/invalid/` to prove expected governance failures without keeping the main OpenLAG dataset broken.
+- Added Playwright lifecycle stabilization through an explicit test runner so portal smoke tests and documentation screenshots terminate cleanly.
+- Added OpenLAG logo and favicon assets to the generated Vite portal and package metadata.
 
 ### Changed
-- Documented the automated npm release flow where merges to `main` trigger GitHub Actions validation, release tag creation, and Trusted Publisher publication.
-- Added a canonical 0.5.x scope baseline and contradiction matrix that separates implemented behavior from proposed roadmap work.
+- Promoted the stabilized OpenLAG 0.5.0 runtime model: lightweight core, optional governance, optional impact engine, optional authoring tooling, and official freeze/export.
+- Normalized canonical contract paths to `docs/contracts/artifacts`, `docs/contracts/relations`, `docs/contracts/rules`, and `docs/contracts/export-profiles`.
+- Updated the main reference dataset so `openlag check --profile release --strict` passes with no lint findings.
+- Updated README, specification, and project documentation to describe 0.5.0 implemented behavior instead of treating stabilized 0.5.0 capabilities as future 0.5.x roadmap work.
+- Updated the portal guide to reflect the OpenLAG 0.5.0 specification, including semantic layers, contract-driven paths, profile commands, rule contracts, and freeze/export behavior.
+
+### Removed
+- Removed Typst, jsPDF, html2canvas, and html-to-image from the 0.5.0 freeze/export public contract and dependencies.
 
 ## 0.4.0 - 2026-05-22
 
 ### Added
-- Added project-local artifact contract loading from `docs/artifacts/*.yaml`, including generated runtime payloads in `public/artifact-definitions.json`.
+- Added project-local artifact contract loading from `docs/contracts/artifacts/*.yaml`, including generated runtime payloads in `public/artifact-definitions.json`.
 - Added relation contract runtime payload generation in `public/relation-definitions.json` for static portal consumption.
 - Added richer lint report data to generated graph output for `draft`, `develop`, `feature`, and `release` profiles.
 - Added default and optional artifact contract scaffolding to `openlag init`, including a `CUSTOM_TYPE` example for user-defined contracts.
@@ -36,7 +47,7 @@ All notable changes to OpenLAG are documented in this file.
 
 ### Added
 - Added contract-driven artifact registry generation through `scripts/generate-artifacts.ts` and `src/core/generated/artifact-definitions.ts`.
-- Added support for custom artifact contracts under `docs/artifacts/*.yaml`, including type extension, layer assignment, required fields, and default impact metadata.
+- Added support for custom artifact contracts under `docs/contracts/artifacts/*.yaml`, including type extension, layer assignment, required fields, and default impact metadata.
 - Added `openlag impact` for contract-driven impact analysis by artifact id, source file, or Git diff range.
 - Added Markdown and JSON output modes for impact analysis, enabling local review and CI consumption.
 - Added bidirectional impact propagation based on relation contract metadata: `impact.propagates`, `impact.directions`, and `impact.weight`.

@@ -59,13 +59,11 @@ Observaciones actuales:
 
 Conclusion: el paquete queda preparado para una release NPM `0.5.0` con documentacion publica coherente y validaciones principales en verde.
 
-## 2.1 Baseline canonica 0.5.x
+## 2.1 Baseline canonica 0.5.0
 
-La baseline canonica de alcance 0.5.x esta en [`OPENLAG_0.5.x_SCOPE_BASELINE.md`](./OPENLAG_0.5.x_SCOPE_BASELINE.md).
+OpenLAG 0.5.0 sigue un modelo hibrido: nucleo ligero, governance opcional, impact engine opcional, tooling de autoria opcional y subsistema oficial de freeze/export. La linea `0.5.x` queda reservada para patches compatibles y estabilizacion posterior.
 
-Ese documento separa comportamiento implementado de trabajo PROPOSED para 0.5.x. Hasta que las fases correspondientes aterricen, no se debe presentar como implementado: `openlag freeze` / exportacion documental, PDF, Playwright para screenshots, nuevas familias de hallazgos de governance, tooling masivo de autoria o evolucion avanzada del impact engine.
-
-### Limite de governance 0.5.x (implementado vs propuesto)
+### Limite de governance 0.5.0
 
 Familias de governance implementadas hoy mediante contratos YAML:
 
@@ -75,7 +73,7 @@ Familias de governance implementadas hoy mediante contratos YAML:
 - `EVIDENCE`
 - `INCIDENT`
 
-Familias de hallazgos de governance que siguen en estado PROPOSED:
+Familias de hallazgos de governance implementadas como MVP mediante contratos y perfiles:
 
 - `GAP`
 - `VIOLATION`
@@ -246,7 +244,7 @@ openlag lint       Valida documentacion y relaciones.
 openlag preview    Previsualiza dist/.
 openlag check      Ejecuta generate + lint de OpenLAG.
 openlag impact     Analiza impacto por artefacto, archivo o rango Git.
-openlag freeze     Genera una congelacion documental Markdown determinista.
+openlag freeze     Genera una congelacion documental determinista.
 ```
 
 Opciones relevantes:
@@ -264,6 +262,9 @@ openlag check --profile release --strict
 openlag impact --artifact req-registration
 openlag impact --from main --to HEAD --json
 openlag freeze --profile architecture --format markdown
+openlag freeze --profile architecture --format json
+openlag freeze --profile architecture --format html
+openlag freeze --profile architecture --format pdf
 openlag freeze --profile architecture --dry-run
 ```
 
@@ -280,11 +281,11 @@ Esta propagación permite navegar por todo el grafo de forma determinista para c
 
 ### Documentation freeze
 
-`openlag freeze` genera una instantanea documental Markdown desde el grafo local y un perfil de exportacion.
+`openlag freeze` genera un modelo documental congelado desde el grafo local y un perfil de exportacion.
 
 El perfil por defecto esta en `docs/contracts/export-profiles/architecture.yaml` y la salida se escribe en `dist/openlag/exports/<profile>/` salvo que se use `--output`.
 
-PDF queda como fase posterior y debe partir del modelo/export Markdown, no de imprimir el portal React.
+Los formatos oficiales son `markdown`, `json`, `html` y `pdf`. HTML genera una pagina documental standalone; PDF parte del modelo congelado y no de imprimir el portal React.
 
 ### Scripts NPM del repositorio
 ### Generacion de datos
@@ -795,7 +796,7 @@ Recomendaciones:
 
 ### P3
 
-- Revisar dependencias de exportacion/reporting (`jspdf`, `html-to-image`, `html2canvas`) y confirmar si siguen siendo necesarias.
+- Mantener las dependencias de exportacion/reporting alineadas con el modelo congelado y evitar dependencias de renderizado del portal.
 - Documentar el contrato de `openlag.config.yml`, ya que el linter lo carga pero la documentacion del archivo de configuracion es limitada.
 - Decidir si `npm run build` debe generar tambien `public/graph-data.json` en el flujo de paquete o si esa responsabilidad queda solo en `openlag build`.
 
@@ -825,7 +826,7 @@ npm run check
 
 ```mermaid
 graph TD
-    DOCS["docs/*.md + docs/relations/*.yaml"] --> PARSER["Parser + Normalizer"]
+    DOCS["docs/*.md + docs/contracts/**/*.yaml"] --> PARSER["Parser + Normalizer"]
     PARSER --> LINT["OpenLAG Lint"]
     PARSER --> GEN["generateData"]
     GEN --> JSON["public/graph-data.json"]
@@ -884,11 +885,11 @@ erDiagram
 
 Antes de considerar OpenLAG listo para release:
 
-1. Regenerar relaciones con `npm run generate-relations` si cambian los YAML de `docs/relations/`.
+1. Regenerar relaciones con `npm run generate-relations` si cambian los YAML de `docs/contracts/relations/`.
 2. Ejecutar `npm run typecheck`.
 3. Ejecutar `openlag check --profile release --strict` si se quiere validar la arquitectura documental como gate de release.
 4. Ejecutar `npm run check`.
 5. Ejecutar `node bin/openlag.js --version`.
 6. Ejecutar `npm pack --dry-run`.
 7. Actualizar esta documentacion si cambian los contratos, comandos o tipos oficiales.
-8. Revisar la baseline 0.5.x en `OPENLAG_0.5.x_SCOPE_BASELINE.md` antes de documentar cualquier capacidad nueva como implementada.
+8. Revisar `SPECIFICATION.md` antes de documentar cualquier capacidad nueva como implementada.

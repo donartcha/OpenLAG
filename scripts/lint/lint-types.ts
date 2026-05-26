@@ -1,4 +1,4 @@
-export type LintSeverity = 'error' | 'warning' | 'info' | 'off';
+export type LintSeverity = 'error' | 'warn' | 'warning' | 'info' | 'off';
 
 export interface LintIssue {
   severity: LintSeverity;

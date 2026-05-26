@@ -3,6 +3,8 @@ import { Artifact, ArtifactType, Relation, RelationType, Change, ChangeType, Sys
 export interface ParsedArtifact extends Artifact {
   file: string;
   status?: 'draft' | 'in_progress' | 'ready' | 'closed' | 'deprecated';
+  markdownBody?: string;
+  raw?: Record<string, unknown>;
 }
 
 export interface ParsedRelation extends Relation {

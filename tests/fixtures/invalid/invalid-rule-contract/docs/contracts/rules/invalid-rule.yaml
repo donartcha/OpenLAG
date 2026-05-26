@@ -1,0 +1,4 @@
+description: "Invalid rule fixture without id."
+severity: warning
+matchNode:
+  type: CODE_ENTITY

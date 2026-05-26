@@ -8,8 +8,8 @@ export function lintDocs(profile: string, jsonOutput = false, strictWarnings = f
   const configPath = path.join(process.cwd(), 'openlag.config.yml');
 
   const config = loadConfig(configPath);
-  loadArtifactContracts(path.join(docsDir, 'artifacts'));
-  loadRelationContracts(path.join(docsDir, 'relations'));
+  loadArtifactContracts(path.join(docsDir, 'contracts', 'artifacts'));
+  loadRelationContracts(path.join(docsDir, 'contracts', 'relations'));
   
   const report = runLint(docsDir, configPath, profile);
 

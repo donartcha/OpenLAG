@@ -10,11 +10,10 @@ export default defineConfig({
     baseURL: 'http://127.0.0.1:4173',
     trace: 'retain-on-failure',
   },
-  webServer: {
+  webServer: process.env.OPENLAG_EXTERNAL_SERVER ? undefined : {
     command: 'npm run preview:e2e',
     url: 'http://127.0.0.1:4173',
-    reuseExistingServer: !process.env.CI,
-    gracefulShutdown: { signal: 'SIGTERM', timeout: 5_000 },
+    reuseExistingServer: false,
     timeout: 120_000,
   },
   projects: [

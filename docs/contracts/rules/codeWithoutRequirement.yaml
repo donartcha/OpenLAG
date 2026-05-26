@@ -6,5 +6,5 @@ matchNode:
 conditions:
   requiredRelations:
     - type: IMPLEMENTS
-      toType: [REQUIREMENT, EPIC, FEATURE, BUG, API]
+      toType: [REQUIREMENT, FEATURE, BUG, API]
       message: "Code entity has no requirement associated."

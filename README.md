@@ -1,5 +1,7 @@
 # OpenLAG
 
+![OpenLAG logo](OpenLAG-logo.png)
+
 OpenLAG is a Documentation-as-Code and Semantic Governance platform for evolving software systems.
 
 It reads versioned architecture documentation from Markdown and YAML files, validates relationships between artifacts, generates a static graph data file, and builds a portal for exploring the resulting traceability graph.
@@ -12,11 +14,9 @@ OpenLAG is in active early development. The current release focuses on a clean C
 
 The tool is designed to be static-first: documentation stays in your repository, OpenLAG generates `public/graph-data.json`, and the portal can be built as static assets.
 
-## 0.5.x Scope Baseline
+## 0.5.0 Scope
 
-The canonical 0.5.x scope baseline is documented in [OPENLAG_0.5.x_SCOPE_BASELINE.md](./OPENLAG_0.5.x_SCOPE_BASELINE.md).
-
-That baseline separates implemented behavior from proposed 0.5.x work. In particular, `openlag freeze` / documentation export, PDF generation, Playwright screenshots, expanded governance findings, mass authoring tooling, and evolved impact reports are roadmap items until their implementation phases land.
+OpenLAG 0.5.0 uses a lightweight contract-driven core with optional governance, impact, authoring, and official freeze/export subsystems. The broader `0.5.x` line remains available for compatible stabilization patches.
 
 ## Install
 
@@ -92,10 +92,13 @@ openlag impact --artifact req-registration
 openlag impact --from main --to HEAD --json
 ```
 
-Generate a deterministic Markdown documentation freeze:
+Generate a deterministic documentation freeze:
 
 ```bash
 openlag freeze --profile architecture --format markdown
+openlag freeze --profile architecture --format json
+openlag freeze --profile architecture --format html
+openlag freeze --profile architecture --format pdf
 openlag freeze --profile architecture --dry-run
 ```
 
@@ -115,23 +118,38 @@ openlag build      Build the static portal
 openlag lint       Validate documentation and relations
 openlag check      Generate graph data and run OpenLAG lint
 openlag impact     Analyze propagated impact from contracts
-openlag freeze     Generate deterministic Markdown documentation snapshots
+openlag freeze     Generate deterministic documentation freezes
 openlag preview    Preview the production build
 ```
 
 ## Documentation Freeze
 
-OpenLAG can generate a Markdown-first documentation freeze from the local graph model and an export profile.
+OpenLAG generates a frozen document model from the local graph and an export profile, then renders it as Markdown, JSON, standalone HTML, or PDF.
 
-The default profile lives at `docs/export-profiles/architecture.yaml`. Generated files go to `dist/openlag/exports/<profile>/` unless `--output` is provided.
+The default profile lives at `docs/contracts/export-profiles/architecture.yaml`. Generated files go to `dist/openlag/exports/<profile>/` unless `--output` is provided.
 
 ```bash
 openlag freeze --profile architecture --format markdown
+openlag freeze --profile architecture --format json
+openlag freeze --profile architecture --format html
+openlag freeze --profile architecture --format pdf
 openlag freeze --profile architecture --output dist/openlag/exports/architecture
 openlag freeze --profile architecture --dry-run
 ```
 
-PDF generation is intentionally not part of the Markdown-first MVP. It is tracked as a later phase and must consume the export model or generated Markdown rather than printing the React portal.
+PDF generation is produced from the frozen document model. It does not print or depend on the React portal.
+
+## Profiles and Templates
+
+Bundled profile packs and templates are versioned package assets:
+
+```bash
+openlag init --profile core
+openlag init --profile governance
+openlag init --profile mvc
+openlag profile add testing
+openlag profile validate --profile governance
+```
 
 ## Lint Profiles
 
@@ -171,7 +189,7 @@ Use `to`, not `target`, in public examples and project documentation.
 
 ## Relation Contracts
 
-Relation rules live in `docs/relations/*.yaml`. The default initialization creates the core relation contracts needed for traceability. Optional relation contracts can be added as the project model matures.
+Relation contracts live in `docs/contracts/relations/*.yaml`. Rule contracts live in `docs/contracts/rules/*.yaml` and are enabled through lint profiles. The default initialization creates the core relation contracts needed for traceability. Optional relation and rule contracts can be added as the project model matures.
 
 Common relations include:
 
@@ -196,7 +214,7 @@ The generated portal is static. Protect it appropriately if the source Markdown 
 ## Repository Documentation
 
 - [Specification](./SPECIFICATION.md): conceptual model, artifact types, relation model, and project structure.
-- [0.5.x Scope Baseline](./OPENLAG_0.5.x_SCOPE_BASELINE.md): canonical scope, contradiction matrix, and implemented vs proposed boundaries.
+- [Specification](./SPECIFICATION.md): canonical runtime contract and implemented behavior boundaries.
 - [Changelog](./CHANGELOG.md): release history.
 - [Security](./SECURITY.md): security considerations and vulnerability reporting.
 - [Contributing](./CONTRIBUTING.md): local development and PR workflow.

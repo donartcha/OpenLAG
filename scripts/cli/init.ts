@@ -1,25 +1,13 @@
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import chalk from 'chalk';
+import { applyProfilePack } from './authoring.js';
 
 /**
  * OpenLAG Project Initializer
  * Purpose: Configures the OpenLAG portal for a specific project.
  */
-
-function copyRecursiveSync(src: string, dest: string) {
-  const exists = fs.existsSync(src);
-  const stats = exists && fs.statSync(src);
-  if (stats && stats.isDirectory()) {
-    if (!fs.existsSync(dest)) fs.mkdirSync(dest, { recursive: true });
-    fs.readdirSync(src).forEach((childItemName) => {
-      copyRecursiveSync(path.join(src, childItemName), path.join(dest, childItemName));
-    });
-  } else {
-    fs.copyFileSync(src, dest);
-    console.log(`Copied ${path.basename(dest)}`);
-  }
-}
 
 export async function initProject(projectName?: string, projectDesc?: string, includeAllRelations?: boolean, profile?: string) {
   const name = projectName || process.env.PROJECT_NAME || 'My OpenLAG Project';
@@ -82,13 +70,13 @@ export async function initProject(projectName?: string, projectDesc?: string, in
     console.log(chalk.green('✅ Created /docs/contracts directory'));
   }
 
-  const packageRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../..');
+  const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
   // Copy Core Profile
   const coreProfileDir = path.join(packageRoot, 'profiles', 'core');
   if (fs.existsSync(coreProfileDir)) {
     console.log(chalk.blue(`📦 Applying Core Profile...`));
-    copyRecursiveSync(coreProfileDir, docsContractsDir);
+    applyProfilePack('core', ROOT_DIR);
     console.log(chalk.green('✅ Core Contracts initialized'));
   } else {
     console.warn(chalk.yellow(`⚠️  Core profile not found at ${coreProfileDir}`));
@@ -102,7 +90,7 @@ export async function initProject(projectName?: string, projectDesc?: string, in
       console.warn(chalk.yellow(`⚠️  Profile pack '${profile}' not found in ${profileDir}. Skipping profile application.`));
     } else {
       console.log(chalk.blue(`📦 Applying extra profile pack: ${profile}...`));
-      copyRecursiveSync(profileDir, docsContractsDir);
+      applyProfilePack(profile, ROOT_DIR);
       console.log(chalk.green(`✅ Successfully added profile: ${profile}`));
     }
   }

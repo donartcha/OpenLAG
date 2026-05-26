@@ -6,6 +6,10 @@ version: v-1
 relations:
   - to: impl-ctr-1
     type: TESTS
+  - to: FEAT-015
+    type: TESTS
+  - to: REQ-020
+    type: TESTS
 ownership:
   owner: pcaro
   team: architecture

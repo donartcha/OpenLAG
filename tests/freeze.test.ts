@@ -113,7 +113,7 @@ function createFixture() {
   return projectRoot;
 }
 
-test('loads an export profile from docs/export-profiles', () => {
+test('loads an export profile from docs/contracts/export-profiles', () => {
   const projectRoot = createFixture();
   const profile = loadExportProfile(projectRoot, 'architecture');
 
@@ -145,4 +145,19 @@ test('writes markdown freeze to dist/openlag/exports by default', () => {
   );
   assert.strictEqual(fs.existsSync(result.outputFile), true);
   assert.strictEqual(fs.readFileSync(result.outputFile, 'utf-8'), result.markdown);
+});
+
+test('renders json, html, and pdf from the same frozen document model', () => {
+  const projectRoot = createFixture();
+  const json = createDocumentationFreeze({ projectRoot, profile: 'architecture', format: 'json' });
+  const html = createDocumentationFreeze({ projectRoot, profile: 'architecture', format: 'html' });
+  const pdf = createDocumentationFreeze({ projectRoot, profile: 'architecture', format: 'pdf' });
+
+  assert.match(json.outputFile, /openlag-architecture\.json$/);
+  assert.match(html.outputFile, /openlag-architecture\.html$/);
+  assert.match(pdf.outputFile, /openlag-architecture\.pdf$/);
+  assert.equal(JSON.parse(String(json.content)).formatVersion, 'openlag.freeze.v1');
+  assert.match(String(html.content), /<!doctype html>/);
+  assert.equal(Buffer.isBuffer(pdf.content), true);
+  assert.equal(fs.readFileSync(pdf.outputFile).subarray(0, 5).toString(), '%PDF-');
 });

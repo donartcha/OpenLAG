@@ -63,13 +63,11 @@ OpenLAG implements a contract-driven artifact engine introduced to enhance obser
 - True custom types via schemas: Standard artifacts or extensions defined through YAML schemas replacing loose free-text attributes.
 - Native propagation rules: Graph traversal powered bidirectional relation parsing explicitly designed to perform CI/CD impact analysis via `openlag impact`.
 
-### 0.5.x Scope Baseline
+### 0.5.0 Runtime Boundary
 
-The canonical 0.5.x scope baseline is maintained in [`OPENLAG_0.5.x_SCOPE_BASELINE.md`](./OPENLAG_0.5.x_SCOPE_BASELINE.md).
+OpenLAG 0.5.0 follows a hybrid architecture: a lightweight contract-driven core with optional governance, impact, authoring, and official freeze/export subsystems. The broader `0.5.x` line is reserved for compatible patches and follow-up stabilization.
 
-That document is the source of truth for current 0.5.x implementation boundaries, the contradiction matrix across prior plans, and the distinction between implemented behavior and PROPOSED roadmap items. This specification must not describe roadmap items such as documentation freeze/export, PDF generation, Playwright screenshots, expanded governance findings, mass authoring tooling, or evolved impact reporting as implemented until their phase-specific work lands.
-
-### 0.5.x Governance Boundary (Implemented vs Proposed)
+### 0.5.0 Governance Boundary
 
 Governance-related artifact contracts already implemented in the repository include:
 
@@ -81,7 +79,7 @@ EVIDENCE
 INCIDENT
 ```
 
-The following governance finding families are currently PROPOSED and must not be presented as implemented behavior until explicit contract and CLI support lands:
+The following governance finding families are implemented as MVP contract types and may be activated by profile-specific rules:
 
 ```text
 GAP
@@ -90,7 +88,9 @@ DEBT
 OBSERVATION
 ```
 
-Any future governance evolution must preserve compatibility with existing contract folders (`docs/contracts/artifacts/*.yaml`, `docs/contracts/relations/*.yaml`) and current lint profile semantics.
+Rule contracts live in `docs/contracts/rules/*.yaml`. They are executable MVP behavior, but they only affect runtime validation when the active lint profile enables the rule id. This keeps custom governance packs extensible without making every discovered rule automatically blocking.
+
+Any future governance evolution must preserve compatibility with existing contract folders (`docs/contracts/artifacts/*.yaml`, `docs/contracts/relations/*.yaml`, `docs/contracts/rules/*.yaml`) and current lint profile semantics.
 
 ## 2. Semantic Layer Model
 
@@ -794,22 +794,25 @@ jobs:
 
 ## 15.1 Documentation Freeze
 
-`openlag freeze` creates a deterministic Markdown documentation snapshot from the local OpenLAG graph and an export profile.
+`openlag freeze` creates a deterministic frozen document model from the local OpenLAG graph and an export profile.
 
-The Markdown-first MVP uses profiles in `docs/contracts/export-profiles/*.yaml` and writes to `dist/openlag/exports/<profile>/` by default. Export profiles are documentation-as-code inputs: they select artifact types, relation types, sections, ordering, and rendering flags without replacing artifact contracts or relation contracts.
+The freeze subsystem uses profiles in `docs/contracts/export-profiles/*.yaml` and writes to `dist/openlag/exports/<profile>/` by default. Export profiles are documentation-as-code inputs: they select artifact types, relation types, sections, ordering, and rendering flags without replacing artifact contracts or relation contracts.
 
-The current implemented format is `markdown`:
+The implemented output formats are `markdown`, `json`, `html`, and `pdf`:
 
 ```bash
 openlag freeze --profile architecture --format markdown
+openlag freeze --profile architecture --format json
+openlag freeze --profile architecture --format html
+openlag freeze --profile architecture --format pdf
 openlag freeze --profile architecture --dry-run
 ```
 
-PDF remains a planned optional phase. It must be generated from the export model or generated Markdown, not from React portal printing.
+HTML output is a standalone documentation page, not the React portal. PDF output is generated from the frozen document model, not from portal printing. `typst` is not part of the public 0.5.0 freeze contract.
 
 ## 16. Conceptual Roadmap
 
-The detailed 0.5.x roadmap baseline and contradiction matrix live in [`OPENLAG_0.5.x_SCOPE_BASELINE.md`](./OPENLAG_0.5.x_SCOPE_BASELINE.md). The roadmap below is conceptual; implemented/proposed boundaries are governed by that baseline.
+The roadmap below is conceptual; implemented behavior is governed by this specification and the runtime validations in this repository.
 
 #### Phase 1: Core and Tooling (Completed/In Progress)
 - **Robust Parser**: Centralized extraction of Markdown and YAML data.

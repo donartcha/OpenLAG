@@ -1,0 +1,5 @@
+type: GAP
+extends: GOVERNANCE_ARTIFACT
+layer: GOVERNANCE
+description: "Unresolved governance or traceability gap."
+requiredFields: [id, type, title, description]

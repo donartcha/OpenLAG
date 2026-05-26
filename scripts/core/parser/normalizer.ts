@@ -17,11 +17,12 @@ export function normalizeArtifact(parsed: any, fullPath: string, body: string): 
     type: typeValue,
     title: String(p.title || p.Title || (p.id || p.ID || '')),
     version: p.version || p.Version,
-    description: body || p.description,
+    description: p.description || body,
     status: p.status,
     layer: p.layer || derivedLayer,
     ownership: p.ownership || p.owner ? { owner: p.owner, ...p.ownership } : undefined,
     file: fullPath,
+    markdownBody: body,
     raw: p
   };
 }

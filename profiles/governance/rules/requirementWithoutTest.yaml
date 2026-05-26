@@ -1,0 +1,10 @@
+id: requirementWithoutTest
+description: "Requirement has no tests linked."
+severity: error
+matchNode:
+  type: [REQUIREMENT, FEATURE, USE_CASE]
+conditions:
+  requiredRelations:
+    - type: TESTS
+      direction: incoming
+      message: "Requirement has no tests linked."

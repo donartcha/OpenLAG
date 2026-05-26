@@ -10,6 +10,10 @@ ownership:
 relations:
   - to: req-func-1
     type: IMPLEMENTS
+  - to: FEAT-015
+    type: IMPLEMENTS
+  - to: REQ-020
+    type: IMPLEMENTS
   - to: des-cmp-1
     type: RELATES_TO
 ---
