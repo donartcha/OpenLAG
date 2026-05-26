@@ -798,6 +798,10 @@ jobs:
 
 The freeze subsystem uses profiles in `docs/contracts/export-profiles/*.yaml` and writes to `dist/openlag/exports/<profile>/` by default. Export profiles are documentation-as-code inputs: they select artifact types, relation types, sections, ordering, and rendering flags without replacing artifact contracts or relation contracts.
 
+Export profiles may also declare documentary template configuration. The optional fields `template`, `branding`, `document`, `executiveSummary`, `footer`, and `rendering` provide the customization contract for cover pages, executive summary text, branding, metadata visibility, relation tables, and footer content. If these fields are absent, the renderer uses backwards-compatible defaults.
+
+The default professional documentary template is `templates/freeze/freeze-template.html`. HTML and PDF exports render from the same frozen document model and template contract. Business-facing text such as document purpose, scope, audience, subtitles, and footer labels should come from the export profile or template defaults rather than being hardcoded in the renderer.
+
 The implemented output formats are `markdown`, `json`, `html`, and `pdf`:
 
 ```bash

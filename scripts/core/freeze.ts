@@ -1,5 +1,7 @@
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
+import { execFileSync } from 'child_process';
 import yaml from 'js-yaml';
 
 import { loadArtifactContracts } from './artifact-contracts.js';
@@ -27,10 +29,42 @@ export interface ExportProfile {
     strategy?: string;
     fallback?: string;
   };
+  template?: {
+    id?: string;
+    path?: string;
+  };
+  branding?: {
+    logo?: string;
+    productName?: string;
+    subtitle?: string;
+  };
+  document?: {
+    language?: string;
+    title?: string;
+    eyebrow?: string;
+    description?: string;
+  };
+  executiveSummary?: {
+    title?: string;
+    purposeTitle?: string;
+    purpose?: string;
+    scopeTitle?: string;
+    scope?: string;
+    audienceTitle?: string;
+    audience?: string;
+  };
+  footer?: {
+    left?: string;
+    right?: string;
+  };
   rendering?: {
     includeTableOfContents?: boolean;
     includeRelationTables?: boolean;
     includeSourceMetadata?: boolean;
+    includeTechnicalMetadata?: boolean;
+    includeCover?: boolean;
+    includeExecutiveSummary?: boolean;
+    includeFooter?: boolean;
   };
 }
 
@@ -75,6 +109,11 @@ export interface FrozenDocument {
     description?: string;
     ordering?: ExportProfile['ordering'];
     rendering?: ExportProfile['rendering'];
+    template?: ExportProfile['template'];
+    branding?: ExportProfile['branding'];
+    document?: ExportProfile['document'];
+    executiveSummary?: ExportProfile['executiveSummary'];
+    footer?: ExportProfile['footer'];
   };
   generatedAt: string;
   formatVersion: 'openlag.freeze.v1';
@@ -125,6 +164,10 @@ function escapeHtml(value: string): string {
     .replace(/"/g, '&quot;');
 }
 
+function escapeAttribute(value: string): string {
+  return escapeHtml(value).replace(/'/g, '&#39;');
+}
+
 function normalizeFormat(value: string | undefined, fallback: FreezeFormat): FreezeFormat {
   const format = (value || fallback).toLowerCase();
   if (format === 'markdown' || format === 'json' || format === 'html' || format === 'pdf') return format;
@@ -167,6 +210,11 @@ export function loadExportProfile(projectRoot: string, profileId = 'architecture
     includeRelations: ensureArray(parsed.includeRelations),
     sections,
     ordering: parsed.ordering,
+    template: parsed.template,
+    branding: parsed.branding,
+    document: parsed.document,
+    executiveSummary: parsed.executiveSummary,
+    footer: parsed.footer,
     rendering: parsed.rendering,
   };
 }
@@ -315,6 +363,11 @@ export function createFrozenDocument(profile: ExportProfile, artifacts: ParsedAr
       description: profile.description,
       ordering: profile.ordering,
       rendering: profile.rendering,
+      template: profile.template,
+      branding: profile.branding,
+      document: profile.document,
+      executiveSummary: profile.executiveSummary,
+      footer: profile.footer,
     },
     generatedAt: '1970-01-01T00:00:00.000Z',
     formatVersion: 'openlag.freeze.v1',
@@ -403,44 +456,351 @@ export function renderJsonFreeze(document: FrozenDocument): string {
   return `${JSON.stringify(document, null, 2)}\n`;
 }
 
-export function renderHtmlFreeze(document: FrozenDocument): string {
-  const markdown = renderMarkdownFreeze(document);
-  const body = markdown
-    .split('\n')
-    .map((line) => {
-      if (line.startsWith('# ')) return `<h1>${escapeHtml(line.slice(2))}</h1>`;
-      if (line.startsWith('## ')) return `<h2 id="${slug(line.slice(3))}">${escapeHtml(line.slice(3))}</h2>`;
-      if (line.startsWith('### ')) return `<h3>${escapeHtml(line.slice(4))}</h3>`;
-      if (line.startsWith('#### ')) return `<h4>${escapeHtml(line.slice(5))}</h4>`;
-      if (line.startsWith('- ')) return `<p class="item">${escapeHtml(line)}</p>`;
-      if (line.startsWith('|')) return `<pre class="table">${escapeHtml(line)}</pre>`;
-      if (line.trim() === '') return '';
-      return `<p>${escapeHtml(line)}</p>`;
-    })
-    .join('\n');
+function normalizeTemplatePath(projectRoot: string, templatePath?: string): string {
+  const defaultTemplate = path.join(projectRoot, 'templates', 'freeze', 'freeze-template.html');
+  if (!templatePath) return defaultTemplate;
+  return path.isAbsolute(templatePath) ? templatePath : path.join(projectRoot, templatePath);
+}
+
+function loadDocumentaryTemplate(projectRoot: string, profile: ExportProfile | FrozenDocument['profile']): string {
+  const templatePath = normalizeTemplatePath(projectRoot, profile.template?.path);
+  if (fs.existsSync(templatePath)) return fs.readFileSync(templatePath, 'utf-8');
+
+  if (profile.template?.path) {
+    throw new Error(`Freeze template not found: ${templatePath}`);
+  }
 
   return [
     '<!doctype html>',
     '<html lang="en">',
     '<head>',
-    '<meta charset="utf-8">',
-    '<meta name="viewport" content="width=device-width, initial-scale=1">',
-    `<title>${escapeHtml(document.profile.name)}</title>`,
-    '<style>body{font-family:Arial,sans-serif;line-height:1.55;margin:40px;max-width:980px;color:#202124}code{background:#f1f3f4;padding:2px 4px;border-radius:3px}.item{margin:.25rem 0}.table{background:#f8f9fa;padding:4px 8px;margin:0;white-space:pre-wrap}</style>',
+    '<meta charset="utf-8" />',
+    '<meta name="viewport" content="width=device-width, initial-scale=1" />',
+    '<title>OpenLAG Freeze</title>',
+    '<style>body{margin:0;background:#eef3f8;color:#182230;font-family:Arial,sans-serif}.app-shell{max-width:1180px;margin:0 auto;padding:28px}.document{background:#fff;border-radius:20px;overflow:hidden}.cover{padding:48px;background:#0f172a;color:white}.content{padding:38px}.artifact-card{border:1px solid #d9e2ec;border-radius:16px;margin:18px 0;overflow:hidden}.artifact-head,.artifact-body{padding:18px}.metadata-grid,.relations{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.badge{display:inline-block;border-radius:999px;padding:4px 8px;background:#eef2f7;margin-right:6px}.footer{padding:20px 38px;background:#f8fafc}</style>',
+    '</head>',
+    '<body><div class="app-shell"><main class="document"><div class="content"></div></main></div></body>',
+    '</html>',
+  ].join('\n');
+}
+
+function extractTemplateStyle(template: string): string {
+  return template.match(/<style[^>]*>[\s\S]*?<\/style>/i)?.[0] || '';
+}
+
+function resolveLogoDataUri(projectRoot: string, logoPath?: string): string | undefined {
+  const logo = logoPath || 'OpenLAG-logo-t.png';
+  const resolved = path.isAbsolute(logo) ? logo : path.join(projectRoot, logo);
+  if (!fs.existsSync(resolved)) return undefined;
+  const ext = path.extname(resolved).toLowerCase();
+  const mime = ext === '.svg' ? 'image/svg+xml' : ext === '.jpg' || ext === '.jpeg' ? 'image/jpeg' : 'image/png';
+  return `data:${mime};base64,${fs.readFileSync(resolved).toString('base64')}`;
+}
+
+function markdownToHtml(markdown?: string): string {
+  if (!markdown?.trim()) return '<p><em>No body content.</em></p>';
+
+  const lines = markdown.trim().split(/\r?\n/);
+  const html: string[] = [];
+  let inList = false;
+  let inCode = false;
+  const codeLines: string[] = [];
+
+  const closeList = () => {
+    if (inList) {
+      html.push('</ul>');
+      inList = false;
+    }
+  };
+
+  for (const line of lines) {
+    if (line.trim().startsWith('```')) {
+      if (inCode) {
+        html.push(`<pre><code>${escapeHtml(codeLines.join('\n'))}</code></pre>`);
+        codeLines.length = 0;
+        inCode = false;
+      } else {
+        closeList();
+        inCode = true;
+      }
+      continue;
+    }
+    if (inCode) {
+      codeLines.push(line);
+      continue;
+    }
+
+    const trimmed = line.trim();
+    if (!trimmed) {
+      closeList();
+      continue;
+    }
+    if (trimmed.startsWith('### ')) {
+      closeList();
+      html.push(`<h3>${escapeHtml(trimmed.slice(4))}</h3>`);
+      continue;
+    }
+    if (trimmed.startsWith('## ')) {
+      closeList();
+      html.push(`<h2>${escapeHtml(trimmed.slice(3))}</h2>`);
+      continue;
+    }
+    if (trimmed.startsWith('# ')) {
+      closeList();
+      html.push(`<h1>${escapeHtml(trimmed.slice(2))}</h1>`);
+      continue;
+    }
+    if (trimmed.startsWith('- ')) {
+      if (!inList) {
+        html.push('<ul>');
+        inList = true;
+      }
+      html.push(`<li>${escapeHtml(trimmed.slice(2))}</li>`);
+      continue;
+    }
+    closeList();
+    html.push(`<p>${escapeHtml(trimmed)}</p>`);
+  }
+  closeList();
+  if (inCode) html.push(`<pre><code>${escapeHtml(codeLines.join('\n'))}</code></pre>`);
+
+  return html.join('\n');
+}
+
+function relationTargetLabel(relation: FrozenRelation, direction: 'outgoing' | 'incoming'): string {
+  return direction === 'outgoing' ? relation.to : relation.from;
+}
+
+function relationArrow(direction: 'outgoing' | 'incoming'): string {
+  return direction === 'outgoing' ? '→' : '←';
+}
+
+function renderRelationList(relations: FrozenRelation[], direction: 'outgoing' | 'incoming', anchors: Set<string>): string {
+  if (relations.length === 0) return '<li><span>No relations</span></li>';
+  return relations.map((relation) => {
+    const target = relationTargetLabel(relation, direction);
+    const targetHtml = anchors.has(target)
+      ? `<a href="#artifact-${escapeAttribute(slug(target))}">${escapeHtml(target)}</a>`
+      : escapeHtml(target);
+    return `<li><span><strong>${escapeHtml(relation.type)}</strong> ${relationArrow(direction)} ${targetHtml}</span></li>`;
+  }).join('\n');
+}
+
+function renderArtifactCard(artifact: FrozenArtifact, anchors: Set<string>, document: FrozenDocument): string {
+  const includeTechnicalMetadata = document.profile.rendering?.includeTechnicalMetadata === true;
+  const includeRelations = document.profile.rendering?.includeRelationTables !== false;
+  const owner = artifact.ownership?.owner || 'Unassigned';
+  const team = artifact.ownership?.team || 'Unassigned';
+  const statusClass = artifact.status ? slug(artifact.status) : '';
+
+  return [
+    `<article class="artifact-card" id="artifact-${escapeAttribute(slug(artifact.id))}">`,
+    '<div class="artifact-head">',
+    '<h3 class="artifact-title">',
+    `<span>${escapeHtml(artifact.title)}</span>`,
+    `<span class="artifact-id">${escapeHtml(artifact.id)}</span>`,
+    '</h3>',
+    '<div class="badges">',
+    `<span class="badge type">${escapeHtml(artifact.type)}</span>`,
+    artifact.status ? `<span class="badge status ${escapeAttribute(statusClass)}">${escapeHtml(artifact.status)}</span>` : '',
+    artifact.layer ? `<span class="badge layer">${escapeHtml(artifact.layer)}</span>` : '',
+    '</div>',
+    '</div>',
+    '<div class="artifact-body">',
+    '<div class="metadata-grid">',
+    `<div class="metadata-item"><span>Owner</span><strong>${escapeHtml(owner)}</strong></div>`,
+    `<div class="metadata-item"><span>Team</span><strong>${escapeHtml(team)}</strong></div>`,
+    artifact.source ? `<div class="metadata-item"><span>Source</span><strong>${escapeHtml(artifact.source)}</strong></div>` : '',
+    '</div>',
+    artifact.description ? `<p>${escapeHtml(artifact.description)}</p>` : '',
+    `<div class="markdown">${markdownToHtml(artifact.markdownBody)}</div>`,
+    includeRelations ? [
+      '<div class="relations">',
+      '<div class="relation-box">',
+      '<h4>Outgoing relations</h4>',
+      `<ul class="relation-list">${renderRelationList(artifact.relations.outgoing, 'outgoing', anchors)}</ul>`,
+      '</div>',
+      '<div class="relation-box">',
+      '<h4>Incoming relations</h4>',
+      `<ul class="relation-list">${renderRelationList(artifact.relations.incoming, 'incoming', anchors)}</ul>`,
+      '</div>',
+      '</div>',
+    ].join('\n') : '',
+    includeTechnicalMetadata ? [
+      '<details>',
+      '<summary>Technical metadata</summary>',
+      `<pre class="json-block">${escapeHtml(JSON.stringify(artifact.metadata, null, 2))}</pre>`,
+      '</details>',
+    ].join('\n') : '',
+    '</div>',
+    '</article>',
+  ].filter(Boolean).join('\n');
+}
+
+function renderSection(section: FrozenSection, index: number, anchors: Set<string>, document: FrozenDocument): string {
+  const artifacts = section.artifacts.length > 0
+    ? section.artifacts.map((artifact) => renderArtifactCard(artifact, anchors, document)).join('\n')
+    : '<div class="panel"><p>No artifacts matched this section.</p></div>';
+
+  return [
+    `<section id="section-${escapeAttribute(slug(section.id))}" class="section">`,
+    '<div class="section-header">',
+    '<div>',
+    `<p class="section-kicker">${String(index + 3).padStart(2, '0')} · Section</p>`,
+    `<h2>${escapeHtml(section.title)}</h2>`,
+    '</div>',
+    `<span class="section-count">${section.artifacts.length} artifacts</span>`,
+    '</div>',
+    artifacts,
+    '</section>',
+  ].join('\n');
+}
+
+function renderToc(document: FrozenDocument): string {
+  return [
+    '<ul class="toc">',
+    ...document.sections.map((section, index) => (
+      `<li><a href="#section-${escapeAttribute(slug(section.id))}"><span class="toc-number">${String(index + 1).padStart(2, '0')}</span> ${escapeHtml(section.title)}</a></li>`
+    )),
+    '</ul>',
+  ].join('\n');
+}
+
+function renderSidebar(document: FrozenDocument, logoDataUri?: string): string {
+  const brand = document.profile.branding || {};
+  return [
+    '<aside class="sidebar">',
+    '<div class="brand">',
+    logoDataUri ? `<img class="brand-logo" src="${logoDataUri}" alt="OpenLAG logo" />` : '',
+    '<div>',
+    `<p class="brand-title">${escapeHtml(brand.productName || 'OpenLAG')}</p>`,
+    `<p class="brand-subtitle">${escapeHtml(brand.subtitle || 'Documentation Freeze')}</p>`,
+    '</div>',
+    '</div>',
+    '<p class="nav-title">Document</p>',
+    document.profile.rendering?.includeCover === false ? '' : '<a class="nav-link" href="#cover">Cover</a>',
+    document.profile.rendering?.includeExecutiveSummary === false ? '' : '<a class="nav-link" href="#executive-summary">Executive Summary</a>',
+    document.profile.rendering?.includeTableOfContents === false ? '' : '<a class="nav-link" href="#toc">Table of Contents</a>',
+    '<p class="nav-title">Sections</p>',
+    ...document.sections.map((section) => `<a class="nav-link" href="#section-${escapeAttribute(slug(section.id))}">${escapeHtml(section.title)}</a>`),
+    '</aside>',
+  ].filter(Boolean).join('\n');
+}
+
+function renderDocumentaryHtml(document: FrozenDocument, projectRoot: string): string {
+  const template = loadDocumentaryTemplate(projectRoot, document.profile);
+  const style = extractTemplateStyle(template);
+  const branding = document.profile.branding || {};
+  const doc = document.profile.document || {};
+  const executiveSummary = document.profile.executiveSummary || {};
+  const footer = document.profile.footer || {};
+  const rendering = document.profile.rendering || {};
+  const logoDataUri = resolveLogoDataUri(projectRoot, branding.logo);
+  const language = doc.language || 'en';
+  const title = doc.title || document.profile.name;
+  const anchors = new Set(document.sections.flatMap((section) => section.artifacts.map((artifact) => artifact.id)));
+
+  const cover = rendering.includeCover === false ? '' : [
+    '<header id="cover" class="cover">',
+    '<div class="cover-content">',
+    logoDataUri ? `<img class="cover-logo" src="${logoDataUri}" alt="OpenLAG logo" />` : '',
+    `<span class="eyebrow">${escapeHtml(doc.eyebrow || 'Generated Architecture Snapshot')}</span>`,
+    `<h1>${escapeHtml(title)}</h1>`,
+    `<p class="cover-description">${escapeHtml(doc.description || document.profile.description || 'Deterministic architecture documentation generated from the current OpenLAG graph.')}</p>`,
+    '<div class="cover-grid">',
+    `<div class="cover-stat"><strong>${document.summary.artifactCount}</strong><span>Artifacts</span></div>`,
+    `<div class="cover-stat"><strong>${document.summary.relationCount}</strong><span>Relations</span></div>`,
+    `<div class="cover-stat"><strong>${document.summary.sectionCount}</strong><span>Sections</span></div>`,
+    `<div class="cover-stat"><strong>${escapeHtml(document.profile.id)}</strong><span>Profile</span></div>`,
+    '</div>',
+    '</div>',
+    '</header>',
+  ].join('\n');
+
+  const summary = rendering.includeExecutiveSummary === false ? '' : [
+    '<section id="executive-summary" class="section">',
+    '<div class="section-header">',
+    '<div>',
+    '<p class="section-kicker">01 · Overview</p>',
+    `<h2>${escapeHtml(executiveSummary.title || 'Executive Summary')}</h2>`,
+    '</div>',
+    `<span class="section-count">${escapeHtml(branding.subtitle || 'Documentation Freeze')}</span>`,
+    '</div>',
+    '<div class="summary-grid">',
+    '<div class="panel">',
+    `<h3>${escapeHtml(executiveSummary.purposeTitle || 'Document purpose')}</h3>`,
+    `<p>${escapeHtml(executiveSummary.purpose || document.profile.description || 'This document provides a stable, reviewable snapshot of the architecture knowledge captured by OpenLAG.')}</p>`,
+    `<h3>${escapeHtml(executiveSummary.scopeTitle || 'Scope')}</h3>`,
+    `<p>${escapeHtml(executiveSummary.scope || 'The content is selected by the active export profile.')}</p>`,
+    '</div>',
+    '<div class="panel">',
+    `<h3>${escapeHtml(executiveSummary.audienceTitle || 'Intended audience')}</h3>`,
+    `<p>${escapeHtml(executiveSummary.audience || 'Architecture, governance and engineering teams.')}</p>`,
+    '</div>',
+    '</div>',
+    '</section>',
+  ].join('\n');
+
+  const toc = rendering.includeTableOfContents === false ? '' : [
+    '<section id="toc" class="section">',
+    '<div class="section-header">',
+    '<div>',
+    '<p class="section-kicker">02 · Navigation</p>',
+    '<h2>Table of Contents</h2>',
+    '</div>',
+    `<span class="section-count">${document.summary.sectionCount} sections</span>`,
+    '</div>',
+    renderToc(document),
+    '</section>',
+  ].join('\n');
+
+  const sections = document.sections.map((section, index) => renderSection(section, index, anchors, document)).join('\n');
+  const footerHtml = rendering.includeFooter === false ? '' : [
+    '<footer class="footer">',
+    `<span>${escapeHtml(footer.left || 'Generated by OpenLAG freeze')}</span>`,
+    `<span>${escapeHtml(footer.right || `Document template ${document.profile.template?.id || 'professional-document-v1'}`)}</span>`,
+    '</footer>',
+  ].join('\n');
+
+  const html = [
+    '<!doctype html>',
+    `<html lang="${escapeAttribute(language)}">`,
+    '<head>',
+    '<meta charset="utf-8" />',
+    '<meta name="viewport" content="width=device-width, initial-scale=1" />',
+    `<title>${escapeHtml(title)}</title>`,
+    style,
     '</head>',
     '<body>',
-    body,
+    '<div class="app-shell">',
+    renderSidebar(document, logoDataUri),
+    '<main class="document">',
+    cover,
+    '<div class="content">',
+    summary,
+    toc,
+    sections,
+    '</div>',
+    footerHtml,
+    '</main>',
+    '</div>',
     '</body>',
     '</html>',
     '',
   ].join('\n');
+
+  return html.replace(/\sdata-template="[^"]*"/g, '');
+}
+
+export function renderHtmlFreeze(document: FrozenDocument, projectRoot = process.cwd()): string {
+  return renderDocumentaryHtml(document, projectRoot);
 }
 
 function pdfEscape(value: string): string {
   return value.replace(/\\/g, '\\\\').replace(/\(/g, '\\(').replace(/\)/g, '\\)');
 }
 
-export function renderPdfFreeze(document: FrozenDocument): Buffer {
+function renderPlainPdfFreeze(document: FrozenDocument): Buffer {
   const textLines = renderMarkdownFreeze(document)
     .split('\n')
     .filter((line) => !line.startsWith('---'))
@@ -487,10 +847,36 @@ export function renderPdfFreeze(document: FrozenDocument): Buffer {
   return Buffer.from(chunks.join(''), 'utf-8');
 }
 
-function renderFreeze(document: FrozenDocument, format: FreezeFormat): string | Buffer {
+export function renderPdfFreeze(document: FrozenDocument, projectRoot = process.cwd()): Buffer {
+  const html = renderDocumentaryHtml(document, projectRoot);
+  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'openlag-freeze-pdf-'));
+  const htmlPath = path.join(tempDir, 'freeze.html');
+  const pdfPath = path.join(tempDir, 'freeze.pdf');
+  fs.writeFileSync(htmlPath, html, 'utf-8');
+
+  try {
+    execFileSync(process.execPath, [
+      '--import',
+      'tsx',
+      path.join(projectRoot, 'scripts', 'core', 'render-pdf.ts'),
+      htmlPath,
+      pdfPath,
+    ], {
+      cwd: projectRoot,
+      stdio: 'pipe',
+    });
+    return fs.readFileSync(pdfPath);
+  } catch {
+    return renderPlainPdfFreeze(document);
+  } finally {
+    fs.rmSync(tempDir, { recursive: true, force: true });
+  }
+}
+
+function renderFreeze(document: FrozenDocument, format: FreezeFormat, projectRoot: string): string | Buffer {
   if (format === 'json') return renderJsonFreeze(document);
-  if (format === 'html') return renderHtmlFreeze(document);
-  if (format === 'pdf') return renderPdfFreeze(document);
+  if (format === 'html') return renderHtmlFreeze(document, projectRoot);
+  if (format === 'pdf') return renderPdfFreeze(document, projectRoot);
   return renderMarkdownFreeze(document);
 }
 
@@ -505,7 +891,7 @@ export function createDocumentationFreeze(options: FreezeOptions): FreezeResult 
 
   const parsed = parseOpenLagDocs(docsDir);
   const document = createFrozenDocument(profile, parsed.artifacts, parsed.relations);
-  const content = renderFreeze(document, format);
+  const content = renderFreeze(document, format, projectRoot);
   const markdown = renderMarkdownFreeze(document);
   const outputFile = resolveOutputFile(projectRoot, profile, format, options.output);
 

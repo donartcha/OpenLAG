@@ -11,6 +11,7 @@ All notable changes to OpenLAG are documented in this file.
 - Added invalid validation fixtures under `tests/fixtures/invalid/` to prove expected governance failures without keeping the main OpenLAG dataset broken.
 - Added Playwright lifecycle stabilization through an explicit test runner so portal smoke tests and documentation screenshots terminate cleanly.
 - Added OpenLAG logo and favicon assets to the generated Vite portal and package metadata.
+- Added professional freeze template rendering for HTML and PDF exports, including branded cover pages, executive summary text from export profiles, artifact cards, relation lists, and UTF-8-safe documentary output.
 
 ### Changed
 - Promoted the stabilized OpenLAG 0.5.0 runtime model: lightweight core, optional governance, optional impact engine, optional authoring tooling, and official freeze/export.
@@ -18,6 +19,7 @@ All notable changes to OpenLAG are documented in this file.
 - Updated the main reference dataset so `openlag check --profile release --strict` passes with no lint findings.
 - Updated README, specification, and project documentation to describe 0.5.0 implemented behavior instead of treating stabilized 0.5.0 capabilities as future 0.5.x roadmap work.
 - Updated the portal guide to reflect the OpenLAG 0.5.0 specification, including semantic layers, contract-driven paths, profile commands, rule contracts, and freeze/export behavior.
+- Extended export profiles with optional `template`, `branding`, `document`, `executiveSummary`, `footer`, and rendering controls while keeping older export profiles compatible.
 
 ### Removed
 - Removed Typst, jsPDF, html2canvas, and html-to-image from the 0.5.0 freeze/export public contract and dependencies.
