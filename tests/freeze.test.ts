@@ -14,7 +14,7 @@ function writeFile(filePath: string, content: string) {
 function createFixture() {
   const projectRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'openlag-freeze-'));
 
-  writeFile(path.join(projectRoot, 'docs', 'artifacts', 'PROJECT.yaml'), [
+  writeFile(path.join(projectRoot, 'docs', 'contracts', 'artifacts', 'PROJECT.yaml'), [
     'type: PROJECT',
     'layer: DOCUMENTATION',
     'description: Project artifact.',
@@ -22,7 +22,7 @@ function createFixture() {
     '',
   ].join('\n'));
 
-  writeFile(path.join(projectRoot, 'docs', 'artifacts', 'REQUIREMENT.yaml'), [
+  writeFile(path.join(projectRoot, 'docs', 'contracts', 'artifacts', 'REQUIREMENT.yaml'), [
     'type: REQUIREMENT',
     'layer: BUSINESS',
     'description: Requirement artifact.',
@@ -30,7 +30,7 @@ function createFixture() {
     '',
   ].join('\n'));
 
-  writeFile(path.join(projectRoot, 'docs', 'artifacts', 'COMPONENT.yaml'), [
+  writeFile(path.join(projectRoot, 'docs', 'contracts', 'artifacts', 'COMPONENT.yaml'), [
     'type: COMPONENT',
     'layer: ARCHITECTURE',
     'description: Component artifact.',
@@ -38,7 +38,7 @@ function createFixture() {
     '',
   ].join('\n'));
 
-  writeFile(path.join(projectRoot, 'docs', 'relations', 'IMPLEMENTS.yaml'), [
+  writeFile(path.join(projectRoot, 'docs', 'contracts', 'relations', 'IMPLEMENTS.yaml'), [
     'relation: IMPLEMENTS',
     'description: Implements a requirement.',
     'category: TRACEABILITY',
@@ -49,7 +49,7 @@ function createFixture() {
     '',
   ].join('\n'));
 
-  writeFile(path.join(projectRoot, 'docs', 'export-profiles', 'architecture.yaml'), [
+  writeFile(path.join(projectRoot, 'docs', 'contracts', 'export-profiles', 'architecture.yaml'), [
     'id: architecture',
     'name: Architecture Freeze',
     'defaultFormat: markdown',

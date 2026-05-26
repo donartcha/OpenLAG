@@ -8,7 +8,7 @@ export function registerFreezeCommand(program: Command) {
     .command('freeze')
     .description('Generate a deterministic documentation freeze from the OpenLAG graph')
     .option('-p, --profile <profile>', 'Export profile from docs/export-profiles', 'architecture')
-    .option('--format <format>', 'Output format (markdown in P1)', 'markdown')
+    .option('--format <format>', 'Output format (markdown, pdf, typst)', 'markdown')
     .option('-o, --output <path>', 'Output directory or .md file')
     .option('--dry-run', 'Preview what would be exported without writing files')
     .action((options) => {

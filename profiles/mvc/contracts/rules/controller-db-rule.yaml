@@ -1,0 +1,9 @@
+id: controller-must-not-access-db
+status: PROPOSED
+description: "Controllers must not access the database directly."
+appliesTo:
+  - CONTROLLER
+rule:
+  forbiddenDependency:
+    - DATABASE_ENTITY
+severity: high

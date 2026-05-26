@@ -1,0 +1,6 @@
+type: USES_PROFILE
+description: "The freeze uses a specific export profile configuration."
+category: SEMANTIC
+strength: STRONG
+allowedFrom: [DOCUMENTATION_FREEZE]
+allowedTo: [DOCUMENTATION]

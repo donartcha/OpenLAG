@@ -1,0 +1,9 @@
+type: ACCEPTED_AS_DEBT
+description: "A governance gap or violation was formally accepted as technical debt."
+category: GOVERNANCE
+strength: STRONG
+allowedFrom:
+  - GAP
+  - VIOLATION
+allowedTo:
+  - DEBT

@@ -41,8 +41,9 @@ program
   .option('-n, --name <name>', 'Project name')
   .option('-d, --desc <description>', 'Project description')
   .option('--all', 'Include optional synthetic relations')
+  .option('-p, --profile <profile>', 'Apply a profile pack (e.g. mvc, hexagonal)')
   .action((options) => {
-    initProject(options.name, options.desc, options.all);
+    initProject(options.name, options.desc, options.all, options.profile);
   });
 
 program

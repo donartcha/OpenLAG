@@ -1,0 +1,21 @@
+id: release
+name: Release Documentation Snapshot
+description: Captures the state of a release including features, components, and changes.
+defaultFormat: pdf
+includeArtifactTypes:
+  - PROJECT
+  - VERSION
+  - EPIC
+  - FEATURE
+  - COMPONENT
+  - CHANGE
+sections:
+  - id: overview
+    title: Release Overview
+    artifactTypes: [PROJECT, VERSION]
+  - id: scope
+    title: Scope & Features
+    artifactTypes: [EPIC, FEATURE]
+  - id: changes
+    title: Changes & Components
+    artifactTypes: [CHANGE, COMPONENT]

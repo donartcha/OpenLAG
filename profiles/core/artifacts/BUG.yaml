@@ -1,0 +1,7 @@
+type: BUG
+layer: IMPLEMENTATION
+description: "Standard BUG artifact."
+requiredFields:
+  - id
+  - type
+  - title

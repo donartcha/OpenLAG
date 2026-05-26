@@ -1,6 +1,6 @@
 # OpenLAG
 
-OpenLAG is an Architecture as Code traceability graph generator.
+OpenLAG is a Documentation-as-Code and Semantic Governance platform for evolving software systems.
 
 It reads versioned architecture documentation from Markdown and YAML files, validates relationships between artifacts, generates a static graph data file, and builds a portal for exploring the resulting traceability graph.
 
@@ -8,7 +8,7 @@ The NPM package is published as `@donartcha/openlag`. The global CLI binary inst
 
 ## Package Status
 
-OpenLAG is in active early development. The current release focuses on a clean CLI workflow, static portal generation, relation contracts, lint profiles, graph exploration, and public package documentation.
+OpenLAG is in active early development. The current release focuses on a clean CLI workflow, static portal generation, relation contracts, lint profiles, graph exploration, and semantic governance.
 
 The tool is designed to be static-first: documentation stays in your repository, OpenLAG generates `public/graph-data.json`, and the portal can be built as static assets.
 

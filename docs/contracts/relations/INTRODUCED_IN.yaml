@@ -1,0 +1,9 @@
+type: INTRODUCED_IN
+description: "A governance artifact or change was introduced in a specific version."
+category: GOVERNANCE
+strength: WEAK
+allowedFrom:
+  - GOVERNANCE_ARTIFACT
+  - CHANGE
+allowedTo:
+  - SYSTEM_VERSION

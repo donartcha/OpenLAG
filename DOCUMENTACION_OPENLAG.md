@@ -1,12 +1,12 @@
 # Documentacion tecnica validada - OpenLAG
 
-Documento validado contra el repositorio del proyecto y el paquete `@donartcha/openlag@0.3.0`.
+Documento validado contra el repositorio del proyecto y el paquete `@donartcha/openlag@0.5.0`.
 
 Fecha de validacion: 2026-05-19.
 
 ## 1. Resumen ejecutivo
 
-**Evolución Reciente**: Se ha integrado la especificación *Contract-Driven Impact Evolution*, migrando los tipos anidados y sub-tipos a contratos formales YAML ubicados en `/docs/artifacts/` que configuran la herencia, las validaciones de linter dinámicas, y las direcciones de propagación que ahora son explotadas por el nuevo comando `openlag impact` (permitiendo análisis via git diff nativo sobre CLI).
+**Evolución Reciente**: Se ha integrado la especificación *Contract-Driven Impact Evolution*, migrando los tipos anidados y sub-tipos a contratos formales YAML ubicados en `/docs/contracts/artifacts/` que configuran la herencia, las validaciones de linter dinámicas, y las direcciones de propagación que ahora son explotadas por el nuevo comando `openlag impact` (permitiendo análisis via git diff nativo sobre CLI).
 
 OpenLAG, Open Living Architecture Graph, es una herramienta de Architecture as Code para convertir documentacion tecnica versionada en Markdown y contratos YAML en un grafo de trazabilidad navegable.
 
@@ -26,7 +26,7 @@ La premisa central es mantener la arquitectura cerca del codigo, dentro del repo
 ### Version y paquete
 
 - Paquete NPM: `@donartcha/openlag`
-- Version local: `0.3.0`
+- Version local: `0.5.0`
 - Binario publicado: `openlag`
 - Licencia: `MPL-2.0`
 - Runtime soportado: Node.js `>=18`
@@ -47,8 +47,8 @@ npm pack --dry-run
 Resultado actual:
 
 - `npm run check` pasa correctamente.
-- `node bin/openlag.js --version` devuelve `0.3.0`.
-- `npm pack --dry-run` genera la tarball `donartcha-openlag-0.3.0.tgz` e incluye la documentacion publica esperada.
+- `node bin/openlag.js --version` devuelve `0.5.0`.
+- `npm pack --dry-run` genera la tarball `donartcha-openlag-0.5.0.tgz` e incluye la documentacion publica esperada.
 - `DOCUMENTACION_OPENLAG.md` permanece excluido del paquete NPM.
 
 Observaciones actuales:
@@ -57,7 +57,7 @@ Observaciones actuales:
 - ESLint sigue mostrando warnings por imports o variables sin uso, pero no errores.
 - Vite advierte que algunos chunks superan 500 kB tras minificacion; no bloquea la release, pero queda como mejora futura.
 
-Conclusion: el paquete queda preparado para una release NPM `0.3.0` con documentacion publica coherente y validaciones principales en verde.
+Conclusion: el paquete queda preparado para una release NPM `0.5.0` con documentacion publica coherente y validaciones principales en verde.
 
 ## 2.1 Baseline canonica 0.5.x
 
@@ -82,9 +82,9 @@ Familias de hallazgos de governance que siguen en estado PROPOSED:
 - `DEBT`
 - `OBSERVATION`
 
-La evolucion de governance no debe romper compatibilidad con `docs/artifacts/*.yaml`, `docs/relations/*.yaml` ni con los perfiles de lint actuales (`draft`, `feature`, `develop`, `release`).
+La evolucion de governance no debe romper compatibilidad con `docs/contracts/artifacts/*.yaml`, `docs/contracts/relations/*.yaml` ni con los perfiles de lint actuales (`draft`, `feature`, `develop`, `release`).
 
-La documentacion humana debe seguir usando Markdown, los contratos canonicos siguen en `docs/artifacts/*.yaml` y `docs/relations/*.yaml`, y OpenLAG debe conservar el modo static-first sin backend obligatorio.
+La documentacion humana debe seguir usando Markdown, los contratos canonicos siguen en `docs/contracts/artifacts/*.yaml` y `docs/contracts/relations/*.yaml`, y OpenLAG debe conservar el modo static-first sin backend obligatorio.
 
 ## 3. Arquitectura general
 
@@ -93,7 +93,46 @@ OpenLAG esta compuesto por tres zonas principales:
 1. **Fuente documental**
    - Directorio `docs/`.
    - Artefactos Markdown con YAML estructurado.
-   - Contratos de relaciones en `docs/relations/*.yaml`.
+   - Contratos de relaciones en `docs/contracts/relations/*.yaml`.
+   - Metadatos del portal en `metadata.json`.
+
+2. **Motor local de generacion y validacion**
+   - CLI en `scripts/cli/openlag.ts`.
+   - Parser en `scripts/core/parser.ts` y modulos de `scripts/core/parser/`.
+   - Linter en `scripts/lint/`.
+   - Generador de contratos TypeScript en `scripts/generate-relations.ts`.
+
+3. **Portal estatico**
+   - Frontend React 19 + Vite.
+   - Estado global con Zustand en `src/store.ts`.
+   - Grafo visual con `@xyflow/react` y `dagre`.
+   - Render Markdown/Mermaid en `src/components/MarkdownRenderer.tsx`.
+   - Consultas de subgrafo en `src/core/graph/GraphQueryLayer.ts`.
+   - Estrategias de proyeccion en `src/core/strategies/`.
+
+No hay backend persistente ni API REST. El contrato principal entre generador y frontend es `public/graph-data.json`.
+
+## 4. Estructura del repositorio
+
+```text
+OpenLAG/
+  bin/
+    openlag.js
+  docs/
+    architecture/
+    artifacts/
+    changes/
+    ci/
+    deployment/
+
+## 3. Arquitectura general
+
+OpenLAG esta compuesto por tres zonas principales:
+
+1. **Fuente documental**
+   - Directorio `docs/`.
+   - Artefactos Markdown con YAML estructurado.
+   - Contratos de relaciones en `docs/contracts/relations/*.yaml`.
    - Metadatos del portal en `metadata.json`.
 
 2. **Motor local de generacion y validacion**
@@ -130,6 +169,11 @@ OpenLAG/
     maintenance/
     monitoring/
     operations/
+    contracts/
+      artifacts/
+      relations/
+      rules/
+      export-profiles/
     relations/
     requirements/
     testing/
@@ -162,8 +206,8 @@ OpenLAG/
 Directorios clave:
 
 - `docs/versions/`: versiones globales (`VERSION`) y versiones de sistemas/componentes (`SYSTEM_VERSION`).
-- `docs/artifacts/`: contratos YAML de tipos de artefacto, incluyendo extensiones personalizadas.
-- `docs/relations/`: contratos YAML de relaciones.
+- `docs/contracts/artifacts/`: contratos YAML de tipos de artefacto, incluyendo extensiones personalizadas.
+- `docs/contracts/relations/`: contratos YAML de relaciones.
 - `scripts/cli/`: comandos `init`, `generate`, `dev`, `build`, `lint`, `preview`, `check`.
 - `scripts/core/parser.ts`: extraccion documental y normalizacion.
 - `scripts/lint/`: reglas, perfiles y reporte de validacion.
@@ -171,7 +215,7 @@ Directorios clave:
 - `src/core/registry/RelationRegistry.ts`: contratos de relaciones generados.
 - `public/artifact-definitions.json`: contratos de artefacto del proyecto activo para el portal estatico.
 - `public/relation-definitions.json`: contratos de relacion del proyecto activo para diagnostico y trazabilidad estatica.
-- `src/core/generated/relation-definitions.ts`: archivo generado desde `docs/relations/*.yaml`.
+- `src/core/generated/relation-definitions.ts`: archivo generado desde `docs/contracts/relations/*.yaml`.
 - `src/core/graph/GraphQueryLayer.ts`: indices y proyeccion de subgrafos.
 - `src/core/strategies/`: agrupaciones semanticas del portal.
 
@@ -187,7 +231,7 @@ Generated Runtime JSON
 Portal Consumption
 ```
 
-Los YAML en `docs/artifacts/*.yaml` y `docs/relations/*.yaml` son la fuente de verdad. Los JSON en `public/` son proyecciones runtime para el portal. Los TypeScript generados son artefactos de implementacion, no la fuente canonica de contratos del proyecto.
+Los YAML en `docs/contracts/artifacts/*.yaml` y `docs/contracts/relations/*.yaml` son la fuente de verdad. Los JSON en `public/` son proyecciones runtime para el portal. Los TypeScript generados son artefactos de implementacion, no la fuente canonica de contratos del proyecto.
 
 ## 5. Comandos disponibles
 
@@ -227,54 +271,11 @@ openlag freeze --profile architecture --dry-run
 
 `openlag freeze` genera una instantanea documental Markdown desde el grafo local y un perfil de exportacion.
 
-El perfil por defecto esta en `docs/export-profiles/architecture.yaml` y la salida se escribe en `dist/openlag/exports/<profile>/` salvo que se use `--output`.
+El perfil por defecto esta en `docs/contracts/export-profiles/architecture.yaml` y la salida se escribe en `dist/openlag/exports/<profile>/` salvo que se use `--output`.
 
 PDF queda como fase posterior y debe partir del modelo/export Markdown, no de imprimir el portal React.
 
 ### Scripts NPM del repositorio
-
-```text
-npm run dev                 Ejecuta tsx scripts/cli/openlag.ts dev.
-npm run generate            Ejecuta tsx scripts/cli/openlag.ts generate.
-npm run generate-relations  Regenera src/core/generated/relation-definitions.ts.
-npm run build               Regenera relaciones, construye web y CLI.
-npm run build:web           Ejecuta vite build.
-npm run build:cli           Compila la CLI con tsup.
-npm run lint                Ejecuta ESLint.
-npm run typecheck           Ejecuta tsc --noEmit.
-npm run test                Ejecuta node --import tsx --test tests/*.test.ts.
-npm run check               Ejecuta typecheck, lint, test y pack dry-run.
-npm run clean               Borra dist y public/graph-data.json.
-```
-
-### Reportes del Linter
-El flujo de reporte vía `openlag lint` provee mensajes ricos, detallados y contextualizados enfocados en la experiencia de desarrollo (DX):
-- **Atribución Clara**: Cada infracción etiqueta su ID de artefacto o archivo fuente.
-- **Detalle Contractual**: Expone la regla del contrato YAML que falló, indicando si los atributos, relaciones o capas no coinciden.
-- **Sugerencias y Soluciones**: La CLI imprime sugerencias accionables directamente en la consola (listado restrictivo de orígenes o destinos en relaciones, capas esperadas por subtipo).
-- Soporte oficial y ayuda documentada para nuevos perfiles de entorno, destacando `--profile draft`.
-- Además, en esta evolución se ha instrumentado amplia documentación JSDoc a nivel de backend dentro de `src/utils/artifactUtils.ts` para esclarecer métodos internos de resolución dinámica contractual, *layers*, y ascendencia.
-
-Nota importante: no existen scripts `lint:openlag`, `lint:openlag:feature` ni `lint:openlag:release` en el `package.json` actual. Para lint de arquitectura se debe usar `openlag lint` o `tsx scripts/cli/openlag.ts lint`.
-
-## 6. Flujo de ejecucion
-
-### Desarrollo local
-
-```bash
-npm install
-npm run generate
-npm run dev
-```
-
-`openlag dev` hace lo siguiente:
-
-1. Resuelve `docs/` desde el proyecto donde se ejecuta.
-2. Genera `public/graph-data.json`.
-3. Activa un watcher con `chokidar` sobre `docs/`.
-4. Arranca Vite usando la configuracion del paquete.
-5. Inyecta `OPENLAG_PROJECT_ROOT` para que Vite opere contra el proyecto actual.
-
 ### Generacion de datos
 
 `generateData()`:
@@ -349,30 +350,7 @@ El parser requiere un conjunto minimo de campos estructurales, aunque los contra
 
 Campos estructurales minimos:
 
-- `id`
-- `type`
-- `title`
-
-Campos recomendados de ciclo de vida:
-
-- `status`
-- `version`
-- `description`
-- `ownership`
-- `relations`
-- `systemVersionId`
-
-Campos recomendados:
-
-`layer` ya no debe entenderse como un sustituto textual del antiguo `subType`.
-
-En OpenLAG v0.3:
-
-- `type` representa el tipo concreto del artefacto.
-- `extends` representa herencia contractual.
-- `layer` representa la clasificacion semantica arquitectonica utilizada para validacion, proyeccion y visualizacion.
-
-El valor de `layer` normalmente se resuelve desde el contrato YAML del tipo (`docs/artifacts/*.yaml`) y no necesita repetirse en cada artefacto Markdown.
+El valor de `layer` normalmente se resuelve desde el contrato YAML del tipo (`docs/contracts/artifacts/*.yaml`) y no necesita repetirse en cada artefacto Markdown.
 
 Ejemplo valido para el parser actual:
 
@@ -433,7 +411,7 @@ PROCESS
 PIPELINE
 ```
 
-Hallazgo resuelto para OpenLAG v0.3: los contratos y artefactos publicos fueron normalizados para usar tipos respaldados por contrato. `subType` y `TEST` no forman parte del modelo legacy v0.2.
+Hallazgo resuelto para OpenLAG v0.5.0: los contratos y artefactos publicos fueron normalizados para usar tipos respaldados por contrato. `subType` y `TEST` no forman parte del modelo legacy v0.2.
 
 ### Modelo de resolucion de contratos
 
@@ -551,7 +529,7 @@ El linter actual exige ownership especialmente en APIs y artefactos `closed`.
 
 ## 12. Relaciones y contratos
 
-Las relaciones se definen en `docs/relations/*.yaml`. Cada contrato incluye:
+Las relaciones se definen en `docs/contracts/relations/*.yaml`. Cada contrato incluye:
 
 - `type`
 - `description`
@@ -562,7 +540,7 @@ Las relaciones se definen en `docs/relations/*.yaml`. Cada contrato incluye:
 - `multiplicity`
 - `validation.severity`
 
-Los contratos YAML de `docs/relations/*.yaml` son la fuente de verdad para relaciones. La CLI resuelve esos contratos y emite proyecciones runtime en `public/relation-definitions.json`.
+Los contratos YAML de `docs/contracts/relations/*.yaml` son la fuente de verdad para relaciones. La CLI resuelve esos contratos y emite proyecciones runtime en `public/relation-definitions.json`.
 
 Los archivos TypeScript generados, como `src/core/generated/relation-definitions.ts`, son detalles de implementacion derivados y no sustituyen a los YAML canonicos.
 
@@ -706,7 +684,7 @@ El sistema puede explorar el grafo completo como base de conocimiento, pero la U
 
 OpenLAG define alrededor de 30 artefactos arquitectónicos por defecto. Sin embargo, su diseño permite a cada organización inyectar nuevos tipos a medida.
 
-Al ejecutar `openlag init`, el scaffold crea `docs/artifacts/CUSTOM_TYPE.yaml` como ejemplo intencional de contrato personalizado. No es un tipo oficial del dominio OpenLAG ni un artefacto obligatorio del modelo; sirve para mostrar la sintaxis minima de extension (`extends`, `layer`, `requiredFields`) y puede renombrarse, modificarse o eliminarse cuando el proyecto defina sus tipos reales.
+Al ejecutar `openlag init`, el scaffold crea `docs/contracts/artifacts/CUSTOM_TYPE.yaml` como ejemplo intencional de contrato personalizado. No es un tipo oficial del dominio OpenLAG ni un artefacto obligatorio del modelo; sirve para mostrar la sintaxis minima de extension (`extends`, `layer`, `requiredFields`) y puede renombrarse, modificarse o eliminarse cuando el proyecto defina sus tipos reales.
 
 Las extensiones dinamicas permiten reclasificar semanticamente tipos derivados.
 
@@ -714,7 +692,7 @@ Por ejemplo, un proyecto puede extender `TEST_CASE` para crear contratos especia
 
 Para añadir un nuevo contrato de artefacto:
 
-1. Crea un fichero `.yaml` en el directorio `docs/artifacts/` del proyecto.
+1. Crea un fichero `.yaml` en el directorio `docs/contracts/artifacts/` del proyecto.
 2. Define los campos necesarios. Es posible extender de un tipo base conocido mediante la directiva `extends`:
 
 ```yaml
@@ -729,7 +707,7 @@ requiredFields:
 impactSeverityDefault: low
 ```
 
-3. Cada vez que inicias los scripts de la CLI (`openlag generate`, `openlag dev` o `openlag build`), OpenLAG carga los contratos del proyecto activo y emite datos estaticos en `public/artifact-definitions.json` y `public/relation-definitions.json`. El portal consume estos contratos de artefacto desde `public/` y conserva los contratos empaquetados como fallback. De igual forma para las relaciones: los nuevos conectores semánticos deben emplazarse en `docs/relations/`.
+3. Cada vez que inicias los scripts de la CLI (`openlag generate`, `openlag dev` o `openlag build`), OpenLAG carga los contratos del proyecto activo y emite datos estaticos en `public/artifact-definitions.json` y `public/relation-definitions.json`. El portal consume estos contratos de artefacto desde `public/` y conserva los contratos empaquetados como fallback. De igual forma para las relaciones: los nuevos conectores semánticos deben emplazarse en `docs/contracts/relations/`.
 
 Flujo de generacion contractual:
 
@@ -775,7 +753,7 @@ Registradas en `src/core/strategies/index.ts`:
 - `release`
 - `domain`
 
-Las estrategias agrupan artefactos para analizar el mismo grafo desde perspectivas diferentes. Con la introducción de **contratos YAML dinámicos**, estas estrategias ya no dependen de un listado cerrado de tipos (`ArtifactType`); en su lugar, leen la propiedad `layer` (fase o capa arquitectónica, por ejemplo, `BUSINESS`, `ARCHITECTURE`, `IMPLEMENTATION`, `VERIFICATION`, `OPERATIONS`, `GOVERNANCE`, `DOCUMENTATION`) declarada en los archivos `.yaml` ubicados bajo `docs/artifacts/`.
+Las estrategias agrupan artefactos para analizar el mismo grafo desde perspectivas diferentes. Con la introducción de **contratos YAML dinámicos**, estas estrategias ya no dependen de un listado cerrado de tipos (`ArtifactType`); en su lugar, leen la propiedad `layer` (fase o capa arquitectónica, por ejemplo, `BUSINESS`, `ARCHITECTURE`, `IMPLEMENTATION`, `VERIFICATION`, `OPERATIONS`, `GOVERNANCE`, `DOCUMENTATION`) declarada en los archivos `.yaml` ubicados bajo `docs/contracts/artifacts/`.
 
 Esto asegura que cuando una organización introduzca sus propios artefactos (ej. `API_ROUTE`, `ASYNC_WORKER`), el artefacto caerá naturalmente en la Categoría o Fase correcta del *Sidebar* de visualización dependiendo del `layer` que se le haya asignado en su contrato, y los conteos de la UI englobarán de forma exacta los nuevos sub-tipos inyectados.
 

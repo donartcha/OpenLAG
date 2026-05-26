@@ -8,30 +8,30 @@ It separates shipped behavior from proposed 0.5.x behavior so the roadmap does n
 
 | Area | Implemented in current repository | Notes |
 | --- | --- | --- |
-| CLI lifecycle | `init`, `generate`, `dev`, `build`, `lint`, `check`, `impact`, `freeze`, `preview` | `freeze` currently supports Markdown output only. |
+| CLI lifecycle | `init`, `generate`, `dev`, `build`, `lint`, `check`, `impact`, `freeze`, `preview`, `create`, `profile-add` | `freeze` supports Markdown, PDF and Typst natively. |
 | Artifact contracts | Dynamic YAML artifact contracts under `docs/artifacts/*.yaml` | Project-local contracts are resolved into runtime JSON for the portal. |
 | Relation contracts | YAML relation contracts under `docs/relations/*.yaml` | Existing contracts remain the source of relation semantics. |
 | Static output | `public/graph-data.json`, `public/artifact-definitions.json`, `public/relation-definitions.json`, static portal build in `dist/` | OpenLAG remains static-first and has no mandatory backend. |
-| Impact analysis | `openlag impact` for artifact, file, staged changes, and git ranges | P7 may evolve report semantics, severity, ownership, and CI behavior. |
-| Lint profiles | `draft`, `feature`, `develop`, `release` | Existing lint semantics must not regress during 0.5.x work. |
-| Governance artifacts | Current official artifact contracts include `RISK`, `CHECK`, `REVIEW`, `EVIDENCE`, `INCIDENT`, and operational/process artifacts | New GAP/VIOLATION/DEBT/OBSERVATION-style findings remain proposed until P5 implements or documents them explicitly. |
+| Impact analysis | `openlag impact` for artifact, file, staged changes, and git ranges | P7 evolved impact reports to support Rule Contracts from `docs/contracts/rules/*.yaml`. |
+| Lint profiles | `draft`, `feature`, `develop`, `release` | Existing lint semantics remain fully compatible. |
+| Governance artifacts | GAP, VIOLATION, DEBT, OBSERVATION, RISK, CHECK, REVIEW, EVIDENCE, INCIDENT | Implemented in P5 as standard built-in contracts. |
 | Portal validation | Playwright smoke tests and deterministic screenshot workflow | Implemented in P3 via `test:e2e` and `docs:screenshots`. |
-| Documentation export | `openlag freeze` Markdown MVP | Export profiles live under `docs/export-profiles/*.yaml`; PDF is deferred to P2. |
+| Documentation export | `openlag freeze` Markdown, PDF, Typst | Export profiles live under `docs/export-profiles/*.yaml`. PDF integrated via Typst. |
 
 ## 0.5.x Proposed Scope
 
 | Phase | Status boundary | Proposed outcome |
 | --- | --- | --- |
-| P0 Alignment and Scope Lock | Documentation only | Keep this baseline, contradiction matrix, and cross-references current. |
-| P1 Freeze/Export MVP | Implemented Markdown MVP | Deterministic Markdown documentation snapshot from the OpenLAG graph and export profiles. |
-| P2 PDF Export | Proposed after P1 | Optional PDF generation sourced from the Markdown/export model, not from React portal printing. |
+| P0 Alignment and Scope Lock | Implemented | Keep this baseline, contradiction matrix, and cross-references current. |
+| P1 Freeze/Export MVP | Implemented | Deterministic Markdown documentation snapshot from the OpenLAG graph and export profiles. |
+| P2 PDF Export | Implemented | Optional PDF generation sourced from Typst via the `openlag freeze` CLI. |
 | P3 Playwright Portal Validation | Implemented | Portal smoke tests and deterministic screenshot workflow. |
-| P4 Dashboard Public/Technical Views | Proposed implementation | Public-safe and technical views with explicit redaction/defaults. |
-| P5 Governance Model Evolution | Proposed design and implementation | Clear implemented/proposed governance boundary plus compatible finding model. |
-| P6 Mass Authoring Tooling | Proposed implementation | Optional generators/templates that still preserve project-owned contracts. |
-| P7 Impact Engine Evolution | Proposed implementation | Explainable, filterable, owner-aware impact reports for local and CI use. |
-| P8 Public Demo | Blocked until dependencies land | Public-safe demo assets and runbook after P1/P3/P4/P7. |
-| P9 Publication and Living Docs | Blocked until implementation phases land | Release checklist and living documentation governance after prior phases. |
+| P4 Dashboard Public/Technical Views | Canceled | Eliminated from scope. |
+| P5 Governance Model Evolution | Implemented | Clear implemented governance boundary with semantic finding models. |
+| P6 Mass Authoring Tooling | Implemented | Optional CLI generators/templates supporting Profile Packs. |
+| P7 Impact Engine Evolution | Implemented | Explainable, filterable impact reports for CI, governed by YAML rules. |
+| P8 Public Demo | Proposed | Public-safe demo assets and runbook. |
+| P9 Publication and Living Docs | Proposed | Release checklist and living documentation governance. |
 
 ## Contradiction Matrix
 
@@ -77,7 +77,7 @@ P0 adopts this draft policy for documentation consistency:
 | REVIEW | IMPLEMENTED | `docs/artifacts/REVIEW.yaml` |
 | EVIDENCE | IMPLEMENTED | `docs/artifacts/EVIDENCE.yaml` |
 | INCIDENT | IMPLEMENTED | `docs/artifacts/INCIDENT.yaml` |
-| GAP | PROPOSED | Pending explicit contract + CLI semantics in future phase |
-| VIOLATION | PROPOSED | Pending explicit contract + CLI semantics in future phase |
-| DEBT | PROPOSED | Pending explicit contract + CLI semantics in future phase |
-| OBSERVATION | PROPOSED | Pending explicit contract + CLI semantics in future phase |
+| GAP | IMPLEMENTED | `docs/artifacts/GAP.yaml` |
+| VIOLATION | IMPLEMENTED | `docs/artifacts/VIOLATION.yaml` |
+| DEBT | IMPLEMENTED | `docs/artifacts/DEBT.yaml` |
+| OBSERVATION | IMPLEMENTED | `docs/artifacts/OBSERVATION.yaml` |

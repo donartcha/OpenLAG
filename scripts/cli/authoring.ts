@@ -16,9 +16,9 @@ function writeIfMissing(filePath: string, content: string) {
 export function registerAuthoringCommands(program: Command) {
   program
     .command('profiles')
-    .description('List export profiles from docs/export-profiles')
+    .description('List export profiles from docs/contracts/export-profiles')
     .action(() => {
-      const dir = path.join(process.cwd(), 'docs', 'export-profiles');
+      const dir = path.join(process.cwd(), 'docs', 'contracts', 'export-profiles');
       if (!fs.existsSync(dir)) {
         console.log('No profiles directory found.');
         return;
@@ -54,6 +54,82 @@ export function registerAuthoringCommands(program: Command) {
       writeIfMissing(path.join(templatesDir, 'relations', 'relation-contract.template.yaml'), `type: RELATES_TO\ncategory: SEMANTIC\nallowedFrom: [PROJECT]\nallowedTo: [PROJECT]\n`);
       writeIfMissing(path.join(templatesDir, 'markdown', 'artifact.template.md'), `---\nid: sample-id\ntype: REQUIREMENT\ntitle: Sample Artifact\nownership:\n  owner: team-member\n  team: core\nrelations: []\n---\n\n# Sample\n`);
       console.log('Scaffolded templates/ for mass authoring.');
+    });
+  program
+    .command('create')
+    .description('Create an artifact contract, relation contract, rule contract, or artifact')
+    .argument('<type>', 'Type of entity to create (artifact-contract, relation, rule, artifact)')
+    .argument('<name>', 'Name or ID of the entity')
+    .action((type, name) => {
+      const contractsDir = path.join(process.cwd(), 'docs', 'contracts');
+      const templatesDir = path.join(process.cwd(), 'templates');
+      const templatePath = path.join(templatesDir, type === 'artifact-contract' ? 'artifacts/artifact-contract.template.yaml' 
+        : type === 'relation' ? 'relations/relation-contract.template.yaml'
+        : type === 'rule' ? 'rules/rule-contract.template.yaml'
+        : 'markdown/artifact.template.md');
+      
+      let content = '';
+      if (fs.existsSync(templatePath)) {
+        content = fs.readFileSync(templatePath, 'utf-8').replace(/sample-id/g, name).replace(/Sample Artifact/g, name);
+      } else {
+        // Fallbacks if scaffold hasn't run
+        if (type === 'artifact-contract') content = `type: ${name.toUpperCase()}\nextends: CODE_ENTITY\nlayer: IMPLEMENTATION\nrequiredFields:\n  - id\n  - type\n  - title\n`;
+        else if (type === 'relation') content = `type: ${name.toUpperCase()}\ncategory: SEMANTIC\nallowedFrom: [PROJECT]\nallowedTo: [PROJECT]\n`;
+        else if (type === 'rule') content = `id: ${name}\nstatus: PROPOSED\ndescription: "Auto-generated rule"\nappliesTo: [CODE_ENTITY]\nrule:\n  requiresField:\n    - "ownership.owner"\nseverity: high\n`;
+        else if (type === 'artifact') content = `---\nid: ${name}\ntype: REQUIREMENT\ntitle: ${name}\nownership:\n  owner: team\n  team: core\nrelations: []\n---\n\n# ${name}\n`;
+      }
+      
+      let targetPath = '';
+      if (type === 'artifact-contract') targetPath = path.join(contractsDir, 'artifacts', `${name}.yaml`);
+      else if (type === 'relation') targetPath = path.join(contractsDir, 'relations', `${name}.yaml`);
+      else if (type === 'rule') targetPath = path.join(contractsDir, 'rules', `${name}.yaml`);
+      else if (type === 'artifact') targetPath = path.join(process.cwd(), 'docs', `${name}.md`);
+      else {
+        console.error(`Unknown type: ${type}. Use artifact-contract, relation, rule, or artifact.`);
+        process.exit(1);
+      }
+
+      ensureDir(path.dirname(targetPath));
+      if (writeIfMissing(targetPath, content)) {
+        console.log(`Created ${targetPath}`);
+      } else {
+        console.error(`File already exists: ${targetPath}`);
+      }
+    });
+
+  program
+    .command('profile-add')
+    .description('Add a profile pack to the current project')
+    .argument('<profile>', 'Name of the profile (e.g., mvc, hexagonal)')
+    .action((profile) => {
+      const packageRoot = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../..');
+      const profileDir = path.join(packageRoot, 'profiles', profile);
+      const targetContractsDir = path.join(process.cwd(), 'docs', 'contracts');
+
+      if (!fs.existsSync(profileDir)) {
+        console.error(`Profile pack '${profile}' not found in ${profileDir}.`);
+        process.exit(1);
+      }
+
+      console.log(`Applying profile pack: ${profile}...`);
+      // Copy files from profileDir to docs/
+      const copyRecursiveSync = (src: string, dest: string) => {
+        const exists = fs.existsSync(src);
+        const stats = exists && fs.statSync(src);
+        const isDirectory = exists && stats && stats.isDirectory();
+        if (isDirectory) {
+          ensureDir(dest);
+          fs.readdirSync(src).forEach((childItemName) => {
+            copyRecursiveSync(path.join(src, childItemName), path.join(dest, childItemName));
+          });
+        } else {
+          fs.copyFileSync(src, dest);
+          console.log(`Copied ${path.basename(dest)}`);
+        }
+      };
+      
+      copyRecursiveSync(profileDir, targetContractsDir);
+      console.log(`Successfully added profile: ${profile}`);
     });
 }
 

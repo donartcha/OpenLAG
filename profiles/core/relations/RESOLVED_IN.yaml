@@ -1,0 +1,9 @@
+type: RESOLVED_IN
+description: "A governance artifact or change was resolved in a specific version."
+category: GOVERNANCE
+strength: MEDIUM
+allowedFrom:
+  - GOVERNANCE_ARTIFACT
+  - CHANGE
+allowedTo:
+  - SYSTEM_VERSION

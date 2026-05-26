@@ -3,6 +3,8 @@ import { parseOpenLagDocs, ParsedRelation, ParsedArtifact } from '../core/parser
 import { RelationRegistry } from '../../src/core/registry/RelationRegistry.js';
 import path from 'path';
 import { execSync } from 'child_process';
+import fs from 'fs';
+import yaml from 'js-yaml';
 
 type ImpactEdge = {
   from: string;
@@ -126,6 +128,22 @@ export function registerImpactCommand(program: Command) {
         const data = parseOpenLagDocs(path.join(process.cwd(), 'docs'));
         const graph = new ImpactGraph(data.artifacts, data.relations);
 
+        // Load rules
+        const rulesDir = path.join(process.cwd(), 'docs', 'contracts', 'rules');
+        const rules: any[] = [];
+        if (fs.existsSync(rulesDir)) {
+          const files = fs.readdirSync(rulesDir).filter(f => f.endsWith('.yaml'));
+          for (const f of files) {
+            try {
+              const raw = fs.readFileSync(path.join(rulesDir, f), 'utf-8');
+              const parsed = yaml.load(raw);
+              if (parsed) rules.push(parsed);
+            } catch (err) {
+              console.warn(`Failed to parse rule ${f}:`, err);
+            }
+          }
+        }
+
         let targetIds: string[] = [];
 
         if (options.artifact) {
@@ -165,8 +183,28 @@ export function registerImpactCommand(program: Command) {
             }
             const impacted = graph.getImpactRecords(tId);
             for (const item of impacted) {
+              const art = graph.artifacts.get(item.id);
+              if (art) {
+                // Apply rules
+                for (const rule of rules) {
+                  if (rule.appliesTo && rule.appliesTo.includes(art.type)) {
+                    if (rule.rule?.forbiddenDependency) {
+                      const edges = data.relations.filter(r => r.from === art.id);
+                      for (const edge of edges) {
+                        const targetArt = graph.artifacts.get(edge.to);
+                        if (targetArt && rule.rule.forbiddenDependency.includes(targetArt.type)) {
+                          item.reason += ` [VIOLATION: ${rule.id} -> ${targetArt.type}]`;
+                          if (rule.severity === 'high') item.severity = 'high';
+                          item.weight = Math.max(item.weight, 1.0);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+
               const prev = impactById.get(item.id);
-              if (!prev || item.weight > prev.weight) {
+              if (!prev || item.weight > prev.weight || item.reason.includes('VIOLATION')) {
                 impactById.set(item.id, item);
               }
             }

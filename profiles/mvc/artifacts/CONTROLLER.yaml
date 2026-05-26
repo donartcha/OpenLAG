@@ -1,7 +1,7 @@
 type: CONTROLLER
 extends: CODE_ENTITY
 layer: IMPLEMENTATION
-description: "Controller implementation artifact."
+description: "Handles user input and coordinates the model and view."
 requiredFields:
   - id
   - type

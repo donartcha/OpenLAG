@@ -73,11 +73,9 @@ export const ImpactView: React.FC = () => {
     
     // Find systems affected directly or through artifacts
     const directlyAffected = (systemVersions || []).filter(sv => (selectedChange.affects || []).includes(sv.id));
-    const indirectIds = (selectedChange.affects || []).map(id => graph?.artifacts.find(a => a.id === id)?.systemVersionId).filter(Boolean);
-    const indirectlyAffected = (systemVersions || []).filter(sv => indirectIds.includes(sv.id));
     
     // Merge unique
-    const all = [...directlyAffected, ...indirectlyAffected];
+    const all = [...directlyAffected];
     return (all || []).filter(item => item !== undefined).reduce((acc, item) => {
         if (!acc.find(i => i.id === item.id)) {
             acc.push(item);

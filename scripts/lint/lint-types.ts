@@ -35,6 +35,7 @@ export interface LintProfile {
   invalidLayer: LintSeverity;
   invalidLayerRelation?: LintSeverity;
   missingOwnership?: LintSeverity;
+  [key: string]: LintSeverity | undefined;
 }
 
 export interface LintConfig {

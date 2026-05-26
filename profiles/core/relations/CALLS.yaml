@@ -1,0 +1,10 @@
+relation: CALLS
+description: "Trazabilidad de invocación a nivel código."
+category: STRUCTURAL
+allowedFrom: [CODE_ENTITY]
+allowedTo: [CODE_ENTITY, API]
+multiplicity:
+  from: many
+  to: many
+validation:
+  severity: warn

@@ -1,0 +1,8 @@
+type: DETECTED_BY
+description: "A governance artifact was detected by a specific validation or rule."
+category: GOVERNANCE
+strength: MEDIUM
+allowedFrom:
+  - GOVERNANCE_ARTIFACT
+allowedTo:
+  - PROJECT

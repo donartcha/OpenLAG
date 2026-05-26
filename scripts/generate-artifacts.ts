@@ -2,7 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import yaml from 'js-yaml';
 
-const artifactsDir = path.join(process.cwd(), 'docs/artifacts');
+const artifactsDir = path.join(process.cwd(), 'docs/contracts/artifacts');
 const outputFile = path.join(process.cwd(), 'src/core/generated/artifact-definitions.ts');
 const publicOutputFile = path.join(process.cwd(), 'public/artifact-definitions.json');
 
@@ -10,7 +10,7 @@ const files = fs.existsSync(artifactsDir) ? fs.readdirSync(artifactsDir) : [];
 const artifacts: any[] = [];
 
 if (files.filter(file => file.endsWith('.yaml')).length === 0 && fs.existsSync(outputFile)) {
-  console.log('No artifact contracts found in docs/artifacts; keeping existing generated artifact definitions.');
+  console.log('No artifact contracts found in docs/contracts/artifacts; keeping existing generated artifact definitions.');
   process.exit(0);
 }
 

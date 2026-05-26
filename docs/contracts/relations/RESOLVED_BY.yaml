@@ -1,0 +1,9 @@
+type: RESOLVED_BY
+description: "A governance artifact was resolved by a change, pull request, or component."
+category: GOVERNANCE
+strength: STRONG
+allowedFrom:
+  - GOVERNANCE_ARTIFACT
+allowedTo:
+  - CHANGE
+  - PROJECT

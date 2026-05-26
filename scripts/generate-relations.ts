@@ -3,7 +3,7 @@ import path from 'path';
 
 import { readRelationContracts } from './core/relation-contracts.js';
 
-const relationsDir = path.join(process.cwd(), 'docs/relations');
+const relationsDir = path.join(process.cwd(), 'docs/contracts/relations');
 const outputFile = path.join(process.cwd(), 'src/core/generated/relation-definitions.ts');
 const publicOutputFile = path.join(process.cwd(), 'public/relation-definitions.json');
 

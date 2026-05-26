@@ -1,0 +1,7 @@
+type: USE_CASE
+layer: BUSINESS
+description: "Standard USE_CASE artifact."
+requiredFields:
+  - id
+  - type
+  - title

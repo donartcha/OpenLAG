@@ -1,0 +1,10 @@
+id: domain-isolation
+status: PROPOSED
+description: "Domain logic must not depend on infrastructure or external adapters."
+appliesTo:
+  - DOMAIN_ENTITY
+rule:
+  forbiddenDependency:
+    - ADAPTER
+    - INFRASTRUCTURE
+severity: high
