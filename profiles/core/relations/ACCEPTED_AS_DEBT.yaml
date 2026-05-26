@@ -7,3 +7,8 @@ allowedFrom:
   - VIOLATION
 allowedTo:
   - DEBT
+
+impact:
+  propagates: false
+  directions: [forward]
+  weight: 1

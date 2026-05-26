@@ -4,3 +4,8 @@ category: TRACEABILITY
 strength: STRONG
 allowedFrom: [DOCUMENTATION_FREEZE]
 allowedTo: [VERSION, SYSTEM_VERSION, PROJECT]
+
+impact:
+  propagates: true
+  directions: [reverse]
+  weight: 1

@@ -48,10 +48,12 @@ export function registerAuthoringCommands(program: Command) {
       const templatesDir = path.join(process.cwd(), 'templates');
       ensureDir(path.join(templatesDir, 'artifacts'));
       ensureDir(path.join(templatesDir, 'relations'));
+      ensureDir(path.join(templatesDir, 'rules'));
       ensureDir(path.join(templatesDir, 'markdown'));
 
       writeIfMissing(path.join(templatesDir, 'artifacts', 'artifact-contract.template.yaml'), `type: CUSTOM_TYPE\nextends: CODE_ENTITY\nlayer: IMPLEMENTATION\nrequiredFields:\n  - id\n  - type\n  - title\n`);
-      writeIfMissing(path.join(templatesDir, 'relations', 'relation-contract.template.yaml'), `type: RELATES_TO\ncategory: SEMANTIC\nallowedFrom: [PROJECT]\nallowedTo: [PROJECT]\n`);
+      writeIfMissing(path.join(templatesDir, 'relations', 'relation-contract.template.yaml'), `relation: CUSTOM_REL\ndescription: "Auto-generated relation"\ncategory: SEMANTIC\nallowedFrom: [PROJECT]\nallowedTo: [PROJECT]\nmultiplicity:\n  from: many\n  to: many\nvalidation:\n  severity: warn\nimpact:\n  propagates: false\n  directions: [forward]\n  weight: 1\n`);
+      writeIfMissing(path.join(templatesDir, 'rules', 'rule-contract.template.yaml'), `id: custom-rule\ndescription: "Auto-generated rule"\nmatchNode:\n  type: [CODE_ENTITY]\nrule:\n  requiresField:\n    - "ownership.owner"\nseverity: error\n`);
       writeIfMissing(path.join(templatesDir, 'markdown', 'artifact.template.md'), `---\nid: sample-id\ntype: REQUIREMENT\ntitle: Sample Artifact\nownership:\n  owner: team-member\n  team: core\nrelations: []\n---\n\n# Sample\n`);
       console.log('Scaffolded templates/ for mass authoring.');
     });
@@ -74,8 +76,8 @@ export function registerAuthoringCommands(program: Command) {
       } else {
         // Fallbacks if scaffold hasn't run
         if (type === 'artifact-contract') content = `type: ${name.toUpperCase()}\nextends: CODE_ENTITY\nlayer: IMPLEMENTATION\nrequiredFields:\n  - id\n  - type\n  - title\n`;
-        else if (type === 'relation') content = `type: ${name.toUpperCase()}\ncategory: SEMANTIC\nallowedFrom: [PROJECT]\nallowedTo: [PROJECT]\n`;
-        else if (type === 'rule') content = `id: ${name}\nstatus: PROPOSED\ndescription: "Auto-generated rule"\nappliesTo: [CODE_ENTITY]\nrule:\n  requiresField:\n    - "ownership.owner"\nseverity: high\n`;
+        else if (type === 'relation') content = `relation: ${name.toUpperCase()}\ndescription: "Auto-generated relation"\ncategory: SEMANTIC\nallowedFrom: [PROJECT]\nallowedTo: [PROJECT]\nmultiplicity:\n  from: many\n  to: many\nvalidation:\n  severity: warn\nimpact:\n  propagates: false\n  directions: [forward]\n  weight: 1\n`;
+        else if (type === 'rule') content = `id: ${name}\ndescription: "Auto-generated rule"\nmatchNode:\n  type: [CODE_ENTITY]\nrule:\n  requiresField:\n    - "ownership.owner"\nseverity: error\n`;
         else if (type === 'artifact') content = `---\nid: ${name}\ntype: REQUIREMENT\ntitle: ${name}\nownership:\n  owner: team\n  team: core\nrelations: []\n---\n\n# ${name}\n`;
       }
       

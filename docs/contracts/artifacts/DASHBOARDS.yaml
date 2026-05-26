@@ -1,0 +1,8 @@
+type: DASHBOARDS
+extends: MONITORING
+layer: OPERATIONS
+description: "Monitoring dashboard artifact."
+requiredFields:
+  - id
+  - type
+  - title

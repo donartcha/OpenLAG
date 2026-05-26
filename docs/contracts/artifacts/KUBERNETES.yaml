@@ -1,0 +1,8 @@
+type: KUBERNETES
+extends: DEPLOYMENT
+layer: OPERATIONS
+description: "Kubernetes deployment artifact."
+requiredFields:
+  - id
+  - type
+  - title

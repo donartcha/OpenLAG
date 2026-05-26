@@ -8,3 +8,7 @@ multiplicity:
   to: many
 validation:
   severity: info
+impact:
+  propagates: true
+  directions: [reverse]
+  weight: 1

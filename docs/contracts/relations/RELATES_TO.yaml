@@ -15,3 +15,7 @@ multiplicity:
   to: many
 validation:
   severity: warn
+impact:
+  propagates: true
+  directions: [both]
+  weight: 0.5

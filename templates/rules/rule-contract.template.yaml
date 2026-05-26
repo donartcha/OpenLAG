@@ -1,0 +1,8 @@
+id: custom-rule
+description: "Auto-generated rule"
+matchNode:
+  type: [CODE_ENTITY]
+rule:
+  requiresField:
+    - "ownership.owner"
+severity: error

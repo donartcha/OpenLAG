@@ -6,3 +6,8 @@ allowedFrom:
   - GOVERNANCE_ARTIFACT
 allowedTo:
   - PROJECT
+
+impact:
+  propagates: true
+  directions: [reverse]
+  weight: 1

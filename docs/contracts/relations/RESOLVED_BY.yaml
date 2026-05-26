@@ -7,3 +7,8 @@ allowedFrom:
 allowedTo:
   - CHANGE
   - PROJECT
+
+impact:
+  propagates: true
+  directions: [forward]
+  weight: 1

@@ -1,9 +1,9 @@
 ---
 id: sv-db-pg-15
 type: SYSTEM_VERSION
-component: PostgreSQL Engine
-version: 15.4
-releaseDate: '2023-08-10'
+component: PostgreSQL Database
+version: "15"
+releaseDate: '2022-10-13'
 layer: OPERATIONS
 title: PostgreSQL Database Engine
 description: >-

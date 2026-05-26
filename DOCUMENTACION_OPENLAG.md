@@ -267,6 +267,17 @@ openlag freeze --profile architecture --format markdown
 openlag freeze --profile architecture --dry-run
 ```
 
+### Análisis de Impacto (Impact Engine)
+
+El motor de impacto en OpenLAG (`openlag impact`) calcula cómo afecta un cambio a otras partes de la arquitectura basándose de manera estricta en las **reglas de impacto definidas en los contratos de relaciones** (`docs/contracts/relations/*.yaml`). 
+
+Cada relación puede definir una propagación a través del bloque `impact`:
+*   `forward`: El impacto viaja en el mismo sentido que la relación (`A -> B`, cambio en A impacta a B). Ejemplo: `AFFECTS`.
+*   `reverse`: El impacto viaja en sentido contrario (`A -> B`, cambio en B impacta a A). Ejemplo: Si Código (A) `IMPLEMENTS` Requerimiento (B), un cambio en el Requerimiento (B) impacta retrospectivamente al Código (A) para su revisión.
+*   `both`: Viaja en ambos sentidos (ej. `RELATES_TO`).
+
+Esta propagación permite navegar por todo el grafo de forma determinista para calcular de forma temprana los colaterales de un refactor arquitectónico.
+
 ### Documentation freeze
 
 `openlag freeze` genera una instantanea documental Markdown desde el grafo local y un perfil de exportacion.

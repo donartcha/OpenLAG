@@ -52,6 +52,47 @@ export const generatedRules: RuleContract[] = [
     }
   },
   {
+    "id": "controller-db-isolation",
+    "description": "Controllers should not depend directly on database entities.",
+    "matchNode": {
+      "type": [
+        "CONTROLLER"
+      ]
+    },
+    "conditions": {
+      "forbiddenRelations": [
+        {
+          "type": "DEPENDS_ON",
+          "toType": [
+            "DATABASE_ENTITY"
+          ]
+        }
+      ]
+    },
+    "severity": "error"
+  },
+  {
+    "id": "domain-isolation",
+    "description": "Domain logic must not depend on infrastructure or external adapters.",
+    "matchNode": {
+      "type": [
+        "DOMAIN_ENTITY"
+      ]
+    },
+    "conditions": {
+      "forbiddenRelations": [
+        {
+          "type": "DEPENDS_ON",
+          "toType": [
+            "ADAPTER",
+            "INFRASTRUCTURE"
+          ]
+        }
+      ]
+    },
+    "severity": "error"
+  },
+  {
     "id": "invalidLayerRelation",
     "description": "Business layer artifact should not have OPERATIONAL relations.",
     "severity": "error",

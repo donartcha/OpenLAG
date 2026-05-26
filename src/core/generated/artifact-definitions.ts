@@ -15,9 +15,81 @@ export interface ArtifactContract {
 
 export const GENERATED_ARTIFACTS: ArtifactContract[] = [
   {
+    "type": "ADAPTER",
+    "extends": "CODE_ENTITY",
+    "layer": "IMPLEMENTATION",
+    "description": "Implements a Port to interact with external systems.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "ADR",
+    "extends": "DECISION",
+    "layer": "ARCHITECTURE",
+    "description": "Architecture decision record.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "ALERT",
+    "extends": "MONITORING",
+    "layer": "OPERATIONS",
+    "description": "Operational alert artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
     "type": "API",
     "layer": "ARCHITECTURE",
     "description": "Standard API artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "API_ROUTE",
+    "extends": "API",
+    "layer": "ARCHITECTURE",
+    "description": "HTTP API route or endpoint.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "ARCHITECTURE",
+    "extends": "DESIGN",
+    "layer": "ARCHITECTURE",
+    "description": "Architecture-level design artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "ASYNC_WORKER",
+    "extends": "CODE_ENTITY",
+    "layer": "IMPLEMENTATION",
+    "description": "Asynchronous worker implementation.",
     "requiredFields": [
       "id",
       "type",
@@ -70,6 +142,18 @@ export const GENERATED_ARTIFACTS: ArtifactContract[] = [
     "impact": {}
   },
   {
+    "type": "CI_PIPELINE",
+    "extends": "PIPELINE",
+    "layer": "OPERATIONS",
+    "description": "Continuous integration pipeline.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
     "type": "CODE_ENTITY",
     "layer": "IMPLEMENTATION",
     "description": "Standard CODE_ENTITY artifact.",
@@ -92,6 +176,42 @@ export const GENERATED_ARTIFACTS: ArtifactContract[] = [
     "impact": {}
   },
   {
+    "type": "COMPONENT_DIAGRAM",
+    "extends": "DESIGN",
+    "layer": "ARCHITECTURE",
+    "description": "Component diagram design artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "CONSTRAINT",
+    "extends": "REQUIREMENT",
+    "layer": "BUSINESS",
+    "description": "Constraint requirement.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "CONTROLLER",
+    "extends": "CODE_ENTITY",
+    "layer": "IMPLEMENTATION",
+    "description": "Handles user input and coordinates the model and view.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
     "type": "CUSTOM_TYPE",
     "extends": "CODE_ENTITY",
     "layer": "IMPLEMENTATION",
@@ -102,6 +222,30 @@ export const GENERATED_ARTIFACTS: ArtifactContract[] = [
       "title"
     ],
     "impactSeverityDefault": "low",
+    "impact": {}
+  },
+  {
+    "type": "DAO",
+    "extends": "CODE_ENTITY",
+    "layer": "IMPLEMENTATION",
+    "description": "Data access object implementation.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "DASHBOARDS",
+    "extends": "MONITORING",
+    "layer": "OPERATIONS",
+    "description": "Monitoring dashboard artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
     "impact": {}
   },
   {
@@ -185,6 +329,30 @@ export const GENERATED_ARTIFACTS: ArtifactContract[] = [
     "impact": {}
   },
   {
+    "type": "DTO",
+    "extends": "CODE_ENTITY",
+    "layer": "IMPLEMENTATION",
+    "description": "Data transfer object implementation.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "ENTITY",
+    "extends": "CODE_ENTITY",
+    "layer": "IMPLEMENTATION",
+    "description": "Domain or persistence entity implementation.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
     "type": "ENVIRONMENT",
     "layer": "OPERATIONS",
     "description": "Standard ENVIRONMENT artifact.",
@@ -230,10 +398,34 @@ export const GENERATED_ARTIFACTS: ArtifactContract[] = [
     "impact": {}
   },
   {
+    "type": "FUNCTIONAL",
+    "extends": "REQUIREMENT",
+    "layer": "BUSINESS",
+    "description": "Functional requirement.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
     "type": "GAP",
     "extends": "GOVERNANCE_ARTIFACT",
     "layer": "GOVERNANCE",
     "description": "A missing semantic link or architectural anomaly detected by the system.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "GITHUB_ACTIONS",
+    "extends": "DEPLOYMENT",
+    "layer": "OPERATIONS",
+    "description": "GitHub Actions deployment workflow.",
     "requiredFields": [
       "id",
       "type",
@@ -287,6 +479,36 @@ export const GENERATED_ARTIFACTS: ArtifactContract[] = [
     "impact": {}
   },
   {
+    "type": "INTEGRATION",
+    "extends": "TEST_CASE",
+    "requiredFields": [],
+    "impact": {}
+  },
+  {
+    "type": "INTEGRATION_TEST",
+    "extends": "TEST_CASE",
+    "layer": "IMPLEMENTATION",
+    "description": "Integration test case.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "KUBERNETES",
+    "extends": "DEPLOYMENT",
+    "layer": "OPERATIONS",
+    "description": "Kubernetes deployment artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
     "type": "LIBRARY",
     "layer": "IMPLEMENTATION",
     "description": "Standard LIBRARY artifact.",
@@ -320,6 +542,18 @@ export const GENERATED_ARTIFACTS: ArtifactContract[] = [
     "impact": {}
   },
   {
+    "type": "NON_FUNCTIONAL_REQUIREMENT",
+    "extends": "REQUIREMENT",
+    "layer": "BUSINESS",
+    "description": "Non-functional requirement.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
     "type": "OBSERVATION",
     "extends": "GOVERNANCE_ARTIFACT",
     "layer": "GOVERNANCE",
@@ -332,9 +566,39 @@ export const GENERATED_ARTIFACTS: ArtifactContract[] = [
     "impact": {}
   },
   {
+    "type": "PACKAGE",
+    "extends": "CHANGE",
+    "layer": "IMPLEMENTATION",
+    "description": "Package or distributable artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "PATCH",
+    "extends": "CHANGE",
+    "requiredFields": [],
+    "impact": {}
+  },
+  {
     "type": "PIPELINE",
     "layer": "OPERATIONS",
     "description": "Standard PIPELINE artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "PORT",
+    "extends": "CODE_ENTITY",
+    "layer": "ARCHITECTURE",
+    "description": "Defines an interface for communication with the outside world.",
     "requiredFields": [
       "id",
       "type",
@@ -365,6 +629,18 @@ export const GENERATED_ARTIFACTS: ArtifactContract[] = [
     "impact": {}
   },
   {
+    "type": "REPOSITORY",
+    "extends": "CODE_ENTITY",
+    "layer": "IMPLEMENTATION",
+    "description": "Repository implementation artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
     "type": "REQUIREMENT",
     "layer": "BUSINESS",
     "description": "Standard REQUIREMENT artifact.",
@@ -373,6 +649,12 @@ export const GENERATED_ARTIFACTS: ArtifactContract[] = [
       "type",
       "title"
     ],
+    "impact": {}
+  },
+  {
+    "type": "RETIREMENT",
+    "extends": "CHANGE",
+    "requiredFields": [],
     "impact": {}
   },
   {
@@ -399,6 +681,42 @@ export const GENERATED_ARTIFACTS: ArtifactContract[] = [
     "impact": {}
   },
   {
+    "type": "RUNBOOK",
+    "extends": "DOCUMENTATION",
+    "layer": "DOCUMENTATION",
+    "description": "Operational runbook.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "SERVICE_CONTRACT",
+    "extends": "API",
+    "layer": "ARCHITECTURE",
+    "description": "Service API contract.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "SHARED_COMPONENT",
+    "extends": "CODE_ENTITY",
+    "layer": "IMPLEMENTATION",
+    "description": "Shared UI or application component.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
     "type": "SYSTEM_VERSION",
     "layer": "OPERATIONS",
     "description": "Standard SYSTEM_VERSION artifact.",
@@ -416,6 +734,18 @@ export const GENERATED_ARTIFACTS: ArtifactContract[] = [
     "type": "TEST_CASE",
     "layer": "IMPLEMENTATION",
     "description": "Standard TEST_CASE artifact.",
+    "requiredFields": [
+      "id",
+      "type",
+      "title"
+    ],
+    "impact": {}
+  },
+  {
+    "type": "TEST_RESULTS",
+    "extends": "DOCUMENTATION",
+    "layer": "DOCUMENTATION",
+    "description": "Test result documentation.",
     "requiredFields": [
       "id",
       "type",
