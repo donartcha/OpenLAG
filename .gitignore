@@ -12,3 +12,4 @@ coverage/
 logs/
 checklist.md
 docs/assets/screenshots/generated/
+/test-results
