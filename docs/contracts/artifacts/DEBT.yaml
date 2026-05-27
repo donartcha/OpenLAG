@@ -1,8 +1,0 @@
-type: DEBT
-extends: GOVERNANCE_ARTIFACT
-layer: GOVERNANCE
-description: "A conscious or unconscious technical debt item accepted by the team."
-requiredFields:
-  - id
-  - type
-  - title

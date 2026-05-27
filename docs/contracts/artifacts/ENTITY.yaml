@@ -1,8 +1,0 @@
-type: ENTITY
-extends: CODE_ENTITY
-layer: IMPLEMENTATION
-description: "Domain or persistence entity implementation."
-requiredFields:
-  - id
-  - type
-  - title

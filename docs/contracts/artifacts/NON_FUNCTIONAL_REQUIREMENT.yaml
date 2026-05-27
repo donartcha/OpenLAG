@@ -1,8 +1,0 @@
-type: NON_FUNCTIONAL_REQUIREMENT
-extends: REQUIREMENT
-layer: BUSINESS
-description: "Non-functional requirement."
-requiredFields:
-  - id
-  - type
-  - title

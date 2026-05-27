@@ -1,8 +1,0 @@
-type: API_ROUTE
-extends: API
-layer: ARCHITECTURE
-description: "HTTP API route or endpoint."
-requiredFields:
-  - id
-  - type
-  - title

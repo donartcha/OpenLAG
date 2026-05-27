@@ -1,8 +1,0 @@
-type: CI_PIPELINE
-extends: PIPELINE
-layer: OPERATIONS
-description: "Continuous integration pipeline."
-requiredFields:
-  - id
-  - type
-  - title

@@ -1,9 +1,0 @@
-type: DOCUMENTATION_FREEZE
-extends: DOCUMENTATION
-layer: DOCUMENTATION
-description: "A static snapshot of the architecture graph exported via a profile."
-requiredFields:
-  - id
-  - type
-  - profile
-  - format

@@ -1,9 +1,0 @@
-id: controller-db-isolation
-description: "Controllers should not depend directly on database entities."
-matchNode:
-  type: [CONTROLLER]
-conditions:
-  forbiddenRelations:
-    - type: DEPENDS_ON
-      toType: [DATABASE_ENTITY]
-severity: error

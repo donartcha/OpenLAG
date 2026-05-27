@@ -1,7 +1,0 @@
-type: PROJECT
-layer: BUSINESS
-description: "Standard PROJECT artifact."
-requiredFields:
-  - id
-  - type
-  - title

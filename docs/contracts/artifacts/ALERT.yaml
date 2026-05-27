@@ -1,8 +1,0 @@
-type: ALERT
-extends: MONITORING
-layer: OPERATIONS
-description: "Operational alert artifact."
-requiredFields:
-  - id
-  - type
-  - title

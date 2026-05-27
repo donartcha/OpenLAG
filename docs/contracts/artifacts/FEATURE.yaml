@@ -1,7 +1,0 @@
-type: FEATURE
-layer: BUSINESS
-description: "Standard FEATURE artifact."
-requiredFields:
-  - id
-  - type
-  - title

@@ -1,9 +1,0 @@
-type: CUSTOM_TYPE
-extends: CODE_ENTITY
-layer: IMPLEMENTATION
-description: "A custom template for code entities."
-requiredFields:
-  - id
-  - type
-  - title
-impactSeverityDefault: low

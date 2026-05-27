@@ -1,8 +1,0 @@
-type: PORT
-extends: CODE_ENTITY
-layer: ARCHITECTURE
-description: "Defines an interface for communication with the outside world."
-requiredFields:
-  - id
-  - type
-  - title

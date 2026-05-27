@@ -1,7 +1,0 @@
-type: DESIGN
-layer: ARCHITECTURE
-description: "Standard DESIGN artifact."
-requiredFields:
-  - id
-  - type
-  - title

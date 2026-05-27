@@ -1,7 +1,0 @@
-type: DOCUMENTATION
-layer: DOCUMENTATION
-description: "Standard DOCUMENTATION artifact."
-requiredFields:
-  - id
-  - type
-  - title

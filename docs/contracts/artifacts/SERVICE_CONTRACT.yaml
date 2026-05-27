@@ -1,8 +1,0 @@
-type: SERVICE_CONTRACT
-extends: API
-layer: ARCHITECTURE
-description: "Service API contract."
-requiredFields:
-  - id
-  - type
-  - title

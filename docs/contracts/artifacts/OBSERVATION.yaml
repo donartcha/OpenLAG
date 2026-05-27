@@ -1,8 +1,0 @@
-type: OBSERVATION
-extends: GOVERNANCE_ARTIFACT
-layer: GOVERNANCE
-description: "A non-critical governance observation or recommendation."
-requiredFields:
-  - id
-  - type
-  - title

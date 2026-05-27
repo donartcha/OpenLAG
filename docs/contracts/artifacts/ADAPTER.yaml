@@ -1,8 +1,0 @@
-type: ADAPTER
-extends: CODE_ENTITY
-layer: IMPLEMENTATION
-description: "Implements a Port to interact with external systems."
-requiredFields:
-  - id
-  - type
-  - title

@@ -1,8 +1,0 @@
-type: INTEGRATION_TEST
-extends: TEST_CASE
-layer: IMPLEMENTATION
-description: "Integration test case."
-requiredFields:
-  - id
-  - type
-  - title

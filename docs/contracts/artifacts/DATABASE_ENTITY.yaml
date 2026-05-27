@@ -1,7 +1,0 @@
-type: DATABASE_ENTITY
-layer: IMPLEMENTATION
-description: "Standard DATABASE_ENTITY artifact."
-requiredFields:
-  - id
-  - type
-  - title

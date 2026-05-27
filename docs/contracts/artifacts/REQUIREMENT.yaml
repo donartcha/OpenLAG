@@ -1,7 +1,0 @@
-type: REQUIREMENT
-layer: BUSINESS
-description: "Standard REQUIREMENT artifact."
-requiredFields:
-  - id
-  - type
-  - title

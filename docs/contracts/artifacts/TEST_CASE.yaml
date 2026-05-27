@@ -1,7 +1,0 @@
-type: TEST_CASE
-layer: IMPLEMENTATION
-description: "Standard TEST_CASE artifact."
-requiredFields:
-  - id
-  - type
-  - title

@@ -1,7 +1,0 @@
-type: DECISION
-layer: ARCHITECTURE
-description: "Standard DECISION artifact."
-requiredFields:
-  - id
-  - type
-  - title

@@ -1,7 +1,0 @@
-type: CODE_ENTITY
-layer: IMPLEMENTATION
-description: "Standard CODE_ENTITY artifact."
-requiredFields:
-  - id
-  - type
-  - title

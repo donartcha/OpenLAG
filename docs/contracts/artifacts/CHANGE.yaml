@@ -1,7 +1,0 @@
-type: CHANGE
-layer: IMPLEMENTATION
-description: "Standard CHANGE artifact."
-requiredFields:
-  - id
-  - type
-  - title

@@ -1,8 +1,0 @@
-type: GOVERNANCE_ARTIFACT
-extends: CUSTOM_TYPE
-layer: GOVERNANCE
-description: "A persistent finding or operational fact regarding system architecture."
-requiredFields:
-  - id
-  - type
-  - title

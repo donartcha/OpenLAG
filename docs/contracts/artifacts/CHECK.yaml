@@ -1,7 +1,0 @@
-type: CHECK
-layer: OPERATIONS
-description: "Standard CHECK artifact."
-requiredFields:
-  - id
-  - type
-  - title

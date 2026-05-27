@@ -1,7 +1,0 @@
-type: MONITORING
-layer: OPERATIONS
-description: "Standard MONITORING artifact."
-requiredFields:
-  - id
-  - type
-  - title

@@ -1,8 +1,0 @@
-type: CONSTRAINT
-extends: REQUIREMENT
-layer: BUSINESS
-description: "Constraint requirement."
-requiredFields:
-  - id
-  - type
-  - title

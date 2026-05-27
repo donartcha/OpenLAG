@@ -1,7 +1,0 @@
-type: LIBRARY
-layer: IMPLEMENTATION
-description: "Standard LIBRARY artifact."
-requiredFields:
-  - id
-  - type
-  - title

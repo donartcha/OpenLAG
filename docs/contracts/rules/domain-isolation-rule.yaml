@@ -1,9 +1,0 @@
-id: domain-isolation
-description: "Domain logic must not depend on infrastructure or external adapters."
-matchNode:
-  type: [DOMAIN_ENTITY]
-conditions:
-  forbiddenRelations:
-    - type: DEPENDS_ON
-      toType: [ADAPTER, INFRASTRUCTURE]
-severity: error

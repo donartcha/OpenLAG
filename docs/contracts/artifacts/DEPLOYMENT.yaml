@@ -1,7 +1,0 @@
-type: DEPLOYMENT
-layer: OPERATIONS
-description: "Standard DEPLOYMENT artifact."
-requiredFields:
-  - id
-  - type
-  - title

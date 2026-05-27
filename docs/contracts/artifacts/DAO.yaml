@@ -1,8 +1,0 @@
-type: DAO
-extends: CODE_ENTITY
-layer: IMPLEMENTATION
-description: "Data access object implementation."
-requiredFields:
-  - id
-  - type
-  - title

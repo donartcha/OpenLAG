@@ -1,7 +1,0 @@
-type: ENVIRONMENT
-layer: OPERATIONS
-description: "Standard ENVIRONMENT artifact."
-requiredFields:
-  - id
-  - type
-  - title

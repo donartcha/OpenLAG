@@ -1,7 +1,0 @@
-type: RISK
-layer: DOCUMENTATION
-description: "Standard RISK artifact."
-requiredFields:
-  - id
-  - type
-  - title

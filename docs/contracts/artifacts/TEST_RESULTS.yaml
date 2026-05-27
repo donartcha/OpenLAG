@@ -1,8 +1,0 @@
-type: TEST_RESULTS
-extends: DOCUMENTATION
-layer: DOCUMENTATION
-description: "Test result documentation."
-requiredFields:
-  - id
-  - type
-  - title

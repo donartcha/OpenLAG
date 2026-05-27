@@ -1,7 +1,0 @@
-type: EPIC
-layer: BUSINESS
-description: "Standard EPIC artifact."
-requiredFields:
-  - id
-  - type
-  - title

@@ -1,8 +1,0 @@
-type: COMPONENT_DIAGRAM
-extends: DESIGN
-layer: ARCHITECTURE
-description: "Component diagram design artifact."
-requiredFields:
-  - id
-  - type
-  - title

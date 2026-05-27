@@ -1,8 +1,0 @@
-type: VIOLATION
-extends: GOVERNANCE_ARTIFACT
-layer: GOVERNANCE
-description: "An explicit violation of an architectural rule contract."
-requiredFields:
-  - id
-  - type
-  - title

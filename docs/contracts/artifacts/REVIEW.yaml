@@ -1,8 +1,0 @@
-type: REVIEW
-extends: DOCUMENTATION
-layer: DOCUMENTATION
-description: "Review documentation artifact."
-requiredFields:
-  - id
-  - type
-  - title
