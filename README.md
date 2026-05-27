@@ -113,7 +113,7 @@ openlag --version
 
 ```text
 openlag init       Initialize docs, metadata, artifact contracts, and relation definitions
-openlag generate   Generate public/graph-data.json
+openlag generate   Generate public graph/runtime JSON assets
 openlag dev        Start the portal dev server with live data refresh
 openlag build      Build the static portal
 openlag lint       Validate documentation and relations
@@ -144,6 +144,8 @@ Export profiles select artifact types, relation types, sections, ordering, docum
 
 HTML output is standalone and offline: vendor bundles for Markdown and Mermaid are injected only into generated output. PDF generation is produced from the frozen document model. It does not print or depend on the React portal.
 
+When a freeze template contains navigable structure (headings, internal anchors, table of contents hierarchy), PDF export preserves that structure as real PDF bookmarks/outline entries in the generated document.
+
 ## Profiles and Templates
 
 Bundled profile packs and templates are versioned package assets:
@@ -155,6 +157,26 @@ openlag init --profile mvc
 openlag profile add testing
 openlag profile validate --profile governance
 ```
+
+## Freeze Visual Audit Utility
+
+OpenLAG includes a repository-level QA utility for visual/structural validation of generated freeze PDFs:
+
+```bash
+python scripts/qa/run-freeze-visual-audit.py --root .
+```
+
+Optional parameters:
+
+- `--pdf-dir` (default: `test-results/freeze`)
+- `--template-dir` (default: `templates/freeze`)
+- `--report-prefix` (default: `FREEZE_VISUAL_AUDIT_REPORT`)
+
+The utility generates:
+
+- `FREEZE_VISUAL_AUDIT_REPORT.md`
+- `FREEZE_VISUAL_AUDIT_REPORT.json`
+- `audit-evidence/` (page-by-page visual evidence)
 
 ## Lint Profiles
 
@@ -211,20 +233,22 @@ Common relations include:
 public/graph-data.json           Static graph data generated from docs/
 public/artifact-definitions.json Project artifact contracts for the portal
 public/relation-definitions.json Project relation contracts for the portal
-dist/                          Static portal build output
+public/rule-definitions.json     Project rule contracts for lint/governance runtime
+dist/                            Static portal build output
 ```
 
 The generated portal is static. Protect it appropriately if the source Markdown contains internal architecture, system names, incidents, vulnerabilities, or operational details.
 
 ## Repository Documentation
 
-- [Specification](./SPECIFICATION.md): conceptual model, artifact types, relation model, and project structure.
-- [Specification](./SPECIFICATION.md): canonical runtime contract and implemented behavior boundaries.
+- [Specification](./SPECIFICATION.md): conceptual model, artifact types, relation model, project structure, and runtime contract boundaries.
+- [Why OpenLAG](./WHY_OPENLAG.md): rationale and problem framing behind the project.
 - [Changelog](./CHANGELOG.md): release history.
 - [Security](./SECURITY.md): security considerations and vulnerability reporting.
 - [Contributing](./CONTRIBUTING.md): local development and PR workflow.
 
-Internal audit notes are intentionally not published as NPM documentation.
+Internal audit notes are intentionally not published as NPM documentation.  
+`WHY_OPENLAG.md` is repository documentation and is not currently included in the npm package artifact list.
 
 ## License
 
