@@ -8,6 +8,7 @@ All notable changes to OpenLAG are documented in this file.
 - Corrected freeze export behavior across CLI/core flow to keep generated outputs aligned with the expected profile/template mapping.
 - Updated export profile contracts (`compliance`, `developer`, `executive`, `governance`, `release`) to match the corrected export behavior.
 - Updated freeze screenshot E2E coverage to validate the corrected export outputs.
+- Fixed print CSS in freeze templates to remove edge-clipping risk, improve print margins/pagination, and prevent near-empty orphan pages in generated PDFs (`freeze-template`, `knowledge-map`).
 
 ## 0.5.0 - 2026-05-26
 

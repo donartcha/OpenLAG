@@ -582,6 +582,10 @@
     }
 
     @media print {
+      @page {
+        size: A4;
+        margin: 16mm 14mm;
+      }
       /* INK-FRIENDLY BLUEPRINT LIGHT THEME INVERSION */
       :root {
         --bg: #ffffff;
@@ -598,6 +602,8 @@
       body {
         background: #ffffff;
         color: #000000;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
       }
       .map-shell {
         display: block;
@@ -608,7 +614,8 @@
         display: none;
       }
       .cover {
-        height: 100vh;
+        height: auto;
+        min-height: auto;
         box-sizing: border-box;
         display: flex;
         flex-direction: column;
@@ -618,7 +625,8 @@
         border: 1px solid #cbd5e1;
         background: #ffffff !important;
         color: #0f172a !important;
-        padding: 2in 0.5in 0.5in !important;
+        padding: 28mm 16mm 16mm !important;
+        margin-bottom: 8mm;
       }
       .cover h1, .cover-description, .cover-stat strong, .cover-stat span {
         color: #0f172a !important;
@@ -628,15 +636,20 @@
         border-color: #cbd5e1 !important;
       }
       .content {
-        padding: 0;
+        padding: 0 2mm;
       }
       .section {
         background: #ffffff;
         border: 1px solid #cbd5e1;
-        padding: 24px;
+        padding: 16px;
         page-break-inside: auto;
         break-inside: auto;
-        margin-bottom: 30px;
+        margin-bottom: 16px;
+        overflow: hidden;
+      }
+      .section-header {
+        break-after: avoid-page;
+        page-break-after: avoid;
       }
       .section-header h2 {
         color: #0f172a !important;
@@ -676,10 +689,21 @@
         border-color: #cbd5e1 !important;
         color: #0f172a !important;
       }
+      .relation-matrix,
+      .relation-matrix th,
+      .relation-matrix td {
+        max-width: 100%;
+        word-break: break-word;
+        overflow-wrap: anywhere;
+      }
       .markdown pre, .json-block {
         background: #f8fafc !important;
         color: #0f172a !important;
         border-color: #cbd5e1 !important;
+        max-width: 100%;
+        overflow: hidden;
+        white-space: pre-wrap;
+        word-break: break-word;
       }
       .markdown code {
         background: #e0f2fe !important;
@@ -692,6 +716,19 @@
       }
       .footer {
         display: none;
+      }
+      .openlag-mermaid {
+        overflow: hidden !important;
+        padding: 12px;
+      }
+      .openlag-mermaid svg {
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+      }
+      p, li {
+        orphans: 3;
+        widows: 3;
       }
     }
   </style>
