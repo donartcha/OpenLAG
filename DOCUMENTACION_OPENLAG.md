@@ -276,6 +276,7 @@ Opciones relevantes:
 
 ```bash
 openlag init --name "Mi Sistema" --desc "Arquitectura del sistema"
+openlag init --starter
 openlag init --all
 openlag generate --watch
 openlag lint --profile feature
@@ -293,7 +294,30 @@ openlag freeze --profile architecture --format pdf
 openlag freeze --profile architecture --output exports/architecture
 openlag freeze --profile architecture --format html --template audit-dossier
 openlag freeze --profile architecture --dry-run
+openlag freeze --profile starter --format markdown
 ```
+
+### Happy Path para nuevos equipos: OpenLAG Lite (`--starter`)
+
+Para onboarding rapido (equipos pequenos, repos nuevos o usuarios que vienen de ADRs simples), OpenLAG incluye un modo Lite:
+
+```bash
+npx @donartcha/openlag init --starter
+openlag check --profile develop
+openlag freeze --profile starter --format markdown
+```
+
+El modo `--starter` crea una base minima, orientada a baja friccion:
+
+- 4 tipos de artefacto: `REQUIREMENT`, `FEATURE`, `CODE_ENTITY`, `TEST_CASE`.
+- 4 relaciones: `REFINES`, `IMPLEMENTS`, `TESTS`, `DEPENDS_ON`.
+- 1 perfil de exportacion: `starter` (formato por defecto `markdown`, estrategia `lifecycle`).
+
+Estrategia recomendada de adopcion:
+
+1. Empezar con `--starter` para dominar el flujo `crear -> relacionar -> validar -> exportar`.
+2. Agregar complejidad progresiva con `openlag profile add <pack>` (por ejemplo, `governance` o `mvc`).
+3. Incorporar reglas y contratos adicionales solo cuando el equipo ya tenga disciplina de trazabilidad en el flujo base.
 
 ### Análisis de Impacto (Impact Engine)
 

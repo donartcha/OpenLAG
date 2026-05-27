@@ -5,6 +5,7 @@ All notable changes to OpenLAG are documented in this file.
 ## 0.5.0 - 2026-05-26
 
 ### Added
+- Added `openlag init --starter` as an OpenLAG Lite onboarding path with a minimal contract scaffold for new teams: 4 artifact types (`REQUIREMENT`, `FEATURE`, `CODE_ENTITY`, `TEST_CASE`), 4 relations (`REFINES`, `IMPLEMENTS`, `TESTS`, `DEPENDS_ON`), and one starter export profile (`starter`).
 - Added the official `openlag freeze` subsystem with export profiles, dry-run support, deterministic frozen document model generation, and `markdown`, `json`, `html`, and `pdf` output in the command directory or explicit `--output` path.
 - Added executable rule contracts under `docs/contracts/rules/*.yaml`, generated rule registries, profile-gated runtime validation, and normalized `warn`/`warning` severity handling.
 - Added bundled profile/template assets for `core`, `governance`, `mvc`, `hexagonal`, and related profile packs, including deterministic `openlag profile add` and `openlag profile validate` workflows.
@@ -18,6 +19,7 @@ All notable changes to OpenLAG are documented in this file.
 - Added deterministic freeze test controls for generation timestamps while keeping production freeze output timestamped with the real generation time.
 
 ### Changed
+- Updated documentation and in-product guide content to include a newcomer "Happy Path" based on OpenLAG Lite starter workflows.
 - Promoted the stabilized OpenLAG 0.5.0 runtime model: lightweight core, optional governance, optional impact engine, optional authoring tooling, and official freeze/export.
 - Normalized canonical contract paths to `docs/contracts/artifacts`, `docs/contracts/relations`, `docs/contracts/rules`, and `docs/contracts/export-profiles`.
 - Updated the main reference dataset so `openlag check --profile release --strict` passes with no lint findings.

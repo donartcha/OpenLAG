@@ -1,0 +1,7 @@
+type: FEATURE
+layer: BUSINESS
+description: "User-facing feature."
+requiredFields:
+  - id
+  - type
+  - title

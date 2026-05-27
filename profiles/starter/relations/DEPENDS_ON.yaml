@@ -1,0 +1,14 @@
+relation: DEPENDS_ON
+description: "Declares implementation dependencies."
+category: STRUCTURAL
+allowedFrom: [CODE_ENTITY]
+allowedTo: [CODE_ENTITY]
+multiplicity:
+  from: many
+  to: many
+validation:
+  severity: info
+impact:
+  propagates: true
+  directions: [forward]
+  weight: 1

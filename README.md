@@ -32,6 +32,22 @@ Run without a global install:
 npx @donartcha/openlag init
 ```
 
+## OpenLAG Lite (Starter)
+
+For first-time users and small teams, use the lightweight starter mode:
+
+```bash
+npx @donartcha/openlag init --starter
+openlag check --profile develop
+openlag freeze --profile starter --format markdown
+```
+
+`--starter` applies a minimal contract set:
+
+- 4 artifact types: `REQUIREMENT`, `FEATURE`, `CODE_ENTITY`, `TEST_CASE`
+- 4 relations: `REFINES`, `IMPLEMENTS`, `TESTS`, `DEPENDS_ON`
+- 1 export profile: `starter` (default format: `markdown`, ordering strategy: `lifecycle`)
+
 ## Quick Start
 
 ```bash

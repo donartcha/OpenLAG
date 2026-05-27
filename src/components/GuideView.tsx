@@ -208,6 +208,18 @@ const dailyCommands = [
     ['openlag impact --artifact REQ-LOGIN-001', 'Inspect propagated impact from one artifact.']
 ];
 
+const starterCommands = [
+    'npx @donartcha/openlag init --starter',
+    'openlag check --profile develop',
+    'openlag freeze --profile starter --format markdown'
+];
+
+const starterScope = [
+    ['4 artifact types', 'REQUIREMENT, FEATURE, CODE_ENTITY, TEST_CASE'],
+    ['4 relations', 'REFINES, IMPLEMENTS, TESTS, DEPENDS_ON'],
+    ['1 export profile', 'starter (default markdown, lifecycle ordering)']
+];
+
 const markdownExample = `---
 id: REQ-AUTH-001
 type: REQUIREMENT
@@ -545,6 +557,40 @@ export const GuideView: React.FC = () => {
                                         <p className="md:w-2/3 text-[13px] text-white/60 leading-relaxed">{desc}</p>
                                     </div>
                                 ))}
+                            </div>
+                        </section>
+
+                        <section>
+                            <SectionHeader
+                                icon={<CheckCircle2 size={18} className="text-emerald-400" />}
+                                title="OpenLAG Lite Happy Path (Starter)"
+                                desc="For first-time users, small teams, or ADR-first workflows, start with the minimum contract set and grow later."
+                                tone="bg-emerald-500/10 border-emerald-500/20"
+                            />
+
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 max-w-6xl">
+                                <div className="bg-black/40 border border-white/5 rounded-lg overflow-hidden">
+                                    <div className="p-4 bg-white/[0.03] border-b border-white/5">
+                                        <span className="text-[10px] font-mono text-white/40 italic">starter onboarding commands</span>
+                                    </div>
+                                    <div className="p-6">
+                                        <pre className="text-[11px] font-mono leading-relaxed text-white/60 select-all">{starterCommands.join('\n')}</pre>
+                                    </div>
+                                </div>
+                                <div className="bg-[#0c0c0c] border border-white/5 p-5 rounded">
+                                    <h3 className="text-sm font-bold text-white/80 mb-4">What starter scaffolds</h3>
+                                    <div className="space-y-3">
+                                        {starterScope.map(([label, value]) => (
+                                            <div key={label} className="border-b border-white/5 last:border-b-0 pb-3 last:pb-0">
+                                                <div className="text-[11px] text-emerald-300 font-mono">{label}</div>
+                                                <p className="text-[11px] text-white/45 leading-relaxed mt-1">{value}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <p className="text-[12px] text-white/45 leading-relaxed mt-5">
+                                        Recommended path: start with starter, stabilize traceability habits, then expand with `openlag profile add governance` or `openlag profile add mvc`.
+                                    </p>
+                                </div>
                             </div>
                         </section>
 

@@ -1,0 +1,7 @@
+type: CODE_ENTITY
+layer: IMPLEMENTATION
+description: "Code implementation unit."
+requiredFields:
+  - id
+  - type
+  - title

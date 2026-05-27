@@ -52,6 +52,7 @@ program
   .description('Initialize a new OpenLAG project')
   .option('-n, --name <name>', 'Project name')
   .option('-d, --desc <description>', 'Project description')
+  .option('--starter', 'Initialize with OpenLAG Lite starter contracts (4 artifact types, 4 relations, 1 export profile)')
   .option('--all', 'Include optional synthetic relations')
   .option('-p, --profile <profile>', 'Apply a profile pack (e.g. mvc, hexagonal)')
   .addHelpText('after', `
@@ -59,15 +60,17 @@ program
 Examples:
   $ openlag init --name "My System"
   $ openlag init --name "My System" --desc "Architecture knowledge base"
+  $ openlag init --starter
   $ openlag init --profile governance
   $ openlag init --all
 
 Notes:
   Existing contract files are preserved.
+  --starter applies the lightweight starter profile for new teams.
   --profile copies bundled contracts/templates into docs/contracts/.
 `)
   .action((options) => {
-    initProject(options.name, options.desc, options.all, options.profile);
+    initProject(options.name, options.desc, options.all, options.profile, options.starter);
   });
 
 program

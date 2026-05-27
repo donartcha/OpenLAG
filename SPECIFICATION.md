@@ -466,6 +466,14 @@ For relation contracts, the initialization command (`npx openlag init` or `npm r
 
 The goal is to reduce cognitive complexity for new projects. Teams can progressively incorporate `Official Optional Relations` by copying the specifications as their documentary model matures; thus avoiding overwhelming teams with more than 18 options from day one.
 
+OpenLAG also provides a lightweight onboarding mode through `npx openlag init --starter` (OpenLAG Lite). This mode is intentionally optimized for first-time users and small teams by scaffolding only:
+
+- 4 artifact contracts: `REQUIREMENT`, `FEATURE`, `CODE_ENTITY`, `TEST_CASE`
+- 4 relation contracts: `REFINES`, `IMPLEMENTS`, `TESTS`, `DEPENDS_ON`
+- 1 export profile: `starter` (default `markdown`, `lifecycle` ordering strategy)
+
+This starter path reduces initial setup friction while preserving the same contract-driven architecture and allowing progressive expansion via profile packs or custom contracts.
+
 In addition to the mandatory relation contracts and the baseline artifact contracts needed by the portal, `openlag init` also creates `docs/contracts/artifacts/CUSTOM_TYPE.yaml` as an intentional learning sample. `CUSTOM_TYPE` is not an official domain artifact and should not be interpreted as part of the mandatory OpenLAG taxonomy; it exists to demonstrate how a project can define a custom artifact contract by extending a known base type such as `CODE_ENTITY`.
 
 The default `DOCUMENTS` contract is scoped to Base Artifact Contracts. When `openlag init --all` is used, `DOCUMENTS` is generated with the expanded official artifact universe so documentation can target optional operations, governance, infrastructure, risk, and process artifacts as well.
@@ -519,6 +527,8 @@ Generated TypeScript files are considered implementation artifacts and not the c
 ### Profile Packs (Scaffolding Contracts)
 OpenLAG provides pre-built architecture profiles (Profile Packs) inside `profiles/`. These profiles are templates of `contracts` (Artifacts, Relations, and Rules).
 When a user runs `npx openlag init --profile <pack_name>` (e.g. `npx openlag init --profile mvc`), OpenLAG automatically copies all the contracts predefined in `profiles/<pack_name>/` into the project's `docs/contracts/` folder. This provides teams with out-of-the-box structural governance and visualization groupings for established architectural patterns (like MVC, Hexagonal, etc.) without having to define all the `PORT`, `ADAPTER`, or `CONTROLLER` YAML contracts by hand.
+
+For onboarding, `--starter` behaves like a dedicated profile-level scaffold focused on the minimum traceability loop (`requirement -> feature -> code -> test`) and can be combined later with `openlag profile add <pack>` to grow into broader governance or architecture patterns.
 
 ### Severity per Profile
 - **feature**: Only `error` on `INVALID` rules.
