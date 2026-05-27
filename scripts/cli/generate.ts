@@ -56,7 +56,7 @@ export function generateData(docsDir: string, outputDir: string, silent = false)
   if (fs.existsSync(metadataPath)) {
     try {
       metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
-    } catch (e) {
+    } catch {
       if (!silent) console.warn(chalk.yellow("⚠️  Could not parse metadata.json"));
     }
   }
@@ -176,7 +176,7 @@ export function watchData(docsDir: string, outputDir: string) {
     timeout = setTimeout(runCleanly, 300);
   };
 
-  watcher.on('all', (event, path) => {
+  watcher.on('all', () => {
     debouncedRun();
   });
 }

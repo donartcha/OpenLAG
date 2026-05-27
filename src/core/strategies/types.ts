@@ -1,4 +1,4 @@
-import { Artifact, ArtifactType } from '../../types';
+import { Artifact } from '../../types';
 
 export interface StrategyResultGroup {
   id: string;

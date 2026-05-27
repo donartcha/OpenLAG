@@ -1,5 +1,5 @@
 import { ProjectionStrategy, StrategyResultGroup } from './types';
-import { Artifact, ArtifactType, ArtifactLayer } from '../../types';
+import { Artifact, ArtifactLayer } from '../../types';
 import { getArtifactLayer } from '../../utils/artifactUtils';
 
 const LAYER_ORDER: ArtifactLayer[] = [

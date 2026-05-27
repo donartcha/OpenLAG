@@ -16,6 +16,7 @@ All notable changes to OpenLAG are documented in this file.
 - Updated runtime behavior documentation in `SPECIFICATION.md` to explicitly distinguish static `dist/` serving vs regeneration/rebuild preview workflow.
 - Updated `openlag build` contract regeneration step to include rules alongside artifact and relation contracts.
 - Improved contract regeneration warnings in `openlag build` and `openlag dev` to include the underlying error reason and explicit fallback behavior.
+- Applied stabilization updates across lint/parser and portal views (`DocumentationView`, `MarkdownRenderer`, `OrphansView`, `SettingsView`, lifecycle strategy typing) to keep runtime behavior and TypeScript contracts consistent in the 0.5.0 line.
 
 ### Fixed
 - Fixed `openlag generate` contract path resolution to read from:

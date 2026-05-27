@@ -3,7 +3,7 @@ import { useStore } from '../store';
 import { Artifact } from '../types';
 import { getArtifactLayer, getArtifactOwner, getArtifactTeam } from '../utils/artifactUtils';
 import { strategyRegistry } from '../core/strategies';
-import { Layers, FileText, FileCode2, ShieldCheck, ChevronRight, Search, GitPullRequest, Repeat, Box, Rocket, Activity, Wrench, Trash2, AlertCircle, Printer, Milestone, Bookmark, BookOpen } from 'lucide-react';
+import { ChevronRight, Search, Activity, Trash2, AlertCircle, Printer, Bookmark } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
 const OwnershipBadge = ({ artifact }: { artifact: Artifact }) => {

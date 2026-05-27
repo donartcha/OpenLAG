@@ -53,7 +53,7 @@ export const MarkdownRenderer = ({ content }: { content: string }) => {
     <div className="markdown-body prose prose-invert prose-sm max-w-none text-[#e0e0e0]/80">
       <Markdown
         components={{
-          code({node, className, children, ...props}: any) {
+          code({className, children, ...props}: any) {
             const match = /language-(\w+)/.exec(className || '');
             if (match && match[1] === 'mermaid') {
               return <Mermaid chart={String(children).replace(/\n$/, '')} />;
