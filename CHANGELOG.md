@@ -2,7 +2,7 @@
 
 All notable changes to OpenLAG are documented in this file.
 
-## 0.5.1 - 2026-05-28
+## 0.5.0 - 2026-05-28 (stabilization updates)
 
 ### Added
 - Added local preview and static serving guidance to official documentation (`README.md`, `CONTRIBUTING.md`, `DOCUMENTACION_OPENLAG.md`) covering:
@@ -29,7 +29,7 @@ All notable changes to OpenLAG are documented in this file.
   - `public/graph-data.json`
 - Fixed opaque fallback behavior by adding explicit warnings when a contract family is missing from `docs/contracts/**` and no local `public/*-definitions.json` fallback file exists.
 
-## 0.5.0 - 2026-05-26
+### 0.5.0 initial release - 2026-05-26
 
 ### Added
 - Added `openlag init --starter` as an OpenLAG Lite onboarding path with a minimal contract scaffold for new teams: 4 artifact types (`REQUIREMENT`, `FEATURE`, `CODE_ENTITY`, `TEST_CASE`), 4 relations (`REFINES`, `IMPLEMENTS`, `TESTS`, `DEPENDS_ON`), and one starter export profile (`starter`).
