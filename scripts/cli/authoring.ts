@@ -70,6 +70,14 @@ export function registerAuthoringCommands(program: Command) {
   program
     .command('profiles')
     .description('List bundled OpenLAG profile packs')
+    .addHelpText('after', `
+
+Example:
+  $ openlag profiles
+
+Notes:
+  Profile packs can be applied with openlag profile add <profile>.
+`)
     .action(() => {
       const dir = path.join(packageRoot(), 'profiles');
       if (!fs.existsSync(dir)) {
@@ -83,12 +91,31 @@ export function registerAuthoringCommands(program: Command) {
       for (const profile of profiles) console.log(profile);
     });
 
-  const profile = program.command('profile').description('Manage OpenLAG profile packs');
+  const profile = program
+    .command('profile')
+    .description('Manage OpenLAG profile packs')
+    .addHelpText('after', `
+
+Examples:
+  $ openlag profile add governance
+  $ openlag profile validate --profile governance
+  $ openlag profile validate --file profiles/governance/profile.yaml
+`);
 
   profile
     .command('add')
     .description('Add a bundled profile pack to the current project')
     .argument('<profile>', 'Name of the profile (e.g. core, governance, mvc, hexagonal, testing)')
+    .addHelpText('after', `
+
+Examples:
+  $ openlag profile add core
+  $ openlag profile add governance
+  $ openlag profile add mvc
+
+Notes:
+  Copies YAML contracts and templates from the bundled profile into the current project.
+`)
     .action((profileName) => {
       try {
         const result = applyProfilePack(profileName);
@@ -105,6 +132,16 @@ export function registerAuthoringCommands(program: Command) {
     .description('Validate a bundled profile pack or a profile YAML file')
     .option('--profile <profile>', 'Bundled profile name')
     .option('--file <path>', 'Path to profile yaml')
+    .addHelpText('after', `
+
+Examples:
+  $ openlag profile validate
+  $ openlag profile validate --profile governance
+  $ openlag profile validate --file profiles/governance/profile.yaml
+
+Notes:
+  Defaults to --profile core when neither --profile nor --file is provided.
+`)
     .action((options) => {
       try {
         if (options.file) {
@@ -131,6 +168,14 @@ export function registerAuthoringCommands(program: Command) {
     .command('profile-add')
     .description('Deprecated alias for `openlag profile add`')
     .argument('<profile>', 'Name of the profile')
+    .addHelpText('after', `
+
+Example:
+  $ openlag profile-add governance
+
+Notes:
+  Deprecated. Prefer openlag profile add <profile>.
+`)
     .action((profileName) => {
       try {
         const result = applyProfilePack(profileName);
@@ -146,6 +191,17 @@ export function registerAuthoringCommands(program: Command) {
   program
     .command('scaffold')
     .description('Scaffold mass authoring templates and samples')
+    .addHelpText('after', `
+
+Example:
+  $ openlag scaffold
+
+Output:
+  templates/artifacts/artifact-contract.template.yaml
+  templates/relations/relation-contract.template.yaml
+  templates/rules/rule-contract.template.yaml
+  templates/markdown/artifact.template.md
+`)
     .action(() => {
       const templatesDir = path.join(process.cwd(), 'templates');
       ensureDir(path.join(templatesDir, 'artifacts'));
@@ -165,6 +221,20 @@ export function registerAuthoringCommands(program: Command) {
     .description('Create an artifact contract, relation contract, rule contract, or artifact')
     .argument('<type>', 'Type of entity to create (artifact-contract, relation, rule, artifact)')
     .argument('<name>', 'Name or ID of the entity')
+    .addHelpText('after', `
+
+Examples:
+  $ openlag create artifact-contract API_ROUTE
+  $ openlag create relation TRACKS
+  $ openlag create rule requirement-owner-required
+  $ openlag create artifact REQ-AUTH-001
+
+Output:
+  artifact-contract -> docs/contracts/artifacts/<name>.yaml
+  relation          -> docs/contracts/relations/<name>.yaml
+  rule              -> docs/contracts/rules/<name>.yaml
+  artifact          -> docs/<name>.md
+`)
     .action((type, name) => {
       const contractsDir = path.join(process.cwd(), 'docs', 'contracts');
       const templatesDir = path.join(process.cwd(), 'templates');

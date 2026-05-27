@@ -10,8 +10,21 @@ export function registerFreezeCommand(program: Command) {
     .option('-p, --profile <profile>', 'Export profile from docs/contracts/export-profiles', 'architecture')
     .option('--format <format>', 'Output format (markdown, json, html, pdf)', 'markdown')
     .option('--template <template>', 'Freeze HTML/PDF template id or path override')
-    .option('-o, --output <path>', 'Output directory or .md file')
+    .option('-o, --output <path>', 'Output directory or target file')
     .option('--dry-run', 'Preview what would be exported without writing files')
+    .addHelpText('after', `
+
+Examples:
+  $ openlag freeze --profile architecture --format markdown
+  $ openlag freeze --profile architecture --format html --template audit-dossier
+  $ openlag freeze --profile architecture --format pdf --output exports/audit.pdf
+  $ openlag freeze --profile architecture --dry-run
+
+Notes:
+  Export profiles live in docs/contracts/export-profiles/*.yaml.
+  If --output has an extension it is used as the target file.
+  If --output has no extension it is used as the output directory.
+`)
     .action((options) => {
       try {
         const result = createDocumentationFreeze({

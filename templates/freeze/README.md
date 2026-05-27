@@ -24,6 +24,15 @@ The CLI can override it:
 
 ```bash
 openlag freeze --profile architecture --format html --template audit-dossier
+openlag freeze --profile architecture --format pdf --template executive-brief
+openlag freeze --profile architecture --format html --template templates/freeze/knowledge-map.html
+```
+
+When `--output` is provided, a path with an extension is treated as the target file. A path without an extension is treated as a directory and receives the standard `openlag-<profile>-<template>.<format>` filename.
+
+```bash
+openlag freeze --profile architecture --format html --output exports
+openlag freeze --profile architecture --format pdf --template audit-dossier --output exports/audit.pdf
 ```
 
 ## Required Placeholders
@@ -43,7 +52,7 @@ Templates must keep these slots:
 - `openlag.relations`
 - `openlag.technicalMetadata`
 
-Slots are rendered by shared OpenLAG code. Do not add artifact filtering, relation filtering, ordering, or profile logic inside templates.
+Slots are rendered by shared OpenLAG code. Do not add artifact filtering, relation filtering, ordering, profile logic, or business copy decisions inside templates. Keep those decisions in `docs/contracts/export-profiles/*.yaml`.
 
 ## Offline Bundles
 
@@ -54,7 +63,7 @@ Source templates contain only these placeholders:
 /* __OPENLAG_INLINE_MERMAID_BUNDLE__ */
 ```
 
-OpenLAG injects Marked and Mermaid bundles in memory during export. Bundles are written only to generated files under `dist/openlag/exports/...`; they must never be committed into source templates.
+OpenLAG injects Marked and Mermaid bundles in memory during export. Bundles are written only to generated output files in the command directory or the explicit `--output` path; they must never be committed into source templates.
 
 ## Safe Customization
 

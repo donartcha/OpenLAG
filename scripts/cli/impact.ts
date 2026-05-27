@@ -124,6 +124,18 @@ export function registerImpactCommand(program: Command) {
     .option('--to <ref>', 'Git target ref (default HEAD)')
     .option('--json', 'Output results in JSON format')
     .option('--fail-on-impact', 'Exit with code 2 when impacted artifacts are detected (CI mode)')
+    .addHelpText('after', `
+
+Examples:
+  $ openlag impact --artifact REQ-AUTH-001
+  $ openlag impact --file docs/requirements/REQ-AUTH-001.md
+  $ openlag impact --from main --to HEAD --json
+  $ openlag impact --from origin/main --fail-on-impact
+
+Notes:
+  Impact traversal follows relation impact rules from docs/contracts/relations/*.yaml.
+  Provide one target source: --artifact, --file, or --from.
+`)
     .action((options) => {
         const data = parseOpenLagDocs(path.join(process.cwd(), 'docs'));
         const graph = new ImpactGraph(data.artifacts, data.relations);

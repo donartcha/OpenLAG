@@ -70,7 +70,7 @@ const copies: Record<'EN' | 'ES', GuideCopy> = {
         rulesTitle: 'Rule Contracts',
         rulesDesc: 'Rule contracts are MVP runtime behavior in 0.5.0. They live in the project contracts folder and affect validation only when the active profile enables the rule id.',
         freezeTitle: 'Freeze and Export',
-        freezeDesc: 'Freeze builds a frozen document model from profile, graph, artifacts, and ordering rules. HTML is a standalone documentation page; PDF is generated from the frozen model, not from portal printing.',
+        freezeDesc: 'Freeze builds a deterministic frozen document model from the local graph and an export profile. Markdown and JSON expose the model; HTML and PDF render the same model through offline documentary templates, not through portal printing.',
         profilesTitle: 'Profiles and Templates',
         profilesDesc: 'Profiles and templates are versioned package assets. Profile commands copy and validate reusable contract packs for local projects.',
         frontmatterTitle: 'Official Markdown Frontmatter',
@@ -99,7 +99,7 @@ const copies: Record<'EN' | 'ES', GuideCopy> = {
         rulesTitle: 'Contratos de reglas',
         rulesDesc: 'Los contratos de reglas son comportamiento MVP ejecutable en 0.5.0. Viven en la carpeta de contratos del proyecto y solo afectan a la validacion cuando el perfil activo habilita el id de regla.',
         freezeTitle: 'Freeze y export',
-        freezeDesc: 'Freeze construye un modelo documental congelado desde perfil, grafo, artefactos y ordenacion. HTML es una pagina independiente; PDF se genera desde el modelo congelado, no desde imprimir el portal.',
+        freezeDesc: 'Freeze construye un modelo documental congelado y determinista desde el grafo local y un perfil de exportacion. Markdown y JSON exponen el modelo; HTML y PDF renderizan el mismo modelo con plantillas documentales offline, no imprimiendo el portal.',
         profilesTitle: 'Perfiles y plantillas',
         profilesDesc: 'Perfiles y plantillas son assets versionados del paquete. Los comandos de perfil copian y validan packs reutilizables para proyectos locales.',
         frontmatterTitle: 'Frontmatter Markdown oficial',
@@ -164,8 +164,42 @@ const freezeCommands = [
     'openlag freeze --profile architecture --format markdown',
     'openlag freeze --profile architecture --format json',
     'openlag freeze --profile architecture --format html',
-    'openlag freeze --profile architecture --format pdf'
+    'openlag freeze --profile architecture --format pdf',
+    'openlag freeze --profile architecture --output exports/architecture',
+    'openlag freeze --profile architecture --format html --template audit-dossier',
+    'openlag freeze --profile architecture --dry-run'
 ];
+
+const freezeTemplates = [
+    ['freeze-template', 'Default professional documentation template.'],
+    ['technical-manual', 'Dense developer and architecture manual.'],
+    ['executive-brief', 'Metrics-first stakeholder brief.'],
+    ['audit-dossier', 'Formal traceability dossier for governance review.'],
+    ['knowledge-map', 'Navigation-first architecture exploration document.']
+];
+
+const exportProfileExample = `id: architecture
+name: Architecture Documentation Freeze
+defaultFormat: markdown
+template:
+  id: technical-manual
+  path: templates/freeze/technical-manual.html
+includeArtifactTypes:
+  - PROJECT
+  - REQUIREMENT
+  - DECISION
+includeRelations:
+  - REFINES
+  - IMPLEMENTS
+sections:
+  - id: requirements
+    title: Requirements
+    artifactTypes:
+      - REQUIREMENT
+rendering:
+  includeTableOfContents: true
+  includeRelationTables: true
+  includeSourceMetadata: true`;
 
 const dailyCommands = [
     ['openlag generate', 'Generate static graph and contract payloads.'],
@@ -344,7 +378,8 @@ const validationCommands = [
     'openlag freeze --profile architecture --format markdown',
     'openlag freeze --profile architecture --format json',
     'openlag freeze --profile architecture --format html',
-    'openlag freeze --profile architecture --format pdf'
+    'openlag freeze --profile architecture --format pdf',
+    'openlag freeze --profile architecture --format html --template technical-manual'
 ];
 
 const Chip: React.FC<{ children: React.ReactNode; tone?: string }> = ({ children, tone = 'bg-white/5 text-white/60' }) => (
@@ -685,6 +720,31 @@ export const GuideView: React.FC = () => {
                                     <pre className="text-[11px] font-mono leading-relaxed text-white/60 select-all">
 {freezeCommands.join('\n')}
                                     </pre>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 max-w-6xl mt-4">
+                                <div className="bg-black/40 border border-white/5 rounded-lg overflow-hidden">
+                                    <div className="p-4 bg-white/[0.03] border-b border-white/5">
+                                        <span className="text-[10px] font-mono text-white/40 italic">docs/contracts/export-profiles/architecture.yaml</span>
+                                    </div>
+                                    <div className="p-6">
+                                        <pre className="text-[11px] font-mono leading-relaxed text-white/60 select-all">{exportProfileExample}</pre>
+                                    </div>
+                                </div>
+                                <div className="bg-[#0c0c0c] border border-white/5 p-5 rounded">
+                                    <h3 className="text-sm font-bold text-white/80 mb-4">Bundled freeze templates</h3>
+                                    <div className="space-y-3">
+                                        {freezeTemplates.map(([template, desc]) => (
+                                            <div key={template} className="border-b border-white/5 last:border-b-0 pb-3 last:pb-0">
+                                                <code className="text-[11px] text-cyan-300 font-mono">{template}</code>
+                                                <p className="text-[11px] text-white/45 leading-relaxed mt-1">{desc}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                    <p className="text-[12px] text-white/45 leading-relaxed mt-5">
+                                        Templates control presentation only. Artifact selection, relation selection, sections, ordering, and rendering flags belong to the export profile.
+                                    </p>
                                 </div>
                             </div>
                         </section>

@@ -1,8 +1,9 @@
 id: architecture
 name: Architecture Documentation Freeze
 description: >
-  Generates a deterministic Markdown architecture snapshot from the current
-  OpenLAG graph.
+  Generates a deterministic architecture documentation freeze from the current
+  OpenLAG graph. Markdown and JSON expose the frozen model; HTML and PDF render
+  the same model through the configured documentary template.
 defaultFormat: markdown
 
 template:

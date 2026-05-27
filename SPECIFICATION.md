@@ -796,11 +796,11 @@ jobs:
 
 `openlag freeze` creates a deterministic frozen document model from the local OpenLAG graph and an export profile.
 
-The freeze subsystem uses profiles in `docs/contracts/export-profiles/*.yaml` and writes to `dist/openlag/exports/<profile>/` by default. Export profiles are documentation-as-code inputs: they select artifact types, relation types, sections, ordering, and rendering flags without replacing artifact contracts or relation contracts.
+The freeze subsystem uses profiles in `docs/contracts/export-profiles/*.yaml` and writes to the command execution directory by default. Export profiles are documentation-as-code inputs: they select artifact types, relation types, sections, ordering, documentary copy, branding, footer text, and rendering flags without replacing artifact contracts or relation contracts. Users may redirect output with `--output`; a path with an extension is treated as the output file, while a path without an extension is treated as an output directory.
 
 Export profiles may also declare documentary template configuration. The optional fields `template`, `branding`, `document`, `executiveSummary`, `footer`, and `rendering` provide the customization contract for cover pages, executive summary text, branding, metadata visibility, relation tables, and footer content. If these fields are absent, the renderer uses backwards-compatible defaults.
 
-The default professional documentary template is `templates/freeze/freeze-template.html`. HTML and PDF exports render from the same frozen document model and template contract. Business-facing text such as document purpose, scope, audience, subtitles, and footer labels should come from the export profile or template defaults rather than being hardcoded in the renderer.
+The default professional documentary template is `templates/freeze/freeze-template.html`. HTML and PDF exports render from the same frozen document model and template contract. Business-facing text such as document purpose, scope, audience, subtitles, and footer labels should come from the export profile or template defaults rather than being hardcoded in the renderer. The bundled template ids are `freeze-template`, `technical-manual`, `executive-brief`, `audit-dossier`, and `knowledge-map`; the CLI `--template` option may override the profile template with either one of those ids or an HTML path.
 
 The implemented output formats are `markdown`, `json`, `html`, and `pdf`:
 
@@ -809,10 +809,12 @@ openlag freeze --profile architecture --format markdown
 openlag freeze --profile architecture --format json
 openlag freeze --profile architecture --format html
 openlag freeze --profile architecture --format pdf
+openlag freeze --profile architecture --output exports/architecture
+openlag freeze --profile architecture --format html --template audit-dossier
 openlag freeze --profile architecture --dry-run
 ```
 
-HTML output is a standalone documentation page, not the React portal. PDF output is generated from the frozen document model, not from portal printing. `typst` is not part of the public 0.5.0 freeze contract.
+HTML output is a standalone offline documentation page, not the React portal. Marked and Mermaid browser bundles are injected in memory into generated HTML/PDF output only; source templates must keep placeholders instead of committed vendor bundles. PDF output is generated from the frozen document model, not from portal printing. `typst` is not part of the public 0.5.0 freeze contract.
 
 ## 16. Conceptual Roadmap
 

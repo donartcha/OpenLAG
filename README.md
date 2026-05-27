@@ -99,6 +99,7 @@ openlag freeze --profile architecture --format markdown
 openlag freeze --profile architecture --format json
 openlag freeze --profile architecture --format html
 openlag freeze --profile architecture --format pdf
+openlag freeze --profile architecture --format html --template audit-dossier
 openlag freeze --profile architecture --dry-run
 ```
 
@@ -124,20 +125,24 @@ openlag preview    Preview the production build
 
 ## Documentation Freeze
 
-OpenLAG generates a frozen document model from the local graph and an export profile, then renders it as Markdown, JSON, standalone HTML, or PDF.
+OpenLAG generates a deterministic frozen document model from the local graph and an export profile, then renders it as Markdown, JSON, standalone HTML, or PDF.
 
-The default profile lives at `docs/contracts/export-profiles/architecture.yaml`. Generated files go to `dist/openlag/exports/<profile>/` unless `--output` is provided.
+The default profile lives at `docs/contracts/export-profiles/architecture.yaml`. Generated files go to the directory where the command is executed unless `--output` is provided. If `--output` has an extension, OpenLAG treats it as the target file; otherwise it treats it as a directory and writes the standard `openlag-<profile>.<format>` filename there.
 
 ```bash
 openlag freeze --profile architecture --format markdown
 openlag freeze --profile architecture --format json
 openlag freeze --profile architecture --format html
 openlag freeze --profile architecture --format pdf
-openlag freeze --profile architecture --output dist/openlag/exports/architecture
+openlag freeze --profile architecture --output exports/architecture
+openlag freeze --profile architecture --format html --template technical-manual
+openlag freeze --profile architecture --format pdf --template executive-brief
 openlag freeze --profile architecture --dry-run
 ```
 
-PDF generation is produced from the frozen document model. It does not print or depend on the React portal.
+Export profiles select artifact types, relation types, sections, ordering, documentary copy, branding, footer text, and rendering flags. HTML and PDF exports use the same frozen model and the same template contract. Bundled template ids are `freeze-template`, `technical-manual`, `executive-brief`, `audit-dossier`, and `knowledge-map`; `--template` can also point to a template HTML path.
+
+HTML output is standalone and offline: vendor bundles for Markdown and Mermaid are injected only into generated output. PDF generation is produced from the frozen document model. It does not print or depend on the React portal.
 
 ## Profiles and Templates
 

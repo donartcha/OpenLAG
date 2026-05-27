@@ -33,7 +33,19 @@ function runVitePreview() {
   });
 }
 
-program.name('openlag').description('Architecture as Code traceability graph generator').version(packageJson.version);
+program
+  .name('openlag')
+  .description('Architecture as Code traceability graph generator')
+  .version(packageJson.version)
+  .addHelpText('after', `
+
+Common workflows:
+  $ openlag init --name "My System"
+  $ openlag generate
+  $ openlag lint --profile develop
+  $ openlag check --profile release --strict
+  $ openlag freeze --profile architecture --format html
+`);
 
 program
   .command('init')
@@ -42,6 +54,18 @@ program
   .option('-d, --desc <description>', 'Project description')
   .option('--all', 'Include optional synthetic relations')
   .option('-p, --profile <profile>', 'Apply a profile pack (e.g. mvc, hexagonal)')
+  .addHelpText('after', `
+
+Examples:
+  $ openlag init --name "My System"
+  $ openlag init --name "My System" --desc "Architecture knowledge base"
+  $ openlag init --profile governance
+  $ openlag init --all
+
+Notes:
+  Existing contract files are preserved.
+  --profile copies bundled contracts/templates into docs/contracts/.
+`)
   .action((options) => {
     initProject(options.name, options.desc, options.all, options.profile);
   });
@@ -50,6 +74,17 @@ program
   .command('generate')
   .description('Generate static graph data from markdown docs')
   .option('-w, --watch', 'Watch mode')
+  .addHelpText('after', `
+
+Examples:
+  $ openlag generate
+  $ openlag generate --watch
+
+Output:
+  public/graph-data.json
+  public/artifact-definitions.json
+  public/relation-definitions.json
+`)
   .action((options) => {
     const docsDir = path.join(process.cwd(), 'docs');
     const outputDir = path.join(process.cwd(), 'public');
@@ -64,6 +99,14 @@ program
 program
   .command('dev')
   .description('Start development server with live data refresh')
+  .addHelpText('after', `
+
+Example:
+  $ openlag dev
+
+Notes:
+  Regenerates graph data and starts the Vite development portal.
+`)
   .action(() => {
     runDevServer();
   });
@@ -71,6 +114,14 @@ program
 program
   .command('build')
   .description('Build the OpenLAG portal for production')
+  .addHelpText('after', `
+
+Example:
+  $ openlag build
+
+Output:
+  dist/
+`)
   .action(() => {
     buildPortal();
   });
@@ -81,6 +132,14 @@ program
   .option('-p, --profile <profile>', 'Lint profile (draft, develop, feature, release)', 'develop')
   .option('--json', 'Output report in JSON format')
   .option('--strict', 'Fail on warnings')
+  .addHelpText('after', `
+
+Examples:
+  $ openlag lint
+  $ openlag lint --profile feature
+  $ openlag lint --profile release --strict
+  $ openlag lint --json
+`)
   .action((options) => {
     lintDocs(options.profile, options.json, options.strict);
   });
@@ -88,6 +147,14 @@ program
 program
   .command('preview')
   .description('Preview the production build')
+  .addHelpText('after', `
+
+Example:
+  $ openlag preview
+
+Notes:
+  Serves the production build from dist/.
+`)
   .action(() => {
     runVitePreview();
   });
@@ -97,6 +164,15 @@ program
   .description('Generate graph data and validate architecture documentation')
   .option('-p, --profile <profile>', 'Lint profile (draft, develop, feature, release)', 'develop')
   .option('--strict', 'Fail on warnings')
+  .addHelpText('after', `
+
+Examples:
+  $ openlag check
+  $ openlag check --profile release --strict
+
+Notes:
+  Runs generate first, then lint with the selected profile.
+`)
   .action((options) => {
     console.log(chalk.blue('Running OpenLAG checks...'));
 

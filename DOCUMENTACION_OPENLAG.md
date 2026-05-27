@@ -265,6 +265,8 @@ openlag freeze --profile architecture --format markdown
 openlag freeze --profile architecture --format json
 openlag freeze --profile architecture --format html
 openlag freeze --profile architecture --format pdf
+openlag freeze --profile architecture --output exports/architecture
+openlag freeze --profile architecture --format html --template audit-dossier
 openlag freeze --profile architecture --dry-run
 ```
 
@@ -281,11 +283,15 @@ Esta propagación permite navegar por todo el grafo de forma determinista para c
 
 ### Documentation freeze
 
-`openlag freeze` genera un modelo documental congelado desde el grafo local y un perfil de exportacion.
+`openlag freeze` genera un modelo documental congelado y determinista desde el grafo local y un perfil de exportacion.
 
-El perfil por defecto esta en `docs/contracts/export-profiles/architecture.yaml` y la salida se escribe en `dist/openlag/exports/<profile>/` salvo que se use `--output`.
+El perfil por defecto esta en `docs/contracts/export-profiles/architecture.yaml` y la salida se escribe en el directorio desde el que se ejecuta el comando salvo que se use `--output`. Si `--output` incluye extension, se interpreta como archivo destino; si no incluye extension, se interpreta como directorio y OpenLAG usa el nombre estandar `openlag-<perfil>.<formato>`.
 
-Los formatos oficiales son `markdown`, `json`, `html` y `pdf`. HTML genera una pagina documental standalone; PDF parte del modelo congelado y no de imprimir el portal React.
+Los formatos oficiales son `markdown`, `json`, `html` y `pdf`. Markdown y JSON exponen el modelo congelado; HTML genera una pagina documental standalone y offline; PDF parte del mismo modelo congelado y no de imprimir el portal React.
+
+Los perfiles de exportacion seleccionan tipos de artefacto, relaciones, secciones, ordenacion, textos documentales, branding, footer y flags de renderizado. Las plantillas controlan solo la presentacion. Las plantillas incluidas son `freeze-template`, `technical-manual`, `executive-brief`, `audit-dossier` y `knowledge-map`; `--template` puede usar uno de esos ids o una ruta HTML.
+
+Durante la exportacion HTML/PDF, OpenLAG inyecta Marked y Mermaid en memoria en los archivos generados. Las plantillas fuente deben conservar placeholders y no deben incluir bundles vendor comprometidos.
 
 ### Scripts NPM del repositorio
 ### Generacion de datos

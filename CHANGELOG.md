@@ -5,7 +5,7 @@ All notable changes to OpenLAG are documented in this file.
 ## 0.5.0 - 2026-05-26
 
 ### Added
-- Added the official `openlag freeze` subsystem with export profiles, dry-run support, deterministic frozen document model generation, and `markdown`, `json`, `html`, and `pdf` output under `dist/openlag/exports/`.
+- Added the official `openlag freeze` subsystem with export profiles, dry-run support, deterministic frozen document model generation, and `markdown`, `json`, `html`, and `pdf` output in the command directory or explicit `--output` path.
 - Added executable rule contracts under `docs/contracts/rules/*.yaml`, generated rule registries, profile-gated runtime validation, and normalized `warn`/`warning` severity handling.
 - Added bundled profile/template assets for `core`, `governance`, `mvc`, `hexagonal`, and related profile packs, including deterministic `openlag profile add` and `openlag profile validate` workflows.
 - Added invalid validation fixtures under `tests/fixtures/invalid/` to prove expected governance failures without keeping the main OpenLAG dataset broken.
@@ -14,6 +14,7 @@ All notable changes to OpenLAG are documented in this file.
 - Added professional freeze template rendering for HTML and PDF exports, including branded cover pages, executive summary text from export profiles, artifact cards, relation lists, and UTF-8-safe documentary output.
 - Added in-memory offline vendor injection for Marked and Mermaid so exported HTML/PDF documentary outputs do not depend on CDN, internet access, ESM imports, or a local server while keeping the source freeze template editable.
 - Added a parameterized freeze template system with technical manual, executive brief, audit dossier, and knowledge map documentary layouts that share the same rendering contract and offline export pipeline.
+- Added expanded `--help` usage examples and notes for every `openlag` command and subcommand, including profile, authoring, impact, and freeze workflows.
 
 ### Changed
 - Promoted the stabilized OpenLAG 0.5.0 runtime model: lightweight core, optional governance, optional impact engine, optional authoring tooling, and official freeze/export.
@@ -22,6 +23,7 @@ All notable changes to OpenLAG are documented in this file.
 - Updated README, specification, and project documentation to describe 0.5.0 implemented behavior instead of treating stabilized 0.5.0 capabilities as future 0.5.x roadmap work.
 - Updated the portal guide to reflect the OpenLAG 0.5.0 specification, including semantic layers, contract-driven paths, profile commands, rule contracts, and freeze/export behavior.
 - Extended export profiles with optional `template`, `branding`, `document`, `executiveSummary`, `footer`, and rendering controls while keeping older export profiles compatible.
+- Clarified freeze/export documentation across the README, specification, Spanish technical documentation, portal guide, default export profile, and freeze template README, including `--output`, `--template`, offline HTML/PDF rendering, and the boundary between export profiles and templates.
 
 ### Removed
 - Removed Typst, jsPDF, html2canvas, and html-to-image from the 0.5.0 freeze/export public contract and dependencies.
