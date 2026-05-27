@@ -2,14 +2,6 @@
 
 All notable changes to OpenLAG are documented in this file.
 
-## 0.5.1 - 2026-05-27
-
-### Fixed
-- Corrected freeze export behavior across CLI/core flow to keep generated outputs aligned with the expected profile/template mapping.
-- Updated export profile contracts (`compliance`, `developer`, `executive`, `governance`, `release`) to match the corrected export behavior.
-- Updated freeze screenshot E2E coverage to validate the corrected export outputs.
-- Fixed print CSS in freeze templates to remove edge-clipping risk, improve print margins/pagination, and prevent near-empty orphan pages in generated PDFs (`freeze-template`, `knowledge-map`).
-
 ## 0.5.0 - 2026-05-26
 
 ### Added
@@ -36,6 +28,12 @@ All notable changes to OpenLAG are documented in this file.
 - Updated bundled freeze templates from compact single-line sources into readable, maintainable standalone HTML templates with richer print, navigation, artifact card, relation, and responsive styling.
 - Changed freeze output resolution so default exports are written as `openlag-<profile>.<format>` in the command directory, while explicit output directories preserve template-aware filenames such as `openlag-architecture-technical-manual.html`.
 - Kept Markdown body content separate from artifact descriptions so freeze cards without `description` do not display the full body as a promoted summary.
+
+### Fixed
+- Corrected freeze export behavior across CLI/core flow to keep generated outputs aligned with the expected profile/template mapping.
+- Updated export profile contracts (`compliance`, `developer`, `executive`, `governance`, `release`) to match the corrected export behavior.
+- Updated freeze screenshot E2E coverage to validate the corrected export outputs.
+- Fixed print CSS in freeze templates to remove edge-clipping risk, improve print margins/pagination, and prevent near-empty orphan pages in generated PDFs (`freeze-template`, `knowledge-map`).
 
 ### Removed
 - Removed Typst, jsPDF, html2canvas, and html-to-image from the 0.5.0 freeze/export public contract and dependencies.
