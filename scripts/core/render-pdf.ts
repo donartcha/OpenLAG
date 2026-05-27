@@ -24,6 +24,10 @@ try {
     format: 'A4',
     printBackground: true,
     preferCSSPageSize: true,
+    // Preserve navigable document structure as real PDF outline/bookmarks
+    // when the HTML template provides semantic hierarchy.
+    outline: true,
+    tagged: true,
     margin: {
       top: '0mm',
       right: '0mm',
