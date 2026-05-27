@@ -639,7 +639,7 @@
         padding: 0 2mm;
       }
       .section {
-        background: #ffffff;
+        background: #f8fafc;
         border: 1px solid #cbd5e1;
         padding: 16px;
         page-break-inside: auto;
@@ -650,6 +650,10 @@
       .section-header {
         break-after: avoid-page;
         page-break-after: avoid;
+      }
+      .section-header + * {
+        break-before: avoid-page;
+        page-break-before: avoid;
       }
       .section-header h2 {
         color: #0f172a !important;
@@ -662,10 +666,18 @@
       .artifact-card {
         border-color: #cbd5e1 !important;
         background: #f8fafc !important;
+        break-inside: avoid-page;
+        page-break-inside: avoid;
       }
       .artifact-head {
         background: #e2e8f0 !important;
         border-color: #cbd5e1 !important;
+        break-after: avoid-page;
+        page-break-after: avoid;
+      }
+      .artifact-body, .metadata-grid, .metadata-item, .panel, .relation-box, .openlag-diagram-card {
+        break-inside: avoid-page;
+        page-break-inside: avoid;
       }
       .artifact-title {
         color: #0f172a !important;
@@ -689,12 +701,21 @@
         border-color: #cbd5e1 !important;
         color: #0f172a !important;
       }
+      .relation-matrix th {
+        background: #e2e8f0 !important;
+        border-color: #cbd5e1 !important;
+        color: #0f172a !important;
+      }
       .relation-matrix,
       .relation-matrix th,
       .relation-matrix td {
         max-width: 100%;
         word-break: break-word;
         overflow-wrap: anywhere;
+      }
+      .relation-matrix {
+        break-inside: avoid-page;
+        page-break-inside: avoid;
       }
       .markdown pre, .json-block {
         background: #f8fafc !important;
@@ -729,6 +750,10 @@
       p, li {
         orphans: 3;
         widows: 3;
+      }
+      h3, h4 {
+        break-after: avoid-page;
+        page-break-after: avoid;
       }
     }
   </style>

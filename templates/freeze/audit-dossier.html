@@ -615,11 +615,39 @@
         break-inside: auto;
         margin-bottom: 40px;
       }
+      .section-header {
+        break-after: avoid-page;
+        page-break-after: avoid;
+      }
+      .section-header + * {
+        break-before: avoid-page;
+        page-break-before: avoid;
+      }
       .artifact-card, .panel, .openlag-diagram-card {
-        break-inside: avoid;
+        break-inside: avoid-page;
         page-break-inside: avoid;
         margin: 20px 0;
         border-color: #000000 !important;
+      }
+      .artifact-head {
+        break-after: avoid-page;
+        page-break-after: avoid;
+      }
+      .artifact-body, .metadata-grid, .metadata-item, .relation-box {
+        break-inside: avoid-page;
+        page-break-inside: avoid;
+      }
+      .relation-matrix {
+        break-inside: avoid-page;
+        page-break-inside: avoid;
+      }
+      h3, h4 {
+        break-after: avoid-page;
+        page-break-after: avoid;
+      }
+      p, li {
+        orphans: 3;
+        widows: 3;
       }
       .footer {
         display: none;

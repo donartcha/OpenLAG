@@ -247,6 +247,31 @@ openlag impact     Analiza impacto por artefacto, archivo o rango Git.
 openlag freeze     Genera una congelacion documental determinista.
 ```
 
+### Utilidad QA visual de freeze
+
+OpenLAG incluye una utilidad interna para auditoria visual/estructural de los PDFs generados por `freeze`:
+
+`scripts/qa/run-freeze-visual-audit.py`
+
+Uso base:
+
+```bash
+python scripts/qa/run-freeze-visual-audit.py --root .
+```
+
+Parametros disponibles:
+
+- `--root`: raiz del repositorio (por defecto `.`).
+- `--pdf-dir`: directorio de PDFs freeze (por defecto `test-results/freeze`).
+- `--template-dir`: directorio de templates freeze (por defecto `templates/freeze`).
+- `--report-prefix`: prefijo de reportes (por defecto `FREEZE_VISUAL_AUDIT_REPORT`).
+
+Salida esperada (en `test-results/freeze` por defecto):
+
+- `FREEZE_VISUAL_AUDIT_REPORT.md`
+- `FREEZE_VISUAL_AUDIT_REPORT.json`
+- `audit-evidence/` con evidencia por pagina.
+
 Opciones relevantes:
 
 ```bash
