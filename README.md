@@ -255,6 +255,14 @@ dist/                            Static portal build output
 
 The generated portal is static. Protect it appropriately if the source Markdown contains internal architecture, system names, incidents, vulnerabilities, or operational details.
 
+If contract regeneration fails during `openlag generate`, `openlag dev`, or `openlag build`, OpenLAG logs a warning and continues. Runtime resolution order is:
+
+1. Project contracts under `docs/contracts/**` (when present and successfully resolved)
+2. Existing project fallback files in `public/artifact-definitions.json`, `public/relation-definitions.json`, `public/rule-definitions.json`
+3. Bundled generated defaults from the package
+
+When neither project contracts nor local fallback files are available for a contract family, OpenLAG now emits an explicit warning for that missing fallback.
+
 ## Static Dist Serving
 
 Generated `dist/` folders are static outputs and can be served locally with any simple static server.

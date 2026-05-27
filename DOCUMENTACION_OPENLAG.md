@@ -842,6 +842,21 @@ Portal Consumption
 
 Los YAML son la fuente de verdad; los JSON publicos son la proyeccion runtime; los TypeScript generados son detalles de implementacion.
 
+### Warning de regeneracion de contratos y fallback
+
+Durante `openlag generate`, `openlag dev` y `openlag build`, OpenLAG intenta regenerar contratos desde `docs/contracts/**`. Si esa regeneracion falla (por ejemplo, entorno sin `tsx`), el proceso no se detiene: se muestra warning y se continua con fallback.
+
+Orden de resolucion/fallback:
+
+1. Contratos del proyecto (`docs/contracts/artifacts|relations|rules/*.yaml`).
+2. Archivos fallback del proyecto en `public/`:
+   - `artifact-definitions.json`
+   - `relation-definitions.json`
+   - `rule-definitions.json`
+3. Definiciones generadas empaquetadas en el paquete (`src/core/generated/*`) como ultima red de seguridad.
+
+Si falta una familia de contratos y tampoco existe su fallback local en `public/`, OpenLAG emite un warning explicito para facilitar diagnostico.
+
 ### Personalización Visual (Paleta de Colores)
 
 La vista de grafo (GraphView) asigna colores semánticos a los nodos basándose en su tipo central definidos internamente. Cuando se utiliza un tipo extendido (por ejemplo, `type: DAO` que extiende de `CODE_ENTITY`), el motor hereda el color del ancestro base automáticamente.

@@ -93,25 +93,55 @@ export function generateData(docsDir: string, outputDir: string, silent = false)
 
   if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
+  const artifactDefinitionsPath = path.join(outputDir, 'artifact-definitions.json');
+  const relationDefinitionsPath = path.join(outputDir, 'relation-definitions.json');
+  const ruleDefinitionsPath = path.join(outputDir, 'rule-definitions.json');
+
+  const logContractFallbackStatus = (kind: string, filePath: string) => {
+    if (fs.existsSync(filePath)) {
+      if (!silent) {
+        console.warn(
+          chalk.yellow(
+            `Warning: No ${kind} contracts found in docs/contracts/${kind}; keeping existing fallback file ${path.basename(filePath)}.`
+          )
+        );
+      }
+      return;
+    }
+    if (!silent) {
+      console.warn(
+        chalk.red(
+          `Warning: No ${kind} contracts found in docs/contracts/${kind} and no fallback file exists at ${filePath}.`
+        )
+      );
+    }
+  };
+
   if (artifactContracts.length > 0) {
     fs.writeFileSync(
-      path.join(outputDir, 'artifact-definitions.json'),
+      artifactDefinitionsPath,
       JSON.stringify(artifactContracts, null, 2)
     );
+  } else {
+    logContractFallbackStatus('artifacts', artifactDefinitionsPath);
   }
 
   if (relationContracts.length > 0) {
     fs.writeFileSync(
-      path.join(outputDir, 'relation-definitions.json'),
+      relationDefinitionsPath,
       JSON.stringify(relationContracts, null, 2)
     );
+  } else {
+    logContractFallbackStatus('relations', relationDefinitionsPath);
   }
 
   if (ruleContracts.length > 0) {
     fs.writeFileSync(
-      path.join(outputDir, 'rule-definitions.json'),
+      ruleDefinitionsPath,
       JSON.stringify(ruleContracts, null, 2)
     );
+  } else {
+    logContractFallbackStatus('rules', ruleDefinitionsPath);
   }
 
   fs.writeFileSync(

@@ -15,6 +15,7 @@ All notable changes to OpenLAG are documented in this file.
 - Moved the repository sample OpenLAG project from root `docs/` into `internal/dev-sandbox/docs` as an internal development sandbox dataset.
 - Updated runtime behavior documentation in `SPECIFICATION.md` to explicitly distinguish static `dist/` serving vs regeneration/rebuild preview workflow.
 - Updated `openlag build` contract regeneration step to include rules alongside artifact and relation contracts.
+- Improved contract regeneration warnings in `openlag build` and `openlag dev` to include the underlying error reason and explicit fallback behavior.
 
 ### Fixed
 - Fixed `openlag generate` contract path resolution to read from:
@@ -26,6 +27,7 @@ All notable changes to OpenLAG are documented in this file.
   - `public/relation-definitions.json`
   - `public/rule-definitions.json`
   - `public/graph-data.json`
+- Fixed opaque fallback behavior by adding explicit warnings when a contract family is missing from `docs/contracts/**` and no local `public/*-definitions.json` fallback file exists.
 
 ## 0.5.0 - 2026-05-26
 
