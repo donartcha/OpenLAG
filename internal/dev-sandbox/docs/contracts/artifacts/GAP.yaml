@@ -1,0 +1,8 @@
+type: GAP
+extends: GOVERNANCE_ARTIFACT
+layer: GOVERNANCE
+description: "A missing semantic link or architectural anomaly detected by the system."
+requiredFields:
+  - id
+  - type
+  - title

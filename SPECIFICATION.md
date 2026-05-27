@@ -836,6 +836,26 @@ openlag freeze --profile architecture --dry-run
 
 HTML output is a standalone offline documentation page, not the React portal. Marked and Mermaid browser bundles are injected in memory into generated HTML/PDF output only; source templates must keep placeholders instead of committed vendor bundles. PDF output is generated from the frozen document model, not from portal printing. `typst` is not part of the public 0.5.0 freeze contract.
 
+## 15.2 Local Portal Preview and Static Serving
+
+OpenLAG distinguishes two local runtime behaviors for the portal:
+
+- Static serving of an existing `dist/` output.
+- Regeneration/rebuild before preview.
+
+Generated `dist/` folders are static artifacts and may be served as-is with any static file server (for example Python `http.server` or `serve`). This mode does not regenerate graph/runtime data.
+
+For active development preview, the recommended workflow is:
+
+```bash
+cd internal/dev-sandbox
+npx @donartcha/openlag generate
+npx @donartcha/openlag build
+npx vite preview
+```
+
+This workflow regenerates `public/graph-data.json`, runtime payloads, freeze/runtime artifacts, and the static portal build before serving a production-like preview.
+
 ## 16. Conceptual Roadmap
 
 The roadmap below is conceptual; implemented behavior is governed by this specification and the runtime validations in this repository.

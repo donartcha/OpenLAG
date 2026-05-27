@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import yaml from "js-yaml";
 import { parseOpenLagDocs } from "../core/parser.js";
 import { loadArtifactContracts } from "../core/artifact-contracts.js";
 import { loadRelationContracts } from "../core/relation-contracts.js";
@@ -36,8 +37,18 @@ function isDescendant(currentVersionId: string, artifactVersionId: string, versi
 export function generateData(docsDir: string, outputDir: string, silent = false) {
   if (!silent) console.log(chalk.blue("🚀 Generating OpenLAG Static Data..."));
 
-  const artifactContracts = loadArtifactContracts(path.join(docsDir, 'artifacts'));
-  const relationContracts = loadRelationContracts(path.join(docsDir, 'relations'));
+  const artifactContracts = loadArtifactContracts(path.join(docsDir, 'contracts', 'artifacts'));
+  const relationContracts = loadRelationContracts(path.join(docsDir, 'contracts', 'relations'));
+  const rulesDir = path.join(docsDir, 'contracts', 'rules');
+  const ruleContracts: any[] = [];
+  if (fs.existsSync(rulesDir)) {
+    for (const file of fs.readdirSync(rulesDir)) {
+      if (!file.endsWith('.yaml')) continue;
+      const raw = fs.readFileSync(path.join(rulesDir, file), 'utf-8');
+      const parsed = yaml.load(raw);
+      if (parsed) ruleContracts.push(parsed);
+    }
+  }
   const parsedData = parseOpenLagDocs(docsDir);
 
   let metadata = { name: "OpenLAG Project", description: "Architecture documentation." };
@@ -93,6 +104,13 @@ export function generateData(docsDir: string, outputDir: string, silent = false)
     fs.writeFileSync(
       path.join(outputDir, 'relation-definitions.json'),
       JSON.stringify(relationContracts, null, 2)
+    );
+  }
+
+  if (ruleContracts.length > 0) {
+    fs.writeFileSync(
+      path.join(outputDir, 'rule-definitions.json'),
+      JSON.stringify(ruleContracts, null, 2)
     );
   }
 

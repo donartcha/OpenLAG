@@ -1,0 +1,8 @@
+type: GITHUB_ACTIONS
+extends: DEPLOYMENT
+layer: OPERATIONS
+description: "GitHub Actions deployment workflow."
+requiredFields:
+  - id
+  - type
+  - title

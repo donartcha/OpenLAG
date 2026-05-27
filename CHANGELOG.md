@@ -2,6 +2,31 @@
 
 All notable changes to OpenLAG are documented in this file.
 
+## 0.5.1 - 2026-05-28
+
+### Added
+- Added local preview and static serving guidance to official documentation (`README.md`, `CONTRIBUTING.md`, `DOCUMENTACION_OPENLAG.md`) covering:
+  - static serving of an existing `dist/` output,
+  - the recommended regenerate + build + preview workflow for active development.
+- Added the same starter-focused preview/serving guidance to the React portal onboarding section "OpenLAG Lite Happy Path (Starter)".
+- Added `rule-definitions.json` generation to the `openlag generate` output pipeline.
+
+### Changed
+- Moved the repository sample OpenLAG project from root `docs/` into `internal/dev-sandbox/docs` as an internal development sandbox dataset.
+- Updated runtime behavior documentation in `SPECIFICATION.md` to explicitly distinguish static `dist/` serving vs regeneration/rebuild preview workflow.
+- Updated `openlag build` contract regeneration step to include rules alongside artifact and relation contracts.
+
+### Fixed
+- Fixed `openlag generate` contract path resolution to read from:
+  - `docs/contracts/artifacts`
+  - `docs/contracts/relations`
+  instead of legacy non-contract paths, so project contract JSON payloads are produced correctly.
+- Fixed missing runtime contract payload generation by ensuring `openlag generate` emits:
+  - `public/artifact-definitions.json`
+  - `public/relation-definitions.json`
+  - `public/rule-definitions.json`
+  - `public/graph-data.json`
+
 ## 0.5.0 - 2026-05-26
 
 ### Added

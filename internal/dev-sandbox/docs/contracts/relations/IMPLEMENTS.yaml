@@ -1,0 +1,14 @@
+relation: IMPLEMENTS
+description: "Conecta implementación con necesidad funcional/técnica."
+category: TRACEABILITY
+allowedFrom: [CODE_ENTITY]
+allowedTo: [REQUIREMENT, FEATURE, BUG, API]
+multiplicity:
+  from: many
+  to: many
+validation:
+  severity: error
+impact:
+  propagates: true
+  directions: [reverse]
+  weight: 1

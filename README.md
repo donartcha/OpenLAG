@@ -255,6 +255,53 @@ dist/                            Static portal build output
 
 The generated portal is static. Protect it appropriately if the source Markdown contains internal architecture, system names, incidents, vulnerabilities, or operational details.
 
+## Static Dist Serving
+
+Generated `dist/` folders are static outputs and can be served locally with any simple static server.
+
+```bash
+cd internal/dev-sandbox/dist
+python3 -m http.server 8080
+```
+
+Alternative using Node:
+
+```bash
+npm install -g serve
+serve /internal/dev-sandbox/dist
+```
+
+or:
+
+```bash
+cd /internal/dev-sandbox/dist
+serve .
+```
+
+This serves the already generated static portal as-is.
+
+## Recommended Development Preview Workflow
+
+For active OpenLAG development, regenerate data and rebuild before previewing:
+
+```bash
+cd internal/dev-sandbox
+npx @donartcha/openlag generate
+npx @donartcha/openlag build
+npx vite preview
+```
+
+This workflow regenerates:
+
+- `public/graph-data.json`
+- runtime payloads
+- freeze/runtime artifacts
+- the static portal build
+
+Then it serves a production-like preview.
+
+Use this when you are evolving docs/contracts/runtime content. Use static `dist/` serving when you only need to inspect an already built output.
+
 ## Repository Documentation
 
 - [Specification](./SPECIFICATION.md): conceptual model, artifact types, relation model, project structure, and runtime contract boundaries.

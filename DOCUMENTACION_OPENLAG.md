@@ -247,6 +247,58 @@ openlag impact     Analiza impacto por artefacto, archivo o rango Git.
 openlag freeze     Genera una congelacion documental determinista.
 ```
 
+### Servicio estatico de `dist/`
+
+Las carpetas generadas `dist/` son salidas estaticas y pueden servirse localmente con un servidor estatico simple.
+
+Ejemplo con Python:
+
+```bash
+cd internal/dev-sandbox/dist
+python3 -m http.server 8080
+```
+
+Alternativa con Node:
+
+```bash
+npm install -g serve
+serve /internal/dev-sandbox/dist
+```
+
+o:
+
+```bash
+cd /internal/dev-sandbox/dist
+serve .
+```
+
+Esto sirve el portal estatico ya generado, sin regenerar contenido.
+
+### Flujo recomendado de previsualizacion para desarrollo
+
+Para evolucion activa de un proyecto OpenLAG, el flujo recomendado es:
+
+```bash
+cd internal/dev-sandbox
+npx @donartcha/openlag generate
+npx @donartcha/openlag build
+npx vite preview
+```
+
+Este flujo regenera:
+
+- `public/graph-data.json`
+- payloads runtime
+- artefactos de freeze/runtime
+- el build estatico del portal
+
+Despues sirve una previsualizacion similar a produccion.
+
+Diferencia clave:
+
+- servicio estatico de `dist/`: solo publica una salida ya existente.
+- flujo regenerar + build + preview: recompone datos/artefactos antes de previsualizar.
+
 ### Utilidad QA visual de freeze
 
 OpenLAG incluye una utilidad interna para auditoria visual/estructural de los PDFs generados por `freeze`:

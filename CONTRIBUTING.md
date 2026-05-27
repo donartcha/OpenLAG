@@ -30,6 +30,53 @@ Build the package outputs:
 npm run build
 ```
 
+## Static Dist Serving
+
+Generated `dist/` folders are static outputs and may be served locally with a simple static server:
+
+```bash
+cd internal/dev-sandbox/dist
+python3 -m http.server 8080
+```
+
+Alternative using Node:
+
+```bash
+npm install -g serve
+serve /internal/dev-sandbox/dist
+```
+
+or:
+
+```bash
+cd /internal/dev-sandbox/dist
+serve .
+```
+
+This serves the already generated static portal.
+
+## Recommended Development Preview Workflow
+
+When actively evolving an OpenLAG project, use this workflow:
+
+```bash
+cd internal/dev-sandbox
+npx @donartcha/openlag generate
+npx @donartcha/openlag build
+npx vite preview
+```
+
+This regenerates:
+
+- `public/graph-data.json`
+- runtime payloads
+- freeze/runtime artifacts
+- the static portal build
+
+Then serves a production-like preview.
+
+Use static `dist/` serving when you only need to inspect an already generated output. Use the regenerate + build + preview flow when validating current source changes.
+
 ## Validation
 
 Run the full validation suite before opening a pull request:

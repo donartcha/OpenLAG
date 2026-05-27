@@ -1,0 +1,14 @@
+relation: USES
+description: "Llamada funcional, invocación o flujo en tiempo de ejecución."
+category: OPERATIONAL
+allowedFrom: [CODE_ENTITY, COMPONENT, API, FEATURE, USE_CASE]
+allowedTo: [CODE_ENTITY, COMPONENT, API, SYSTEM_VERSION]
+multiplicity:
+  from: many
+  to: many
+validation:
+  severity: warn
+impact:
+  propagates: true
+  directions: [reverse]
+  weight: 1

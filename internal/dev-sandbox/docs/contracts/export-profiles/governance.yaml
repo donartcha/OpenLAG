@@ -1,0 +1,29 @@
+id: governance
+name: Semantic Governance Report
+description: Exports all governance artifacts, findings, risks, and debts.
+defaultFormat: pdf
+template:
+  id: audit-dossier
+  path: templates/freeze/audit-dossier.html
+includeArtifactTypes:
+  - PROJECT
+  - VERSION
+  - GAP
+  - VIOLATION
+  - DEBT
+  - OBSERVATION
+  - RISK
+  - INCIDENT
+sections:
+  - id: overview
+    title: Governance Overview
+    artifactTypes: [PROJECT, VERSION]
+  - id: findings
+    title: Governance Findings
+    artifactTypes: [GAP, VIOLATION]
+  - id: debt
+    title: Technical Debt & Risks
+    artifactTypes: [DEBT, RISK, INCIDENT]
+  - id: observations
+    title: Observations
+    artifactTypes: [OBSERVATION]

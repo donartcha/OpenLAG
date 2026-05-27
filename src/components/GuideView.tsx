@@ -220,6 +220,24 @@ const starterScope = [
     ['1 export profile', 'starter (default markdown, lifecycle ordering)']
 ];
 
+const staticDistServingCommands = [
+    'cd internal/dev-sandbox/dist',
+    'python3 -m http.server 8080',
+    '',
+    'npm.cmd install -g serve',
+    'serve /internal/dev-sandbox/dist',
+    '',
+    'cd /internal/dev-sandbox/dist',
+    'serve .'
+];
+
+const developmentPreviewCommands = [
+    'cd internal/dev-sandbox',
+    'npx @donartcha/openlag generate',
+    'npx @donartcha/openlag build',
+    'npx vite preview'
+];
+
 const markdownExample = `---
 id: REQ-AUTH-001
 type: REQUIREMENT
@@ -590,6 +608,32 @@ export const GuideView: React.FC = () => {
                                     <p className="text-[12px] text-white/45 leading-relaxed mt-5">
                                         Recommended path: start with starter, stabilize traceability habits, then expand with `openlag profile add governance` or `openlag profile add mvc`.
                                     </p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-4 max-w-6xl mt-4">
+                                <div className="bg-black/40 border border-white/5 rounded-lg overflow-hidden">
+                                    <div className="p-4 bg-white/[0.03] border-b border-white/5">
+                                        <span className="text-[10px] font-mono text-white/40 italic">static dist serving</span>
+                                    </div>
+                                    <div className="p-6 space-y-4">
+                                        <pre className="text-[11px] font-mono leading-relaxed text-white/60 select-all">{staticDistServingCommands.join('\n')}</pre>
+                                        <p className="text-[12px] text-white/45 leading-relaxed">
+                                            Serves an already generated static portal from <code>dist/</code> without rebuilding graph/runtime artifacts.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div className="bg-black/40 border border-white/5 rounded-lg overflow-hidden">
+                                    <div className="p-4 bg-white/[0.03] border-b border-white/5">
+                                        <span className="text-[10px] font-mono text-white/40 italic">recommended development preview workflow</span>
+                                    </div>
+                                    <div className="p-6 space-y-4">
+                                        <pre className="text-[11px] font-mono leading-relaxed text-white/60 select-all">{developmentPreviewCommands.join('\n')}</pre>
+                                        <p className="text-[12px] text-white/45 leading-relaxed">
+                                            Regenerates <code>public/graph-data.json</code>, runtime payloads, freeze/runtime artifacts, and the static portal build before a production-like preview.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </section>
