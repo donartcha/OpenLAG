@@ -6,7 +6,7 @@ test('generate deterministic documentation screenshots', async ({ page }) => {
   await page.goto('/');
   await page.setViewportSize({ width: 1440, height: 900 });
 
-  const outputDir = path.resolve(process.cwd(), 'docs/assets/screenshots/generated');
+  const outputDir = path.resolve(process.cwd(), 'test-results/docs/screenshots/generated');
   fs.mkdirSync(outputDir, { recursive: true });
 
   const shellPath = path.join(outputDir, 'portal-shell.png');

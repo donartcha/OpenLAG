@@ -800,7 +800,17 @@ The freeze subsystem uses profiles in `docs/contracts/export-profiles/*.yaml` an
 
 Export profiles may also declare documentary template configuration. The optional fields `template`, `branding`, `document`, `executiveSummary`, `footer`, and `rendering` provide the customization contract for cover pages, executive summary text, branding, metadata visibility, relation tables, and footer content. If these fields are absent, the renderer uses backwards-compatible defaults.
 
-The default professional documentary template is `templates/freeze/freeze-template.html`. HTML and PDF exports render from the same frozen document model and template contract. Business-facing text such as document purpose, scope, audience, subtitles, and footer labels should come from the export profile or template defaults rather than being hardcoded in the renderer. The bundled template ids are `freeze-template`, `technical-manual`, `executive-brief`, `audit-dossier`, and `knowledge-map`; the CLI `--template` option may override the profile template with either one of those ids or an HTML path.
+Each export profile may bind its default HTML/PDF template directly in its YAML contract:
+
+```yaml
+template:
+  id: technical-manual
+  path: templates/freeze/technical-manual.html
+```
+
+`template.id` is the stable template identifier used for generated file names and documentary metadata. `template.path` is the repository-relative or absolute HTML template path used by the renderer. When `template.path` is omitted but `template.id` is present, the renderer resolves it as `templates/freeze/<template.id>.html`. If both are absent, the default professional documentary template is `templates/freeze/freeze-template.html`.
+
+HTML and PDF exports render from the same frozen document model and template contract. Business-facing text such as document purpose, scope, audience, subtitles, and footer labels should come from the export profile or template defaults rather than being hardcoded in the renderer. The bundled template ids are `freeze-template`, `technical-manual`, `executive-brief`, `audit-dossier`, and `knowledge-map`; the CLI `--template` option may override the profile YAML template with either one of those ids or an HTML path.
 
 The implemented output formats are `markdown`, `json`, `html`, and `pdf`:
 

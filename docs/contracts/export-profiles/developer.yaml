@@ -2,6 +2,9 @@ id: developer
 name: Developer Onboarding Guide
 description: Detailed technical specifications for onboarding engineers.
 defaultFormat: markdown
+template:
+  id: technical-manual
+  path: templates/freeze/technical-manual.html
 excludeArtifactTypes:
   - EPIC
   - GAP

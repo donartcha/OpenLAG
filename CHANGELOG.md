@@ -2,6 +2,13 @@
 
 All notable changes to OpenLAG are documented in this file.
 
+## 0.5.1 - 2026-05-27
+
+### Fixed
+- Corrected freeze export behavior across CLI/core flow to keep generated outputs aligned with the expected profile/template mapping.
+- Updated export profile contracts (`compliance`, `developer`, `executive`, `governance`, `release`) to match the corrected export behavior.
+- Updated freeze screenshot E2E coverage to validate the corrected export outputs.
+
 ## 0.5.0 - 2026-05-26
 
 ### Added

@@ -2,6 +2,9 @@ id: compliance
 name: Compliance & Security Report
 description: Documentation tailored for compliance audits.
 defaultFormat: pdf
+template:
+  id: audit-dossier
+  path: templates/freeze/audit-dossier.html
 includeArtifactTypes:
   - PROJECT
   - REQUIREMENT

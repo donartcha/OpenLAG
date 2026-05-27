@@ -2,6 +2,9 @@ id: release
 name: Release Documentation Snapshot
 description: Captures the state of a release including features, components, and changes.
 defaultFormat: pdf
+template:
+  id: knowledge-map
+  path: templates/freeze/knowledge-map.html
 includeArtifactTypes:
   - PROJECT
   - VERSION
