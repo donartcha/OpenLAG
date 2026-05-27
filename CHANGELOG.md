@@ -15,6 +15,7 @@ All notable changes to OpenLAG are documented in this file.
 - Added in-memory offline vendor injection for Marked and Mermaid so exported HTML/PDF documentary outputs do not depend on CDN, internet access, ESM imports, or a local server while keeping the source freeze template editable.
 - Added a parameterized freeze template system with technical manual, executive brief, audit dossier, and knowledge map documentary layouts that share the same rendering contract and offline export pipeline.
 - Added expanded `--help` usage examples and notes for every `openlag` command and subcommand, including profile, authoring, impact, and freeze workflows.
+- Added deterministic freeze test controls for generation timestamps while keeping production freeze output timestamped with the real generation time.
 
 ### Changed
 - Promoted the stabilized OpenLAG 0.5.0 runtime model: lightweight core, optional governance, optional impact engine, optional authoring tooling, and official freeze/export.
@@ -24,6 +25,9 @@ All notable changes to OpenLAG are documented in this file.
 - Updated the portal guide to reflect the OpenLAG 0.5.0 specification, including semantic layers, contract-driven paths, profile commands, rule contracts, and freeze/export behavior.
 - Extended export profiles with optional `template`, `branding`, `document`, `executiveSummary`, `footer`, and rendering controls while keeping older export profiles compatible.
 - Clarified freeze/export documentation across the README, specification, Spanish technical documentation, portal guide, default export profile, and freeze template README, including `--output`, `--template`, offline HTML/PDF rendering, and the boundary between export profiles and templates.
+- Updated bundled freeze templates from compact single-line sources into readable, maintainable standalone HTML templates with richer print, navigation, artifact card, relation, and responsive styling.
+- Changed freeze output resolution so default exports are written as `openlag-<profile>.<format>` in the command directory, while explicit output directories preserve template-aware filenames such as `openlag-architecture-technical-manual.html`.
+- Kept Markdown body content separate from artifact descriptions so freeze cards without `description` do not display the full body as a promoted summary.
 
 ### Removed
 - Removed Typst, jsPDF, html2canvas, and html-to-image from the 0.5.0 freeze/export public contract and dependencies.

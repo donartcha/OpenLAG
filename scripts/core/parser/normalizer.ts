@@ -17,7 +17,7 @@ export function normalizeArtifact(parsed: any, fullPath: string, body: string): 
     type: typeValue,
     title: String(p.title || p.Title || (p.id || p.ID || '')),
     version: p.version || p.Version,
-    description: p.description || body,
+    description: p.description,
     status: p.status,
     layer: p.layer || derivedLayer,
     ownership: p.ownership || p.owner ? { owner: p.owner, ...p.ownership } : undefined,

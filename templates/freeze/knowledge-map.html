@@ -1,4 +1,810 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>OpenLAG Knowledge Map</title><style>
-:root{--ink:#102a43;--muted:#627d98;--line:#bcccdc;--paper:#fff;--soft:#f0f4f8;--accent:#3b82f6;--accent2:#65a30d;--sans:Inter,Segoe UI,system-ui,sans-serif;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}*{box-sizing:border-box}body{margin:0;background:#102a43;color:var(--ink);font-family:var(--sans);line-height:1.55}.map-shell{display:grid;grid-template-columns:260px 1fr;gap:18px;padding:18px;max-width:1640px;margin:auto}.sidebar{background:#0b1f33;color:white;border-radius:18px;padding:18px;position:sticky;top:18px;height:calc(100vh - 36px);overflow:auto}.brand{display:flex;gap:12px}.brand-logo{width:44px}.brand-title{font-weight:900;margin:0}.brand-subtitle,.nav-title{color:#9fb3c8}.nav-link{display:block;color:white;padding:8px;border-radius:10px}.nav-link:hover{background:#1f3a5f}.document{min-width:0}.cover{border-radius:24px;background:radial-gradient(circle at top left,#dbeafe,#f7fee7 55%,#fff);padding:44px}.cover-logo{width:88px}.eyebrow{font-family:var(--mono);color:var(--accent);font-weight:900}.cover h1{font-size:clamp(2.5rem,6vw,5.5rem);margin:12px 0}.cover-grid,.summary-grid,.metadata-grid,.relations{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}.summary-grid,.relations{grid-template-columns:1fr 1fr}.cover-stat,.panel,.artifact-card,.relation-box{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:16px}.content{padding:18px 0}.section{background:#f8fafc;border:1px solid #d9e2ec;border-radius:22px;padding:22px;margin-bottom:18px}.section-header{display:flex;justify-content:space-between}.section-kicker,.artifact-id,.metadata-item span{font-family:var(--mono);color:var(--muted)}.toc{display:flex;flex-wrap:wrap;gap:10px;list-style:none;padding:0}.toc a{display:block;background:white;border:1px solid var(--line);border-radius:999px;padding:8px 12px}.artifact-card{margin:14px 0;break-inside:avoid;page-break-inside:avoid}.artifact-head{border-bottom:1px solid var(--line);margin:-16px -16px 14px;padding:16px;background:linear-gradient(90deg,#dbeafe,#ecfccb)}.badge{display:inline-block;background:#dbeafe;border-radius:999px;padding:4px 8px;margin:2px;font-weight:800;font-size:.73rem}.metadata-item{background:#f8fafc;border-radius:12px;padding:10px}.relation-matrix{width:100%;border-spacing:0 8px}.relation-matrix th,.relation-matrix td{background:white;padding:10px;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.markdown pre,.json-block{background:#0b1f33;color:#dbeafe;border-radius:14px;padding:16px;overflow:auto}.footer{color:white;padding:18px;display:flex;justify-content:space-between}.openlag-diagram-card{background:white;border:1px solid #93c5fd;border-radius:18px;overflow:hidden;break-inside:avoid;page-break-inside:avoid}.openlag-diagram-header{background:#dbeafe;padding:10px}.openlag-mermaid{padding:22px;overflow:auto}@media(max-width:980px){.map-shell{display:block}.sidebar{position:relative;height:auto;margin-bottom:18px}.cover-grid,.summary-grid,.metadata-grid,.relations{grid-template-columns:1fr}}@media print{@page{margin:14mm}body{background:white}.map-shell{display:block;padding:0}.sidebar{display:none}.cover{page-break-after:always}.artifact-card,.panel,.openlag-diagram-card{break-inside:avoid;page-break-inside:avoid}.footer{display:none}}
-</style><script id="openlag-vendor-marked">/* __OPENLAG_INLINE_MARKED_BUNDLE__ */</script><script id="openlag-vendor-mermaid">/* __OPENLAG_INLINE_MERMAID_BUNDLE__ */</script><script>(()=>{async function boot(){document.querySelectorAll("[data-openlag-markdown-body],[data-markdown]").forEach(n=>{n.innerHTML=window.marked?.parse?window.marked.parse(n.textContent||"",{gfm:true}):"<p>"+n.textContent+"</p>";n.querySelectorAll("code.language-mermaid").forEach((c,i)=>{const w=document.createElement("section");w.className="openlag-diagram-card";w.innerHTML='<div class="openlag-diagram-header">Mermaid diagram #'+(i+1)+'</div><div class="mermaid openlag-mermaid"></div>';w.querySelector(".mermaid").textContent=c.textContent||"";(c.closest("pre")||c).replaceWith(w);});});const m=window.mermaid&&(window.mermaid.default||window.mermaid);if(!m?.initialize){document.documentElement.dataset.mermaid="unavailable";return}try{m.initialize({startOnLoad:false,securityLevel:"loose",theme:"base"});m.run?await m.run({querySelector:".mermaid"}):m.init?.(undefined,document.querySelectorAll(".mermaid"));document.documentElement.dataset.mermaid="ready";}catch{document.documentElement.dataset.mermaid="error";}}document.readyState==="loading"?document.addEventListener("DOMContentLoaded",boot):boot();})();</script></head>
-<body><div class="map-shell"><aside class="sidebar"><div class="brand"><img class="brand-logo" data-template-src="branding.logo" alt="OpenLAG logo"><div><p class="brand-title" data-template="branding.productName">OpenLAG</p><p class="brand-subtitle" data-template="branding.subtitle">Documentation Freeze</p></div></div><nav data-slot="openlag.sidebarNavigation"></nav></aside><main class="document"><header id="cover" class="cover"><img class="cover-logo" data-template-src="branding.logo" alt="OpenLAG logo"><p class="eyebrow" data-template="cover.eyebrow">Snapshot</p><h1 data-template="cover.title">Freeze</h1><p data-template="cover.description">Description</p><div class="cover-grid"><div class="cover-stat"><strong data-template="summary.artifactCount">0</strong><span>Artifacts</span></div><div class="cover-stat"><strong data-template="summary.relationCount">0</strong><span>Relations</span></div><div class="cover-stat"><strong data-template="summary.sectionCount">0</strong><span>Sections</span></div><div class="cover-stat"><strong data-template="profile.id">profile</strong><span data-template="profile.name">Profile</span></div></div></header><div class="content"><section id="executive-summary" class="section"><div class="section-header"><div><p class="section-kicker" data-template="document.language">en</p><h2 data-template="executiveSummary.title">Executive Summary</h2></div><span data-template="document.generatedAt">generated</span></div><div class="summary-grid"><div class="panel"><h3 data-template="executiveSummary.purposeTitle">Purpose</h3><p data-template="executiveSummary.purpose">Purpose</p><h3 data-template="executiveSummary.scopeTitle">Scope</h3><p data-template="executiveSummary.scope">Scope</p></div><div class="panel"><h3 data-template="executiveSummary.audienceTitle">Audience</h3><p data-template="executiveSummary.audience">Audience</p><p data-template="profile.description">Profile description</p></div></div></section><section id="toc" class="section"><h2 data-template="document.title">Knowledge domains</h2><p data-template="document.formatVersion">openlag.freeze.v1</p><div data-slot="openlag.tableOfContents"></div></section><section class="section"><h2>Relationship map</h2><div data-slot="openlag.relations"></div></section><div data-slot="openlag.sections"></div><section class="section"><h2>Technical metadata</h2><div data-slot="openlag.technicalMetadata"></div></section><template data-slot="openlag.artifacts"></template></div><footer class="footer"><span data-template="footer.left">Generated</span><span data-template="footer.right">Template</span></footer></main></div></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenLAG Knowledge Map</title>
+  <style>
+    :root {
+      /* Futuristic dark cyber/blueprint theme colors */
+      --bg: #090d16;
+      --sidebar-bg: #050810;
+      --paper: #121a2e;
+      --ink: #cbd5e1;
+      --muted: #64748b;
+      --line: #1e293b;
+      --soft: #0f172a;
+      --accent: #06b6d4; /* Neon Cyan */
+      --accent-light: rgba(6, 182, 212, 0.12);
+      --accent2: #a3e635; /* Neon Lime */
+      --accent2-light: rgba(163, 230, 53, 0.12);
+      
+      /* Typography & Layout */
+      --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --card-shadow: 0 4px 20px rgba(6, 182, 212, 0.03);
+      --hover-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
+      --border-radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      background-image: 
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), 
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 24px 24px;
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .map-shell {
+      display: grid;
+      grid-template-columns: 280px minmax(0, 1fr);
+      gap: 24px;
+      padding: 32px;
+      max-width: 1600px;
+      margin: auto;
+    }
+
+    /* Cyber sticky navigation */
+    .sidebar {
+      background: var(--sidebar-bg);
+      color: #ffffff;
+      border-radius: var(--border-radius);
+      padding: 28px 20px;
+      position: sticky;
+      top: 32px;
+      height: calc(100vh - 64px);
+      overflow-y: auto;
+      border: 1px solid var(--line);
+      scrollbar-width: thin;
+    }
+
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 28px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-logo {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.15rem;
+      margin: 0;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .brand-subtitle {
+      font-size: 0.7rem;
+      font-family: var(--mono);
+      color: var(--muted);
+      margin: 2px 0 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-title {
+      font-size: 0.68rem;
+      font-family: var(--mono);
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 24px 0 8px 8px;
+      letter-spacing: 0.12em;
+      font-weight: 700;
+    }
+
+    .nav-link {
+      display: block;
+      color: #ffffff;
+      padding: 8px 12px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      border-left: 2px solid transparent;
+    }
+
+    .nav-link:hover {
+      background: var(--soft);
+      color: var(--accent);
+      border-left-color: var(--accent);
+    }
+
+    .document {
+      min-width: 0;
+    }
+
+    /* Radial Glowing Map Cover */
+    .cover {
+      border-radius: var(--border-radius);
+      background: radial-gradient(circle at 100% 0%, rgba(6, 182, 212, 0.12) 0%, rgba(18, 26, 46, 0) 70%), var(--paper);
+      padding: 64px;
+      border: 1px solid var(--line);
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .cover-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      font-family: var(--mono);
+      color: var(--accent);
+      font-weight: 800;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .cover h1 {
+      font-size: clamp(2.2rem, 5vw, 4rem);
+      margin: 0 0 16px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #ffffff;
+    }
+
+    .cover-description {
+      font-size: 1.05rem;
+      color: var(--muted);
+      max-width: 720px;
+      line-height: 1.6;
+      margin: 0 0 40px;
+    }
+
+    .cover-grid, .summary-grid, .metadata-grid, .relations {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+    }
+
+    .cover-grid {
+      border-top: 1px solid var(--line);
+      padding-top: 32px;
+    }
+
+    .summary-grid, .relations {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .cover-stat, .panel, .artifact-card, .relation-box {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: var(--card-shadow);
+    }
+
+    .cover-stat {
+      background: rgba(9, 13, 22, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .cover-stat strong {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #ffffff;
+    }
+
+    .cover-stat span {
+      font-size: 0.7rem;
+      font-family: var(--mono);
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .content {
+      padding: 0;
+    }
+
+    .section {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--border-radius);
+      padding: 32px;
+      margin-bottom: 24px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+      margin-bottom: 24px;
+    }
+
+    .section-header h2 {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin: 0;
+      letter-spacing: -0.01em;
+    }
+
+    .section-kicker {
+      font-family: var(--mono);
+      color: var(--accent);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin: 0 0 4px;
+      font-weight: 700;
+    }
+
+    .section-count {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    /* Floating cloud pills for TOC */
+    .toc {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .toc li {
+      break-inside: avoid;
+    }
+
+    .toc a {
+      display: block;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 8px 18px;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .toc a:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--bg);
+      transform: translateY(-2px);
+      box-shadow: var(--hover-shadow);
+    }
+
+    /* Artifact cards style */
+    .artifact-card {
+      margin: 24px 0;
+      padding: 0;
+      overflow: hidden;
+      background: var(--soft);
+      border: 1px solid var(--line);
+      transition: all 0.2s ease;
+    }
+
+    .artifact-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--hover-shadow);
+      border-color: var(--accent);
+    }
+
+    .artifact-head {
+      border-bottom: 1px solid var(--line);
+      padding: 16px 24px;
+      background: rgba(9, 13, 22, 0.4);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .artifact-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .artifact-id {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    .badges {
+      display: flex;
+      gap: 6px;
+    }
+
+    .badge {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-radius: 4px;
+      padding: 3px 8px;
+    }
+
+    .badge.type {
+      background: var(--accent-light);
+      color: var(--accent);
+    }
+
+    .badge.status {
+      background: var(--accent2-light);
+      color: var(--accent2);
+    }
+
+    .badge.layer {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      border: 1px solid var(--line);
+    }
+
+    .artifact-body {
+      padding: 24px;
+    }
+
+    .metadata-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .metadata-item {
+      background: rgba(9, 13, 22, 0.3);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .metadata-item span {
+      font-size: 0.65rem;
+      font-family: var(--mono);
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .metadata-item strong {
+      font-size: 0.85rem;
+      color: #ffffff;
+    }
+
+    .markdown {
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .markdown p {
+      margin: 0 0 16px;
+    }
+
+    .markdown p:last-child {
+      margin-bottom: 0;
+    }
+
+    .markdown pre, .json-block {
+      background: #070d1e;
+      color: #e2e8f0;
+      border-radius: 8px;
+      padding: 16px;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      margin: 16px 0;
+      border: 1px solid var(--line);
+    }
+
+    .markdown code {
+      font-family: var(--mono);
+      font-size: 0.88em;
+      background: rgba(6, 182, 212, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--accent);
+    }
+
+    .markdown pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+    }
+
+    .relation-box {
+      border: 1px solid var(--line);
+      background: rgba(9, 13, 22, 0.3);
+      padding: 16px;
+    }
+
+    .relation-box h4 {
+      margin: 0 0 12px;
+      font-size: 0.78rem;
+      font-family: var(--mono);
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .relation-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .relation-list li {
+      font-size: 0.84rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .relation-list strong {
+      color: var(--accent);
+    }
+
+    .relation-list a {
+      color: #ffffff;
+      text-decoration: none;
+      border-bottom: 1px dashed var(--muted);
+    }
+
+    .relation-list a:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* Cyber matrix design */
+    .relation-matrix {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 8px;
+      margin: 24px 0;
+    }
+
+    .relation-matrix th {
+      color: var(--muted);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      padding: 10px;
+      text-align: left;
+    }
+
+    .relation-matrix td {
+      background: var(--soft);
+      padding: 12px 16px;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      color: #ffffff;
+      font-size: 0.875rem;
+    }
+
+    .relation-matrix td:first-child {
+      border-left: 1px solid var(--line);
+      border-top-left-radius: 8px;
+      border-bottom-left-radius: 8px;
+    }
+
+    .relation-matrix td:last-child {
+      border-right: 1px solid var(--line);
+      border-top-right-radius: 8px;
+      border-bottom-right-radius: 8px;
+    }
+
+    .footer {
+      color: var(--muted);
+      padding: 28px 8px;
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-size: 0.78rem;
+    }
+
+    .openlag-diagram-card {
+      border: 1px solid var(--line);
+      border-radius: var(--border-radius);
+      overflow: hidden;
+      margin: 24px 0;
+      background: #ffffff;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .openlag-diagram-header {
+      background: #f1f5f9;
+      padding: 12px 16px;
+      border-bottom: 1px solid #cbd5e1;
+      font-size: 0.78rem;
+      font-family: var(--mono);
+      color: #475569;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .openlag-mermaid {
+      padding: 24px;
+      overflow-x: auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    @media(max-width: 980px) {
+      .map-shell {
+        display: block;
+        padding: 16px;
+      }
+      .sidebar {
+        position: relative;
+        height: auto;
+        top: 0;
+        margin-bottom: 24px;
+      }
+      .cover-grid, .summary-grid, .metadata-grid, .relations {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      /* INK-FRIENDLY BLUEPRINT LIGHT THEME INVERSION */
+      :root {
+        --bg: #ffffff;
+        --paper: #ffffff;
+        --soft: #f8fafc;
+        --ink: #0f172a;
+        --muted: #475569;
+        --line: #cbd5e1;
+        --accent: #0284c7;
+        --accent-light: #e0f2fe;
+        --accent2: #65a30d;
+        --accent2-light: #f1fbe7;
+      }
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+      .map-shell {
+        display: block;
+        padding: 0;
+        max-width: 100%;
+      }
+      .sidebar {
+        display: none;
+      }
+      .cover {
+        height: 100vh;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        page-break-after: always;
+        break-after: page;
+        border: 1px solid #cbd5e1;
+        background: #ffffff !important;
+        color: #0f172a !important;
+        padding: 2in 0.5in 0.5in !important;
+      }
+      .cover h1, .cover-description, .cover-stat strong, .cover-stat span {
+        color: #0f172a !important;
+      }
+      .cover-stat {
+        background: #f8fafc !important;
+        border-color: #cbd5e1 !important;
+      }
+      .content {
+        padding: 0;
+      }
+      .section {
+        background: #ffffff;
+        border: 1px solid #cbd5e1;
+        padding: 24px;
+        page-break-inside: auto;
+        break-inside: auto;
+        margin-bottom: 30px;
+      }
+      .section-header h2 {
+        color: #0f172a !important;
+      }
+      .toc a {
+        background: #f8fafc !important;
+        border-color: #cbd5e1 !important;
+        color: #0f172a !important;
+      }
+      .artifact-card {
+        border-color: #cbd5e1 !important;
+        background: #f8fafc !important;
+      }
+      .artifact-head {
+        background: #e2e8f0 !important;
+        border-color: #cbd5e1 !important;
+      }
+      .artifact-title {
+        color: #0f172a !important;
+      }
+      .metadata-item {
+        background: #ffffff !important;
+        border-color: #cbd5e1 !important;
+      }
+      .metadata-item strong {
+        color: #0f172a !important;
+      }
+      .relation-box {
+        background: #ffffff !important;
+        border-color: #cbd5e1 !important;
+      }
+      .relation-list a {
+        color: #0f172a !important;
+      }
+      .relation-matrix td {
+        background: #ffffff !important;
+        border-color: #cbd5e1 !important;
+        color: #0f172a !important;
+      }
+      .markdown pre, .json-block {
+        background: #f8fafc !important;
+        color: #0f172a !important;
+        border-color: #cbd5e1 !important;
+      }
+      .markdown code {
+        background: #e0f2fe !important;
+        color: #0284c7 !important;
+        border-color: #cbd5e1 !important;
+      }
+      .openlag-diagram-card {
+        border-color: #cbd5e1 !important;
+        box-shadow: none;
+      }
+      .footer {
+        display: none;
+      }
+    }
+  </style>
+  <script id="openlag-vendor-marked">/* __OPENLAG_INLINE_MARKED_BUNDLE__ */</script>
+  <script id="openlag-vendor-mermaid">/* __OPENLAG_INLINE_MERMAID_BUNDLE__ */</script>
+  <script>
+    (() => {
+      async function boot() {
+        document.querySelectorAll("[data-openlag-markdown-body],[data-markdown]").forEach(n => {
+          n.innerHTML = window.marked?.parse ? window.marked.parse(n.textContent || "", { gfm: true }) : "<p>" + n.textContent + "</p>";
+          n.querySelectorAll("code.language-mermaid").forEach((c, i) => {
+            const w = document.createElement("section");
+            w.className = "openlag-diagram-card";
+            w.innerHTML = '<div class="openlag-diagram-header">Mermaid diagram #' + (i + 1) + '</div><div class="mermaid openlag-mermaid"></div>';
+            w.querySelector(".mermaid").textContent = c.textContent || "";
+            (c.closest("pre") || c).replaceWith(w);
+          });
+        });
+        const m = window.mermaid && (window.mermaid.default || window.mermaid);
+        if (!m?.initialize) { document.documentElement.dataset.mermaid = "unavailable"; return }
+        try {
+          m.initialize({ startOnLoad: false, securityLevel: "loose", theme: "base" });
+          m.run ? await m.run({ querySelector: ".mermaid" }) : m.init?.(undefined, document.querySelectorAll(".mermaid"));
+          document.documentElement.dataset.mermaid = "ready";
+        } catch {
+          document.documentElement.dataset.mermaid = "error";
+        }
+      }
+      document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", boot) : boot();
+    })();
+  </script>
+</head>
+<body>
+  <div class="map-shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <img class="brand-logo" data-template-src="branding.logo" alt="OpenLAG logo">
+        <div>
+          <p class="brand-title" data-template="branding.productName">OpenLAG</p>
+          <p class="brand-subtitle" data-template="branding.subtitle">Documentation Freeze</p>
+        </div>
+      </div>
+      <nav data-slot="openlag.sidebarNavigation"></nav>
+    </aside>
+    <main class="document">
+      <header id="cover" class="cover">
+        <img class="cover-logo" data-template-src="branding.logo" alt="OpenLAG logo">
+        <p class="eyebrow" data-template="cover.eyebrow">Snapshot</p>
+        <h1 data-template="cover.title">Freeze</h1>
+        <p data-template="cover.description">Description</p>
+        <div class="cover-grid">
+          <div class="cover-stat">
+            <strong data-template="summary.artifactCount">0</strong>
+            <span>Artifacts</span>
+          </div>
+          <div class="cover-stat">
+            <strong data-template="summary.relationCount">0</strong>
+            <span>Relations</span>
+          </div>
+          <div class="cover-stat">
+            <strong data-template="summary.sectionCount">0</strong>
+            <span>Sections</span>
+          </div>
+          <div class="cover-stat">
+            <strong data-template="profile.id">profile</strong>
+            <span data-template="profile.name">Profile</span>
+          </div>
+        </div>
+      </header>
+      <div class="content">
+        <section id="executive-summary" class="section">
+          <div class="section-header">
+            <div>
+              <p class="section-kicker" data-template="document.language">en</p>
+              <h2 data-template="executiveSummary.title">Executive Summary</h2>
+            </div>
+            <span data-template="document.generatedAt">generated</span>
+          </div>
+          <div class="summary-grid">
+            <div class="panel">
+              <h3 data-template="executiveSummary.purposeTitle">Purpose</h3>
+              <p data-template="executiveSummary.purpose">Purpose</p>
+              <h3 data-template="executiveSummary.scopeTitle">Scope</h3>
+              <p data-template="executiveSummary.scope">Scope</p>
+            </div>
+            <div class="panel">
+              <h3 data-template="executiveSummary.audienceTitle">Audience</h3>
+              <p data-template="executiveSummary.audience">Audience</p>
+              <p data-template="profile.description">Profile description</p>
+            </div>
+          </div>
+        </section>
+        <section id="toc" class="section">
+          <h2 data-template="document.title">Knowledge domains</h2>
+          <p data-template="document.formatVersion">openlag.freeze.v1</p>
+          <div data-slot="openlag.tableOfContents"></div>
+        </section>
+        <section class="section">
+          <h2>Relationship map</h2>
+          <div data-slot="openlag.relations"></div>
+        </section>
+        <div data-slot="openlag.sections"></div>
+        <section class="section">
+          <h2>Technical metadata</h2>
+          <div data-slot="openlag.technicalMetadata"></div>
+        </section>
+        <template data-slot="openlag.artifacts"></template>
+      </div>
+      <footer class="footer">
+        <span data-template="footer.left">Generated</span>
+        <span data-template="footer.right">Template</span>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>

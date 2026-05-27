@@ -132,6 +132,7 @@ export interface FreezeOptions {
   template?: string;
   output?: string;
   dryRun?: boolean;
+  generatedAt?: string;
 }
 
 export interface FreezeResult {
@@ -306,15 +307,15 @@ function resolveOutputFile(projectRoot: string, profile: ExportProfile, format: 
     pdf: '.pdf',
   };
   const ext = extensionByFormat[format];
-  const defaultDir = path.join(projectRoot, 'dist', 'openlag', 'exports', profile.id);
+  const templateId = profile.template?.id;
+  const suffix = templateId && templateId !== 'professional-document-v1' ? `-${slug(templateId)}` : '';
+  const defaultFileName = `openlag-${profile.id}${suffix}${ext}`;
   if (!output) {
-    const templateId = profile.template?.id;
-    const suffix = templateId && templateId !== 'professional-document-v1' ? `-${slug(templateId)}` : '';
-    return path.join(defaultDir, `openlag-${profile.id}${suffix}${ext}`);
+    return path.join(projectRoot, defaultFileName);
   }
 
   const resolved = path.isAbsolute(output) ? output : path.join(projectRoot, output);
-  return path.extname(resolved) ? resolved : path.join(resolved, `openlag-${profile.id}${ext}`);
+  return path.extname(resolved) ? resolved : path.join(resolved, defaultFileName);
 }
 
 function resolveTemplateOverride(template: string): ExportProfile['template'] {
@@ -431,7 +432,12 @@ function freezeArtifact(artifact: ParsedArtifact, relations: ParsedRelation[], i
   };
 }
 
-export function createFrozenDocument(profile: ExportProfile, artifacts: ParsedArtifact[], relations: ParsedRelation[]): FrozenDocument {
+export function createFrozenDocument(
+  profile: ExportProfile,
+  artifacts: ParsedArtifact[],
+  relations: ParsedRelation[],
+  generatedAt = new Date().toISOString()
+): FrozenDocument {
   const selectedArtifacts = sortArtifacts(profile, selectArtifacts(profile, artifacts));
   const selectedRelations = sortRelations(selectRelations(profile, relations, selectedArtifacts));
   const includeSourceMetadata = profile.rendering?.includeSourceMetadata === true;
@@ -469,7 +475,7 @@ export function createFrozenDocument(profile: ExportProfile, artifacts: ParsedAr
       executiveSummary: profile.executiveSummary,
       footer: profile.footer,
     },
-    generatedAt: '1970-01-01T00:00:00.000Z',
+    generatedAt,
     formatVersion: 'openlag.freeze.v1',
     summary: {
       artifactCount: includedArtifactCount,
@@ -1269,7 +1275,7 @@ export function createDocumentationFreeze(options: FreezeOptions): FreezeResult 
   loadRelationContracts(path.join(docsDir, 'contracts', 'relations'));
 
   const parsed = parseOpenLagDocs(docsDir);
-  const document = createFrozenDocument(profile, parsed.artifacts, parsed.relations);
+  const document = createFrozenDocument(profile, parsed.artifacts, parsed.relations, options.generatedAt);
   const content = renderFreeze(document, format, projectRoot);
   const markdown = renderMarkdownFreeze(document);
   const outputFile = resolveOutputFile(projectRoot, profile, format, options.output);

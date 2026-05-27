@@ -169,6 +169,21 @@ function createFixture() {
     '',
   ].join('\n'));
 
+  writeFile(path.join(projectRoot, 'docs', 'architecture', 'cmp-b.md'), [
+    '---',
+    'id: cmp-b',
+    'type: COMPONENT',
+    'title: Component Without Description',
+    'version: v-1',
+    'status: ready',
+    '---',
+    '',
+    '# Component Without Description',
+    '',
+    'This body must not be promoted to the artifact description.',
+    '',
+  ].join('\n'));
+
   writeFile(path.join(projectRoot, 'docs', 'architecture', 'project.md'), [
     '---',
     'id: project-a',
@@ -195,8 +210,9 @@ test('loads an export profile from docs/contracts/export-profiles', () => {
 
 test('dry-run creates deterministic markdown without writing output', () => {
   const projectRoot = createFixture();
-  const first = createDocumentationFreeze({ projectRoot, profile: 'architecture', dryRun: true });
-  const second = createDocumentationFreeze({ projectRoot, profile: 'architecture', dryRun: true });
+  const generatedAt = '2026-05-27T10:00:00.000Z';
+  const first = createDocumentationFreeze({ projectRoot, profile: 'architecture', dryRun: true, generatedAt });
+  const second = createDocumentationFreeze({ projectRoot, profile: 'architecture', dryRun: true, generatedAt });
 
   assert.strictEqual(first.markdown, second.markdown);
   assert.strictEqual(first.dryRun, true);
@@ -206,16 +222,41 @@ test('dry-run creates deterministic markdown without writing output', () => {
   assert.match(first.markdown, /`IMPLEMENTS`/);
 });
 
-test('writes markdown freeze to dist/openlag/exports by default', () => {
+test('uses a real generation timestamp by default', () => {
+  const projectRoot = createFixture();
+  const result = createDocumentationFreeze({ projectRoot, profile: 'architecture', dryRun: true });
+
+  assert.notStrictEqual(result.document.generatedAt, '1970-01-01T00:00:00.000Z');
+  assert.doesNotMatch(result.markdown, /1970-01-01T00:00:00.000Z/);
+});
+
+test('writes markdown freeze to the command directory by default', () => {
   const projectRoot = createFixture();
   const result = createDocumentationFreeze({ projectRoot, profile: 'architecture' });
 
   assert.strictEqual(
     result.outputFile,
-    path.join(projectRoot, 'dist', 'openlag', 'exports', 'architecture', 'openlag-architecture.md')
+    path.join(projectRoot, 'openlag-architecture.md')
   );
   assert.strictEqual(fs.existsSync(result.outputFile), true);
   assert.strictEqual(fs.readFileSync(result.outputFile, 'utf-8'), result.markdown);
+});
+
+test('writes freeze to the explicit output directory when provided', () => {
+  const projectRoot = createFixture();
+  const result = createDocumentationFreeze({
+    projectRoot,
+    profile: 'architecture',
+    format: 'html',
+    template: 'technical-manual',
+    output: 'exports',
+  });
+
+  assert.strictEqual(
+    result.outputFile,
+    path.join(projectRoot, 'exports', 'openlag-architecture-technical-manual.html')
+  );
+  assert.strictEqual(fs.existsSync(result.outputFile), true);
 });
 
 test('renders json, html, and pdf from the same frozen document model', () => {
@@ -252,6 +293,7 @@ test('renders professional HTML from the freeze template contract', () => {
   assert.match(content, /propósito frágil evolución contraseña auditoría diseño integración/);
   assert.doesNotMatch(content, /data-template=/);
   assert.doesNotMatch(content, /id: req-a\s+type: REQUIREMENT/);
+  assert.doesNotMatch(content, /<p># Component Without Description/);
 });
 
 test('inlines offline vendors in memory without requiring source template mutation', () => {
