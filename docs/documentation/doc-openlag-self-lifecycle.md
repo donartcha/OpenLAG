@@ -3,6 +3,7 @@ id: doc-openlag-self-lifecycle
 type: DOCUMENTATION
 status: ready
 title: OpenLAG Self Lifecycle Documentation
+version: openlag-0.5.0
 description: "Documents the boundary between the root self-documenting project and the internal dev sandbox."
 ownership:
   owner: donartcha

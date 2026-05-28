@@ -6,6 +6,7 @@ title: OpenLAG 0.5.0 Contract-Driven Evolution
 changeType: EVOLUTION
 versionFrom: openlag-0.4.0
 versionTo: openlag-0.5.0
+version: openlag-0.5.0
 description: "Documents the evolution from OpenLAG 0.4.0 to 0.5.0 using OpenLAG artifacts and release evidence."
 ownership:
   owner: donartcha

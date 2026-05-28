@@ -3,6 +3,7 @@ id: feature-preview-workflow
 type: FEATURE
 status: ready
 title: Preview Workflow
+version: openlag-0.5.0
 description: "OpenLAG can generate and build a static portal for inspecting architecture graph outputs."
 ownership:
   owner: donartcha

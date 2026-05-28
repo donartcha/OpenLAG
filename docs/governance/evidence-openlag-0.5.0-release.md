@@ -3,6 +3,7 @@ id: evidence-openlag-0.5.0-release
 type: EVIDENCE
 status: ready
 title: OpenLAG 0.5.0 Release Evidence
+version: openlag-0.5.0
 description: "Captures evidence that the OpenLAG repository can document its own release lifecycle as an OpenLAG project."
 ownership:
   owner: donartcha

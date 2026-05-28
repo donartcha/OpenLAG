@@ -3,6 +3,7 @@ id: feature-starter-mode
 type: FEATURE
 status: ready
 title: Starter Mode
+version: openlag-0.5.0
 description: "OpenLAG provides starter-oriented onboarding contracts and templates for lightweight project adoption."
 ownership:
   owner: donartcha

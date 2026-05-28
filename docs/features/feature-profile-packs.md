@@ -3,6 +3,7 @@ id: feature-profile-packs
 type: FEATURE
 status: ready
 title: Profile Packs
+version: openlag-0.5.0
 description: "OpenLAG 0.5.0 packages reusable architecture, governance, starter, and domain profiles."
 ownership:
   owner: donartcha

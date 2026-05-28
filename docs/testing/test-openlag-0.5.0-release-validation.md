@@ -3,6 +3,7 @@ id: test-openlag-0.5.0-release-validation
 type: TEST_CASE
 status: ready
 title: OpenLAG 0.5.0 Release Validation
+version: openlag-0.5.0
 description: "Validates the 0.5.0 lifecycle features through root generation, release checks, package dry run, and freeze outputs."
 ownership:
   owner: donartcha

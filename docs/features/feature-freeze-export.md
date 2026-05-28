@@ -3,6 +3,7 @@ id: feature-freeze-export
 type: FEATURE
 status: ready
 title: Freeze and Export Evidence
+version: openlag-0.5.0
 description: "OpenLAG can freeze architecture documentation into deterministic markdown, JSON, HTML, and PDF evidence outputs."
 ownership:
   owner: donartcha

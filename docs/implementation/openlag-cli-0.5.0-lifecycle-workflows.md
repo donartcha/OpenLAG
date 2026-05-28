@@ -3,6 +3,7 @@ id: openlag-cli-0.5.0-lifecycle-workflows
 type: CODE_ENTITY
 status: ready
 title: OpenLAG 0.5.0 Lifecycle CLI Workflows
+version: openlag-0.5.0
 description: "CLI and generation workflows implementing the 0.5.0 lifecycle features."
 ownership:
   owner: donartcha
