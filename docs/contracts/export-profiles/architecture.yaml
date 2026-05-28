@@ -1,0 +1,88 @@
+id: architecture
+name: Architecture Documentation Freeze
+description: >
+  Generates a deterministic Markdown architecture snapshot from the current
+  OpenLAG graph.
+defaultFormat: markdown
+
+includeArtifactTypes:
+  - PROJECT
+  - VERSION
+  - EPIC
+  - REQUIREMENT
+  - USE_CASE
+  - DECISION
+  - DESIGN
+  - ARCHITECTURE
+  - COMPONENT
+  - FEATURE
+  - CODE_ENTITY
+  - API
+  - DATABASE_ENTITY
+  - TEST_CASE
+  - RISK
+  - CHANGE
+  - DOCUMENTATION
+
+includeRelations:
+  - DEFINES
+  - REFINES
+  - IMPLEMENTS
+  - TESTS
+  - VALIDATES
+  - DOCUMENTS
+  - JUSTIFIES
+  - DEPENDS_ON
+  - IMPACTS
+  - FIXES
+
+sections:
+  - id: overview
+    title: Project and Versions
+    artifactTypes:
+      - PROJECT
+      - VERSION
+
+  - id: requirements
+    title: Requirements and Use Cases
+    artifactTypes:
+      - EPIC
+      - REQUIREMENT
+      - USE_CASE
+
+  - id: architecture
+    title: Architecture and Decisions
+    artifactTypes:
+      - DECISION
+      - DESIGN
+      - ARCHITECTURE
+      - COMPONENT
+
+  - id: implementation
+    title: Implementation
+    artifactTypes:
+      - FEATURE
+      - CODE_ENTITY
+      - API
+      - DATABASE_ENTITY
+
+  - id: verification
+    title: Verification and Risk
+    artifactTypes:
+      - TEST_CASE
+      - RISK
+      - CHANGE
+
+  - id: documentation
+    title: Documentation
+    artifactTypes:
+      - DOCUMENTATION
+
+ordering:
+  strategy: lifecycle
+  fallback: title
+
+rendering:
+  includeTableOfContents: true
+  includeRelationTables: true
+  includeSourceMetadata: true

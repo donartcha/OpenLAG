@@ -1,0 +1,14 @@
+relation: VALIDATES
+description: "Validación empírica/humana (QA Manual)."
+category: TRACEABILITY
+allowedFrom: [PROCESS, CHECK, DOCUMENTATION]
+allowedTo: [REQUIREMENT, FEATURE, USE_CASE, DEPLOYMENT, VERSION]
+multiplicity:
+  from: many
+  to: many
+validation:
+  severity: info
+impact:
+  propagates: true
+  directions: [reverse]
+  weight: 1

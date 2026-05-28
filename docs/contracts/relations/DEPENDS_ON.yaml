@@ -1,0 +1,14 @@
+relation: DEPENDS_ON
+description: "Acoplamiento estático arquitectónico o de empaquetado."
+category: STRUCTURAL
+allowedFrom: [CODE_ENTITY, COMPONENT, API, DATABASE_ENTITY, LIBRARY, VERSION, SYSTEM_VERSION]
+allowedTo: [CODE_ENTITY, COMPONENT, API, DATABASE_ENTITY, LIBRARY, VERSION, SYSTEM_VERSION]
+multiplicity:
+  from: many
+  to: many
+validation:
+  severity: warn
+impact:
+  propagates: true
+  directions: [reverse]
+  weight: 1

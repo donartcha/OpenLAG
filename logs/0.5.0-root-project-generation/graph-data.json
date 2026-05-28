@@ -1,0 +1,205 @@
+{
+  "versions": [
+    {
+      "id": "openlag-0.4.0",
+      "name": "0.4.0",
+      "timestamp": "2026-05-22",
+      "parentVersion": "none"
+    },
+    {
+      "id": "openlag-0.5.0",
+      "name": "0.5.0",
+      "timestamp": "2026-05-28",
+      "parentVersion": "openlag-0.4.0"
+    }
+  ],
+  "systemVersions": [],
+  "graphs": {
+    "openlag-0.4.0": {
+      "artifacts": [
+        {
+          "id": "openlag-0.4.0",
+          "type": "VERSION",
+          "title": "OpenLAG 0.4.0 Release Baseline",
+          "description": "Published baseline containing project-local artifact contracts, relation runtime payloads, richer lint report data, dynamic portal contract metadata, and init-all support.",
+          "status": "closed",
+          "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\openlag-0.4.0.md",
+          "markdownBody": "# OpenLAG 0.4.0 Release Baseline\n\nThis version represents the audited stable baseline before the 0.5.0 lifecycle evolution.\n\nIn this baseline, the repository-root `docs/*` dataset was the observable OpenLAG project used to generate the architecture graph and release portal evidence.",
+          "raw": {
+            "id": "openlag-0.4.0",
+            "type": "VERSION",
+            "status": "closed",
+            "title": "OpenLAG 0.4.0 Release Baseline",
+            "name": "0.4.0",
+            "timestamp": "2026-05-22",
+            "parentVersion": "none",
+            "description": "Published baseline containing project-local artifact contracts, relation runtime payloads, richer lint report data, dynamic portal contract metadata, and init-all support.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": []
+          }
+        },
+        {
+          "id": "openlag-0.5.0",
+          "type": "VERSION",
+          "title": "OpenLAG 0.5.0 Lifecycle Evolution",
+          "description": "Contract-driven lifecycle evolution adding starter onboarding, freeze/export, rule contracts, profile packs, preview workflow, and self-documenting release evidence.",
+          "status": "ready",
+          "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\openlag-0.5.0.md",
+          "markdownBody": "# OpenLAG 0.5.0 Lifecycle Evolution\n\nThis version documents how OpenLAG evolves from the 0.4.0 baseline into the 0.5.0 contract-driven lifecycle model.\n\nThe root repository now acts as the primary OpenLAG project. Its lifecycle documentation is stored in `docs/*`, while `internal/dev-sandbox` remains a secondary internal dataset for compatibility checks and example validation.",
+          "raw": {
+            "id": "openlag-0.5.0",
+            "type": "VERSION",
+            "status": "ready",
+            "title": "OpenLAG 0.5.0 Lifecycle Evolution",
+            "name": "0.5.0",
+            "timestamp": "2026-05-28",
+            "parentVersion": "openlag-0.4.0",
+            "description": "Contract-driven lifecycle evolution adding starter onboarding, freeze/export, rule contracts, profile packs, preview workflow, and self-documenting release evidence.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "REPLACES",
+                "to": "openlag-0.4.0"
+              }
+            ]
+          }
+        }
+      ],
+      "relations": [
+        {
+          "id": "rel-openlag-0.5.0-0",
+          "from": "openlag-0.5.0",
+          "to": "openlag-0.4.0",
+          "type": "REPLACES",
+          "category": "EVOLUTIONARY",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\openlag-0.5.0.md"
+        }
+      ]
+    },
+    "openlag-0.5.0": {
+      "artifacts": [
+        {
+          "id": "openlag-0.4.0",
+          "type": "VERSION",
+          "title": "OpenLAG 0.4.0 Release Baseline",
+          "description": "Published baseline containing project-local artifact contracts, relation runtime payloads, richer lint report data, dynamic portal contract metadata, and init-all support.",
+          "status": "closed",
+          "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\openlag-0.4.0.md",
+          "markdownBody": "# OpenLAG 0.4.0 Release Baseline\n\nThis version represents the audited stable baseline before the 0.5.0 lifecycle evolution.\n\nIn this baseline, the repository-root `docs/*` dataset was the observable OpenLAG project used to generate the architecture graph and release portal evidence.",
+          "raw": {
+            "id": "openlag-0.4.0",
+            "type": "VERSION",
+            "status": "closed",
+            "title": "OpenLAG 0.4.0 Release Baseline",
+            "name": "0.4.0",
+            "timestamp": "2026-05-22",
+            "parentVersion": "none",
+            "description": "Published baseline containing project-local artifact contracts, relation runtime payloads, richer lint report data, dynamic portal contract metadata, and init-all support.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": []
+          }
+        },
+        {
+          "id": "openlag-0.5.0",
+          "type": "VERSION",
+          "title": "OpenLAG 0.5.0 Lifecycle Evolution",
+          "description": "Contract-driven lifecycle evolution adding starter onboarding, freeze/export, rule contracts, profile packs, preview workflow, and self-documenting release evidence.",
+          "status": "ready",
+          "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\openlag-0.5.0.md",
+          "markdownBody": "# OpenLAG 0.5.0 Lifecycle Evolution\n\nThis version documents how OpenLAG evolves from the 0.4.0 baseline into the 0.5.0 contract-driven lifecycle model.\n\nThe root repository now acts as the primary OpenLAG project. Its lifecycle documentation is stored in `docs/*`, while `internal/dev-sandbox` remains a secondary internal dataset for compatibility checks and example validation.",
+          "raw": {
+            "id": "openlag-0.5.0",
+            "type": "VERSION",
+            "status": "ready",
+            "title": "OpenLAG 0.5.0 Lifecycle Evolution",
+            "name": "0.5.0",
+            "timestamp": "2026-05-28",
+            "parentVersion": "openlag-0.4.0",
+            "description": "Contract-driven lifecycle evolution adding starter onboarding, freeze/export, rule contracts, profile packs, preview workflow, and self-documenting release evidence.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "REPLACES",
+                "to": "openlag-0.4.0"
+              }
+            ]
+          }
+        }
+      ],
+      "relations": [
+        {
+          "id": "rel-openlag-0.5.0-0",
+          "from": "openlag-0.5.0",
+          "to": "openlag-0.4.0",
+          "type": "REPLACES",
+          "category": "EVOLUTIONARY",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\openlag-0.5.0.md"
+        }
+      ]
+    }
+  },
+  "changes": [
+    {
+      "id": "change-openlag-0.5.0-evolution",
+      "type": "EVOLUTION",
+      "title": "OpenLAG 0.5.0 Contract-Driven Evolution",
+      "description": "Documents the evolution from OpenLAG 0.4.0 to 0.5.0 using OpenLAG artifacts and release evidence.",
+      "affects": [],
+      "versionFrom": "openlag-0.4.0",
+      "versionTo": "openlag-0.5.0"
+    }
+  ],
+  "lintReports": {
+    "draft": {
+      "issues": []
+    },
+    "develop": {
+      "issues": []
+    },
+    "feature": {
+      "issues": []
+    },
+    "release": {
+      "issues": []
+    }
+  },
+  "metadata": {
+    "name": "My OpenLAG Project",
+    "description": "Living Architecture documentation for my system.",
+    "typeColors": {}
+  }
+}

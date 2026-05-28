@@ -1,0 +1,22 @@
+---
+id: openlag-0.5.0
+type: VERSION
+status: ready
+title: OpenLAG 0.5.0 Lifecycle Evolution
+name: "0.5.0"
+timestamp: "2026-05-28"
+parentVersion: openlag-0.4.0
+description: "Contract-driven lifecycle evolution adding starter onboarding, freeze/export, rule contracts, profile packs, preview workflow, and self-documenting release evidence."
+ownership:
+  owner: donartcha
+  team: openlag
+relations:
+  - type: REPLACES
+    to: openlag-0.4.0
+---
+
+# OpenLAG 0.5.0 Lifecycle Evolution
+
+This version documents how OpenLAG evolves from the 0.4.0 baseline into the 0.5.0 contract-driven lifecycle model.
+
+The root repository now acts as the primary OpenLAG project. Its lifecycle documentation is stored in `docs/*`, while `internal/dev-sandbox` remains a secondary internal dataset for compatibility checks and example validation.

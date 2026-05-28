@@ -1,0 +1,20 @@
+3a7a683 fix(0.5.0): stabilize guide logo asset import for packaged builds
+61aec58 fix(0.5.0): render summary and markdown body in docs view
+65af642 perf(0.5.0): optimize assets and add code-splitting
+0c213b7 chore(0.5.0): stabilize lint/parser and document changelog
+8ae8651 chore(dev-sandbox): add generated public contract and graph payloads
+f898a9f docs(changelog): align latest entries under 0.5.0
+9a432ec docs(cli): document contract regeneration warning and fallback behavior
+94919f5 chore: remove legacy root docs after internal sandbox migration
+e9e68da chore: move official docs to internal sandbox and fix contract payload generation
+bf468c6 feat(starter): add OpenLAG Lite init mode and newcomer happy path docs
+61439a0 docs(readme): align 0.5.0 outputs and repository docs
+09b315a docs+freeze: add visual audit utility docs and tighten print pagination
+fe87708 Update render-pdf.ts
+5d4a04b docs(changelog): fold freeze fixes into 0.5.0
+fce4e24 fix(freeze): improve print layout stability in templates
+4e7414b fix(freeze): correct exports and document in changelog
+fbb8e94 feat: polish freeze templates and output handling
+c3a394d docs: clarify freeze exports and CLI help
+f9ec547 mejora en el tratamiento de freeze
+495a6bc feat: improve freeze documentary exports

@@ -1,0 +1,10 @@
+type: SYSTEM_VERSION
+layer: OPERATIONS
+description: "Standard SYSTEM_VERSION artifact."
+requiredFields:
+  - id
+  - type
+  - title
+  - component
+  - version
+  - releaseDate

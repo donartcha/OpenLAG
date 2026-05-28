@@ -1,0 +1,14 @@
+relation: IMPORTS
+description: "Trazabilidad de importación estática a nivel de código."
+category: STRUCTURAL
+allowedFrom: [CODE_ENTITY]
+allowedTo: [CODE_ENTITY, LIBRARY]
+multiplicity:
+  from: many
+  to: many
+validation:
+  severity: warn
+impact:
+  propagates: true
+  directions: [reverse]
+  weight: 1

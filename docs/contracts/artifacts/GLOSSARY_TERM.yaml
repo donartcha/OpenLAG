@@ -1,0 +1,7 @@
+type: GLOSSARY_TERM
+layer: DOCUMENTATION
+description: "Standard GLOSSARY_TERM artifact."
+requiredFields:
+  - id
+  - type
+  - title
