@@ -1,13 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { useStore } from './store';
-import { GraphView } from './components/GraphView';
-import { DocumentationView } from './components/DocumentationView';
-import { ImpactView } from './components/ImpactView';
-import { OrphansView } from './components/OrphansView';
-import { GuideView } from './components/GuideView';
-import { SettingsView } from './components/SettingsView';
 import { Network, FileText, GitPullRequest, Settings, Database, AlertCircle, BookOpen } from 'lucide-react';
-import faviconUrl from './assets/favicon.png';
+import faviconUrl from './assets/favicon.webp';
+
+const GraphView = lazy(() => import('./components/GraphView').then((m) => ({ default: m.GraphView })));
+const DocumentationView = lazy(() => import('./components/DocumentationView').then((m) => ({ default: m.DocumentationView })));
+const ImpactView = lazy(() => import('./components/ImpactView').then((m) => ({ default: m.ImpactView })));
+const OrphansView = lazy(() => import('./components/OrphansView').then((m) => ({ default: m.OrphansView })));
+const GuideView = lazy(() => import('./components/GuideView').then((m) => ({ default: m.GuideView })));
+const SettingsView = lazy(() => import('./components/SettingsView').then((m) => ({ default: m.SettingsView })));
 
 export default function App() {
   const { 
@@ -166,12 +167,20 @@ export default function App() {
             </div>
           ) : null}
 
-          {activeView === 'graph' && <GraphView />}
-          {activeView === 'docs' && <DocumentationView />}
-          {activeView === 'impact' && <ImpactView />}
-          {activeView === 'orphans' && <OrphansView />}
-          {activeView === 'guide' && <GuideView />}
-          {activeView === 'settings' && <SettingsView />}
+          <Suspense
+            fallback={
+              <div className="absolute inset-0 flex items-center justify-center bg-[#0a0a0a]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+              </div>
+            }
+          >
+            {activeView === 'graph' && <GraphView />}
+            {activeView === 'docs' && <DocumentationView />}
+            {activeView === 'impact' && <ImpactView />}
+            {activeView === 'orphans' && <OrphansView />}
+            {activeView === 'guide' && <GuideView />}
+            {activeView === 'settings' && <SettingsView />}
+          </Suspense>
         </main>
       </div>
     </div>

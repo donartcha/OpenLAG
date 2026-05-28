@@ -14,7 +14,7 @@ import {
     Terminal
 } from 'lucide-react';
 import { useStore } from '../store';
-import openLagLogo from '../../OpenLAG-logo-t.png';
+import openLagLogo from '../../OpenLAG-logo-t.webp';
 
 type GuideCopy = {
     title: string;

@@ -10,6 +10,7 @@ All notable changes to OpenLAG are documented in this file.
   - the recommended regenerate + build + preview workflow for active development.
 - Added the same starter-focused preview/serving guidance to the React portal onboarding section "OpenLAG Lite Happy Path (Starter)".
 - Added `rule-definitions.json` generation to the `openlag generate` output pipeline.
+- Added image optimization tooling with `sharp` via `npm run optimize-images`, generating lightweight favicon variants and WebP assets for package/runtime use.
 
 ### Changed
 - Moved the repository sample OpenLAG project from root `docs/` into `internal/dev-sandbox/docs` as an internal development sandbox dataset.
@@ -17,6 +18,9 @@ All notable changes to OpenLAG are documented in this file.
 - Updated `openlag build` contract regeneration step to include rules alongside artifact and relation contracts.
 - Improved contract regeneration warnings in `openlag build` and `openlag dev` to include the underlying error reason and explicit fallback behavior.
 - Applied stabilization updates across lint/parser and portal views (`DocumentationView`, `MarkdownRenderer`, `OrphansView`, `SettingsView`, lifecycle strategy typing) to keep runtime behavior and TypeScript contracts consistent in the 0.5.0 line.
+- Switched heavy UI image references to optimized WebP/PNG outputs and replaced the oversized SVG favicon reference in `index.html` with lightweight icon assets.
+- Introduced lazy-loading for major portal views and deferred Mermaid loading in `MarkdownRenderer`, reducing initial bundle cost and moving heavy runtime code to on-demand chunks.
+- Added explicit `manualChunks` split rules in Vite build output to isolate graph/docs/ui vendor groups and improve chunking behavior for production builds.
 
 ### Fixed
 - Fixed `openlag generate` contract path resolution to read from:

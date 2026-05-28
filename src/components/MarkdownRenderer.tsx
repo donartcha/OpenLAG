@@ -1,45 +1,61 @@
 import React, { useEffect, useRef } from 'react';
 import Markdown from 'react-markdown';
-import mermaid from 'mermaid';
 import { useStore } from '../store';
 
-mermaid.initialize({
-  startOnLoad: false,
-  theme: 'base',
-  themeVariables: {
-    background: 'transparent',
-    fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-    primaryColor: '#0a0a0a',
-    primaryTextColor: '#e0e0e0',
-    primaryBorderColor: '#10b981', // emerald-500
-    lineColor: '#34d399', // emerald-400
-    secondaryColor: '#064e3b', // emerald-900
-    tertiaryColor: '#111111',
-    noteBkgColor: '#022c22', // emerald-950
-    noteTextColor: '#e0e0e0',
-    noteBorderColor: '#059669', // emerald-600
+type MermaidModule = typeof import('mermaid');
+
+let mermaidModulePromise: Promise<MermaidModule> | null = null;
+let mermaidInitialized = false;
+
+async function getMermaid() {
+  if (!mermaidModulePromise) {
+    mermaidModulePromise = import('mermaid');
   }
-});
+  const module = await mermaidModulePromise;
+  const mermaid = module.default;
+  if (!mermaidInitialized) {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'base',
+      themeVariables: {
+        background: 'transparent',
+        fontFamily: 'ui-sans-serif, system-ui, sans-serif',
+        primaryColor: '#0a0a0a',
+        primaryTextColor: '#e0e0e0',
+        primaryBorderColor: '#10b981',
+        lineColor: '#34d399',
+        secondaryColor: '#064e3b',
+        tertiaryColor: '#111111',
+        noteBkgColor: '#022c22',
+        noteTextColor: '#e0e0e0',
+        noteBorderColor: '#059669',
+      },
+    });
+    mermaidInitialized = true;
+  }
+  return mermaid;
+}
 
 const Mermaid = ({ chart }: { chart: string }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     let mounted = true;
-    if (containerRef.current) {
-      mermaid.render(`mermaid-${Math.random().toString(36).substring(2, 9)}`, chart)
-        .then(({ svg }) => {
-          if (mounted && containerRef.current) {
-            containerRef.current.innerHTML = svg;
-          }
-        })
-        .catch(err => {
-          console.error("Mermaid parsing issue", err);
-          if (mounted && containerRef.current) {
-             containerRef.current.innerHTML = `<div class="text-red-400 text-xs p-2 border border-red-500/20 bg-red-950/30">Failed to render Mermaid diagram</div>`;
-          }
-        });
-    }
+    void (async () => {
+      if (!containerRef.current) return;
+      try {
+        const mermaid = await getMermaid();
+        const { svg } = await mermaid.render(`mermaid-${Math.random().toString(36).substring(2, 9)}`, chart);
+        if (mounted && containerRef.current) {
+          containerRef.current.innerHTML = svg;
+        }
+      } catch (err) {
+        console.error('Mermaid parsing issue', err);
+        if (mounted && containerRef.current) {
+          containerRef.current.innerHTML = '<div class="text-red-400 text-xs p-2 border border-red-500/20 bg-red-950/30">Failed to render Mermaid diagram</div>';
+        }
+      }
+    })();
     return () => { mounted = false; };
   }, [chart]);
 
