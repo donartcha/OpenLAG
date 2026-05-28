@@ -286,6 +286,22 @@ test('writes markdown freeze to the command directory by default', () => {
   assert.strictEqual(fs.readFileSync(result.outputFile, 'utf-8'), result.markdown);
 });
 
+test('writes pdf freeze to the command directory by default', () => {
+  const projectRoot = createFixture();
+  const result = createDocumentationFreeze({
+    projectRoot,
+    profile: 'architecture',
+    format: 'pdf',
+  });
+
+  assert.strictEqual(
+    result.outputFile,
+    path.join(projectRoot, 'openlag-architecture.pdf')
+  );
+  assert.strictEqual(fs.existsSync(result.outputFile), true);
+  assert.ok(fs.statSync(result.outputFile).size > 0);
+});
+
 test('writes freeze to the explicit output directory when provided', () => {
   const projectRoot = createFixture();
   const result = createDocumentationFreeze({

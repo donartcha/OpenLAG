@@ -25,6 +25,7 @@ Examples:
 Notes:
   Export profiles live in docs/contracts/export-profiles/*.yaml.
   --version filters artifacts by their frontmatter version and keeps VERSION/SYSTEM_VERSION context.
+  Without --output, the file is written in the current command directory.
   If --output has an extension it is used as the target file.
   If --output has no extension it is used as the output directory.
 `)
