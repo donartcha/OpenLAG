@@ -15,6 +15,22 @@ relations:
 
 # Preview Workflow
 
-The preview workflow turns project documentation into graph data and a static portal.
+## What Changed
 
-For OpenLAG 0.5.0, the primary preview is generated from repository-root `docs/*`; sandbox previews remain secondary.
+Preview workflow became an explicit lifecycle stage: source docs are transformed into runtime graph payloads and served as a static portal artifact for branch/version inspection.
+
+## Where It Changed
+
+- Generation orchestration: `scripts/cli/generate.ts`, `scripts/cli/build.ts`, `scripts/cli/dev.ts`.
+- Runtime payload outputs: `public/graph-data.json`, `public/artifact-definitions.json`, `public/relation-definitions.json`, `public/rule-definitions.json`.
+- Portal rendering and lifecycle navigation: `src/components/*`, especially graph/documentation/impact views.
+
+## Why It Changed
+
+Before 0.5.0, preview was treated mostly as UI convenience. Lifecycle reviews required mixing command output with manual branch archaeology. The new workflow elevates preview artifacts as lifecycle evidence that can be frozen and audited.
+
+## Impact
+
+- Behavioral: root docs are now the primary lifecycle data source for preview.
+- Repository boundary: `internal/dev-sandbox` preview remains valid but explicitly secondary.
+- Determinism: preview payloads are reproducible from contract+docs state, making drift visible in generated JSON diffs.

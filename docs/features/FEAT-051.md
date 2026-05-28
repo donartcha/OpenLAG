@@ -15,6 +15,23 @@ relations:
 
 # Freeze and Export Evidence
 
-OpenLAG 0.5.0 introduces release evidence generation through the `freeze` workflow and export profiles.
+## What Changed
 
-This makes lifecycle documentation portable across review, audit, and release contexts.
+`freeze` moved from high-level export utility to lifecycle evidence primitive. The feature now emits deterministic documentation snapshots in markdown/json/html/pdf and supports version-scoped freeze generation via `--version`.
+
+## Where It Changed
+
+- CLI entrypoints: `scripts/cli/freeze.ts`, `scripts/cli/openlag.ts`.
+- Freeze model/render pipeline: `scripts/core/freeze.ts`.
+- Export behavior contracts: `docs/contracts/export-profiles/*.yaml`.
+- Generated evidence destinations: root output files and optional audit directories.
+
+## Why It Changed
+
+Release and audit reviews required concrete lifecycle evidence without requiring branch diff inspection. Freeze outputs now serve as reproducible documentary artifacts for governance and compliance workflows.
+
+## Impact
+
+- Behavioral: freeze now exposes version-aligned lifecycle slices, not only profile-sliced exports.
+- Workflow: teams can produce release dossiers directly from root docs.
+- Determinism: same source+profile+version yields stable documentary structure.
