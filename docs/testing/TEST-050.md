@@ -1,24 +1,24 @@
 ---
-id: test-openlag-0.5.0-release-validation
+id: TEST-050
 type: TEST_CASE
 status: ready
 title: OpenLAG 0.5.0 Release Validation
-version: openlag-0.5.0
+version: VER-050
 description: "Validates the 0.5.0 lifecycle features through root generation, release checks, package dry run, and freeze outputs."
 ownership:
   owner: donartcha
   team: openlag
 relations:
   - type: TESTS
-    to: feature-freeze-export
+    to: FEAT-051
   - type: TESTS
-    to: feature-rule-contracts
+    to: FEAT-052
   - type: TESTS
-    to: feature-profile-packs
+    to: FEAT-053
   - type: TESTS
-    to: feature-starter-mode
+    to: FEAT-054
   - type: TESTS
-    to: feature-preview-workflow
+    to: FEAT-055
 ---
 
 # OpenLAG 0.5.0 Release Validation

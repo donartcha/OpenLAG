@@ -1,24 +1,24 @@
 ---
-id: openlag-cli-0.5.0-lifecycle-workflows
+id: CODE-050
 type: CODE_ENTITY
 status: ready
 title: OpenLAG 0.5.0 Lifecycle CLI Workflows
-version: openlag-0.5.0
+version: VER-050
 description: "CLI and generation workflows implementing the 0.5.0 lifecycle features."
 ownership:
   owner: donartcha
   team: openlag
 relations:
   - type: IMPLEMENTS
-    to: feature-freeze-export
+    to: FEAT-051
   - type: IMPLEMENTS
-    to: feature-rule-contracts
+    to: FEAT-052
   - type: IMPLEMENTS
-    to: feature-profile-packs
+    to: FEAT-053
   - type: IMPLEMENTS
-    to: feature-starter-mode
+    to: FEAT-054
   - type: IMPLEMENTS
-    to: feature-preview-workflow
+    to: FEAT-055
 ---
 
 # OpenLAG 0.5.0 Lifecycle CLI Workflows

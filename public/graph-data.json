@@ -1,24 +1,24 @@
 {
   "versions": [
     {
-      "id": "openlag-0.4.0",
+      "id": "VER-040",
       "name": "0.4.0",
       "timestamp": "2026-05-22",
       "parentVersion": "none"
     },
     {
-      "id": "openlag-0.5.0",
+      "id": "VER-050",
       "name": "0.5.0",
       "timestamp": "2026-05-28",
-      "parentVersion": "openlag-0.4.0"
+      "parentVersion": "VER-040"
     }
   ],
   "systemVersions": [],
   "graphs": {
-    "openlag-0.4.0": {
+    "VER-040": {
       "artifacts": [
         {
-          "id": "openlag-0.4.0",
+          "id": "VER-040",
           "type": "VERSION",
           "title": "OpenLAG 0.4.0 Release Baseline",
           "description": "Published baseline containing project-local artifact contracts, relation runtime payloads, richer lint report data, dynamic portal contract metadata, and init-all support.",
@@ -28,10 +28,10 @@
             "owner": "donartcha",
             "team": "openlag"
           },
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\openlag-0.4.0.md",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\VER-040.md",
           "markdownBody": "# OpenLAG 0.4.0 Release Baseline\n\nThis version represents the audited stable baseline before the 0.5.0 lifecycle evolution.\n\nIn this baseline, the repository-root `docs/*` dataset was the observable OpenLAG project used to generate the architecture graph and release portal evidence.",
           "raw": {
-            "id": "openlag-0.4.0",
+            "id": "VER-040",
             "type": "VERSION",
             "status": "closed",
             "title": "OpenLAG 0.4.0 Release Baseline",
@@ -47,7 +47,7 @@
           }
         },
         {
-          "id": "openlag-0.5.0",
+          "id": "VER-050",
           "type": "VERSION",
           "title": "OpenLAG 0.5.0 Lifecycle Evolution",
           "description": "Contract-driven lifecycle evolution adding starter onboarding, freeze/export, rule contracts, profile packs, preview workflow, and self-documenting release evidence.",
@@ -57,16 +57,16 @@
             "owner": "donartcha",
             "team": "openlag"
           },
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\openlag-0.5.0.md",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\VER-050.md",
           "markdownBody": "# OpenLAG 0.5.0 Lifecycle Evolution\n\nThis version documents how OpenLAG evolves from the 0.4.0 baseline into the 0.5.0 contract-driven lifecycle model.\n\nThe root repository now acts as the primary OpenLAG project. Its lifecycle documentation is stored in `docs/*`, while `internal/dev-sandbox` remains a secondary internal dataset for compatibility checks and example validation.",
           "raw": {
-            "id": "openlag-0.5.0",
+            "id": "VER-050",
             "type": "VERSION",
             "status": "ready",
             "title": "OpenLAG 0.5.0 Lifecycle Evolution",
             "name": "0.5.0",
             "timestamp": "2026-05-28",
-            "parentVersion": "openlag-0.4.0",
+            "parentVersion": "VER-040",
             "description": "Contract-driven lifecycle evolution adding starter onboarding, freeze/export, rule contracts, profile packs, preview workflow, and self-documenting release evidence.",
             "ownership": {
               "owner": "donartcha",
@@ -75,7 +75,7 @@
             "relations": [
               {
                 "type": "REPLACES",
-                "to": "openlag-0.4.0"
+                "to": "VER-040"
               }
             ]
           }
@@ -83,23 +83,23 @@
       ],
       "relations": [
         {
-          "id": "rel-openlag-0.5.0-0",
-          "from": "openlag-0.5.0",
-          "to": "openlag-0.4.0",
+          "id": "rel-VER-050-0",
+          "from": "VER-050",
+          "to": "VER-040",
           "type": "REPLACES",
           "category": "EVOLUTIONARY",
           "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\openlag-0.5.0.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\VER-050.md"
         }
       ]
     },
-    "openlag-0.5.0": {
+    "VER-050": {
       "artifacts": [
         {
-          "id": "change-openlag-0.5.0-evolution",
+          "id": "CHG-050",
           "type": "CHANGE",
           "title": "OpenLAG 0.5.0 Contract-Driven Evolution",
-          "version": "openlag-0.5.0",
+          "version": "VER-050",
           "description": "Documents the evolution from OpenLAG 0.4.0 to 0.5.0 using OpenLAG artifacts and release evidence.",
           "status": "ready",
           "layer": "IMPLEMENTATION",
@@ -107,17 +107,17 @@
             "owner": "donartcha",
             "team": "openlag"
           },
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\change-openlag-0.5.0-evolution.md",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md",
           "markdownBody": "# OpenLAG 0.5.0 Contract-Driven Evolution\n\nThis change captures the architectural and documentary evolution between the 0.4.0 release baseline and the 0.5.0 release line.\n\nThe change reclassifies the repository root as the real self-documenting OpenLAG project and moves the previous example dataset boundary to `internal/dev-sandbox`.",
           "raw": {
-            "id": "change-openlag-0.5.0-evolution",
+            "id": "CHG-050",
             "type": "CHANGE",
             "status": "ready",
             "title": "OpenLAG 0.5.0 Contract-Driven Evolution",
             "changeType": "EVOLUTION",
-            "versionFrom": "openlag-0.4.0",
-            "versionTo": "openlag-0.5.0",
-            "version": "openlag-0.5.0",
+            "versionFrom": "VER-040",
+            "versionTo": "VER-050",
+            "version": "VER-050",
             "description": "Documents the evolution from OpenLAG 0.4.0 to 0.5.0 using OpenLAG artifacts and release evidence.",
             "ownership": {
               "owner": "donartcha",
@@ -126,16 +126,16 @@
             "relations": [
               {
                 "type": "DOCUMENTS",
-                "to": "openlag-0.5.0"
+                "to": "VER-050"
               }
             ]
           }
         },
         {
-          "id": "doc-openlag-self-lifecycle",
+          "id": "DOC-050",
           "type": "DOCUMENTATION",
           "title": "OpenLAG Self Lifecycle Documentation",
-          "version": "openlag-0.5.0",
+          "version": "VER-050",
           "description": "Documents the boundary between the root self-documenting project and the internal dev sandbox.",
           "status": "ready",
           "layer": "DOCUMENTATION",
@@ -143,14 +143,14 @@
             "owner": "donartcha",
             "team": "openlag"
           },
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\doc-openlag-self-lifecycle.md",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md",
           "markdownBody": "# OpenLAG Self Lifecycle Documentation\n\nThe OpenLAG repository root is the primary OpenLAG project for lifecycle documentation.\n\nRoot-level `docs/*` captures versions, changes, features, validation evidence, and governance notes for OpenLAG itself.\n\n`internal/dev-sandbox/docs` remains an internal example and regression dataset. It can be generated and built after root validation, but it does not replace the root lifecycle graph.",
           "raw": {
-            "id": "doc-openlag-self-lifecycle",
+            "id": "DOC-050",
             "type": "DOCUMENTATION",
             "status": "ready",
             "title": "OpenLAG Self Lifecycle Documentation",
-            "version": "openlag-0.5.0",
+            "version": "VER-050",
             "description": "Documents the boundary between the root self-documenting project and the internal dev sandbox.",
             "ownership": {
               "owner": "donartcha",
@@ -159,16 +159,16 @@
             "relations": [
               {
                 "type": "DOCUMENTS",
-                "to": "openlag-0.5.0"
+                "to": "VER-050"
               }
             ]
           }
         },
         {
-          "id": "feature-freeze-export",
+          "id": "FEAT-051",
           "type": "FEATURE",
           "title": "Freeze and Export Evidence",
-          "version": "openlag-0.5.0",
+          "version": "VER-050",
           "description": "OpenLAG can freeze architecture documentation into deterministic markdown, JSON, HTML, and PDF evidence outputs.",
           "status": "ready",
           "layer": "BUSINESS",
@@ -176,14 +176,14 @@
             "owner": "donartcha",
             "team": "openlag"
           },
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\feature-freeze-export.md",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-051.md",
           "markdownBody": "# Freeze and Export Evidence\n\nOpenLAG 0.5.0 introduces release evidence generation through the `freeze` workflow and export profiles.\n\nThis makes lifecycle documentation portable across review, audit, and release contexts.",
           "raw": {
-            "id": "feature-freeze-export",
+            "id": "FEAT-051",
             "type": "FEATURE",
             "status": "ready",
             "title": "Freeze and Export Evidence",
-            "version": "openlag-0.5.0",
+            "version": "VER-050",
             "description": "OpenLAG can freeze architecture documentation into deterministic markdown, JSON, HTML, and PDF evidence outputs.",
             "ownership": {
               "owner": "donartcha",
@@ -192,82 +192,16 @@
             "relations": [
               {
                 "type": "REFINES",
-                "to": "change-openlag-0.5.0-evolution"
+                "to": "CHG-050"
               }
             ]
           }
         },
         {
-          "id": "feature-preview-workflow",
-          "type": "FEATURE",
-          "title": "Preview Workflow",
-          "version": "openlag-0.5.0",
-          "description": "OpenLAG can generate and build a static portal for inspecting architecture graph outputs.",
-          "status": "ready",
-          "layer": "BUSINESS",
-          "ownership": {
-            "owner": "donartcha",
-            "team": "openlag"
-          },
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\feature-preview-workflow.md",
-          "markdownBody": "# Preview Workflow\n\nThe preview workflow turns project documentation into graph data and a static portal.\n\nFor OpenLAG 0.5.0, the primary preview is generated from repository-root `docs/*`; sandbox previews remain secondary.",
-          "raw": {
-            "id": "feature-preview-workflow",
-            "type": "FEATURE",
-            "status": "ready",
-            "title": "Preview Workflow",
-            "version": "openlag-0.5.0",
-            "description": "OpenLAG can generate and build a static portal for inspecting architecture graph outputs.",
-            "ownership": {
-              "owner": "donartcha",
-              "team": "openlag"
-            },
-            "relations": [
-              {
-                "type": "REFINES",
-                "to": "change-openlag-0.5.0-evolution"
-              }
-            ]
-          }
-        },
-        {
-          "id": "feature-profile-packs",
-          "type": "FEATURE",
-          "title": "Profile Packs",
-          "version": "openlag-0.5.0",
-          "description": "OpenLAG 0.5.0 packages reusable architecture, governance, starter, and domain profiles.",
-          "status": "ready",
-          "layer": "BUSINESS",
-          "ownership": {
-            "owner": "donartcha",
-            "team": "openlag"
-          },
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\feature-profile-packs.md",
-          "markdownBody": "# Profile Packs\n\nProfile packs make OpenLAG usable across different documentation domains without forcing every project to hand-author the same contracts.\n\nThe root project uses the core contracts as its own lifecycle vocabulary and keeps the dev sandbox as a separate validation dataset.",
-          "raw": {
-            "id": "feature-profile-packs",
-            "type": "FEATURE",
-            "status": "ready",
-            "title": "Profile Packs",
-            "version": "openlag-0.5.0",
-            "description": "OpenLAG 0.5.0 packages reusable architecture, governance, starter, and domain profiles.",
-            "ownership": {
-              "owner": "donartcha",
-              "team": "openlag"
-            },
-            "relations": [
-              {
-                "type": "REFINES",
-                "to": "change-openlag-0.5.0-evolution"
-              }
-            ]
-          }
-        },
-        {
-          "id": "feature-rule-contracts",
+          "id": "FEAT-052",
           "type": "FEATURE",
           "title": "Rule Contracts",
-          "version": "openlag-0.5.0",
+          "version": "VER-050",
           "description": "OpenLAG supports project-local rule contracts that make governance and validation behavior explicit.",
           "status": "ready",
           "layer": "BUSINESS",
@@ -275,14 +209,14 @@
             "owner": "donartcha",
             "team": "openlag"
           },
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\feature-rule-contracts.md",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-052.md",
           "markdownBody": "# Rule Contracts\n\nRule contracts allow OpenLAG projects to define validation behavior alongside artifacts and relations.\n\nFor the self-documenting repository, rule contracts are activated under `docs/contracts/rules`.",
           "raw": {
-            "id": "feature-rule-contracts",
+            "id": "FEAT-052",
             "type": "FEATURE",
             "status": "ready",
             "title": "Rule Contracts",
-            "version": "openlag-0.5.0",
+            "version": "VER-050",
             "description": "OpenLAG supports project-local rule contracts that make governance and validation behavior explicit.",
             "ownership": {
               "owner": "donartcha",
@@ -291,16 +225,49 @@
             "relations": [
               {
                 "type": "REFINES",
-                "to": "change-openlag-0.5.0-evolution"
+                "to": "CHG-050"
               }
             ]
           }
         },
         {
-          "id": "feature-starter-mode",
+          "id": "FEAT-053",
+          "type": "FEATURE",
+          "title": "Profile Packs",
+          "version": "VER-050",
+          "description": "OpenLAG 0.5.0 packages reusable architecture, governance, starter, and domain profiles.",
+          "status": "ready",
+          "layer": "BUSINESS",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-053.md",
+          "markdownBody": "# Profile Packs\n\nProfile packs make OpenLAG usable across different documentation domains without forcing every project to hand-author the same contracts.\n\nThe root project uses the core contracts as its own lifecycle vocabulary and keeps the dev sandbox as a separate validation dataset.",
+          "raw": {
+            "id": "FEAT-053",
+            "type": "FEATURE",
+            "status": "ready",
+            "title": "Profile Packs",
+            "version": "VER-050",
+            "description": "OpenLAG 0.5.0 packages reusable architecture, governance, starter, and domain profiles.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "REFINES",
+                "to": "CHG-050"
+              }
+            ]
+          }
+        },
+        {
+          "id": "FEAT-054",
           "type": "FEATURE",
           "title": "Starter Mode",
-          "version": "openlag-0.5.0",
+          "version": "VER-050",
           "description": "OpenLAG provides starter-oriented onboarding contracts and templates for lightweight project adoption.",
           "status": "ready",
           "layer": "BUSINESS",
@@ -308,14 +275,14 @@
             "owner": "donartcha",
             "team": "openlag"
           },
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\feature-starter-mode.md",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
           "markdownBody": "# Starter Mode\n\nStarter mode lowers the cost of adopting OpenLAG by providing a compact artifact and relation vocabulary.\n\nIt complements the full core profile used by this repository for release lifecycle documentation.",
           "raw": {
-            "id": "feature-starter-mode",
+            "id": "FEAT-054",
             "type": "FEATURE",
             "status": "ready",
             "title": "Starter Mode",
-            "version": "openlag-0.5.0",
+            "version": "VER-050",
             "description": "OpenLAG provides starter-oriented onboarding contracts and templates for lightweight project adoption.",
             "ownership": {
               "owner": "donartcha",
@@ -324,16 +291,49 @@
             "relations": [
               {
                 "type": "REFINES",
-                "to": "change-openlag-0.5.0-evolution"
+                "to": "CHG-050"
               }
             ]
           }
         },
         {
-          "id": "evidence-openlag-0.5.0-release",
+          "id": "FEAT-055",
+          "type": "FEATURE",
+          "title": "Preview Workflow",
+          "version": "VER-050",
+          "description": "OpenLAG can generate and build a static portal for inspecting architecture graph outputs.",
+          "status": "ready",
+          "layer": "BUSINESS",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-055.md",
+          "markdownBody": "# Preview Workflow\n\nThe preview workflow turns project documentation into graph data and a static portal.\n\nFor OpenLAG 0.5.0, the primary preview is generated from repository-root `docs/*`; sandbox previews remain secondary.",
+          "raw": {
+            "id": "FEAT-055",
+            "type": "FEATURE",
+            "status": "ready",
+            "title": "Preview Workflow",
+            "version": "VER-050",
+            "description": "OpenLAG can generate and build a static portal for inspecting architecture graph outputs.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "REFINES",
+                "to": "CHG-050"
+              }
+            ]
+          }
+        },
+        {
+          "id": "EVD-050",
           "type": "EVIDENCE",
           "title": "OpenLAG 0.5.0 Release Evidence",
-          "version": "openlag-0.5.0",
+          "version": "VER-050",
           "description": "Captures evidence that the OpenLAG repository can document its own release lifecycle as an OpenLAG project.",
           "status": "ready",
           "layer": "DOCUMENTATION",
@@ -341,14 +341,14 @@
             "owner": "donartcha",
             "team": "openlag"
           },
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\governance\\evidence-openlag-0.5.0-release.md",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\governance\\EVD-050.md",
           "markdownBody": "# OpenLAG 0.5.0 Release Evidence\n\nThis evidence records that OpenLAG 0.5.0 can describe its own lifecycle using OpenLAG artifacts in repository-root `docs/*`.\n\nThe expected evidence set includes root graph generation, release profile validation, package dry-run output, freeze exports when available, and secondary sandbox generation.",
           "raw": {
-            "id": "evidence-openlag-0.5.0-release",
+            "id": "EVD-050",
             "type": "EVIDENCE",
             "status": "ready",
             "title": "OpenLAG 0.5.0 Release Evidence",
-            "version": "openlag-0.5.0",
+            "version": "VER-050",
             "description": "Captures evidence that the OpenLAG repository can document its own release lifecycle as an OpenLAG project.",
             "ownership": {
               "owner": "donartcha",
@@ -357,16 +357,16 @@
             "relations": [
               {
                 "type": "VALIDATES",
-                "to": "openlag-0.5.0"
+                "to": "VER-050"
               }
             ]
           }
         },
         {
-          "id": "openlag-cli-0.5.0-lifecycle-workflows",
+          "id": "CODE-050",
           "type": "CODE_ENTITY",
           "title": "OpenLAG 0.5.0 Lifecycle CLI Workflows",
-          "version": "openlag-0.5.0",
+          "version": "VER-050",
           "description": "CLI and generation workflows implementing the 0.5.0 lifecycle features.",
           "status": "ready",
           "layer": "IMPLEMENTATION",
@@ -374,14 +374,14 @@
             "owner": "donartcha",
             "team": "openlag"
           },
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\openlag-cli-0.5.0-lifecycle-workflows.md",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md",
           "markdownBody": "# OpenLAG 0.5.0 Lifecycle CLI Workflows\n\nThis implementation artifact represents the CLI, contract generation, portal generation, profile loading, and freeze/export workflows that deliver the 0.5.0 lifecycle model.\n\nThe concrete implementation spans `scripts/cli`, `scripts/core`, `profiles`, `src/core/generated`, and the generated runtime payloads under `public`.",
           "raw": {
-            "id": "openlag-cli-0.5.0-lifecycle-workflows",
+            "id": "CODE-050",
             "type": "CODE_ENTITY",
             "status": "ready",
             "title": "OpenLAG 0.5.0 Lifecycle CLI Workflows",
-            "version": "openlag-0.5.0",
+            "version": "VER-050",
             "description": "CLI and generation workflows implementing the 0.5.0 lifecycle features.",
             "ownership": {
               "owner": "donartcha",
@@ -390,32 +390,32 @@
             "relations": [
               {
                 "type": "IMPLEMENTS",
-                "to": "feature-freeze-export"
+                "to": "FEAT-051"
               },
               {
                 "type": "IMPLEMENTS",
-                "to": "feature-rule-contracts"
+                "to": "FEAT-052"
               },
               {
                 "type": "IMPLEMENTS",
-                "to": "feature-profile-packs"
+                "to": "FEAT-053"
               },
               {
                 "type": "IMPLEMENTS",
-                "to": "feature-starter-mode"
+                "to": "FEAT-054"
               },
               {
                 "type": "IMPLEMENTS",
-                "to": "feature-preview-workflow"
+                "to": "FEAT-055"
               }
             ]
           }
         },
         {
-          "id": "test-openlag-0.5.0-release-validation",
+          "id": "TEST-050",
           "type": "TEST_CASE",
           "title": "OpenLAG 0.5.0 Release Validation",
-          "version": "openlag-0.5.0",
+          "version": "VER-050",
           "description": "Validates the 0.5.0 lifecycle features through root generation, release checks, package dry run, and freeze outputs.",
           "status": "ready",
           "layer": "IMPLEMENTATION",
@@ -423,14 +423,14 @@
             "owner": "donartcha",
             "team": "openlag"
           },
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\test-openlag-0.5.0-release-validation.md",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md",
           "markdownBody": "# OpenLAG 0.5.0 Release Validation\n\nThis test case covers the final validation path for OpenLAG 0.5.0:\n\n- `npm.cmd run check`\n- `node --import tsx scripts/cli/openlag.ts check --profile develop`\n- `node --import tsx scripts/cli/openlag.ts check --profile release --strict`\n- `node bin/openlag.js --version`\n- `npm.cmd pack --dry-run`\n- root-level generate, build, and freeze evidence",
           "raw": {
-            "id": "test-openlag-0.5.0-release-validation",
+            "id": "TEST-050",
             "type": "TEST_CASE",
             "status": "ready",
             "title": "OpenLAG 0.5.0 Release Validation",
-            "version": "openlag-0.5.0",
+            "version": "VER-050",
             "description": "Validates the 0.5.0 lifecycle features through root generation, release checks, package dry run, and freeze outputs.",
             "ownership": {
               "owner": "donartcha",
@@ -439,29 +439,29 @@
             "relations": [
               {
                 "type": "TESTS",
-                "to": "feature-freeze-export"
+                "to": "FEAT-051"
               },
               {
                 "type": "TESTS",
-                "to": "feature-rule-contracts"
+                "to": "FEAT-052"
               },
               {
                 "type": "TESTS",
-                "to": "feature-profile-packs"
+                "to": "FEAT-053"
               },
               {
                 "type": "TESTS",
-                "to": "feature-starter-mode"
+                "to": "FEAT-054"
               },
               {
                 "type": "TESTS",
-                "to": "feature-preview-workflow"
+                "to": "FEAT-055"
               }
             ]
           }
         },
         {
-          "id": "openlag-0.4.0",
+          "id": "VER-040",
           "type": "VERSION",
           "title": "OpenLAG 0.4.0 Release Baseline",
           "description": "Published baseline containing project-local artifact contracts, relation runtime payloads, richer lint report data, dynamic portal contract metadata, and init-all support.",
@@ -471,10 +471,10 @@
             "owner": "donartcha",
             "team": "openlag"
           },
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\openlag-0.4.0.md",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\VER-040.md",
           "markdownBody": "# OpenLAG 0.4.0 Release Baseline\n\nThis version represents the audited stable baseline before the 0.5.0 lifecycle evolution.\n\nIn this baseline, the repository-root `docs/*` dataset was the observable OpenLAG project used to generate the architecture graph and release portal evidence.",
           "raw": {
-            "id": "openlag-0.4.0",
+            "id": "VER-040",
             "type": "VERSION",
             "status": "closed",
             "title": "OpenLAG 0.4.0 Release Baseline",
@@ -490,7 +490,7 @@
           }
         },
         {
-          "id": "openlag-0.5.0",
+          "id": "VER-050",
           "type": "VERSION",
           "title": "OpenLAG 0.5.0 Lifecycle Evolution",
           "description": "Contract-driven lifecycle evolution adding starter onboarding, freeze/export, rule contracts, profile packs, preview workflow, and self-documenting release evidence.",
@@ -500,16 +500,16 @@
             "owner": "donartcha",
             "team": "openlag"
           },
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\openlag-0.5.0.md",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\VER-050.md",
           "markdownBody": "# OpenLAG 0.5.0 Lifecycle Evolution\n\nThis version documents how OpenLAG evolves from the 0.4.0 baseline into the 0.5.0 contract-driven lifecycle model.\n\nThe root repository now acts as the primary OpenLAG project. Its lifecycle documentation is stored in `docs/*`, while `internal/dev-sandbox` remains a secondary internal dataset for compatibility checks and example validation.",
           "raw": {
-            "id": "openlag-0.5.0",
+            "id": "VER-050",
             "type": "VERSION",
             "status": "ready",
             "title": "OpenLAG 0.5.0 Lifecycle Evolution",
             "name": "0.5.0",
             "timestamp": "2026-05-28",
-            "parentVersion": "openlag-0.4.0",
+            "parentVersion": "VER-040",
             "description": "Contract-driven lifecycle evolution adding starter onboarding, freeze/export, rule contracts, profile packs, preview workflow, and self-documenting release evidence.",
             "ownership": {
               "owner": "donartcha",
@@ -518,7 +518,7 @@
             "relations": [
               {
                 "type": "REPLACES",
-                "to": "openlag-0.4.0"
+                "to": "VER-040"
               }
             ]
           }
@@ -526,188 +526,188 @@
       ],
       "relations": [
         {
-          "id": "rel-change-openlag-0.5.0-evolution-0",
-          "from": "change-openlag-0.5.0-evolution",
-          "to": "openlag-0.5.0",
+          "id": "rel-CHG-050-0",
+          "from": "CHG-050",
+          "to": "VER-050",
           "type": "DOCUMENTS",
           "category": "SEMANTIC",
           "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\change-openlag-0.5.0-evolution.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
         },
         {
-          "id": "rel-doc-openlag-self-lifecycle-0",
-          "from": "doc-openlag-self-lifecycle",
-          "to": "openlag-0.5.0",
+          "id": "rel-DOC-050-0",
+          "from": "DOC-050",
+          "to": "VER-050",
           "type": "DOCUMENTS",
           "category": "SEMANTIC",
           "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\doc-openlag-self-lifecycle.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
         },
         {
-          "id": "rel-feature-freeze-export-0",
-          "from": "feature-freeze-export",
-          "to": "change-openlag-0.5.0-evolution",
+          "id": "rel-FEAT-051-0",
+          "from": "FEAT-051",
+          "to": "CHG-050",
           "type": "REFINES",
           "category": "TRACEABILITY",
           "strength": "MEDIUM",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\feature-freeze-export.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-051.md"
         },
         {
-          "id": "rel-feature-preview-workflow-0",
-          "from": "feature-preview-workflow",
-          "to": "change-openlag-0.5.0-evolution",
+          "id": "rel-FEAT-052-0",
+          "from": "FEAT-052",
+          "to": "CHG-050",
           "type": "REFINES",
           "category": "TRACEABILITY",
           "strength": "MEDIUM",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\feature-preview-workflow.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-052.md"
         },
         {
-          "id": "rel-feature-profile-packs-0",
-          "from": "feature-profile-packs",
-          "to": "change-openlag-0.5.0-evolution",
+          "id": "rel-FEAT-053-0",
+          "from": "FEAT-053",
+          "to": "CHG-050",
           "type": "REFINES",
           "category": "TRACEABILITY",
           "strength": "MEDIUM",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\feature-profile-packs.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-053.md"
         },
         {
-          "id": "rel-feature-rule-contracts-0",
-          "from": "feature-rule-contracts",
-          "to": "change-openlag-0.5.0-evolution",
+          "id": "rel-FEAT-054-0",
+          "from": "FEAT-054",
+          "to": "CHG-050",
           "type": "REFINES",
           "category": "TRACEABILITY",
           "strength": "MEDIUM",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\feature-rule-contracts.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md"
         },
         {
-          "id": "rel-feature-starter-mode-0",
-          "from": "feature-starter-mode",
-          "to": "change-openlag-0.5.0-evolution",
+          "id": "rel-FEAT-055-0",
+          "from": "FEAT-055",
+          "to": "CHG-050",
           "type": "REFINES",
           "category": "TRACEABILITY",
           "strength": "MEDIUM",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\feature-starter-mode.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-055.md"
         },
         {
-          "id": "rel-evidence-openlag-0.5.0-release-0",
-          "from": "evidence-openlag-0.5.0-release",
-          "to": "openlag-0.5.0",
+          "id": "rel-EVD-050-0",
+          "from": "EVD-050",
+          "to": "VER-050",
           "type": "VALIDATES",
           "category": "TRACEABILITY",
           "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\governance\\evidence-openlag-0.5.0-release.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\governance\\EVD-050.md"
         },
         {
-          "id": "rel-openlag-cli-0.5.0-lifecycle-workflows-0",
-          "from": "openlag-cli-0.5.0-lifecycle-workflows",
-          "to": "feature-freeze-export",
+          "id": "rel-CODE-050-0",
+          "from": "CODE-050",
+          "to": "FEAT-051",
           "type": "IMPLEMENTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\openlag-cli-0.5.0-lifecycle-workflows.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
         },
         {
-          "id": "rel-openlag-cli-0.5.0-lifecycle-workflows-1",
-          "from": "openlag-cli-0.5.0-lifecycle-workflows",
-          "to": "feature-rule-contracts",
+          "id": "rel-CODE-050-1",
+          "from": "CODE-050",
+          "to": "FEAT-052",
           "type": "IMPLEMENTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\openlag-cli-0.5.0-lifecycle-workflows.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
         },
         {
-          "id": "rel-openlag-cli-0.5.0-lifecycle-workflows-2",
-          "from": "openlag-cli-0.5.0-lifecycle-workflows",
-          "to": "feature-profile-packs",
+          "id": "rel-CODE-050-2",
+          "from": "CODE-050",
+          "to": "FEAT-053",
           "type": "IMPLEMENTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\openlag-cli-0.5.0-lifecycle-workflows.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
         },
         {
-          "id": "rel-openlag-cli-0.5.0-lifecycle-workflows-3",
-          "from": "openlag-cli-0.5.0-lifecycle-workflows",
-          "to": "feature-starter-mode",
+          "id": "rel-CODE-050-3",
+          "from": "CODE-050",
+          "to": "FEAT-054",
           "type": "IMPLEMENTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\openlag-cli-0.5.0-lifecycle-workflows.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
         },
         {
-          "id": "rel-openlag-cli-0.5.0-lifecycle-workflows-4",
-          "from": "openlag-cli-0.5.0-lifecycle-workflows",
-          "to": "feature-preview-workflow",
+          "id": "rel-CODE-050-4",
+          "from": "CODE-050",
+          "to": "FEAT-055",
           "type": "IMPLEMENTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\openlag-cli-0.5.0-lifecycle-workflows.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
         },
         {
-          "id": "rel-test-openlag-0.5.0-release-validation-0",
-          "from": "test-openlag-0.5.0-release-validation",
-          "to": "feature-freeze-export",
+          "id": "rel-TEST-050-0",
+          "from": "TEST-050",
+          "to": "FEAT-051",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\test-openlag-0.5.0-release-validation.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
         },
         {
-          "id": "rel-test-openlag-0.5.0-release-validation-1",
-          "from": "test-openlag-0.5.0-release-validation",
-          "to": "feature-rule-contracts",
+          "id": "rel-TEST-050-1",
+          "from": "TEST-050",
+          "to": "FEAT-052",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\test-openlag-0.5.0-release-validation.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
         },
         {
-          "id": "rel-test-openlag-0.5.0-release-validation-2",
-          "from": "test-openlag-0.5.0-release-validation",
-          "to": "feature-profile-packs",
+          "id": "rel-TEST-050-2",
+          "from": "TEST-050",
+          "to": "FEAT-053",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\test-openlag-0.5.0-release-validation.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
         },
         {
-          "id": "rel-test-openlag-0.5.0-release-validation-3",
-          "from": "test-openlag-0.5.0-release-validation",
-          "to": "feature-starter-mode",
+          "id": "rel-TEST-050-3",
+          "from": "TEST-050",
+          "to": "FEAT-054",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\test-openlag-0.5.0-release-validation.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
         },
         {
-          "id": "rel-test-openlag-0.5.0-release-validation-4",
-          "from": "test-openlag-0.5.0-release-validation",
-          "to": "feature-preview-workflow",
+          "id": "rel-TEST-050-4",
+          "from": "TEST-050",
+          "to": "FEAT-055",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\test-openlag-0.5.0-release-validation.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
         },
         {
-          "id": "rel-openlag-0.5.0-0",
-          "from": "openlag-0.5.0",
-          "to": "openlag-0.4.0",
+          "id": "rel-VER-050-0",
+          "from": "VER-050",
+          "to": "VER-040",
           "type": "REPLACES",
           "category": "EVOLUTIONARY",
           "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\openlag-0.5.0.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\versions\\VER-050.md"
         }
       ]
     }
   },
   "changes": [
     {
-      "id": "change-openlag-0.5.0-evolution",
+      "id": "CHG-050",
       "type": "EVOLUTION",
       "title": "OpenLAG 0.5.0 Contract-Driven Evolution",
       "description": "Documents the evolution from OpenLAG 0.4.0 to 0.5.0 using OpenLAG artifacts and release evidence.",
       "affects": [],
-      "versionFrom": "openlag-0.4.0",
-      "versionTo": "openlag-0.5.0"
+      "versionFrom": "VER-040",
+      "versionTo": "VER-050"
     }
   ],
   "lintReports": {

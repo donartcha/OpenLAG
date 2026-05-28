@@ -1,16 +1,16 @@
 ---
-id: feature-starter-mode
+id: FEAT-054
 type: FEATURE
 status: ready
 title: Starter Mode
-version: openlag-0.5.0
+version: VER-050
 description: "OpenLAG provides starter-oriented onboarding contracts and templates for lightweight project adoption."
 ownership:
   owner: donartcha
   team: openlag
 relations:
   - type: REFINES
-    to: change-openlag-0.5.0-evolution
+    to: CHG-050
 ---
 
 # Starter Mode

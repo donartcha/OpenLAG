@@ -1,16 +1,16 @@
 ---
-id: feature-profile-packs
+id: FEAT-053
 type: FEATURE
 status: ready
 title: Profile Packs
-version: openlag-0.5.0
+version: VER-050
 description: "OpenLAG 0.5.0 packages reusable architecture, governance, starter, and domain profiles."
 ownership:
   owner: donartcha
   team: openlag
 relations:
   - type: REFINES
-    to: change-openlag-0.5.0-evolution
+    to: CHG-050
 ---
 
 # Profile Packs

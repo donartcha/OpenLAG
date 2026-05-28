@@ -1,16 +1,16 @@
 ---
-id: feature-rule-contracts
+id: FEAT-052
 type: FEATURE
 status: ready
 title: Rule Contracts
-version: openlag-0.5.0
+version: VER-050
 description: "OpenLAG supports project-local rule contracts that make governance and validation behavior explicit."
 ownership:
   owner: donartcha
   team: openlag
 relations:
   - type: REFINES
-    to: change-openlag-0.5.0-evolution
+    to: CHG-050
 ---
 
 # Rule Contracts
