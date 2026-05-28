@@ -5,6 +5,7 @@ All notable changes to OpenLAG are documented in this file.
 ## 0.5.0 - 2026-05-28 (stabilization updates)
 
 ### Added
+- Added `openlag freeze --version <versionId>` to generate deterministic documentation freezes scoped to a specific `VERSION` snapshot while preserving export-profile sections, relation filters, and output formats.
 - Added local preview and static serving guidance to official documentation (`README.md`, `CONTRIBUTING.md`, `DOCUMENTACION_OPENLAG.md`) covering:
   - static serving of an existing `dist/` output,
   - the recommended regenerate + build + preview workflow for active development.

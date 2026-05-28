@@ -826,6 +826,7 @@ The implemented output formats are `markdown`, `json`, `html`, and `pdf`:
 
 ```bash
 openlag freeze --profile architecture --format markdown
+openlag freeze --profile architecture --version VER-050
 openlag freeze --profile architecture --format json
 openlag freeze --profile architecture --format html
 openlag freeze --profile architecture --format pdf
@@ -833,6 +834,8 @@ openlag freeze --profile architecture --output exports/architecture
 openlag freeze --profile architecture --format html --template audit-dossier
 openlag freeze --profile architecture --dry-run
 ```
+
+By default, `freeze` applies only the selected export profile. When `--version <versionId>` is provided, the frozen model is limited to artifacts whose frontmatter `version` matches that `VERSION`, artifacts inherited from ancestor versions through `parentVersion`, and `VERSION` / `SYSTEM_VERSION` context artifacts. Relations are then reduced to links where both endpoints remain in the selected version snapshot. This makes CLI freeze output align with the portal's versioned graph snapshots while preserving export-profile sectioning and rendering rules.
 
 HTML output is a standalone offline documentation page, not the React portal. Marked and Mermaid browser bundles are injected in memory into generated HTML/PDF output only; source templates must keep placeholders instead of committed vendor bundles. PDF output is generated from the frozen document model, not from portal printing. `typst` is not part of the public 0.5.0 freeze contract.
 

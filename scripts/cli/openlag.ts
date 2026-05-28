@@ -21,6 +21,11 @@ const program = new Command();
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const packageJson = JSON.parse(fs.readFileSync(path.join(packageRoot, 'package.json'), 'utf-8'));
 
+if (process.argv.length === 3 && (process.argv[2] === '--version' || process.argv[2] === '-V')) {
+  console.log(packageJson.version);
+  process.exit(0);
+}
+
 function runVitePreview() {
   const viteBin = resolveViteBin(import.meta.url);
   execFileSync(process.execPath, [viteBin, 'preview', '--outDir', path.join(process.cwd(), 'dist')], {
@@ -36,15 +41,16 @@ function runVitePreview() {
 program
   .name('openlag')
   .description('Architecture as Code traceability graph generator')
-  .version(packageJson.version)
   .addHelpText('after', `
 
 Common workflows:
+  $ openlag --version
   $ openlag init --name "My System"
   $ openlag generate
   $ openlag lint --profile develop
   $ openlag check --profile release --strict
   $ openlag freeze --profile architecture --format html
+  $ openlag freeze --profile architecture --version VER-050
 `);
 
 program

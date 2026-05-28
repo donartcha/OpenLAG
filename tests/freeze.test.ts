@@ -61,6 +61,14 @@ function createFixture() {
     '',
   ].join('\n'));
 
+  writeFile(path.join(projectRoot, 'docs', 'contracts', 'artifacts', 'VERSION.yaml'), [
+    'type: VERSION',
+    'layer: DOCUMENTATION',
+    'description: Version artifact.',
+    'requiredFields: [id, type, title, name, timestamp, parentVersion]',
+    '',
+  ].join('\n'));
+
   writeFile(path.join(projectRoot, 'docs', 'contracts', 'artifacts', 'REQUIREMENT.yaml'), [
     'type: REQUIREMENT',
     'layer: BUSINESS',
@@ -154,6 +162,18 @@ function createFixture() {
     '',
   ].join('\n'));
 
+  writeFile(path.join(projectRoot, 'docs', 'requirements', 'req-b.md'), [
+    '---',
+    'id: req-b',
+    'type: REQUIREMENT',
+    'title: Beta Requirement',
+    'description: Beta must stay out of v-1 freezes.',
+    'version: v-2',
+    'status: ready',
+    '---',
+    '',
+  ].join('\n'));
+
   writeFile(path.join(projectRoot, 'docs', 'architecture', 'cmp-a.md'), [
     '---',
     'id: cmp-a',
@@ -192,6 +212,30 @@ function createFixture() {
     'description: Project summary.',
     'version: v-1',
     'status: ready',
+    '---',
+    '',
+  ].join('\n'));
+
+  writeFile(path.join(projectRoot, 'docs', 'versions', 'v-1.md'), [
+    '---',
+    'id: v-1',
+    'type: VERSION',
+    'title: Version 1',
+    'name: "1"',
+    'timestamp: "2026-05-01"',
+    'parentVersion: none',
+    '---',
+    '',
+  ].join('\n'));
+
+  writeFile(path.join(projectRoot, 'docs', 'versions', 'v-2.md'), [
+    '---',
+    'id: v-2',
+    'type: VERSION',
+    'title: Version 2',
+    'name: "2"',
+    'timestamp: "2026-05-02"',
+    'parentVersion: v-1',
     '---',
     '',
   ].join('\n'));
@@ -257,6 +301,37 @@ test('writes freeze to the explicit output directory when provided', () => {
     path.join(projectRoot, 'exports', 'openlag-architecture-technical-manual.html')
   );
   assert.strictEqual(fs.existsSync(result.outputFile), true);
+});
+
+test('filters freeze output to a selected version snapshot', () => {
+  const projectRoot = createFixture();
+  const result = createDocumentationFreeze({
+    projectRoot,
+    profile: 'architecture',
+    version: 'v-1',
+    dryRun: true,
+  });
+
+  const artifactIds = result.document.sections.flatMap((section) => section.artifacts.map((artifact) => artifact.id));
+
+  assert.equal(result.document.version, 'v-1');
+  assert.match(result.markdown, /version: v-1/);
+  assert.ok(artifactIds.includes('project-a'));
+  assert.ok(artifactIds.includes('req-a'));
+  assert.ok(artifactIds.includes('cmp-a'));
+  assert.ok(!artifactIds.includes('req-b'));
+  assert.equal(result.relationCount, 1);
+  assert.match(result.markdown, /Alpha Requirement/);
+  assert.doesNotMatch(result.markdown, /Beta Requirement/);
+});
+
+test('fails clearly when filtering freeze output to an unknown version', () => {
+  const projectRoot = createFixture();
+
+  assert.throws(
+    () => createDocumentationFreeze({ projectRoot, profile: 'architecture', version: 'missing-version', dryRun: true }),
+    /Version not found for freeze: missing-version/
+  );
 });
 
 test('renders json, html, and pdf from the same frozen document model', () => {

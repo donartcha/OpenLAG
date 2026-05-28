@@ -340,6 +340,7 @@ openlag check --profile release --strict
 openlag impact --artifact req-registration
 openlag impact --from main --to HEAD --json
 openlag freeze --profile architecture --format markdown
+openlag freeze --profile architecture --version VER-050 --format markdown
 openlag freeze --profile architecture --format json
 openlag freeze --profile architecture --format html
 openlag freeze --profile architecture --format pdf
@@ -391,6 +392,14 @@ El perfil por defecto esta en `docs/contracts/export-profiles/architecture.yaml`
 Los formatos oficiales son `markdown`, `json`, `html` y `pdf`. Markdown y JSON exponen el modelo congelado; HTML genera una pagina documental standalone y offline; PDF parte del mismo modelo congelado y no de imprimir el portal React.
 
 Los perfiles de exportacion seleccionan tipos de artefacto, relaciones, secciones, ordenacion, textos documentales, branding, footer y flags de renderizado. Las plantillas controlan solo la presentacion. Las plantillas incluidas son `freeze-template`, `technical-manual`, `executive-brief`, `audit-dossier` y `knowledge-map`; `--template` puede usar uno de esos ids o una ruta HTML.
+
+Por defecto, `freeze` filtra por el perfil de exportacion, no por la version visible del portal. Para generar una congelacion documental de una version concreta se usa `--version <versionId>`:
+
+```bash
+openlag freeze --profile architecture --version VER-050 --format markdown
+```
+
+Con `--version`, OpenLAG conserva los artefactos cuyo frontmatter `version` coincide con esa `VERSION`, los heredados desde versiones padre por `parentVersion`, y el contexto `VERSION` / `SYSTEM_VERSION`. Despues reduce las relaciones a las que siguen teniendo ambos extremos dentro del snapshot seleccionado.
 
 Durante la exportacion HTML/PDF, OpenLAG inyecta Marked y Mermaid en memoria en los archivos generados. Las plantillas fuente deben conservar placeholders y no deben incluir bundles vendor comprometidos.
 

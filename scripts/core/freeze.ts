@@ -117,6 +117,7 @@ export interface FrozenDocument {
   };
   generatedAt: string;
   formatVersion: 'openlag.freeze.v1';
+  version?: string;
   summary: {
     artifactCount: number;
     relationCount: number;
@@ -131,6 +132,7 @@ export interface FreezeOptions {
   format?: string;
   template?: string;
   output?: string;
+  version?: string;
   dryRun?: boolean;
   generatedAt?: string;
 }
@@ -377,6 +379,47 @@ function sortRelations(relations: ParsedRelation[]): ParsedRelation[] {
   return [...relations].sort((a, b) => relationSortKey(a).localeCompare(relationSortKey(b)));
 }
 
+function isDescendantVersion(currentVersionId: string, artifactVersionId: string, versions: { id: string; parentVersion?: string | null }[]): boolean {
+  let current = versions.find((version) => version.id === currentVersionId);
+  let depth = 0;
+
+  while (current && current.parentVersion && current.parentVersion !== 'none') {
+    depth += 1;
+    if (depth > 50) return false;
+    if (current.parentVersion === artifactVersionId) return true;
+    current = versions.find((version) => version.id === current!.parentVersion);
+  }
+
+  return false;
+}
+
+function artifactVersion(artifact: ParsedArtifact): string {
+  return String((artifact as any).version || artifact.raw?.version || '');
+}
+
+function filterArtifactsByVersion(
+  artifacts: ParsedArtifact[],
+  relations: ParsedRelation[],
+  versions: { id: string; parentVersion?: string | null }[],
+  versionId?: string
+): { artifacts: ParsedArtifact[]; relations: ParsedRelation[] } {
+  if (!versionId) return { artifacts, relations };
+
+  if (versions.length > 0 && !versions.some((version) => version.id === versionId)) {
+    throw new Error(`Version not found for freeze: ${versionId}`);
+  }
+
+  const selectedArtifacts = artifacts.filter((artifact) => {
+    if (artifact.type === 'VERSION' || artifact.type === 'SYSTEM_VERSION') return true;
+    const version = artifactVersion(artifact);
+    return version === versionId || Boolean(version && isDescendantVersion(versionId, version, versions));
+  });
+  const selectedIds = new Set(selectedArtifacts.map((artifact) => artifact.id));
+  const selectedRelations = relations.filter((relation) => selectedIds.has(relation.from) && selectedIds.has(relation.to));
+
+  return { artifacts: selectedArtifacts, relations: selectedRelations };
+}
+
 function selectArtifacts(profile: ExportProfile, artifacts: ParsedArtifact[]): ParsedArtifact[] {
   const included = new Set(profile.includeArtifactTypes || []);
   const excluded = new Set(profile.excludeArtifactTypes || []);
@@ -436,7 +479,8 @@ export function createFrozenDocument(
   profile: ExportProfile,
   artifacts: ParsedArtifact[],
   relations: ParsedRelation[],
-  generatedAt = new Date().toISOString()
+  generatedAt = new Date().toISOString(),
+  version?: string
 ): FrozenDocument {
   const selectedArtifacts = sortArtifacts(profile, selectArtifacts(profile, artifacts));
   const selectedRelations = sortRelations(selectRelations(profile, relations, selectedArtifacts));
@@ -477,6 +521,7 @@ export function createFrozenDocument(
     },
     generatedAt,
     formatVersion: 'openlag.freeze.v1',
+    version,
     summary: {
       artifactCount: includedArtifactCount,
       relationCount: selectedRelations.length,
@@ -512,6 +557,7 @@ export function renderMarkdownFreeze(document: FrozenDocument): string {
     `id: ${document.id}`,
     'type: DOCUMENTATION_FREEZE',
     `profile: ${document.profile.id}`,
+    ...(document.version ? [`version: ${document.version}`] : []),
     'format: markdown',
     'status: GENERATED',
     '---',
@@ -1275,7 +1321,8 @@ export function createDocumentationFreeze(options: FreezeOptions): FreezeResult 
   loadRelationContracts(path.join(docsDir, 'contracts', 'relations'));
 
   const parsed = parseOpenLagDocs(docsDir);
-  const document = createFrozenDocument(profile, parsed.artifacts, parsed.relations, options.generatedAt);
+  const versionedData = filterArtifactsByVersion(parsed.artifacts, parsed.relations, parsed.versions, options.version);
+  const document = createFrozenDocument(profile, versionedData.artifacts, versionedData.relations, options.generatedAt, options.version);
   const content = renderFreeze(document, format, projectRoot);
   const markdown = renderMarkdownFreeze(document);
   const outputFile = resolveOutputFile(projectRoot, profile, format, options.output);
