@@ -15,6 +15,8 @@ relations:
     to: FEAT-055
   - type: DEPENDS_ON
     to: CODE-052
+  - type: IMPLEMENTS
+    to: REQ-053
 ---
 
 # Graph And Contract Payload Generation

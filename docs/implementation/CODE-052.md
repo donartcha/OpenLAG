@@ -13,6 +13,8 @@ relations:
     to: FEAT-053
   - type: DEPENDS_ON
     to: CODE-053
+  - type: IMPLEMENTS
+    to: REQ-052
 ---
 
 # Parser And Contract Normalization Pipeline

@@ -17,6 +17,8 @@ relations:
     to: CODE-053
   - type: DEPENDS_ON
     to: CODE-054
+  - type: IMPLEMENTS
+    to: REQ-050
 ---
 
 # CLI Lifecycle Orchestration Layer

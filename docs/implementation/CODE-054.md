@@ -15,6 +15,8 @@ relations:
     to: CODE-052
   - type: DEPENDS_ON
     to: CODE-053
+  - type: IMPLEMENTS
+    to: REQ-051
 ---
 
 # Freeze Model And Export Runtime

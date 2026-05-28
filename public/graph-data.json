@@ -131,7 +131,11 @@
               },
               {
                 "type": "IMPACTS",
-                "to": "CODE-050"
+                "to": "CMP-050"
+              },
+              {
+                "type": "JUSTIFIES",
+                "to": "REQ-050"
               }
             ]
           }
@@ -169,6 +173,10 @@
               {
                 "type": "JUSTIFIES",
                 "to": "CODE-054"
+              },
+              {
+                "type": "JUSTIFIES",
+                "to": "REQ-051"
               }
             ]
           }
@@ -186,7 +194,7 @@
             "team": "openlag"
           },
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\architecture\\DSG-050.md",
-          "markdownBody": "# Contract-Driven Lifecycle Graph Design\n\nThis design captures the 0.5.0 graph architecture: source artifacts under `docs/**` and contracts under `docs/contracts/**` are parsed, validated, and compiled into runtime payloads (`public/*.json`) and freeze outputs.\n\nIt exists because 0.4.0 behavior was correct but under-explained. 0.5.0 formalizes the transformation path so deterministic behavior and lifecycle traceability are explicit.\n\nThe impact is direct on generation and validation flows: lifecycle narratives, relations, and governance policies become executable graph inputs instead of passive documentation.",
+          "markdownBody": "# Contract-Driven Lifecycle Graph Design\n\nThis design captures the 0.5.0 graph architecture: source artifacts under `docs/**` and contracts under `docs/contracts/**` are parsed, validated, and compiled into runtime payloads (`public/*.json`) and freeze outputs.\n\nIt exists because 0.4.0 behavior was correct but under-explained. 0.5.0 formalizes the transformation path so deterministic behavior and lifecycle traceability are explicit.\n\nThe impact is direct on generation and validation flows: lifecycle narratives, relations, and governance policies become executable graph inputs instead of passive documentation.\n\n## Pipeline Architecture\n\n```mermaid\nflowchart TD\n    subgraph Source[\"Source Layer (Git)\"]\n        Docs[\"docs/**\\n(Markdown Artifacts)\"]\n        Contracts[\"docs/contracts/**\\n(YAML Schemas)\"]\n    end\n\n    subgraph Engine[\"OpenLAG Core\"]\n        Parser[\"Parser & Normalizer\"]\n    end\n\n    subgraph Output[\"Runtime & Evidence Layer\"]\n        Payloads[\"public/*.json\\n(Graph Payloads)\"]\n        Freeze[\"Freeze Outputs\\n(HTML/PDF/JSON)\"]\n    end\n\n    Docs --> Parser\n    Contracts --> Parser\n    Parser --> Payloads\n    Parser --> Freeze\n```",
           "raw": {
             "id": "DSG-050",
             "type": "DESIGN",
@@ -214,7 +222,7 @@
             "team": "openlag"
           },
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md",
-          "markdownBody": "# OpenLAG 0.5.0 Contract-Driven Evolution\n\n## What Changed\n\nOpenLAG 0.5.0 changes the lifecycle baseline from \"project example inside docs only\" to \"repository root as first-class OpenLAG project.\" The lifecycle graph now has explicit root artifacts for version evolution, feature deltas, implementation footprint, validation evidence, and governance checks.\n\nThe freeze/export lifecycle adds version-scoped documentary output (`freeze --version`) and keeps deterministic output contracts across markdown/json/html/pdf.\n\n## Where It Changed\n\n- Lifecycle sources under `docs/versions`, `docs/changes`, `docs/features`, `docs/implementation`, `docs/testing`, `docs/documentation`, `docs/governance`.\n- CLI and freeze orchestration under `scripts/cli` and `scripts/core/freeze.ts`.\n- Contract and profile behavior under `docs/contracts` and `profiles/core/export-profiles`.\n- Runtime graph payloads under `public/*.json` generated from root `docs/*`.\n\n## Why It Changed\n\nThe 0.4.0 baseline was valid but too implicit for release audits: understanding exact behavior required reading branch diffs and code. 0.5.0 introduces explicit lifecycle artifacts so release reviewers can trace cause/effect from requirements to implementation and verification directly in the generated documentation.\n\n## Behavioral And Workflow Impact\n\n- Generation and preview workflows now treat repository root `docs/*` as the primary lifecycle dataset.\n- `internal/dev-sandbox/*` remains secondary and is used for compatibility checks, not authoritative lifecycle reporting.\n- Freeze documentation can now align with version snapshots instead of only profile filters.\n- Release validation now ties check/profile/package/freeze outputs to explicit lifecycle artifacts.\n\n## Migration Impact From 0.4.0\n\n- Existing root `docs/*` data remains compatible, but 0.5.0 requires richer cross-artifact relations to expose traceability.\n- Teams moving from 0.4.0 should add version-linked `CHANGE`, `FEATURE`, `CODE_ENTITY`, `TEST_CASE`, `DOCUMENTATION`, and `EVIDENCE` artifacts to avoid opaque freeze reports.\n- Sandbox content is no longer a substitute for root lifecycle records.\n\n## Compatibility And Determinism\n\n0.5.0 preserves contract-driven compatibility: artifact/relation validation and profile behavior remain deterministic. Added lifecycle explicitness does not change graph semantics; it makes the same semantics inspectable without manual Git archaeology.",
+          "markdownBody": "# OpenLAG 0.5.0 Contract-Driven Evolution\n\n## What Changed\n\nOpenLAG 0.5.0 changes the lifecycle baseline from \"project example inside docs only\" to \"repository root as first-class OpenLAG project.\" The lifecycle graph now has explicit root artifacts for version evolution, feature deltas, implementation footprint, validation evidence, and governance checks.\n\nThe freeze/export lifecycle adds version-scoped documentary output (`freeze --version`) and keeps deterministic output contracts across markdown/json/html/pdf.\n\n## Where It Changed\n\n- Lifecycle sources under `docs/versions`, `docs/changes`, `docs/features`, `docs/implementation`, `docs/testing`, `docs/documentation`, `docs/governance`.\n- CLI and freeze orchestration under `scripts/cli` and `scripts/core/freeze.ts`.\n- Contract and profile behavior under `docs/contracts` and `profiles/core/export-profiles`.\n- Runtime graph payloads under `public/*.json` generated from root `docs/*`.\n\n## Why It Changed\n\nThe 0.4.0 baseline was valid but too implicit for release audits: understanding exact behavior required reading branch diffs and code. 0.5.0 introduces explicit lifecycle artifacts so release reviewers can trace cause/effect from requirements to implementation and verification directly in the generated documentation.\n\n## Behavioral And Workflow Impact\n\n- Generation and preview workflows now treat repository root `docs/*` as the primary lifecycle dataset.\n- `internal/dev-sandbox/*` remains secondary and is used for compatibility checks, not authoritative lifecycle reporting.\n- Freeze documentation can now align with version snapshots instead of only profile filters.\n- Release validation now ties check/profile/package/freeze outputs to explicit lifecycle artifacts.\n\n## Migration Impact From 0.4.0\n\n```mermaid\nstateDiagram-v2\n    VER_040: VER-040 Baseline\n    VER_040 --> VER_050: Evolution\n    note left of VER_040: Implicit Sandbox Focus\n    VER_050: VER-050 Lifecycle\n    note right of VER_050: Explicit Root Governance\n    VER_050 --> Freeze: Deterministic Export\n```\n\n- Existing root `docs/*` data remains compatible, but 0.5.0 requires richer cross-artifact relations to expose traceability.\n- Teams moving from 0.4.0 should add version-linked `CHANGE`, `FEATURE`, `CODE_ENTITY`, `TEST_CASE`, `DOCUMENTATION`, and `EVIDENCE` artifacts to avoid opaque freeze reports.\n- Sandbox content is no longer a substitute for root lifecycle records.\n\n## Compatibility And Determinism\n\n0.5.0 preserves contract-driven compatibility: artifact/relation validation and profile behavior remain deterministic. Added lifecycle explicitness does not change graph semantics; it makes the same semantics inspectable without manual Git archaeology.",
           "raw": {
             "id": "CHG-050",
             "type": "CHANGE",
@@ -236,38 +244,6 @@
               },
               {
                 "type": "DOCUMENTS",
-                "to": "CODE-050"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "TEST-050"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "DOC-050"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "FEAT-051"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "FEAT-052"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "FEAT-053"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "FEAT-054"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "FEAT-055"
-              },
-              {
-                "type": "DOCUMENTS",
                 "to": "DEC-050"
               },
               {
@@ -277,68 +253,36 @@
               {
                 "type": "DOCUMENTS",
                 "to": "DSG-050"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CODE-051"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CODE-052"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CODE-053"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CODE-054"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CODE-055"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CHK-050"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CHK-051"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CHK-052"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "RSK-050"
-              },
-              {
-                "type": "IMPACTS",
-                "to": "FEAT-051"
-              },
-              {
-                "type": "IMPACTS",
-                "to": "FEAT-052"
-              },
-              {
-                "type": "IMPACTS",
-                "to": "FEAT-053"
-              },
-              {
-                "type": "IMPACTS",
-                "to": "FEAT-054"
-              },
-              {
-                "type": "IMPACTS",
-                "to": "FEAT-055"
-              },
-              {
-                "type": "IMPACTS",
-                "to": "CODE-050"
               }
             ]
+          }
+        },
+        {
+          "id": "CMP-050",
+          "type": "COMPONENT",
+          "title": "OpenLAG 0.5.0 Lifecycle CLI Workflows",
+          "version": "VER-050",
+          "description": "CLI and generation workflows implementing the 0.5.0 lifecycle features.",
+          "status": "ready",
+          "layer": "ARCHITECTURE",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\components\\CMP-050.md",
+          "markdownBody": "# OpenLAG 0.5.0 Lifecycle CLI Workflows\n\n## Implementation Scope\n\nThis artifact captures the concrete implementation evolution from a baseline graph toolchain to a lifecycle-oriented orchestration model.\n\n## Affected Modules And Folders\n\n- CLI orchestration: `scripts/cli/openlag.ts`, `scripts/cli/generate.ts`, `scripts/cli/build.ts`, `scripts/cli/dev.ts`, `scripts/cli/lint.ts`, `scripts/cli/impact.ts`, `scripts/cli/freeze.ts`, `scripts/cli/init.ts`, `scripts/cli/authoring.ts`.\n- Core runtime engines: `scripts/core/parser/*`, `scripts/core/freeze.ts`, `scripts/core/render-pdf.ts`.\n- Contract compilation pipeline: `scripts/generate-artifacts.ts`, `scripts/generate-relations.ts`, `scripts/generate-rules.ts`.\n- Lifecycle vocabularies: `profiles/**` and root `docs/contracts/**`.\n- Portal/runtime consumption: `src/core/generated/*`, `src/core/registry/*`, `src/components/*`.\n- Runtime payload outputs: `public/*.json`.\n\n## Orchestration Boundaries\n\n```mermaid\nflowchart LR\n    CLI[CODE-051: Orchestration] --> Parser[CODE-052: Parser]\n    Parser --> Gen[CODE-053: Generator]\n    Gen --> Freeze[CODE-054: Freeze Runtime]\n    Gen --> Portal[CODE-055: Portal Runtime]\n```\n\n\n## Behavioral Evolution\n\n- Generation flow: docs/contracts are parsed and normalized into deterministic runtime payloads.\n- Validation flow: lint/check now include rule-contract-driven governance gates, not only artifact/relation presence checks.\n- Freeze/export flow: documentary exports are derived from a frozen model with profile and version scoping, and HTML/PDF rendering uses controlled runtime dependencies.\n- Profile resolution flow: init and profile packs shift contract acquisition from manual file assembly to curated profile imports.\n\n## Runtime And Boundary Model\n\n- Global CLI provides command orchestration and entrypoints.\n- Project-local runtime provides templates, docs/contracts, and dependency context required by generation and rich export modes.\n- Root repository is authoritative lifecycle boundary; `internal/dev-sandbox` is an isolated secondary dataset for compatibility validation.\n\n## Deterministic Generation And Tradeoffs\n\n- Deterministic implication: given equal source docs/contracts/profiles and runtime dependencies, graph payloads and freeze outputs are reproducible.\n- Tradeoff: storing generated evidence (`logs/**`, `public/*.json`) improves auditability and drift detection but increases repository noise and merge friction.\n- Ownership shift: lifecycle reliability becomes shared between source artifacts and regeneration discipline, not only code behavior.",
+          "raw": {
+            "id": "CMP-050",
+            "type": "COMPONENT",
+            "status": "ready",
+            "title": "OpenLAG 0.5.0 Lifecycle CLI Workflows",
+            "version": "VER-050",
+            "description": "CLI and generation workflows implementing the 0.5.0 lifecycle features.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": []
           }
         },
         {
@@ -354,7 +298,7 @@
             "team": "openlag"
           },
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md",
-          "markdownBody": "# OpenLAG Self Lifecycle Documentation\n\n## Repository Boundary Documentation\n\nThe OpenLAG repository root is the primary lifecycle boundary. Root `docs/*` is the authoritative source for version, change, feature, implementation, testing, and governance traceability.\n\n`internal/dev-sandbox/docs` is intentionally secondary. It is used for compatibility and regression checks, not as primary release lifecycle evidence.\n\n## Generated Evidence Policy\n\nThe repository intentionally versions generated evidence and runtime outputs (`logs/**`, `public/*.json`, freeze outputs captured for audits) for release reproducibility and auditability.\n\n- Why versioned: to keep immutable audit trails for baseline/evolution validations and to expose drift as explicit Git diffs.\n- Reproducibility expectation: generated outputs must be reproducible from source docs/contracts and controlled runtime conditions.\n- Drift detection: mismatch between source artifacts and regenerated outputs is treated as lifecycle signal, not incidental noise.\n\n## Tradeoff Statement\n\nVersioning generated evidence improves deterministic audits and historical traceability, but increases repository size and merge friction. OpenLAG 0.5.0 accepts this tradeoff to prioritize lifecycle reviewability and compliance evidence continuity.\n\n## Freeze Runtime Dependency Boundary\n\nFreeze CLI behavior is global-command accessible, but HTML/PDF export reliability depends on project-local runtime dependencies and template availability in the active workspace. Deterministic export requires controlled execution context, dependency integrity, and consistent profile/contract inputs.",
+          "markdownBody": "# OpenLAG Self Lifecycle Documentation\n\n## Repository Boundary Documentation\n\nThe OpenLAG repository root is the primary lifecycle boundary. Root `docs/*` is the authoritative source for version, change, feature, implementation, testing, and governance traceability.\n\n`internal/dev-sandbox/docs` is intentionally secondary. It is used for compatibility and regression checks, not as primary release lifecycle evidence.\n\n## Generated Evidence Policy\n\nThe repository intentionally versions generated evidence and runtime outputs (`logs/**`, `public/*.json`, freeze outputs captured for audits) for release reproducibility and auditability.\n\n- Why versioned: to keep immutable audit trails for baseline/evolution validations and to expose drift as explicit Git diffs.\n- Reproducibility expectation: generated outputs must be reproducible from source docs/contracts and controlled runtime conditions.\n- Drift detection: mismatch between source artifacts and regenerated outputs is treated as lifecycle signal, not incidental noise.\n\n## Tradeoff Statement\n\nVersioning generated evidence (`logs/**` and `public/*.json`) directly in Git guarantees deterministic audits and historical traceability. However, this approach causes significant repository churn, merge conflict friction, and repository bloat over time as graphs scale. \n\nOpenLAG 0.5.0 accepts this tradeoff to prioritize lifecycle reviewability and compliance evidence continuity in its early baseline. In the future, as the graph grows, this evidence model will likely need to migrate away from Git commits and shift toward CI/CD release assets (e.g., GitHub Releases, external artifact stores) to maintain long-term repository scalability.\n\n## Freeze Runtime Dependency Boundary\n\nFreeze CLI behavior is global-command accessible, but HTML/PDF export reliability depends on project-local runtime dependencies and template availability in the active workspace. Deterministic export requires controlled execution context, dependency integrity, and consistent profile/contract inputs.",
           "raw": {
             "id": "DOC-050",
             "type": "DOCUMENTATION",
@@ -370,86 +314,6 @@
               {
                 "type": "DOCUMENTS",
                 "to": "VER-050"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CHG-050"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CODE-050"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "TEST-050"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "FEAT-051"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "FEAT-052"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "FEAT-053"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "FEAT-054"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "FEAT-055"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "DEC-050"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "DEC-051"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "DSG-050"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CODE-051"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CODE-052"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CODE-053"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CODE-054"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CODE-055"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CHK-050"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CHK-051"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "CHK-052"
-              },
-              {
-                "type": "DOCUMENTS",
-                "to": "RSK-050"
               }
             ]
           }
@@ -483,6 +347,10 @@
               {
                 "type": "REFINES",
                 "to": "CHG-050"
+              },
+              {
+                "type": "REFINES",
+                "to": "REQ-051"
               }
             ]
           }
@@ -516,6 +384,10 @@
               {
                 "type": "REFINES",
                 "to": "CHG-050"
+              },
+              {
+                "type": "REFINES",
+                "to": "REQ-052"
               }
             ]
           }
@@ -549,6 +421,10 @@
               {
                 "type": "REFINES",
                 "to": "CHG-050"
+              },
+              {
+                "type": "REFINES",
+                "to": "REQ-053"
               }
             ]
           }
@@ -582,6 +458,10 @@
               {
                 "type": "REFINES",
                 "to": "CHG-050"
+              },
+              {
+                "type": "REFINES",
+                "to": "REQ-053"
               }
             ]
           }
@@ -615,6 +495,10 @@
               {
                 "type": "REFINES",
                 "to": "CHG-050"
+              },
+              {
+                "type": "REFINES",
+                "to": "REQ-050"
               }
             ]
           }
@@ -632,7 +516,7 @@
             "team": "openlag"
           },
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\governance\\EVD-050.md",
-          "markdownBody": "# OpenLAG 0.5.0 Release Evidence\n\n## Evidence Objective\n\nThis evidence proves that OpenLAG 0.5.0 lifecycle claims are executable, reproducible, and traceable from root source artifacts without relying on undocumented branch knowledge.\n\n## Evidence Set\n\n- Baseline audit evidence (`main` / 0.4.0) under `logs/0.4.0-baseline/**`.\n- Evolution validation evidence (`develop` / 0.5.0) under `logs/0.5.0-*/**`.\n- Root runtime payload evidence under `logs/0.5.0-root-project-generation/**`.\n- Freeze documentary evidence under `logs/0.5.0-self-documentation/**`.\n- Secondary sandbox compatibility evidence under `logs/0.5.0-dev-sandbox-validation/**`.\n\n## Governance Interpretation\n\n- Immutable audit intent: committed logs and generated payloads are treated as release-time evidence snapshots.\n- Regeneration rule: when source lifecycle artifacts change, evidence is expected to be regenerated so governance can detect drift.\n- Compatibility statement: evidence remains meaningful only when runtime context, contracts, and profiles remain aligned with validated branch state.",
+          "markdownBody": "# OpenLAG 0.5.0 Release Evidence\n\n## Evidence Objective\n\nThis evidence proves that OpenLAG 0.5.0 lifecycle claims are executable, reproducible, and traceable from root source artifacts without relying on undocumented branch knowledge.\n\n## Evidence Set\n\n- Baseline audit evidence (`main` / 0.4.0) under `logs/0.4.0-baseline/**`.\n- Evolution validation evidence (`develop` / 0.5.0) under `logs/0.5.0-*/**`.\n- Root runtime payload evidence under `logs/0.5.0-root-project-generation/**`.\n- Freeze documentary evidence under `logs/0.5.0-self-documentation/**`.\n- Secondary sandbox compatibility evidence under `logs/0.5.0-dev-sandbox-validation/**`.\n\n## Governance Interpretation\n\n- Immutable audit intent: committed logs and generated payloads are treated as release-time evidence snapshots.\n- Regeneration rule: when source lifecycle artifacts change, evidence is expected to be regenerated so governance can detect drift.\n- Compatibility statement: evidence remains meaningful only when runtime context, contracts, and profiles remain aligned with validated branch state.\n\n## Evidence Generation Pipeline\n\n```mermaid\nflowchart TD\n    Source[\"Source Artifacts\"] --> Validate[\"openlag check\\n(Governance & Lint)\"]\n    Validate --> Generate[\"openlag generate\\n(Graph Payloads)\"]\n    Generate --> Freeze[\"openlag freeze\\n(Self-Documentation)\"]\n    \n    Freeze --> AuditLogs[\"logs/**\\n(Audit Snapshots)\"]\n    Generate --> PublicData[\"public/*.json\\n(Runtime Evidence)\"]\n    \n    subgraph Evidence [\"Release Evidence\"]\n        AuditLogs\n        PublicData\n    end\n```",
           "raw": {
             "id": "EVD-050",
             "type": "EVIDENCE",
@@ -659,75 +543,6 @@
               },
               {
                 "type": "VALIDATES",
-                "to": "FEAT-055"
-              }
-            ]
-          }
-        },
-        {
-          "id": "CODE-050",
-          "type": "CODE_ENTITY",
-          "title": "OpenLAG 0.5.0 Lifecycle CLI Workflows",
-          "version": "VER-050",
-          "description": "CLI and generation workflows implementing the 0.5.0 lifecycle features.",
-          "status": "ready",
-          "layer": "IMPLEMENTATION",
-          "ownership": {
-            "owner": "donartcha",
-            "team": "openlag"
-          },
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md",
-          "markdownBody": "# OpenLAG 0.5.0 Lifecycle CLI Workflows\n\n## Implementation Scope\n\nThis artifact captures the concrete implementation evolution from a baseline graph toolchain to a lifecycle-oriented orchestration model.\n\n## Affected Modules And Folders\n\n- CLI orchestration: `scripts/cli/openlag.ts`, `scripts/cli/generate.ts`, `scripts/cli/build.ts`, `scripts/cli/dev.ts`, `scripts/cli/lint.ts`, `scripts/cli/impact.ts`, `scripts/cli/freeze.ts`, `scripts/cli/init.ts`, `scripts/cli/authoring.ts`.\n- Core runtime engines: `scripts/core/parser/*`, `scripts/core/freeze.ts`, `scripts/core/render-pdf.ts`.\n- Contract compilation pipeline: `scripts/generate-artifacts.ts`, `scripts/generate-relations.ts`, `scripts/generate-rules.ts`.\n- Lifecycle vocabularies: `profiles/**` and root `docs/contracts/**`.\n- Portal/runtime consumption: `src/core/generated/*`, `src/core/registry/*`, `src/components/*`.\n- Runtime payload outputs: `public/*.json`.\n\n## Behavioral Evolution\n\n- Generation flow: docs/contracts are parsed and normalized into deterministic runtime payloads.\n- Validation flow: lint/check now include rule-contract-driven governance gates, not only artifact/relation presence checks.\n- Freeze/export flow: documentary exports are derived from a frozen model with profile and version scoping, and HTML/PDF rendering uses controlled runtime dependencies.\n- Profile resolution flow: init and profile packs shift contract acquisition from manual file assembly to curated profile imports.\n\n## Runtime And Boundary Model\n\n- Global CLI provides command orchestration and entrypoints.\n- Project-local runtime provides templates, docs/contracts, and dependency context required by generation and rich export modes.\n- Root repository is authoritative lifecycle boundary; `internal/dev-sandbox` is an isolated secondary dataset for compatibility validation.\n\n## Deterministic Generation And Tradeoffs\n\n- Deterministic implication: given equal source docs/contracts/profiles and runtime dependencies, graph payloads and freeze outputs are reproducible.\n- Tradeoff: storing generated evidence (`logs/**`, `public/*.json`) improves auditability and drift detection but increases repository noise and merge friction.\n- Ownership shift: lifecycle reliability becomes shared between source artifacts and regeneration discipline, not only code behavior.",
-          "raw": {
-            "id": "CODE-050",
-            "type": "CODE_ENTITY",
-            "status": "ready",
-            "title": "OpenLAG 0.5.0 Lifecycle CLI Workflows",
-            "version": "VER-050",
-            "description": "CLI and generation workflows implementing the 0.5.0 lifecycle features.",
-            "ownership": {
-              "owner": "donartcha",
-              "team": "openlag"
-            },
-            "relations": [
-              {
-                "type": "DEPENDS_ON",
-                "to": "CODE-051"
-              },
-              {
-                "type": "DEPENDS_ON",
-                "to": "CODE-052"
-              },
-              {
-                "type": "DEPENDS_ON",
-                "to": "CODE-053"
-              },
-              {
-                "type": "DEPENDS_ON",
-                "to": "CODE-054"
-              },
-              {
-                "type": "DEPENDS_ON",
-                "to": "CODE-055"
-              },
-              {
-                "type": "IMPLEMENTS",
-                "to": "FEAT-051"
-              },
-              {
-                "type": "IMPLEMENTS",
-                "to": "FEAT-052"
-              },
-              {
-                "type": "IMPLEMENTS",
-                "to": "FEAT-053"
-              },
-              {
-                "type": "IMPLEMENTS",
-                "to": "FEAT-054"
-              },
-              {
-                "type": "IMPLEMENTS",
                 "to": "FEAT-055"
               }
             ]
@@ -774,6 +589,10 @@
               {
                 "type": "DEPENDS_ON",
                 "to": "CODE-054"
+              },
+              {
+                "type": "IMPLEMENTS",
+                "to": "REQ-050"
               }
             ]
           }
@@ -811,6 +630,10 @@
               {
                 "type": "DEPENDS_ON",
                 "to": "CODE-053"
+              },
+              {
+                "type": "IMPLEMENTS",
+                "to": "REQ-052"
               }
             ]
           }
@@ -852,6 +675,10 @@
               {
                 "type": "DEPENDS_ON",
                 "to": "CODE-052"
+              },
+              {
+                "type": "IMPLEMENTS",
+                "to": "REQ-053"
               }
             ]
           }
@@ -893,6 +720,10 @@
               {
                 "type": "DEPENDS_ON",
                 "to": "CODE-053"
+              },
+              {
+                "type": "IMPLEMENTS",
+                "to": "REQ-051"
               }
             ]
           }
@@ -930,8 +761,124 @@
               {
                 "type": "DEPENDS_ON",
                 "to": "CODE-053"
+              },
+              {
+                "type": "IMPLEMENTS",
+                "to": "REQ-050"
               }
             ]
+          }
+        },
+        {
+          "id": "REQ-050",
+          "type": "REQUIREMENT",
+          "title": "Self-Documenting Lifecycle Boundary",
+          "version": "VER-050",
+          "description": "Establish the authoritative repository root docs and contracts as the primary boundary for lifecycle compliance reporting.",
+          "status": "ready",
+          "layer": "BUSINESS",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\requirements\\REQ-050.md",
+          "markdownBody": "# Self-Documenting Lifecycle Boundary\n\n## Lifecycle / Product Need\nThe platform requires a single, unambiguous source of truth for architecture and governance metadata. By restricting the primary lifecycle boundary to the repository root (`docs/` and `docs/contracts/`), we ensure that generated audits and freeze outputs are authentic and not contaminated by secondary experimental domains (such as the dev-sandbox).\n\n## Rationale\nIn previous versions, there was ambiguity regarding which folders defined the authoritative contracts and models. Formalizing this boundary prevents configuration drift and split-authority bugs during releases.\n\n## Constrained System Behavior\nAll command entrypoints (generate, check, build, freeze) must evaluate and validate the root context as the primary scope. Experimental environments must be isolated and verified separately.\n\n## Acceptance Criteria\n- `npm.cmd run check` succeeds when root artifacts comply with root contracts.\n- Graph generation is restricted to the validated root-level documents.\n- Any unauthorized boundary violations or mismatched contexts throw execution errors.",
+          "raw": {
+            "id": "REQ-050",
+            "type": "REQUIREMENT",
+            "status": "ready",
+            "title": "Self-Documenting Lifecycle Boundary",
+            "version": "VER-050",
+            "description": "Establish the authoritative repository root docs and contracts as the primary boundary for lifecycle compliance reporting.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": []
+          }
+        },
+        {
+          "id": "REQ-051",
+          "type": "REQUIREMENT",
+          "title": "Deterministic Release Evidence",
+          "version": "VER-050",
+          "description": "Generate reproducible, version-scoped documentary evidence snapshots in multiple formats (Markdown, JSON, HTML, PDF).",
+          "status": "ready",
+          "layer": "BUSINESS",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\requirements\\REQ-051.md",
+          "markdownBody": "# Deterministic Release Evidence\n\n## Lifecycle / Product Need\nAuditors and release managers require immutable and reproducible evidence of the architecture's state at any given version tag. Documentary freeze outputs must be generated deterministically without relying on runtime-variant state or branch diff inspections.\n\n## Rationale\nAd-hoc markdown files or manual documentation checks do not provide deterministic release-grade evidence. Automating version-scoped freeze operations ensures reproducible audits.\n\n## Constrained System Behavior\nThe freeze execution pipeline must filter and scope graph elements by their target `version`. It must render output formats (Markdown, JSON, HTML, PDF) consistently under identical inputs.\n\n## Acceptance Criteria\n- Running the freeze command with identical source and version parameters yields byte-by-byte stable documentation outputs.\n- Supports the `--version` CLI flag to filter output scope.",
+          "raw": {
+            "id": "REQ-051",
+            "type": "REQUIREMENT",
+            "status": "ready",
+            "title": "Deterministic Release Evidence",
+            "version": "VER-050",
+            "description": "Generate reproducible, version-scoped documentary evidence snapshots in multiple formats (Markdown, JSON, HTML, PDF).",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": []
+          }
+        },
+        {
+          "id": "REQ-052",
+          "type": "REQUIREMENT",
+          "title": "Contract-Driven Traceability",
+          "version": "VER-050",
+          "description": "Enforce formal validation of all graph node attributes and relations against defined contract schemas.",
+          "status": "ready",
+          "layer": "BUSINESS",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\requirements\\REQ-052.md",
+          "markdownBody": "# Contract-Driven Traceability\n\n## Lifecycle / Product Need\nTo prevent graph pollution and ensure semantic integrity, all architectural nodes and their relationships must conform strictly to defined contracts. Any undeclared relation or missing mandatory property must be identified and blocked automatically.\n\n## Rationale\nA free-form documentation graph can easily become noisy or semantically weak. Schema validation ensures that the lifecycle graph remains clean, standardized, and machine-readable.\n\n## Constrained System Behavior\nThe artifact parser and relation normalizer must load contracts from `docs/contracts/` and validate all parsed entities before compiling the runtime JSON graph.\n\n## Acceptance Criteria\n- Parsing fails with descriptive errors if an artifact lacks mandatory frontmatter fields.\n- Mismatched or contract-invalid relations (e.g. source/target mismatch) block build and validation commands.",
+          "raw": {
+            "id": "REQ-052",
+            "type": "REQUIREMENT",
+            "status": "ready",
+            "title": "Contract-Driven Traceability",
+            "version": "VER-050",
+            "description": "Enforce formal validation of all graph node attributes and relations against defined contract schemas.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": []
+          }
+        },
+        {
+          "id": "REQ-053",
+          "type": "REQUIREMENT",
+          "title": "Progressive Architecture-as-Code Adoption",
+          "version": "VER-050",
+          "description": "Enable progressive adoption of Architecture-as-Code via starter modes, modular profile packs, and gradual compliance pathways.",
+          "status": "ready",
+          "layer": "BUSINESS",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\requirements\\REQ-053.md",
+          "markdownBody": "# Progressive Architecture-as-Code Adoption\n\n## Lifecycle / Product Need\nAdopting formal Architecture-as-Code controls can present a high entry barrier for early-stage or fast-moving projects. The platform must support progressive adoption, allowing teams to start with lightweight traceability and incrementally layer stronger governance rules without disrupting active development.\n\n## Rationale\nMandating full contract compliance and strict lint gates from day one blocks developer productivity. Allowing gradual promotion from starter mode to full governance profiles encourages continuous adoption.\n\n## Constrained System Behavior\nThe configuration and validation engine must support pre-packaged contract profiles (starter, core, governance) and adjust validation gates to tolerate incomplete metadata profiles during local development phases.\n\n## Acceptance Criteria\n- Teams can initialize the workspace in `starter` mode with a reduced set of required artifact types and relationships.\n- Support modular profile packs to bootstrap standard domain vocabularies quickly.\n- Provide clear upgrade pathways to promote the workspace from starter to strict release-grade validation profiles.",
+          "raw": {
+            "id": "REQ-053",
+            "type": "REQUIREMENT",
+            "status": "ready",
+            "title": "Progressive Architecture-as-Code Adoption",
+            "version": "VER-050",
+            "description": "Enable progressive adoption of Architecture-as-Code via starter modes, modular profile packs, and gradual compliance pathways.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": []
           }
         },
         {
@@ -1097,9 +1044,9 @@
         {
           "id": "TEST-050",
           "type": "TEST_CASE",
-          "title": "OpenLAG 0.5.0 Release Validation",
+          "title": "OpenLAG 0.5.0 CLI Orchestration Validation",
           "version": "VER-050",
-          "description": "Validates the 0.5.0 lifecycle features through root generation, release checks, package dry run, and freeze outputs.",
+          "description": "Validates the CLI entrypoints and orchestration layer.",
           "status": "ready",
           "layer": "IMPLEMENTATION",
           "ownership": {
@@ -1107,14 +1054,14 @@
             "team": "openlag"
           },
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md",
-          "markdownBody": "# OpenLAG 0.5.0 Release Validation\n\n## Validation Intent\n\nThis test case verifies that lifecycle evolution is not only documented but executable and deterministic across branch/version transitions.\n\n## Command-Level Coverage\n\nThis validation path covers:\n\n- `npm.cmd run check`\n- `node --import tsx scripts/cli/openlag.ts check --profile develop`\n- `node --import tsx scripts/cli/openlag.ts check --profile release --strict`\n- `node bin/openlag.js --version`\n- `npm.cmd pack --dry-run`\n- root-level generate, build, and freeze evidence\n\n## What These Checks Prove\n\n- Integrity: contracts, relations, and rules resolve without graph violations.\n- Governance: profile-specific rule gates behave consistently across develop and release strictness.\n- Runtime packaging: published artifact composition is inspectable before release.\n- Lifecycle determinism: regenerated outputs remain aligned with source artifacts and validation expectations.\n\n## Operational Assumptions\n\n- PDF/HTML freeze validation depends on a valid project-local runtime dependency context.\n- CLI entrypoints may be global, but deterministic export behavior depends on running within a correctly prepared project workspace.",
+          "markdownBody": "# OpenLAG 0.5.0 CLI Orchestration Validation\n\n## Validation Intent\n\nThis test case verifies that the CLI correctly orchestrates command execution.\n\n## Command-Level Coverage\n\nThis validation path covers:\n- `node bin/openlag.js --version`\n- `npm.cmd pack --dry-run`\n\n## What These Checks Prove\n\n- Runtime packaging: published artifact composition is inspectable before release.\n- CLI Entrypoints: The binary executes correctly and orchestration logic functions as intended.",
           "raw": {
             "id": "TEST-050",
             "type": "TEST_CASE",
             "status": "ready",
-            "title": "OpenLAG 0.5.0 Release Validation",
+            "title": "OpenLAG 0.5.0 CLI Orchestration Validation",
             "version": "VER-050",
-            "description": "Validates the 0.5.0 lifecycle features through root generation, release checks, package dry run, and freeze outputs.",
+            "description": "Validates the CLI entrypoints and orchestration layer.",
             "ownership": {
               "owner": "donartcha",
               "team": "openlag"
@@ -1122,12 +1069,41 @@
             "relations": [
               {
                 "type": "TESTS",
-                "to": "CODE-050"
+                "to": "CODE-051"
               },
               {
                 "type": "TESTS",
-                "to": "CODE-051"
-              },
+                "to": "REQ-050"
+              }
+            ]
+          }
+        },
+        {
+          "id": "TEST-051",
+          "type": "TEST_CASE",
+          "title": "OpenLAG 0.5.0 Parser And Graph Payload Validation",
+          "version": "VER-050",
+          "description": "Validates the parsing of artifacts and generation of public graph payloads.",
+          "status": "ready",
+          "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-051.md",
+          "markdownBody": "# OpenLAG 0.5.0 Parser And Graph Payload Validation\n\n## Validation Intent\n\nThis test case ensures that the parser correctly reads source artifacts and generates deterministic `public/*.json` graph data payloads.\n\n## Command-Level Coverage\n\nThis validation path covers:\n- root-level generate\n\n## What These Checks Prove\n\n- Integrity: contracts, relations, and rules resolve without graph violations.\n- Lifecycle determinism: regenerated outputs remain aligned with source artifacts and validation expectations.",
+          "raw": {
+            "id": "TEST-051",
+            "type": "TEST_CASE",
+            "status": "ready",
+            "title": "OpenLAG 0.5.0 Parser And Graph Payload Validation",
+            "version": "VER-050",
+            "description": "Validates the parsing of artifacts and generation of public graph payloads.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
               {
                 "type": "TESTS",
                 "to": "CODE-052"
@@ -1138,31 +1114,81 @@
               },
               {
                 "type": "TESTS",
+                "to": "REQ-052"
+              }
+            ]
+          }
+        },
+        {
+          "id": "TEST-052",
+          "type": "TEST_CASE",
+          "title": "OpenLAG 0.5.0 Freeze And Export Runtime Validation",
+          "version": "VER-050",
+          "description": "Validates the deterministic export and rendering of freeze documentation.",
+          "status": "ready",
+          "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-052.md",
+          "markdownBody": "# OpenLAG 0.5.0 Freeze And Export Runtime Validation\n\n## Validation Intent\n\nThis test case verifies that freeze outputs act as deterministic, version-scoped lifecycle evidence.\n\n## Command-Level Coverage\n\nThis validation path covers:\n- root-level freeze evidence commands\n\n## Operational Assumptions\n\n- PDF/HTML freeze validation depends on a valid project-local runtime dependency context.\n- Export behavior depends on running within a correctly prepared project workspace.",
+          "raw": {
+            "id": "TEST-052",
+            "type": "TEST_CASE",
+            "status": "ready",
+            "title": "OpenLAG 0.5.0 Freeze And Export Runtime Validation",
+            "version": "VER-050",
+            "description": "Validates the deterministic export and rendering of freeze documentation.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "TESTS",
                 "to": "CODE-054"
               },
               {
                 "type": "TESTS",
-                "to": "CODE-055"
+                "to": "REQ-051"
+              }
+            ]
+          }
+        },
+        {
+          "id": "TEST-053",
+          "type": "TEST_CASE",
+          "title": "OpenLAG 0.5.0 Governance And Rule Profile Validation",
+          "version": "VER-050",
+          "description": "Validates the lint and profile-specific governance gates.",
+          "status": "ready",
+          "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-053.md",
+          "markdownBody": "# OpenLAG 0.5.0 Governance And Rule Profile Validation\n\n## Validation Intent\n\nThis test case ensures that governance rules are strictly enforced according to the active profile (develop vs release).\n\n## Command-Level Coverage\n\nThis validation path covers:\n- `npm.cmd run check`\n- `node --import tsx scripts/cli/openlag.ts check --profile develop`\n- `node --import tsx scripts/cli/openlag.ts check --profile release --strict`\n\n## What These Checks Prove\n\n- Governance: profile-specific rule gates behave consistently across develop and release strictness.",
+          "raw": {
+            "id": "TEST-053",
+            "type": "TEST_CASE",
+            "status": "ready",
+            "title": "OpenLAG 0.5.0 Governance And Rule Profile Validation",
+            "version": "VER-050",
+            "description": "Validates the lint and profile-specific governance gates.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "TESTS",
+                "to": "CHK-050"
               },
               {
                 "type": "TESTS",
-                "to": "FEAT-051"
-              },
-              {
-                "type": "TESTS",
-                "to": "FEAT-052"
-              },
-              {
-                "type": "TESTS",
-                "to": "FEAT-053"
-              },
-              {
-                "type": "TESTS",
-                "to": "FEAT-054"
-              },
-              {
-                "type": "TESTS",
-                "to": "FEAT-055"
+                "to": "REQ-053"
               }
             ]
           }
@@ -1253,8 +1279,17 @@
         {
           "id": "rel-DEC-050-2",
           "from": "DEC-050",
-          "to": "CODE-050",
+          "to": "CMP-050",
           "type": "IMPACTS",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\architecture\\DEC-050.md"
+        },
+        {
+          "id": "rel-DEC-050-3",
+          "from": "DEC-050",
+          "to": "REQ-050",
+          "type": "JUSTIFIES",
           "category": "SEMANTIC",
           "strength": "MEDIUM",
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\architecture\\DEC-050.md"
@@ -1278,6 +1313,15 @@
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\architecture\\DEC-051.md"
         },
         {
+          "id": "rel-DEC-051-2",
+          "from": "DEC-051",
+          "to": "REQ-051",
+          "type": "JUSTIFIES",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\architecture\\DEC-051.md"
+        },
+        {
           "id": "rel-CHG-050-0",
           "from": "CHG-050",
           "to": "VER-050",
@@ -1289,7 +1333,7 @@
         {
           "id": "rel-CHG-050-1",
           "from": "CHG-050",
-          "to": "CODE-050",
+          "to": "DEC-050",
           "type": "DOCUMENTS",
           "category": "SEMANTIC",
           "strength": "WEAK",
@@ -1298,7 +1342,7 @@
         {
           "id": "rel-CHG-050-2",
           "from": "CHG-050",
-          "to": "TEST-050",
+          "to": "DEC-051",
           "type": "DOCUMENTS",
           "category": "SEMANTIC",
           "strength": "WEAK",
@@ -1307,403 +1351,16 @@
         {
           "id": "rel-CHG-050-3",
           "from": "CHG-050",
-          "to": "DOC-050",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-4",
-          "from": "CHG-050",
-          "to": "FEAT-051",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-5",
-          "from": "CHG-050",
-          "to": "FEAT-052",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-6",
-          "from": "CHG-050",
-          "to": "FEAT-053",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-7",
-          "from": "CHG-050",
-          "to": "FEAT-054",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-8",
-          "from": "CHG-050",
-          "to": "FEAT-055",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-9",
-          "from": "CHG-050",
-          "to": "DEC-050",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-10",
-          "from": "CHG-050",
-          "to": "DEC-051",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-11",
-          "from": "CHG-050",
           "to": "DSG-050",
           "type": "DOCUMENTS",
           "category": "SEMANTIC",
           "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-12",
-          "from": "CHG-050",
-          "to": "CODE-051",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-13",
-          "from": "CHG-050",
-          "to": "CODE-052",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-14",
-          "from": "CHG-050",
-          "to": "CODE-053",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-15",
-          "from": "CHG-050",
-          "to": "CODE-054",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-16",
-          "from": "CHG-050",
-          "to": "CODE-055",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-17",
-          "from": "CHG-050",
-          "to": "CHK-050",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-18",
-          "from": "CHG-050",
-          "to": "CHK-051",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-19",
-          "from": "CHG-050",
-          "to": "CHK-052",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-20",
-          "from": "CHG-050",
-          "to": "RSK-050",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-21",
-          "from": "CHG-050",
-          "to": "FEAT-051",
-          "type": "IMPACTS",
-          "category": "SEMANTIC",
-          "strength": "MEDIUM",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-22",
-          "from": "CHG-050",
-          "to": "FEAT-052",
-          "type": "IMPACTS",
-          "category": "SEMANTIC",
-          "strength": "MEDIUM",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-23",
-          "from": "CHG-050",
-          "to": "FEAT-053",
-          "type": "IMPACTS",
-          "category": "SEMANTIC",
-          "strength": "MEDIUM",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-24",
-          "from": "CHG-050",
-          "to": "FEAT-054",
-          "type": "IMPACTS",
-          "category": "SEMANTIC",
-          "strength": "MEDIUM",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-25",
-          "from": "CHG-050",
-          "to": "FEAT-055",
-          "type": "IMPACTS",
-          "category": "SEMANTIC",
-          "strength": "MEDIUM",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
-        },
-        {
-          "id": "rel-CHG-050-26",
-          "from": "CHG-050",
-          "to": "CODE-050",
-          "type": "IMPACTS",
-          "category": "SEMANTIC",
-          "strength": "MEDIUM",
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
         },
         {
           "id": "rel-DOC-050-0",
           "from": "DOC-050",
           "to": "VER-050",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-1",
-          "from": "DOC-050",
-          "to": "CHG-050",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-2",
-          "from": "DOC-050",
-          "to": "CODE-050",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-3",
-          "from": "DOC-050",
-          "to": "TEST-050",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-4",
-          "from": "DOC-050",
-          "to": "FEAT-051",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-5",
-          "from": "DOC-050",
-          "to": "FEAT-052",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-6",
-          "from": "DOC-050",
-          "to": "FEAT-053",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-7",
-          "from": "DOC-050",
-          "to": "FEAT-054",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-8",
-          "from": "DOC-050",
-          "to": "FEAT-055",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-9",
-          "from": "DOC-050",
-          "to": "DEC-050",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-10",
-          "from": "DOC-050",
-          "to": "DEC-051",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-11",
-          "from": "DOC-050",
-          "to": "DSG-050",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-12",
-          "from": "DOC-050",
-          "to": "CODE-051",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-13",
-          "from": "DOC-050",
-          "to": "CODE-052",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-14",
-          "from": "DOC-050",
-          "to": "CODE-053",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-15",
-          "from": "DOC-050",
-          "to": "CODE-054",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-16",
-          "from": "DOC-050",
-          "to": "CODE-055",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-17",
-          "from": "DOC-050",
-          "to": "CHK-050",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-18",
-          "from": "DOC-050",
-          "to": "CHK-051",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-19",
-          "from": "DOC-050",
-          "to": "CHK-052",
-          "type": "DOCUMENTS",
-          "category": "SEMANTIC",
-          "strength": "WEAK",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
-        },
-        {
-          "id": "rel-DOC-050-20",
-          "from": "DOC-050",
-          "to": "RSK-050",
           "type": "DOCUMENTS",
           "category": "SEMANTIC",
           "strength": "WEAK",
@@ -1719,9 +1376,27 @@
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-051.md"
         },
         {
+          "id": "rel-FEAT-051-1",
+          "from": "FEAT-051",
+          "to": "REQ-051",
+          "type": "REFINES",
+          "category": "TRACEABILITY",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-051.md"
+        },
+        {
           "id": "rel-FEAT-052-0",
           "from": "FEAT-052",
           "to": "CHG-050",
+          "type": "REFINES",
+          "category": "TRACEABILITY",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-052.md"
+        },
+        {
+          "id": "rel-FEAT-052-1",
+          "from": "FEAT-052",
+          "to": "REQ-052",
           "type": "REFINES",
           "category": "TRACEABILITY",
           "strength": "MEDIUM",
@@ -1737,6 +1412,15 @@
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-053.md"
         },
         {
+          "id": "rel-FEAT-053-1",
+          "from": "FEAT-053",
+          "to": "REQ-053",
+          "type": "REFINES",
+          "category": "TRACEABILITY",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-053.md"
+        },
+        {
           "id": "rel-FEAT-054-0",
           "from": "FEAT-054",
           "to": "CHG-050",
@@ -1746,9 +1430,27 @@
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md"
         },
         {
+          "id": "rel-FEAT-054-1",
+          "from": "FEAT-054",
+          "to": "REQ-053",
+          "type": "REFINES",
+          "category": "TRACEABILITY",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md"
+        },
+        {
           "id": "rel-FEAT-055-0",
           "from": "FEAT-055",
           "to": "CHG-050",
+          "type": "REFINES",
+          "category": "TRACEABILITY",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-055.md"
+        },
+        {
+          "id": "rel-FEAT-055-1",
+          "from": "FEAT-055",
+          "to": "REQ-050",
           "type": "REFINES",
           "category": "TRACEABILITY",
           "strength": "MEDIUM",
@@ -1791,96 +1493,6 @@
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\governance\\EVD-050.md"
         },
         {
-          "id": "rel-CODE-050-0",
-          "from": "CODE-050",
-          "to": "CODE-051",
-          "type": "DEPENDS_ON",
-          "category": "STRUCTURAL",
-          "strength": "MEDIUM",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
-        },
-        {
-          "id": "rel-CODE-050-1",
-          "from": "CODE-050",
-          "to": "CODE-052",
-          "type": "DEPENDS_ON",
-          "category": "STRUCTURAL",
-          "strength": "MEDIUM",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
-        },
-        {
-          "id": "rel-CODE-050-2",
-          "from": "CODE-050",
-          "to": "CODE-053",
-          "type": "DEPENDS_ON",
-          "category": "STRUCTURAL",
-          "strength": "MEDIUM",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
-        },
-        {
-          "id": "rel-CODE-050-3",
-          "from": "CODE-050",
-          "to": "CODE-054",
-          "type": "DEPENDS_ON",
-          "category": "STRUCTURAL",
-          "strength": "MEDIUM",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
-        },
-        {
-          "id": "rel-CODE-050-4",
-          "from": "CODE-050",
-          "to": "CODE-055",
-          "type": "DEPENDS_ON",
-          "category": "STRUCTURAL",
-          "strength": "MEDIUM",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
-        },
-        {
-          "id": "rel-CODE-050-5",
-          "from": "CODE-050",
-          "to": "FEAT-051",
-          "type": "IMPLEMENTS",
-          "category": "TRACEABILITY",
-          "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
-        },
-        {
-          "id": "rel-CODE-050-6",
-          "from": "CODE-050",
-          "to": "FEAT-052",
-          "type": "IMPLEMENTS",
-          "category": "TRACEABILITY",
-          "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
-        },
-        {
-          "id": "rel-CODE-050-7",
-          "from": "CODE-050",
-          "to": "FEAT-053",
-          "type": "IMPLEMENTS",
-          "category": "TRACEABILITY",
-          "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
-        },
-        {
-          "id": "rel-CODE-050-8",
-          "from": "CODE-050",
-          "to": "FEAT-054",
-          "type": "IMPLEMENTS",
-          "category": "TRACEABILITY",
-          "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
-        },
-        {
-          "id": "rel-CODE-050-9",
-          "from": "CODE-050",
-          "to": "FEAT-055",
-          "type": "IMPLEMENTS",
-          "category": "TRACEABILITY",
-          "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
-        },
-        {
           "id": "rel-CODE-051-0",
           "from": "CODE-051",
           "to": "FEAT-055",
@@ -1917,6 +1529,15 @@
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-051.md"
         },
         {
+          "id": "rel-CODE-051-4",
+          "from": "CODE-051",
+          "to": "REQ-050",
+          "type": "IMPLEMENTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-051.md"
+        },
+        {
           "id": "rel-CODE-052-0",
           "from": "CODE-052",
           "to": "FEAT-053",
@@ -1932,6 +1553,15 @@
           "type": "DEPENDS_ON",
           "category": "STRUCTURAL",
           "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-052.md"
+        },
+        {
+          "id": "rel-CODE-052-2",
+          "from": "CODE-052",
+          "to": "REQ-052",
+          "type": "IMPLEMENTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-052.md"
         },
         {
@@ -1962,6 +1592,15 @@
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-053.md"
         },
         {
+          "id": "rel-CODE-053-3",
+          "from": "CODE-053",
+          "to": "REQ-053",
+          "type": "IMPLEMENTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-053.md"
+        },
+        {
           "id": "rel-CODE-054-0",
           "from": "CODE-054",
           "to": "FEAT-051",
@@ -1989,6 +1628,15 @@
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-054.md"
         },
         {
+          "id": "rel-CODE-054-3",
+          "from": "CODE-054",
+          "to": "REQ-051",
+          "type": "IMPLEMENTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-054.md"
+        },
+        {
           "id": "rel-CODE-055-0",
           "from": "CODE-055",
           "to": "FEAT-055",
@@ -2004,6 +1652,15 @@
           "type": "DEPENDS_ON",
           "category": "STRUCTURAL",
           "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-055.md"
+        },
+        {
+          "id": "rel-CODE-055-2",
+          "from": "CODE-055",
+          "to": "REQ-050",
+          "type": "IMPLEMENTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-055.md"
         },
         {
@@ -2108,7 +1765,7 @@
         {
           "id": "rel-TEST-050-0",
           "from": "TEST-050",
-          "to": "CODE-050",
+          "to": "CODE-051",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
@@ -2117,92 +1774,74 @@
         {
           "id": "rel-TEST-050-1",
           "from": "TEST-050",
-          "to": "CODE-051",
+          "to": "REQ-050",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
         },
         {
-          "id": "rel-TEST-050-2",
-          "from": "TEST-050",
+          "id": "rel-TEST-051-0",
+          "from": "TEST-051",
           "to": "CODE-052",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-051.md"
         },
         {
-          "id": "rel-TEST-050-3",
-          "from": "TEST-050",
+          "id": "rel-TEST-051-1",
+          "from": "TEST-051",
           "to": "CODE-053",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-051.md"
         },
         {
-          "id": "rel-TEST-050-4",
-          "from": "TEST-050",
+          "id": "rel-TEST-051-2",
+          "from": "TEST-051",
+          "to": "REQ-052",
+          "type": "TESTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-051.md"
+        },
+        {
+          "id": "rel-TEST-052-0",
+          "from": "TEST-052",
           "to": "CODE-054",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-052.md"
         },
         {
-          "id": "rel-TEST-050-5",
-          "from": "TEST-050",
-          "to": "CODE-055",
+          "id": "rel-TEST-052-1",
+          "from": "TEST-052",
+          "to": "REQ-051",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-052.md"
         },
         {
-          "id": "rel-TEST-050-6",
-          "from": "TEST-050",
-          "to": "FEAT-051",
+          "id": "rel-TEST-053-0",
+          "from": "TEST-053",
+          "to": "CHK-050",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-053.md"
         },
         {
-          "id": "rel-TEST-050-7",
-          "from": "TEST-050",
-          "to": "FEAT-052",
+          "id": "rel-TEST-053-1",
+          "from": "TEST-053",
+          "to": "REQ-053",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
-        },
-        {
-          "id": "rel-TEST-050-8",
-          "from": "TEST-050",
-          "to": "FEAT-053",
-          "type": "TESTS",
-          "category": "TRACEABILITY",
-          "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
-        },
-        {
-          "id": "rel-TEST-050-9",
-          "from": "TEST-050",
-          "to": "FEAT-054",
-          "type": "TESTS",
-          "category": "TRACEABILITY",
-          "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
-        },
-        {
-          "id": "rel-TEST-050-10",
-          "from": "TEST-050",
-          "to": "FEAT-055",
-          "type": "TESTS",
-          "category": "TRACEABILITY",
-          "strength": "STRONG",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-053.md"
         },
         {
           "id": "rel-VER-050-0",
@@ -2229,16 +1868,244 @@
   ],
   "lintReports": {
     "draft": {
-      "issues": []
+      "issues": [
+        {
+          "severity": "warning",
+          "rule": "invalidRelationType",
+          "message": "Relation `TESTS` targeting `CHECK` is NOT ALLOWED.\n\nAllowed targets for `TESTS` are: `CODE_ENTITY, REQUIREMENT, FEATURE, BUG, USE_CASE`.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-053.md",
+          "artifactId": "TEST-053"
+        },
+        {
+          "severity": "info",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-051.md",
+          "artifactId": "FEAT-051"
+        },
+        {
+          "severity": "info",
+          "rule": "requirementWithoutImplementation",
+          "message": "Requirement lacks implementation.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-052.md",
+          "artifactId": "FEAT-052"
+        },
+        {
+          "severity": "info",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-052.md",
+          "artifactId": "FEAT-052"
+        },
+        {
+          "severity": "info",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-053.md",
+          "artifactId": "FEAT-053"
+        },
+        {
+          "severity": "info",
+          "rule": "requirementWithoutImplementation",
+          "message": "Requirement lacks implementation.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
+          "artifactId": "FEAT-054"
+        },
+        {
+          "severity": "info",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
+          "artifactId": "FEAT-054"
+        },
+        {
+          "severity": "info",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-055.md",
+          "artifactId": "FEAT-055"
+        }
+      ]
     },
     "develop": {
-      "issues": []
+      "issues": [
+        {
+          "severity": "error",
+          "rule": "invalidRelationType",
+          "message": "Relation `TESTS` targeting `CHECK` is NOT ALLOWED.\n\nAllowed targets for `TESTS` are: `CODE_ENTITY, REQUIREMENT, FEATURE, BUG, USE_CASE`.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-053.md",
+          "artifactId": "TEST-053"
+        },
+        {
+          "severity": "warning",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-051.md",
+          "artifactId": "FEAT-051"
+        },
+        {
+          "severity": "warning",
+          "rule": "requirementWithoutImplementation",
+          "message": "Requirement lacks implementation.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-052.md",
+          "artifactId": "FEAT-052"
+        },
+        {
+          "severity": "warning",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-052.md",
+          "artifactId": "FEAT-052"
+        },
+        {
+          "severity": "warning",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-053.md",
+          "artifactId": "FEAT-053"
+        },
+        {
+          "severity": "warning",
+          "rule": "requirementWithoutImplementation",
+          "message": "Requirement lacks implementation.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
+          "artifactId": "FEAT-054"
+        },
+        {
+          "severity": "warning",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
+          "artifactId": "FEAT-054"
+        },
+        {
+          "severity": "warning",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-055.md",
+          "artifactId": "FEAT-055"
+        }
+      ]
     },
     "feature": {
-      "issues": []
+      "issues": [
+        {
+          "severity": "error",
+          "rule": "invalidRelationType",
+          "message": "Relation `TESTS` targeting `CHECK` is NOT ALLOWED.\n\nAllowed targets for `TESTS` are: `CODE_ENTITY, REQUIREMENT, FEATURE, BUG, USE_CASE`.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-053.md",
+          "artifactId": "TEST-053"
+        },
+        {
+          "severity": "info",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-051.md",
+          "artifactId": "FEAT-051"
+        },
+        {
+          "severity": "info",
+          "rule": "requirementWithoutImplementation",
+          "message": "Requirement lacks implementation.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-052.md",
+          "artifactId": "FEAT-052"
+        },
+        {
+          "severity": "info",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-052.md",
+          "artifactId": "FEAT-052"
+        },
+        {
+          "severity": "info",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-053.md",
+          "artifactId": "FEAT-053"
+        },
+        {
+          "severity": "info",
+          "rule": "requirementWithoutImplementation",
+          "message": "Requirement lacks implementation.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
+          "artifactId": "FEAT-054"
+        },
+        {
+          "severity": "info",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
+          "artifactId": "FEAT-054"
+        },
+        {
+          "severity": "info",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-055.md",
+          "artifactId": "FEAT-055"
+        }
+      ]
     },
     "release": {
-      "issues": []
+      "issues": [
+        {
+          "severity": "error",
+          "rule": "invalidRelationType",
+          "message": "Relation `TESTS` targeting `CHECK` is NOT ALLOWED.\n\nAllowed targets for `TESTS` are: `CODE_ENTITY, REQUIREMENT, FEATURE, BUG, USE_CASE`.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-053.md",
+          "artifactId": "TEST-053"
+        },
+        {
+          "severity": "error",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-051.md",
+          "artifactId": "FEAT-051"
+        },
+        {
+          "severity": "error",
+          "rule": "requirementWithoutImplementation",
+          "message": "Requirement lacks implementation.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-052.md",
+          "artifactId": "FEAT-052"
+        },
+        {
+          "severity": "error",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-052.md",
+          "artifactId": "FEAT-052"
+        },
+        {
+          "severity": "error",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-053.md",
+          "artifactId": "FEAT-053"
+        },
+        {
+          "severity": "error",
+          "rule": "requirementWithoutImplementation",
+          "message": "Requirement lacks implementation.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
+          "artifactId": "FEAT-054"
+        },
+        {
+          "severity": "error",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
+          "artifactId": "FEAT-054"
+        },
+        {
+          "severity": "error",
+          "rule": "requirementWithoutTest",
+          "message": "Requirement has no tests linked.",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-055.md",
+          "artifactId": "FEAT-055"
+        }
+      ]
     }
   },
   "metadata": {

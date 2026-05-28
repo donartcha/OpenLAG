@@ -13,6 +13,8 @@ relations:
     to: FEAT-055
   - type: DEPENDS_ON
     to: CODE-053
+  - type: IMPLEMENTS
+    to: REQ-050
 ---
 
 # Portal Runtime Lifecycle Consumption

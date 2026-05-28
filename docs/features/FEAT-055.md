@@ -11,6 +11,8 @@ ownership:
 relations:
   - type: REFINES
     to: CHG-050
+  - type: REFINES
+    to: REQ-050
 ---
 
 # Preview Workflow
