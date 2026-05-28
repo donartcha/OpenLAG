@@ -96,6 +96,112 @@
     "VER-050": {
       "artifacts": [
         {
+          "id": "DEC-050",
+          "type": "DECISION",
+          "title": "Repository Root As Primary Lifecycle Boundary",
+          "version": "VER-050",
+          "description": "Defines that root docs/contracts are authoritative for lifecycle reporting, while internal/dev-sandbox is secondary validation scope.",
+          "status": "ready",
+          "layer": "ARCHITECTURE",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\architecture\\DEC-050.md",
+          "markdownBody": "# Repository Root As Primary Lifecycle Boundary\n\nThis decision represents the boundary change introduced in 0.5.0: lifecycle truth is produced from repository-root `docs/*` and `docs/contracts/*`.\n\nIt exists to avoid split authority between root and sandbox datasets. `internal/dev-sandbox` remains a compatibility and regression dataset, not the source of record for release lifecycle evidence.\n\nThe impact is architectural and operational: generation, check, and freeze workflows must be evaluated first in root context, then optionally in sandbox context.",
+          "raw": {
+            "id": "DEC-050",
+            "type": "DECISION",
+            "status": "ready",
+            "title": "Repository Root As Primary Lifecycle Boundary",
+            "version": "VER-050",
+            "description": "Defines that root docs/contracts are authoritative for lifecycle reporting, while internal/dev-sandbox is secondary validation scope.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "JUSTIFIES",
+                "to": "DSG-050"
+              },
+              {
+                "type": "JUSTIFIES",
+                "to": "FEAT-055"
+              },
+              {
+                "type": "IMPACTS",
+                "to": "CODE-050"
+              }
+            ]
+          }
+        },
+        {
+          "id": "DEC-051",
+          "type": "DECISION",
+          "title": "Version-Scoped Freeze As Release Evidence",
+          "version": "VER-050",
+          "description": "Adopts freeze --version outputs as release-grade lifecycle evidence aligned with version snapshots.",
+          "status": "ready",
+          "layer": "ARCHITECTURE",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\architecture\\DEC-051.md",
+          "markdownBody": "# Version-Scoped Freeze As Release Evidence\n\nThis decision establishes that documentary exports are part of lifecycle evidence, not optional narrative attachments.\n\nIt exists to solve audit ambiguity from baseline workflows where behavior was verifiable only through branch diffs and command logs.\n\nThe 0.5.0 impact is that freeze outputs are expected to be version-scoped, reproducible under controlled runtime conditions, and traceable back to root lifecycle artifacts.",
+          "raw": {
+            "id": "DEC-051",
+            "type": "DECISION",
+            "status": "ready",
+            "title": "Version-Scoped Freeze As Release Evidence",
+            "version": "VER-050",
+            "description": "Adopts freeze --version outputs as release-grade lifecycle evidence aligned with version snapshots.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "JUSTIFIES",
+                "to": "FEAT-051"
+              },
+              {
+                "type": "JUSTIFIES",
+                "to": "CODE-054"
+              }
+            ]
+          }
+        },
+        {
+          "id": "DSG-050",
+          "type": "DESIGN",
+          "title": "Contract-Driven Lifecycle Graph Design",
+          "version": "VER-050",
+          "description": "Describes how docs/contracts + docs artifacts are transformed into deterministic graph/runtime payloads and lifecycle freeze evidence.",
+          "status": "ready",
+          "layer": "ARCHITECTURE",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\architecture\\DSG-050.md",
+          "markdownBody": "# Contract-Driven Lifecycle Graph Design\n\nThis design captures the 0.5.0 graph architecture: source artifacts under `docs/**` and contracts under `docs/contracts/**` are parsed, validated, and compiled into runtime payloads (`public/*.json`) and freeze outputs.\n\nIt exists because 0.4.0 behavior was correct but under-explained. 0.5.0 formalizes the transformation path so deterministic behavior and lifecycle traceability are explicit.\n\nThe impact is direct on generation and validation flows: lifecycle narratives, relations, and governance policies become executable graph inputs instead of passive documentation.",
+          "raw": {
+            "id": "DSG-050",
+            "type": "DESIGN",
+            "status": "ready",
+            "title": "Contract-Driven Lifecycle Graph Design",
+            "version": "VER-050",
+            "description": "Describes how docs/contracts + docs artifacts are transformed into deterministic graph/runtime payloads and lifecycle freeze evidence.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": []
+          }
+        },
+        {
           "id": "CHG-050",
           "type": "CHANGE",
           "title": "OpenLAG 0.5.0 Contract-Driven Evolution",
@@ -127,6 +233,110 @@
               {
                 "type": "DOCUMENTS",
                 "to": "VER-050"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CODE-050"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "TEST-050"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "DOC-050"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "FEAT-051"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "FEAT-052"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "FEAT-053"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "FEAT-054"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "FEAT-055"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "DEC-050"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "DEC-051"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "DSG-050"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CODE-051"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CODE-052"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CODE-053"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CODE-054"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CODE-055"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CHK-050"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CHK-051"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CHK-052"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "RSK-050"
+              },
+              {
+                "type": "IMPACTS",
+                "to": "FEAT-051"
+              },
+              {
+                "type": "IMPACTS",
+                "to": "FEAT-052"
+              },
+              {
+                "type": "IMPACTS",
+                "to": "FEAT-053"
+              },
+              {
+                "type": "IMPACTS",
+                "to": "FEAT-054"
+              },
+              {
+                "type": "IMPACTS",
+                "to": "FEAT-055"
+              },
+              {
+                "type": "IMPACTS",
+                "to": "CODE-050"
               }
             ]
           }
@@ -160,6 +370,86 @@
               {
                 "type": "DOCUMENTS",
                 "to": "VER-050"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CHG-050"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CODE-050"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "TEST-050"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "FEAT-051"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "FEAT-052"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "FEAT-053"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "FEAT-054"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "FEAT-055"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "DEC-050"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "DEC-051"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "DSG-050"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CODE-051"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CODE-052"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CODE-053"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CODE-054"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CODE-055"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CHK-050"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CHK-051"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "CHK-052"
+              },
+              {
+                "type": "DOCUMENTS",
+                "to": "RSK-050"
               }
             ]
           }
@@ -358,6 +648,18 @@
               {
                 "type": "VALIDATES",
                 "to": "VER-050"
+              },
+              {
+                "type": "VALIDATES",
+                "to": "FEAT-051"
+              },
+              {
+                "type": "VALIDATES",
+                "to": "FEAT-052"
+              },
+              {
+                "type": "VALIDATES",
+                "to": "FEAT-055"
               }
             ]
           }
@@ -389,6 +691,26 @@
             },
             "relations": [
               {
+                "type": "DEPENDS_ON",
+                "to": "CODE-051"
+              },
+              {
+                "type": "DEPENDS_ON",
+                "to": "CODE-052"
+              },
+              {
+                "type": "DEPENDS_ON",
+                "to": "CODE-053"
+              },
+              {
+                "type": "DEPENDS_ON",
+                "to": "CODE-054"
+              },
+              {
+                "type": "DEPENDS_ON",
+                "to": "CODE-055"
+              },
+              {
                 "type": "IMPLEMENTS",
                 "to": "FEAT-051"
               },
@@ -407,6 +729,367 @@
               {
                 "type": "IMPLEMENTS",
                 "to": "FEAT-055"
+              }
+            ]
+          }
+        },
+        {
+          "id": "CODE-051",
+          "type": "CODE_ENTITY",
+          "title": "CLI Lifecycle Orchestration Layer",
+          "version": "VER-050",
+          "description": "Coordinates generate/check/build/freeze workflows and lifecycle command boundaries from CLI entrypoints.",
+          "status": "ready",
+          "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-051.md",
+          "markdownBody": "# CLI Lifecycle Orchestration Layer\n\nRepresents the concrete command orchestration in `scripts/cli/*` and root command registration.\n\nIn 0.5.0 this layer gained explicit lifecycle ownership for profile checks, root generation orchestration, and version-scoped freeze execution.\n\nImpact: branch/version lifecycle behavior is now inspectable through command-level responsibilities instead of implicit command chaining.",
+          "raw": {
+            "id": "CODE-051",
+            "type": "CODE_ENTITY",
+            "status": "ready",
+            "title": "CLI Lifecycle Orchestration Layer",
+            "version": "VER-050",
+            "description": "Coordinates generate/check/build/freeze workflows and lifecycle command boundaries from CLI entrypoints.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "IMPLEMENTS",
+                "to": "FEAT-055"
+              },
+              {
+                "type": "DEPENDS_ON",
+                "to": "CODE-052"
+              },
+              {
+                "type": "DEPENDS_ON",
+                "to": "CODE-053"
+              },
+              {
+                "type": "DEPENDS_ON",
+                "to": "CODE-054"
+              }
+            ]
+          }
+        },
+        {
+          "id": "CODE-052",
+          "type": "CODE_ENTITY",
+          "title": "Parser And Contract Normalization Pipeline",
+          "version": "VER-050",
+          "description": "Parses docs artifacts/contracts and normalizes metadata for deterministic relation and artifact resolution.",
+          "status": "ready",
+          "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-052.md",
+          "markdownBody": "# Parser And Contract Normalization Pipeline\n\nRepresents parser and schema normalization logic under `scripts/core/parser/*`.\n\nIn 0.5.0 this pipeline became central to lifecycle determinism by normalizing version metadata, relation payloads, and contract-driven fields before generation/freeze steps.\n\nImpact: deterministic graph construction and consistent rule/contract enforcement across develop and release checks.",
+          "raw": {
+            "id": "CODE-052",
+            "type": "CODE_ENTITY",
+            "status": "ready",
+            "title": "Parser And Contract Normalization Pipeline",
+            "version": "VER-050",
+            "description": "Parses docs artifacts/contracts and normalizes metadata for deterministic relation and artifact resolution.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "IMPLEMENTS",
+                "to": "FEAT-053"
+              },
+              {
+                "type": "DEPENDS_ON",
+                "to": "CODE-053"
+              }
+            ]
+          }
+        },
+        {
+          "id": "CODE-053",
+          "type": "CODE_ENTITY",
+          "title": "Graph And Contract Payload Generation",
+          "version": "VER-050",
+          "description": "Generates public graph/runtime payloads and compiled artifact/relation/rule definitions from lifecycle sources.",
+          "status": "ready",
+          "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-053.md",
+          "markdownBody": "# Graph And Contract Payload Generation\n\nRepresents generation flow in `scripts/generate-artifacts.ts`, `scripts/generate-relations.ts`, `scripts/generate-rules.ts`, and graph generation commands.\n\n0.5.0 change: payload generation includes rule definitions and lifecycle-oriented runtime outputs consumed by portal and validation flows.\n\nImpact: `public/*.json` becomes first-class, reproducible lifecycle evidence and drift detection surface.",
+          "raw": {
+            "id": "CODE-053",
+            "type": "CODE_ENTITY",
+            "status": "ready",
+            "title": "Graph And Contract Payload Generation",
+            "version": "VER-050",
+            "description": "Generates public graph/runtime payloads and compiled artifact/relation/rule definitions from lifecycle sources.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "IMPLEMENTS",
+                "to": "FEAT-053"
+              },
+              {
+                "type": "IMPLEMENTS",
+                "to": "FEAT-055"
+              },
+              {
+                "type": "DEPENDS_ON",
+                "to": "CODE-052"
+              }
+            ]
+          }
+        },
+        {
+          "id": "CODE-054",
+          "type": "CODE_ENTITY",
+          "title": "Freeze Model And Export Runtime",
+          "version": "VER-050",
+          "description": "Builds frozen lifecycle documents and renders markdown/json/html/pdf outputs with version-scoped filtering.",
+          "status": "ready",
+          "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-054.md",
+          "markdownBody": "# Freeze Model And Export Runtime\n\nRepresents freeze orchestration and rendering in `scripts/core/freeze.ts` and `scripts/core/render-pdf.ts`.\n\n0.5.0 introduces version-scoped documentary generation and explicit runtime assumptions for html/pdf exports.\n\nImpact: freeze outputs are now lifecycle-grade artifacts with reproducible content model and controlled export boundaries.",
+          "raw": {
+            "id": "CODE-054",
+            "type": "CODE_ENTITY",
+            "status": "ready",
+            "title": "Freeze Model And Export Runtime",
+            "version": "VER-050",
+            "description": "Builds frozen lifecycle documents and renders markdown/json/html/pdf outputs with version-scoped filtering.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "IMPLEMENTS",
+                "to": "FEAT-051"
+              },
+              {
+                "type": "DEPENDS_ON",
+                "to": "CODE-052"
+              },
+              {
+                "type": "DEPENDS_ON",
+                "to": "CODE-053"
+              }
+            ]
+          }
+        },
+        {
+          "id": "CODE-055",
+          "type": "CODE_ENTITY",
+          "title": "Portal Runtime Lifecycle Consumption",
+          "version": "VER-050",
+          "description": "Consumes generated lifecycle payloads in portal views for graph, documentation, impact, and sectioned layer navigation.",
+          "status": "ready",
+          "layer": "IMPLEMENTATION",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-055.md",
+          "markdownBody": "# Portal Runtime Lifecycle Consumption\n\nRepresents runtime consumption in `src/components/*` and `src/core/generated/*`.\n\nIn 0.5.0, the portal is expected to expose lifecycle structure by layer (architecture, implementation, verification, documentation) from root payloads.\n\nImpact: lifecycle reviews can follow source-to-runtime traceability through generated graph data without switching to branch-level Git analysis.",
+          "raw": {
+            "id": "CODE-055",
+            "type": "CODE_ENTITY",
+            "status": "ready",
+            "title": "Portal Runtime Lifecycle Consumption",
+            "version": "VER-050",
+            "description": "Consumes generated lifecycle payloads in portal views for graph, documentation, impact, and sectioned layer navigation.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "IMPLEMENTS",
+                "to": "FEAT-055"
+              },
+              {
+                "type": "DEPENDS_ON",
+                "to": "CODE-053"
+              }
+            ]
+          }
+        },
+        {
+          "id": "CHK-050",
+          "type": "CHECK",
+          "title": "Develop And Release Profile Validation Gate",
+          "version": "VER-050",
+          "description": "Validates lifecycle integrity with develop and strict release profiles to enforce contract and relation correctness.",
+          "status": "ready",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\CHK-050.md",
+          "markdownBody": "# Develop And Release Profile Validation Gate\n\nRepresents the mandatory validation gate executed through profile-based check workflows.\n\n0.5.0 impact: governance behavior is profile-explicit and tied to rule contracts, reducing ambiguity between development and release acceptance.",
+          "raw": {
+            "id": "CHK-050",
+            "type": "CHECK",
+            "status": "ready",
+            "title": "Develop And Release Profile Validation Gate",
+            "version": "VER-050",
+            "description": "Validates lifecycle integrity with develop and strict release profiles to enforce contract and relation correctness.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "VALIDATES",
+                "to": "VER-050"
+              },
+              {
+                "type": "VALIDATES",
+                "to": "FEAT-052"
+              },
+              {
+                "type": "VALIDATES",
+                "to": "FEAT-053"
+              }
+            ]
+          }
+        },
+        {
+          "id": "CHK-051",
+          "type": "CHECK",
+          "title": "Freeze Export Runtime Dependency Check",
+          "version": "VER-050",
+          "description": "Confirms html/pdf freeze exports run under valid project-local runtime dependencies and controlled execution context.",
+          "status": "ready",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\CHK-051.md",
+          "markdownBody": "# Freeze Export Runtime Dependency Check\n\nRepresents operational validation of freeze export assumptions: template availability, runtime dependency resolution, and deterministic export context.\n\n0.5.0 impact: distinguishes global CLI invocation from project-local export prerequisites, reducing false failures during release evidence generation.",
+          "raw": {
+            "id": "CHK-051",
+            "type": "CHECK",
+            "status": "ready",
+            "title": "Freeze Export Runtime Dependency Check",
+            "version": "VER-050",
+            "description": "Confirms html/pdf freeze exports run under valid project-local runtime dependencies and controlled execution context.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "VALIDATES",
+                "to": "VER-050"
+              },
+              {
+                "type": "VALIDATES",
+                "to": "FEAT-051"
+              },
+              {
+                "type": "VALIDATES",
+                "to": "FEAT-055"
+              }
+            ]
+          }
+        },
+        {
+          "id": "CHK-052",
+          "type": "CHECK",
+          "title": "Generated Evidence Drift Detection Check",
+          "version": "VER-050",
+          "description": "Checks that regenerated graph and evidence outputs remain aligned with source lifecycle artifacts and contracts.",
+          "status": "ready",
+          "layer": "OPERATIONS",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\CHK-052.md",
+          "markdownBody": "# Generated Evidence Drift Detection Check\n\nRepresents control checks around `public/*.json` and `logs/**` regeneration expectations.\n\n0.5.0 impact: generated evidence is treated as audit-relevant output, so drift is lifecycle signal that must be visible during validation.",
+          "raw": {
+            "id": "CHK-052",
+            "type": "CHECK",
+            "status": "ready",
+            "title": "Generated Evidence Drift Detection Check",
+            "version": "VER-050",
+            "description": "Checks that regenerated graph and evidence outputs remain aligned with source lifecycle artifacts and contracts.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "VALIDATES",
+                "to": "VER-050"
+              },
+              {
+                "type": "VALIDATES",
+                "to": "FEAT-053"
+              },
+              {
+                "type": "VALIDATES",
+                "to": "FEAT-055"
+              }
+            ]
+          }
+        },
+        {
+          "id": "RSK-050",
+          "type": "RISK",
+          "title": "Freeze Runtime Context Drift Risk",
+          "version": "VER-050",
+          "description": "Risk that html/pdf freeze outputs diverge when execution context differs from validated project-local runtime assumptions.",
+          "status": "ready",
+          "layer": "DOCUMENTATION",
+          "ownership": {
+            "owner": "donartcha",
+            "team": "openlag"
+          },
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\RSK-050.md",
+          "markdownBody": "# Freeze Runtime Context Drift Risk\n\nRepresents the operational risk that global command invocation without project-local runtime prerequisites can produce export failures or inconsistent documentary outputs.\n\nIt exists in 0.5.0 because freeze evidence became release-relevant; runtime-context drift now has governance impact, not only developer inconvenience.",
+          "raw": {
+            "id": "RSK-050",
+            "type": "RISK",
+            "status": "ready",
+            "title": "Freeze Runtime Context Drift Risk",
+            "version": "VER-050",
+            "description": "Risk that html/pdf freeze outputs diverge when execution context differs from validated project-local runtime assumptions.",
+            "ownership": {
+              "owner": "donartcha",
+              "team": "openlag"
+            },
+            "relations": [
+              {
+                "type": "IMPACTS",
+                "to": "FEAT-051"
+              },
+              {
+                "type": "IMPACTS",
+                "to": "CODE-054"
               }
             ]
           }
@@ -437,6 +1120,30 @@
               "team": "openlag"
             },
             "relations": [
+              {
+                "type": "TESTS",
+                "to": "CODE-050"
+              },
+              {
+                "type": "TESTS",
+                "to": "CODE-051"
+              },
+              {
+                "type": "TESTS",
+                "to": "CODE-052"
+              },
+              {
+                "type": "TESTS",
+                "to": "CODE-053"
+              },
+              {
+                "type": "TESTS",
+                "to": "CODE-054"
+              },
+              {
+                "type": "TESTS",
+                "to": "CODE-055"
+              },
               {
                 "type": "TESTS",
                 "to": "FEAT-051"
@@ -526,6 +1233,51 @@
       ],
       "relations": [
         {
+          "id": "rel-DEC-050-0",
+          "from": "DEC-050",
+          "to": "DSG-050",
+          "type": "JUSTIFIES",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\architecture\\DEC-050.md"
+        },
+        {
+          "id": "rel-DEC-050-1",
+          "from": "DEC-050",
+          "to": "FEAT-055",
+          "type": "JUSTIFIES",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\architecture\\DEC-050.md"
+        },
+        {
+          "id": "rel-DEC-050-2",
+          "from": "DEC-050",
+          "to": "CODE-050",
+          "type": "IMPACTS",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\architecture\\DEC-050.md"
+        },
+        {
+          "id": "rel-DEC-051-0",
+          "from": "DEC-051",
+          "to": "FEAT-051",
+          "type": "JUSTIFIES",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\architecture\\DEC-051.md"
+        },
+        {
+          "id": "rel-DEC-051-1",
+          "from": "DEC-051",
+          "to": "CODE-054",
+          "type": "JUSTIFIES",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\architecture\\DEC-051.md"
+        },
+        {
           "id": "rel-CHG-050-0",
           "from": "CHG-050",
           "to": "VER-050",
@@ -535,9 +1287,423 @@
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
         },
         {
+          "id": "rel-CHG-050-1",
+          "from": "CHG-050",
+          "to": "CODE-050",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-2",
+          "from": "CHG-050",
+          "to": "TEST-050",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-3",
+          "from": "CHG-050",
+          "to": "DOC-050",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-4",
+          "from": "CHG-050",
+          "to": "FEAT-051",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-5",
+          "from": "CHG-050",
+          "to": "FEAT-052",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-6",
+          "from": "CHG-050",
+          "to": "FEAT-053",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-7",
+          "from": "CHG-050",
+          "to": "FEAT-054",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-8",
+          "from": "CHG-050",
+          "to": "FEAT-055",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-9",
+          "from": "CHG-050",
+          "to": "DEC-050",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-10",
+          "from": "CHG-050",
+          "to": "DEC-051",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-11",
+          "from": "CHG-050",
+          "to": "DSG-050",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-12",
+          "from": "CHG-050",
+          "to": "CODE-051",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-13",
+          "from": "CHG-050",
+          "to": "CODE-052",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-14",
+          "from": "CHG-050",
+          "to": "CODE-053",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-15",
+          "from": "CHG-050",
+          "to": "CODE-054",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-16",
+          "from": "CHG-050",
+          "to": "CODE-055",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-17",
+          "from": "CHG-050",
+          "to": "CHK-050",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-18",
+          "from": "CHG-050",
+          "to": "CHK-051",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-19",
+          "from": "CHG-050",
+          "to": "CHK-052",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-20",
+          "from": "CHG-050",
+          "to": "RSK-050",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-21",
+          "from": "CHG-050",
+          "to": "FEAT-051",
+          "type": "IMPACTS",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-22",
+          "from": "CHG-050",
+          "to": "FEAT-052",
+          "type": "IMPACTS",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-23",
+          "from": "CHG-050",
+          "to": "FEAT-053",
+          "type": "IMPACTS",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-24",
+          "from": "CHG-050",
+          "to": "FEAT-054",
+          "type": "IMPACTS",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-25",
+          "from": "CHG-050",
+          "to": "FEAT-055",
+          "type": "IMPACTS",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
+          "id": "rel-CHG-050-26",
+          "from": "CHG-050",
+          "to": "CODE-050",
+          "type": "IMPACTS",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\changes\\CHG-050.md"
+        },
+        {
           "id": "rel-DOC-050-0",
           "from": "DOC-050",
           "to": "VER-050",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-1",
+          "from": "DOC-050",
+          "to": "CHG-050",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-2",
+          "from": "DOC-050",
+          "to": "CODE-050",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-3",
+          "from": "DOC-050",
+          "to": "TEST-050",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-4",
+          "from": "DOC-050",
+          "to": "FEAT-051",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-5",
+          "from": "DOC-050",
+          "to": "FEAT-052",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-6",
+          "from": "DOC-050",
+          "to": "FEAT-053",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-7",
+          "from": "DOC-050",
+          "to": "FEAT-054",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-8",
+          "from": "DOC-050",
+          "to": "FEAT-055",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-9",
+          "from": "DOC-050",
+          "to": "DEC-050",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-10",
+          "from": "DOC-050",
+          "to": "DEC-051",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-11",
+          "from": "DOC-050",
+          "to": "DSG-050",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-12",
+          "from": "DOC-050",
+          "to": "CODE-051",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-13",
+          "from": "DOC-050",
+          "to": "CODE-052",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-14",
+          "from": "DOC-050",
+          "to": "CODE-053",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-15",
+          "from": "DOC-050",
+          "to": "CODE-054",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-16",
+          "from": "DOC-050",
+          "to": "CODE-055",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-17",
+          "from": "DOC-050",
+          "to": "CHK-050",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-18",
+          "from": "DOC-050",
+          "to": "CHK-051",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-19",
+          "from": "DOC-050",
+          "to": "CHK-052",
+          "type": "DOCUMENTS",
+          "category": "SEMANTIC",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\documentation\\DOC-050.md"
+        },
+        {
+          "id": "rel-DOC-050-20",
+          "from": "DOC-050",
+          "to": "RSK-050",
           "type": "DOCUMENTS",
           "category": "SEMANTIC",
           "strength": "WEAK",
@@ -598,7 +1764,79 @@
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\governance\\EVD-050.md"
         },
         {
+          "id": "rel-EVD-050-1",
+          "from": "EVD-050",
+          "to": "FEAT-051",
+          "type": "VALIDATES",
+          "category": "TRACEABILITY",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\governance\\EVD-050.md"
+        },
+        {
+          "id": "rel-EVD-050-2",
+          "from": "EVD-050",
+          "to": "FEAT-052",
+          "type": "VALIDATES",
+          "category": "TRACEABILITY",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\governance\\EVD-050.md"
+        },
+        {
+          "id": "rel-EVD-050-3",
+          "from": "EVD-050",
+          "to": "FEAT-055",
+          "type": "VALIDATES",
+          "category": "TRACEABILITY",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\governance\\EVD-050.md"
+        },
+        {
           "id": "rel-CODE-050-0",
+          "from": "CODE-050",
+          "to": "CODE-051",
+          "type": "DEPENDS_ON",
+          "category": "STRUCTURAL",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
+        },
+        {
+          "id": "rel-CODE-050-1",
+          "from": "CODE-050",
+          "to": "CODE-052",
+          "type": "DEPENDS_ON",
+          "category": "STRUCTURAL",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
+        },
+        {
+          "id": "rel-CODE-050-2",
+          "from": "CODE-050",
+          "to": "CODE-053",
+          "type": "DEPENDS_ON",
+          "category": "STRUCTURAL",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
+        },
+        {
+          "id": "rel-CODE-050-3",
+          "from": "CODE-050",
+          "to": "CODE-054",
+          "type": "DEPENDS_ON",
+          "category": "STRUCTURAL",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
+        },
+        {
+          "id": "rel-CODE-050-4",
+          "from": "CODE-050",
+          "to": "CODE-055",
+          "type": "DEPENDS_ON",
+          "category": "STRUCTURAL",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
+        },
+        {
+          "id": "rel-CODE-050-5",
           "from": "CODE-050",
           "to": "FEAT-051",
           "type": "IMPLEMENTS",
@@ -607,7 +1845,7 @@
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
         },
         {
-          "id": "rel-CODE-050-1",
+          "id": "rel-CODE-050-6",
           "from": "CODE-050",
           "to": "FEAT-052",
           "type": "IMPLEMENTS",
@@ -616,7 +1854,7 @@
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
         },
         {
-          "id": "rel-CODE-050-2",
+          "id": "rel-CODE-050-7",
           "from": "CODE-050",
           "to": "FEAT-053",
           "type": "IMPLEMENTS",
@@ -625,7 +1863,7 @@
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
         },
         {
-          "id": "rel-CODE-050-3",
+          "id": "rel-CODE-050-8",
           "from": "CODE-050",
           "to": "FEAT-054",
           "type": "IMPLEMENTS",
@@ -634,7 +1872,7 @@
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
         },
         {
-          "id": "rel-CODE-050-4",
+          "id": "rel-CODE-050-9",
           "from": "CODE-050",
           "to": "FEAT-055",
           "type": "IMPLEMENTS",
@@ -643,9 +1881,234 @@
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-050.md"
         },
         {
+          "id": "rel-CODE-051-0",
+          "from": "CODE-051",
+          "to": "FEAT-055",
+          "type": "IMPLEMENTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-051.md"
+        },
+        {
+          "id": "rel-CODE-051-1",
+          "from": "CODE-051",
+          "to": "CODE-052",
+          "type": "DEPENDS_ON",
+          "category": "STRUCTURAL",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-051.md"
+        },
+        {
+          "id": "rel-CODE-051-2",
+          "from": "CODE-051",
+          "to": "CODE-053",
+          "type": "DEPENDS_ON",
+          "category": "STRUCTURAL",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-051.md"
+        },
+        {
+          "id": "rel-CODE-051-3",
+          "from": "CODE-051",
+          "to": "CODE-054",
+          "type": "DEPENDS_ON",
+          "category": "STRUCTURAL",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-051.md"
+        },
+        {
+          "id": "rel-CODE-052-0",
+          "from": "CODE-052",
+          "to": "FEAT-053",
+          "type": "IMPLEMENTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-052.md"
+        },
+        {
+          "id": "rel-CODE-052-1",
+          "from": "CODE-052",
+          "to": "CODE-053",
+          "type": "DEPENDS_ON",
+          "category": "STRUCTURAL",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-052.md"
+        },
+        {
+          "id": "rel-CODE-053-0",
+          "from": "CODE-053",
+          "to": "FEAT-053",
+          "type": "IMPLEMENTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-053.md"
+        },
+        {
+          "id": "rel-CODE-053-1",
+          "from": "CODE-053",
+          "to": "FEAT-055",
+          "type": "IMPLEMENTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-053.md"
+        },
+        {
+          "id": "rel-CODE-053-2",
+          "from": "CODE-053",
+          "to": "CODE-052",
+          "type": "DEPENDS_ON",
+          "category": "STRUCTURAL",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-053.md"
+        },
+        {
+          "id": "rel-CODE-054-0",
+          "from": "CODE-054",
+          "to": "FEAT-051",
+          "type": "IMPLEMENTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-054.md"
+        },
+        {
+          "id": "rel-CODE-054-1",
+          "from": "CODE-054",
+          "to": "CODE-052",
+          "type": "DEPENDS_ON",
+          "category": "STRUCTURAL",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-054.md"
+        },
+        {
+          "id": "rel-CODE-054-2",
+          "from": "CODE-054",
+          "to": "CODE-053",
+          "type": "DEPENDS_ON",
+          "category": "STRUCTURAL",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-054.md"
+        },
+        {
+          "id": "rel-CODE-055-0",
+          "from": "CODE-055",
+          "to": "FEAT-055",
+          "type": "IMPLEMENTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-055.md"
+        },
+        {
+          "id": "rel-CODE-055-1",
+          "from": "CODE-055",
+          "to": "CODE-053",
+          "type": "DEPENDS_ON",
+          "category": "STRUCTURAL",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-055.md"
+        },
+        {
+          "id": "rel-CHK-050-0",
+          "from": "CHK-050",
+          "to": "VER-050",
+          "type": "VALIDATES",
+          "category": "TRACEABILITY",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\CHK-050.md"
+        },
+        {
+          "id": "rel-CHK-050-1",
+          "from": "CHK-050",
+          "to": "FEAT-052",
+          "type": "VALIDATES",
+          "category": "TRACEABILITY",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\CHK-050.md"
+        },
+        {
+          "id": "rel-CHK-050-2",
+          "from": "CHK-050",
+          "to": "FEAT-053",
+          "type": "VALIDATES",
+          "category": "TRACEABILITY",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\CHK-050.md"
+        },
+        {
+          "id": "rel-CHK-051-0",
+          "from": "CHK-051",
+          "to": "VER-050",
+          "type": "VALIDATES",
+          "category": "TRACEABILITY",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\CHK-051.md"
+        },
+        {
+          "id": "rel-CHK-051-1",
+          "from": "CHK-051",
+          "to": "FEAT-051",
+          "type": "VALIDATES",
+          "category": "TRACEABILITY",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\CHK-051.md"
+        },
+        {
+          "id": "rel-CHK-051-2",
+          "from": "CHK-051",
+          "to": "FEAT-055",
+          "type": "VALIDATES",
+          "category": "TRACEABILITY",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\CHK-051.md"
+        },
+        {
+          "id": "rel-CHK-052-0",
+          "from": "CHK-052",
+          "to": "VER-050",
+          "type": "VALIDATES",
+          "category": "TRACEABILITY",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\CHK-052.md"
+        },
+        {
+          "id": "rel-CHK-052-1",
+          "from": "CHK-052",
+          "to": "FEAT-053",
+          "type": "VALIDATES",
+          "category": "TRACEABILITY",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\CHK-052.md"
+        },
+        {
+          "id": "rel-CHK-052-2",
+          "from": "CHK-052",
+          "to": "FEAT-055",
+          "type": "VALIDATES",
+          "category": "TRACEABILITY",
+          "strength": "WEAK",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\CHK-052.md"
+        },
+        {
+          "id": "rel-RSK-050-0",
+          "from": "RSK-050",
+          "to": "FEAT-051",
+          "type": "IMPACTS",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\RSK-050.md"
+        },
+        {
+          "id": "rel-RSK-050-1",
+          "from": "RSK-050",
+          "to": "CODE-054",
+          "type": "IMPACTS",
+          "category": "SEMANTIC",
+          "strength": "MEDIUM",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\RSK-050.md"
+        },
+        {
           "id": "rel-TEST-050-0",
           "from": "TEST-050",
-          "to": "FEAT-051",
+          "to": "CODE-050",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
@@ -654,7 +2117,7 @@
         {
           "id": "rel-TEST-050-1",
           "from": "TEST-050",
-          "to": "FEAT-052",
+          "to": "CODE-051",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
@@ -663,7 +2126,7 @@
         {
           "id": "rel-TEST-050-2",
           "from": "TEST-050",
-          "to": "FEAT-053",
+          "to": "CODE-052",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
@@ -672,7 +2135,7 @@
         {
           "id": "rel-TEST-050-3",
           "from": "TEST-050",
-          "to": "FEAT-054",
+          "to": "CODE-053",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
@@ -680,6 +2143,60 @@
         },
         {
           "id": "rel-TEST-050-4",
+          "from": "TEST-050",
+          "to": "CODE-054",
+          "type": "TESTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
+        },
+        {
+          "id": "rel-TEST-050-5",
+          "from": "TEST-050",
+          "to": "CODE-055",
+          "type": "TESTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
+        },
+        {
+          "id": "rel-TEST-050-6",
+          "from": "TEST-050",
+          "to": "FEAT-051",
+          "type": "TESTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
+        },
+        {
+          "id": "rel-TEST-050-7",
+          "from": "TEST-050",
+          "to": "FEAT-052",
+          "type": "TESTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
+        },
+        {
+          "id": "rel-TEST-050-8",
+          "from": "TEST-050",
+          "to": "FEAT-053",
+          "type": "TESTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
+        },
+        {
+          "id": "rel-TEST-050-9",
+          "from": "TEST-050",
+          "to": "FEAT-054",
+          "type": "TESTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
+        },
+        {
+          "id": "rel-TEST-050-10",
           "from": "TEST-050",
           "to": "FEAT-055",
           "type": "TESTS",

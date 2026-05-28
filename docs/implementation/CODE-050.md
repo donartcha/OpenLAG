@@ -9,6 +9,16 @@ ownership:
   owner: donartcha
   team: openlag
 relations:
+  - type: DEPENDS_ON
+    to: CODE-051
+  - type: DEPENDS_ON
+    to: CODE-052
+  - type: DEPENDS_ON
+    to: CODE-053
+  - type: DEPENDS_ON
+    to: CODE-054
+  - type: DEPENDS_ON
+    to: CODE-055
   - type: IMPLEMENTS
     to: FEAT-051
   - type: IMPLEMENTS

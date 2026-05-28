@@ -10,6 +10,18 @@ ownership:
   team: openlag
 relations:
   - type: TESTS
+    to: CODE-050
+  - type: TESTS
+    to: CODE-051
+  - type: TESTS
+    to: CODE-052
+  - type: TESTS
+    to: CODE-053
+  - type: TESTS
+    to: CODE-054
+  - type: TESTS
+    to: CODE-055
+  - type: TESTS
     to: FEAT-051
   - type: TESTS
     to: FEAT-052
