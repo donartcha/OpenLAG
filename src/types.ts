@@ -36,6 +36,7 @@ export interface Artifact {
   type: ArtifactType;
   title: string;
   description?: string;
+  markdownBody?: string;
   version?: string;
   component?: string;
   releaseDate?: string;

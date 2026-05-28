@@ -33,6 +33,7 @@ All notable changes to OpenLAG are documented in this file.
   - `public/rule-definitions.json`
   - `public/graph-data.json`
 - Fixed opaque fallback behavior by adding explicit warnings when a contract family is missing from `docs/contracts/**` and no local `public/*-definitions.json` fallback file exists.
+- Fixed documentation rendering in the React portal so artifact cards display both the short summary (`description`) and full markdown content (`markdownBody`) instead of hiding one view when both exist.
 
 ### 0.5.0 initial release - 2026-05-26
 

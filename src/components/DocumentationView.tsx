@@ -484,7 +484,22 @@ export const DocumentationView: React.FC = () => {
                                           )}
                                         </h3>
                                         <OwnershipBadge artifact={artifact} />
-                                        <MarkdownRenderer content={artifact.description} />
+                                        {artifact.description && (
+                                          <div className="mb-4">
+                                            <div className="text-[10px] uppercase tracking-widest text-white/40 mb-2 font-mono">
+                                              Summary
+                                            </div>
+                                            <MarkdownRenderer content={artifact.description} />
+                                          </div>
+                                        )}
+                                        {artifact.markdownBody && artifact.markdownBody.trim().length > 0 && (
+                                          <div className="pt-4 border-t border-white/10">
+                                            <div className="text-[10px] uppercase tracking-widest text-white/40 mb-3 font-mono">
+                                              Document Body
+                                            </div>
+                                            <MarkdownRenderer content={artifact.markdownBody} />
+                                          </div>
+                                        )}
                                       </div>
                                     ))}
                                 </div>
