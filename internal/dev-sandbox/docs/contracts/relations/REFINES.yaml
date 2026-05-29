@@ -1,0 +1,14 @@
+relation: REFINES
+description: "Descompone artefactos en otros más concretos."
+category: TRACEABILITY
+allowedFrom: [EPIC, FEATURE, REQUIREMENT]
+allowedTo: [EPIC, FEATURE, REQUIREMENT]
+multiplicity:
+  from: many
+  to: many
+validation:
+  severity: warn
+impact:
+  propagates: true
+  directions: [reverse]
+  weight: 1

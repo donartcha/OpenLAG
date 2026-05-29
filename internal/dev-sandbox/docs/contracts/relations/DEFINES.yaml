@@ -1,0 +1,14 @@
+relation: DEFINES
+description: "Entidades que instauran glosarios o normas."
+category: SEMANTIC
+allowedFrom: [BUSINESS_RULE, DECISION, DOCUMENTATION, GLOSSARY_TERM]
+allowedTo: [REQUIREMENT, FEATURE, DESIGN, PROJECT, COMPONENT, API, DATABASE_ENTITY]
+multiplicity:
+  from: many
+  to: many
+validation:
+  severity: info
+impact:
+  propagates: true
+  directions: [reverse]
+  weight: 1

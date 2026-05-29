@@ -1,0 +1,14 @@
+relation: TESTS
+description: "Connects tests with validated artifacts."
+category: TRACEABILITY
+allowedFrom: [TEST_CASE]
+allowedTo: [CODE_ENTITY, REQUIREMENT, FEATURE]
+multiplicity:
+  from: many
+  to: many
+validation:
+  severity: error
+impact:
+  propagates: true
+  directions: [reverse]
+  weight: 1

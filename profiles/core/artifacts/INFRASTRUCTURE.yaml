@@ -1,0 +1,7 @@
+type: INFRASTRUCTURE
+layer: OPERATIONS
+description: "Standard INFRASTRUCTURE artifact."
+requiredFields:
+  - id
+  - type
+  - title

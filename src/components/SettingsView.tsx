@@ -1,6 +1,6 @@
 import React from 'react';
 import { useStore } from '../store';
-import { Settings, Save, AlertCircle } from 'lucide-react';
+import { Settings } from 'lucide-react';
 
 export const SettingsView: React.FC = () => {
   const { settings, updateSettings } = useStore();

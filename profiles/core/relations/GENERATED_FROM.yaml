@@ -1,0 +1,11 @@
+type: GENERATED_FROM
+description: "The snapshot was generated from a specific version or state."
+category: TRACEABILITY
+strength: STRONG
+allowedFrom: [DOCUMENTATION_FREEZE]
+allowedTo: [VERSION, SYSTEM_VERSION, PROJECT]
+
+impact:
+  propagates: true
+  directions: [reverse]
+  weight: 1

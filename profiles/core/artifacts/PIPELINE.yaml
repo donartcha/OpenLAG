@@ -1,0 +1,7 @@
+type: PIPELINE
+layer: OPERATIONS
+description: "Standard PIPELINE artifact."
+requiredFields:
+  - id
+  - type
+  - title

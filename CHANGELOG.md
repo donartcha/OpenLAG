@@ -2,12 +2,86 @@
 
 All notable changes to OpenLAG are documented in this file.
 
-## Unreleased
+## 0.5.0 - 2026-05-28 (stabilization updates)
+
+### Added
+- Added architecture freeze dossier link to `README.md`, surfacing the generated lifecycle/architecture snapshot (`openlag-architecture.pdf`) as deterministic Architecture-as-Code evidence.
+- Added `openlag freeze --version <versionId>` to generate deterministic documentation freezes scoped to a specific `VERSION` snapshot while preserving export-profile sections, relation filters, and output formats.
+- Added local preview and static serving guidance to official documentation (`README.md`, `CONTRIBUTING.md`, `DOCUMENTACION_OPENLAG.md`) covering:
+  - static serving of an existing `dist/` output,
+  - the recommended regenerate + build + preview workflow for active development.
+- Added the same starter-focused preview/serving guidance to the React portal onboarding section "OpenLAG Lite Happy Path (Starter)".
+- Added `rule-definitions.json` generation to the `openlag generate` output pipeline.
+- Added image optimization tooling with `sharp` via `npm run optimize-images`, generating lightweight favicon variants and WebP assets for package/runtime use.
+
+### Changed
+- Moved the repository sample OpenLAG project from root `docs/` into `internal/dev-sandbox/docs` as an internal development sandbox dataset.
+- Updated runtime behavior documentation in `SPECIFICATION.md` to explicitly distinguish static `dist/` serving vs regeneration/rebuild preview workflow.
+- Updated `openlag build` contract regeneration step to include rules alongside artifact and relation contracts.
+- Improved contract regeneration warnings in `openlag build` and `openlag dev` to include the underlying error reason and explicit fallback behavior.
+- Applied stabilization updates across lint/parser and portal views (`DocumentationView`, `MarkdownRenderer`, `OrphansView`, `SettingsView`, lifecycle strategy typing) to keep runtime behavior and TypeScript contracts consistent in the 0.5.0 line.
+- Switched heavy UI image references to optimized WebP/PNG outputs and replaced the oversized SVG favicon reference in `index.html` with lightweight icon assets.
+- Introduced lazy-loading for major portal views and deferred Mermaid loading in `MarkdownRenderer`, reducing initial bundle cost and moving heavy runtime code to on-demand chunks.
+- Added explicit `manualChunks` split rules in Vite build output to isolate graph/docs/ui vendor groups and improve chunking behavior for production builds.
+
+### Fixed
+- Fixed `openlag generate` contract path resolution to read from:
+  - `docs/contracts/artifacts`
+  - `docs/contracts/relations`
+  instead of legacy non-contract paths, so project contract JSON payloads are produced correctly.
+- Fixed missing runtime contract payload generation by ensuring `openlag generate` emits:
+  - `public/artifact-definitions.json`
+  - `public/relation-definitions.json`
+  - `public/rule-definitions.json`
+  - `public/graph-data.json`
+- Fixed opaque fallback behavior by adding explicit warnings when a contract family is missing from `docs/contracts/**` and no local `public/*-definitions.json` fallback file exists.
+- Fixed documentation rendering in the React portal so artifact cards display both the short summary (`description`) and full markdown content (`markdownBody`) instead of hiding one view when both exist.
+- Fixed OpenLAG portal build failures in global/package installs by updating `GuideView` logo import to use a packaged asset path (`OpenLAG-logo-t.png`) instead of a non-bundled WebP reference.
+
+### 0.5.0 initial release - 2026-05-26
+
+### Added
+- Added `openlag init --starter` as an OpenLAG Lite onboarding path with a minimal contract scaffold for new teams: 4 artifact types (`REQUIREMENT`, `FEATURE`, `CODE_ENTITY`, `TEST_CASE`), 4 relations (`REFINES`, `IMPLEMENTS`, `TESTS`, `DEPENDS_ON`), and one starter export profile (`starter`).
+- Added the official `openlag freeze` subsystem with export profiles, dry-run support, deterministic frozen document model generation, and `markdown`, `json`, `html`, and `pdf` output in the command directory or explicit `--output` path.
+- Added executable rule contracts under `docs/contracts/rules/*.yaml`, generated rule registries, profile-gated runtime validation, and normalized `warn`/`warning` severity handling.
+- Added bundled profile/template assets for `core`, `governance`, `mvc`, `hexagonal`, and related profile packs, including deterministic `openlag profile add` and `openlag profile validate` workflows.
+- Added invalid validation fixtures under `tests/fixtures/invalid/` to prove expected governance failures without keeping the main OpenLAG dataset broken.
+- Added Playwright lifecycle stabilization through an explicit test runner so portal smoke tests and documentation screenshots terminate cleanly.
+- Added OpenLAG logo and favicon assets to the generated Vite portal and package metadata.
+- Added professional freeze template rendering for HTML and PDF exports, including branded cover pages, executive summary text from export profiles, artifact cards, relation lists, and UTF-8-safe documentary output.
+- Added in-memory offline vendor injection for Marked and Mermaid so exported HTML/PDF documentary outputs do not depend on CDN, internet access, ESM imports, or a local server while keeping the source freeze template editable.
+- Added a parameterized freeze template system with technical manual, executive brief, audit dossier, and knowledge map documentary layouts that share the same rendering contract and offline export pipeline.
+- Added expanded `--help` usage examples and notes for every `openlag` command and subcommand, including profile, authoring, impact, and freeze workflows.
+- Added deterministic freeze test controls for generation timestamps while keeping production freeze output timestamped with the real generation time.
+
+### Changed
+- Updated documentation and in-product guide content to include a newcomer "Happy Path" based on OpenLAG Lite starter workflows.
+- Promoted the stabilized OpenLAG 0.5.0 runtime model: lightweight core, optional governance, optional impact engine, optional authoring tooling, and official freeze/export.
+- Normalized canonical contract paths to `docs/contracts/artifacts`, `docs/contracts/relations`, `docs/contracts/rules`, and `docs/contracts/export-profiles`.
+- Updated the main reference dataset so `openlag check --profile release --strict` passes with no lint findings.
+- Updated README, specification, and project documentation to describe 0.5.0 implemented behavior instead of treating stabilized 0.5.0 capabilities as future 0.5.x roadmap work.
+- Updated the portal guide to reflect the OpenLAG 0.5.0 specification, including semantic layers, contract-driven paths, profile commands, rule contracts, and freeze/export behavior.
+- Extended export profiles with optional `template`, `branding`, `document`, `executiveSummary`, `footer`, and rendering controls while keeping older export profiles compatible.
+- Clarified freeze/export documentation across the README, specification, Spanish technical documentation, portal guide, default export profile, and freeze template README, including `--output`, `--template`, offline HTML/PDF rendering, and the boundary between export profiles and templates.
+- Updated bundled freeze templates from compact single-line sources into readable, maintainable standalone HTML templates with richer print, navigation, artifact card, relation, and responsive styling.
+- Changed freeze output resolution so default exports are written as `openlag-<profile>.<format>` in the command directory, while explicit output directories preserve template-aware filenames such as `openlag-architecture-technical-manual.html`.
+- Kept Markdown body content separate from artifact descriptions so freeze cards without `description` do not display the full body as a promoted summary.
+- Added repository-level freeze visual audit utility (`scripts/qa/run-freeze-visual-audit.py`) with CLI parameters to run deterministic PDF QA from project root without hardcoded local paths.
+
+### Fixed
+- Corrected freeze export behavior across CLI/core flow to keep generated outputs aligned with the expected profile/template mapping.
+- Updated export profile contracts (`compliance`, `developer`, `executive`, `governance`, `release`) to match the corrected export behavior.
+- Updated freeze screenshot E2E coverage to validate the corrected export outputs.
+- Fixed print CSS in freeze templates to remove edge-clipping risk, improve print margins/pagination, and prevent near-empty orphan pages in generated PDFs (`freeze-template`, `knowledge-map`).
+- Reduced print-time visual fragmentation across freeze templates to keep semantic cards/metadata blocks together and avoid header/content splits between pages.
+
+### Removed
+- Removed Typst, jsPDF, html2canvas, and html-to-image from the 0.5.0 freeze/export public contract and dependencies.
 
 ## 0.4.0 - 2026-05-22
 
 ### Added
-- Added project-local artifact contract loading from `docs/artifacts/*.yaml`, including generated runtime payloads in `public/artifact-definitions.json`.
+- Added project-local artifact contract loading from `docs/contracts/artifacts/*.yaml`, including generated runtime payloads in `public/artifact-definitions.json`.
 - Added relation contract runtime payload generation in `public/relation-definitions.json` for static portal consumption.
 - Added richer lint report data to generated graph output for `draft`, `develop`, `feature`, and `release` profiles.
 - Added default and optional artifact contract scaffolding to `openlag init`, including a `CUSTOM_TYPE` example for user-defined contracts.
@@ -29,7 +103,7 @@ All notable changes to OpenLAG are documented in this file.
 
 ### Added
 - Added contract-driven artifact registry generation through `scripts/generate-artifacts.ts` and `src/core/generated/artifact-definitions.ts`.
-- Added support for custom artifact contracts under `docs/artifacts/*.yaml`, including type extension, layer assignment, required fields, and default impact metadata.
+- Added support for custom artifact contracts under `docs/contracts/artifacts/*.yaml`, including type extension, layer assignment, required fields, and default impact metadata.
 - Added `openlag impact` for contract-driven impact analysis by artifact id, source file, or Git diff range.
 - Added Markdown and JSON output modes for impact analysis, enabling local review and CI consumption.
 - Added bidirectional impact propagation based on relation contract metadata: `impact.propagates`, `impact.directions`, and `impact.weight`.

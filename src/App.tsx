@@ -1,12 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { useStore } from './store';
-import { GraphView } from './components/GraphView';
-import { DocumentationView } from './components/DocumentationView';
-import { ImpactView } from './components/ImpactView';
-import { OrphansView } from './components/OrphansView';
-import { GuideView } from './components/GuideView';
-import { SettingsView } from './components/SettingsView';
 import { Network, FileText, GitPullRequest, Settings, Database, AlertCircle, BookOpen } from 'lucide-react';
+import faviconUrl from './assets/favicon.webp';
+
+const GraphView = lazy(() => import('./components/GraphView').then((m) => ({ default: m.GraphView })));
+const DocumentationView = lazy(() => import('./components/DocumentationView').then((m) => ({ default: m.DocumentationView })));
+const ImpactView = lazy(() => import('./components/ImpactView').then((m) => ({ default: m.ImpactView })));
+const OrphansView = lazy(() => import('./components/OrphansView').then((m) => ({ default: m.OrphansView })));
+const GuideView = lazy(() => import('./components/GuideView').then((m) => ({ default: m.GuideView })));
+const SettingsView = lazy(() => import('./components/SettingsView').then((m) => ({ default: m.SettingsView })));
 
 export default function App() {
   const { 
@@ -35,8 +37,8 @@ export default function App() {
     <div className="flex h-screen w-screen overflow-hidden bg-[#0a0a0a] text-[#e0e0e0] font-sans selection:bg-emerald-500/30 print-block">
       {/* Sidebar Nav */}
       <nav className="w-16 flex flex-col items-center py-6 bg-[#0c0c0c] text-white/40 border-r border-white/10 shrink-0">
-        <div className="w-8 h-8 bg-white flex items-center justify-center rounded-sm mb-8">
-          <div className="w-4 h-4 border-2 border-black rotate-45"></div>
+        <div className="w-10 h-10 flex items-center justify-center rounded-sm mb-8">
+          <img src={faviconUrl} alt="OpenLAG" className="h-9 w-9 object-contain" />
         </div>
         
         <div className="flex flex-col gap-6 w-full items-center">
@@ -44,6 +46,7 @@ export default function App() {
             onClick={() => setView('graph')}
             className={`transition-all hover:text-white hover:opacity-100 ${activeView === 'graph' ? 'text-white opacity-100' : 'opacity-40'}`}
             title="Graph View"
+            data-testid="nav-graph"
           >
             <Network size={20} strokeWidth={1.5} />
           </button>
@@ -51,6 +54,7 @@ export default function App() {
              onClick={() => setView('docs')}
              className={`transition-all hover:text-white hover:opacity-100 ${activeView === 'docs' ? 'text-white opacity-100' : 'opacity-40'}`}
              title="Documentation Engine"
+             data-testid="nav-docs"
           >
             <FileText size={20} strokeWidth={1.5} />
           </button>
@@ -58,6 +62,7 @@ export default function App() {
              onClick={() => setView('impact')}
              className={`transition-all hover:text-white hover:opacity-100 ${activeView === 'impact' ? 'text-white opacity-100' : 'opacity-40'}`}
              title="Impact Analysis"
+             data-testid="nav-impact"
           >
             <GitPullRequest size={20} strokeWidth={1.5} />
           </button>
@@ -65,6 +70,7 @@ export default function App() {
              onClick={() => setView('orphans')}
              className={`transition-all hover:text-white hover:opacity-100 ${activeView === 'orphans' ? 'text-red-400 opacity-100' : 'opacity-40'}`}
              title="Traceability GAPs"
+             data-testid="nav-orphans"
           >
             <AlertCircle size={20} strokeWidth={1.5} />
           </button>
@@ -72,6 +78,7 @@ export default function App() {
              onClick={() => setView('guide')}
              className={`transition-all hover:text-white hover:opacity-100 ${activeView === 'guide' ? 'text-amber-400 opacity-100' : 'opacity-40'}`}
              title="Usage Guide"
+             data-testid="nav-guide"
           >
             <BookOpen size={20} strokeWidth={1.5} />
           </button>
@@ -82,6 +89,7 @@ export default function App() {
             onClick={() => setView('settings')}
             className={`transition-all hover:text-white hover:opacity-100 ${activeView === 'settings' ? 'text-white opacity-100' : 'opacity-40'}`}
             title="Settings"
+            data-testid="nav-settings"
           >
             <Settings size={20} strokeWidth={1.5} />
           </button>
@@ -103,6 +111,7 @@ export default function App() {
                 <span className="text-[10px] opacity-40 uppercase tracking-widest">Doc Snapshot</span>
               </div>
               <select 
+                data-testid="version-select"
                 value={currentVersionId || ''} 
                 onChange={(e) => setVersion(e.target.value)}
                 className="bg-[#0c0c0c] border border-white/20 text-xs font-mono text-emerald-400 rounded-sm px-3 py-1.5 outline-none cursor-pointer hover:bg-white/5 transition-colors focus:border-emerald-400"
@@ -151,19 +160,27 @@ export default function App() {
         </header>
 
         {/* View Renderer */}
-        <main className="flex-1 relative overflow-hidden">
+        <main className="flex-1 relative overflow-hidden" data-testid={`view-${activeView}`}>
           {isLoading && !currentVersionId ? (
             <div className="absolute inset-0 flex items-center justify-center bg-white/50 backdrop-blur-sm z-50">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
             </div>
           ) : null}
 
-          {activeView === 'graph' && <GraphView />}
-          {activeView === 'docs' && <DocumentationView />}
-          {activeView === 'impact' && <ImpactView />}
-          {activeView === 'orphans' && <OrphansView />}
-          {activeView === 'guide' && <GuideView />}
-          {activeView === 'settings' && <SettingsView />}
+          <Suspense
+            fallback={
+              <div className="absolute inset-0 flex items-center justify-center bg-[#0a0a0a]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-emerald-500" />
+              </div>
+            }
+          >
+            {activeView === 'graph' && <GraphView />}
+            {activeView === 'docs' && <DocumentationView />}
+            {activeView === 'impact' && <ImpactView />}
+            {activeView === 'orphans' && <OrphansView />}
+            {activeView === 'guide' && <GuideView />}
+            {activeView === 'settings' && <SettingsView />}
+          </Suspense>
         </main>
       </div>
     </div>

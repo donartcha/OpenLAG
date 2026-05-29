@@ -1,0 +1,7 @@
+type: COMPONENT
+layer: ARCHITECTURE
+description: "Standard COMPONENT artifact."
+requiredFields:
+  - id
+  - type
+  - title

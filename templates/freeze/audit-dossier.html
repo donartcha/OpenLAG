@@ -1,0 +1,767 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenLAG Audit Dossier</title>
+  <style>
+    :root {
+      /* Authoritative and formal color palette */
+      --ink: #111827;
+      --muted: #4b5563;
+      --line: #374151;
+      --line-light: #d1d5db;
+      --paper: #ffffff;
+      --soft: #f9fafb;
+      --accent: #881337; /* Formal Burgundy */
+      --accent-hover: #4c0519;
+      
+      /* Typography & Layout */
+      --sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      --serif: Georgia, Cambria, "Times New Roman", Times, serif;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --border-double: 3px double var(--ink);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: #e5e7eb;
+      color: var(--ink);
+      font-family: var(--serif);
+      line-height: 1.62;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .dossier {
+      max-width: 980px;
+      margin: 48px auto;
+      background: var(--paper);
+      border-top: 6px solid var(--accent);
+      border-left: 1px solid var(--line-light);
+      border-right: 1px solid var(--line-light);
+      border-bottom: 1px solid var(--line-light);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    /* Formal sidebar header */
+    .sidebar {
+      border-bottom: 2px solid var(--ink);
+      padding: 24px 56px;
+      background: var(--soft);
+      font-family: var(--sans);
+    }
+
+    .brand {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    .brand-title {
+      font-weight: 800;
+      font-size: 1.1rem;
+      margin: 0;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+
+    .brand-subtitle {
+      font-size: 0.72rem;
+      font-family: var(--mono);
+      color: var(--muted);
+      margin: 2px 0 0;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .nav-link {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-decoration: none;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      transition: color 0.15s ease;
+    }
+
+    .nav-link:hover {
+      color: var(--accent);
+    }
+
+    /* Legal Report Cover Sheet */
+    .cover {
+      padding: 96px 72px 72px;
+      border-bottom: var(--border-double);
+      text-align: center;
+      position: relative;
+    }
+
+    .cover::before {
+      content: '';
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      right: 24px;
+      bottom: 24px;
+      border: 1px solid var(--line);
+      pointer-events: none;
+    }
+
+    .cover-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: var(--accent);
+      font-family: var(--sans);
+      font-weight: 800;
+      font-size: 0.85rem;
+      margin: 0 0 16px;
+      display: block;
+    }
+
+    .cover h1 {
+      font-size: 3.4rem;
+      font-weight: 800;
+      line-height: 1.15;
+      margin: 0 0 20px;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+    }
+
+    .cover-description {
+      font-size: 1.1rem;
+      max-width: 680px;
+      margin: 0 auto 48px;
+      line-height: 1.65;
+      color: var(--muted);
+    }
+
+    /* Formal grid table */
+    .cover-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin-top: 40px;
+      border: 1px solid var(--line);
+      font-family: var(--sans);
+    }
+
+    .cover-stat {
+      padding: 20px;
+      border-right: 1px solid var(--line);
+      background: var(--soft);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .cover-stat:last-child {
+      border-right: 0;
+    }
+
+    .cover-stat strong {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .cover-stat span {
+      font-size: 0.68rem;
+      font-family: var(--mono);
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .content {
+      padding: 64px 72px;
+    }
+
+    .section {
+      margin-bottom: 56px;
+      counter-increment: section;
+    }
+
+    .section-header {
+      border-bottom: 2px solid var(--ink);
+      padding-bottom: 8px;
+      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .section-header h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin: 0;
+      font-family: var(--sans);
+      letter-spacing: -0.01em;
+    }
+
+    .section-header h2:before {
+      content: counter(section) ". ";
+      color: var(--accent);
+    }
+
+    .section-kicker {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0;
+    }
+
+    .section-count {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-family: var(--mono);
+    }
+
+    .summary-grid, .relations, .metadata-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .metadata-grid {
+      grid-template-columns: repeat(3, 1fr);
+      font-family: var(--sans);
+    }
+
+    .panel, .artifact-card {
+      border: 1px solid var(--line-light);
+      padding: 24px;
+      background: var(--paper);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .panel h3 {
+      font-size: 0.85rem;
+      font-family: var(--sans);
+      text-transform: uppercase;
+      color: var(--accent);
+      margin: 0 0 12px;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+    }
+
+    .panel p {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      color: var(--ink);
+      margin: 0;
+    }
+
+    /* Structured TOC grid */
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-family: var(--sans);
+    }
+
+    .toc li {
+      break-inside: avoid;
+    }
+
+    .toc a {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 18px;
+      border: 1px solid var(--line-light);
+      border-radius: 4px;
+      text-decoration: none;
+      color: var(--ink);
+      font-weight: 600;
+      font-size: 0.88rem;
+      background: var(--soft);
+      transition: all 0.15s ease;
+    }
+
+    .toc a:hover {
+      background: #ffffff;
+      border-color: var(--accent);
+    }
+
+    .toc-number {
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* Dossier sheets cards */
+    .artifact-card {
+      margin: 24px 0;
+      border: 1px solid var(--line);
+    }
+
+    .artifact-head {
+      border-bottom: 1px solid var(--line-light);
+      margin: -24px -24px 20px;
+      padding: 16px 24px;
+      background: var(--soft);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-family: var(--sans);
+    }
+
+    .artifact-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .artifact-id {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--muted);
+      font-weight: 400;
+    }
+
+    .badges {
+      display: flex;
+      gap: 6px;
+    }
+
+    .badge {
+      font-family: var(--mono);
+      font-size: 0.64rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border: 1px solid var(--line-light);
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: #ffffff;
+    }
+
+    .badge.type {
+      border-color: var(--line);
+      color: var(--ink);
+    }
+
+    .badge.status {
+      background: var(--soft);
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .badge.layer {
+      background: var(--soft);
+      color: var(--muted);
+    }
+
+    .metadata-item {
+      border: 1px solid var(--line-light);
+      background: var(--soft);
+      padding: 10px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .metadata-item span {
+      font-size: 0.65rem;
+      font-family: var(--mono);
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .metadata-item strong {
+      font-size: 0.85rem;
+      color: var(--ink);
+    }
+
+    .markdown {
+      font-size: 0.96rem;
+      line-height: 1.62;
+      color: var(--ink);
+      margin-top: 16px;
+    }
+
+    .markdown p {
+      margin: 0 0 16px;
+    }
+
+    .markdown p:last-child {
+      margin-bottom: 0;
+    }
+
+    .markdown pre, .json-block {
+      background: #0f172a;
+      color: #f8fafc;
+      border-radius: 4px;
+      padding: 16px;
+      overflow-x: auto;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      margin: 16px 0;
+      border: 1px solid var(--line);
+    }
+
+    .markdown code {
+      font-family: var(--mono);
+      font-size: 0.9em;
+      background: var(--soft);
+      padding: 2px 4px;
+      border-radius: 2px;
+      color: #eb5757;
+      border: 1px solid var(--line-light);
+    }
+
+    .markdown pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+      border: none;
+    }
+
+    .relation-box {
+      border: 1px solid var(--line-light);
+      background: var(--soft);
+      padding: 16px;
+    }
+
+    .relation-box h4 {
+      margin: 0 0 12px;
+      font-size: 0.78rem;
+      font-family: var(--sans);
+      text-transform: uppercase;
+      color: var(--accent);
+      letter-spacing: 0.05em;
+    }
+
+    .relation-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .relation-list li {
+      font-size: 0.84rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .relation-list strong {
+      color: var(--accent);
+    }
+
+    .relation-list a {
+      color: var(--ink);
+      text-decoration: none;
+      border-bottom: 1px dashed var(--muted);
+    }
+
+    .relation-list a:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* Formal legal registry table */
+    .relation-matrix {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      font-family: var(--sans);
+    }
+
+    .relation-matrix th {
+      background: var(--soft);
+      color: var(--ink);
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      padding: 12px;
+      border: 1px solid var(--line);
+      text-align: left;
+    }
+
+    .relation-matrix td {
+      padding: 12px;
+      border: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 0.875rem;
+    }
+
+    .relation-matrix tr:hover td {
+      background: var(--soft);
+    }
+
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      border-top: var(--border-double);
+      padding: 24px 72px;
+      color: var(--muted);
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      background: var(--soft);
+    }
+
+    .openlag-diagram-card {
+      border: 1px solid var(--line);
+      overflow: hidden;
+      margin: 24px 0;
+      background: var(--paper);
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    .openlag-diagram-header {
+      padding: 12px 16px;
+      background: var(--soft);
+      font-family: var(--sans);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--muted);
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .openlag-mermaid {
+      padding: 24px;
+      overflow-x: auto;
+      background: #ffffff;
+      display: flex;
+      justify-content: center;
+    }
+
+    @media(max-width: 900px) {
+      .dossier {
+        margin: 0;
+        border: none;
+      }
+      .cover, .content, .sidebar, .footer {
+        padding: 32px 24px;
+      }
+      .cover-grid, .summary-grid, .relations, .metadata-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 20mm 15mm;
+      }
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+      .dossier {
+        margin: 0;
+        border: none;
+        box-shadow: none;
+      }
+      .sidebar {
+        display: none;
+      }
+      .cover {
+        height: 100vh;
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        page-break-after: always;
+        break-after: page;
+        padding: 2in 0.5in 0.5in !important;
+      }
+      .content {
+        padding: 0;
+      }
+      .section {
+        page-break-inside: auto;
+        break-inside: auto;
+        margin-bottom: 40px;
+      }
+      .section-header {
+        break-after: avoid-page;
+        page-break-after: avoid;
+      }
+      .section-header + * {
+        break-before: avoid-page;
+        page-break-before: avoid;
+      }
+      .artifact-card, .panel, .openlag-diagram-card {
+        break-inside: avoid-page;
+        page-break-inside: avoid;
+        margin: 20px 0;
+        border-color: #000000 !important;
+      }
+      .artifact-head {
+        break-after: avoid-page;
+        page-break-after: avoid;
+      }
+      .artifact-body, .metadata-grid, .metadata-item, .relation-box {
+        break-inside: avoid-page;
+        page-break-inside: avoid;
+      }
+      .relation-matrix {
+        break-inside: avoid-page;
+        page-break-inside: avoid;
+      }
+      h3, h4 {
+        break-after: avoid-page;
+        page-break-after: avoid;
+      }
+      p, li {
+        orphans: 3;
+        widows: 3;
+      }
+      .footer {
+        display: none;
+      }
+    }
+  </style>
+  <script id="openlag-vendor-marked">/* __OPENLAG_INLINE_MARKED_BUNDLE__ */</script>
+  <script id="openlag-vendor-mermaid">/* __OPENLAG_INLINE_MERMAID_BUNDLE__ */</script>
+  <script>
+    (() => {
+      async function boot() {
+        document.querySelectorAll("[data-openlag-markdown-body],[data-markdown]").forEach(n => {
+          n.innerHTML = window.marked?.parse ? window.marked.parse(n.textContent || "", { gfm: true }) : "<p>" + n.textContent + "</p>";
+          n.querySelectorAll("code.language-mermaid").forEach((c, i) => {
+            const w = document.createElement("section");
+            w.className = "openlag-diagram-card";
+            w.innerHTML = '<div class="openlag-diagram-header">Mermaid diagram #' + (i + 1) + '</div><div class="mermaid openlag-mermaid"></div>';
+            w.querySelector(".mermaid").textContent = c.textContent || "";
+            (c.closest("pre") || c).replaceWith(w);
+          });
+        });
+        const m = window.mermaid && (window.mermaid.default || window.mermaid);
+        if (!m?.initialize) { document.documentElement.dataset.mermaid = "unavailable"; return }
+        try {
+          m.initialize({ startOnLoad: false, securityLevel: "loose", theme: "base" });
+          m.run ? await m.run({ querySelector: ".mermaid" }) : m.init?.(undefined, document.querySelectorAll(".mermaid"));
+          document.documentElement.dataset.mermaid = "ready";
+        } catch {
+          document.documentElement.dataset.mermaid = "error";
+        }
+      }
+      document.readyState === "loading" ? document.addEventListener("DOMContentLoaded", boot) : boot();
+    })();
+  </script>
+</head>
+<body>
+  <main class="dossier">
+    <aside class="sidebar">
+      <div class="brand">
+        <img class="brand-logo" data-template-src="branding.logo" alt="OpenLAG logo">
+        <div>
+          <p class="brand-title" data-template="branding.productName">OpenLAG</p>
+          <p class="brand-subtitle" data-template="branding.subtitle">Documentation Freeze</p>
+        </div>
+      </div>
+      <nav class="nav-links" data-slot="openlag.sidebarNavigation"></nav>
+    </aside>
+    <header id="cover" class="cover">
+      <img class="cover-logo" data-template-src="branding.logo" alt="OpenLAG logo">
+      <p class="eyebrow" data-template="cover.eyebrow">Snapshot</p>
+      <h1 data-template="cover.title">Freeze</h1>
+      <p data-template="cover.description">Description</p>
+      <div class="cover-grid">
+        <div class="cover-stat">
+          <strong data-template="summary.artifactCount">0</strong>
+          <span>Artifacts</span>
+        </div>
+        <div class="cover-stat">
+          <strong data-template="summary.relationCount">0</strong>
+          <span>Relations</span>
+        </div>
+        <div class="cover-stat">
+          <strong data-template="summary.sectionCount">0</strong>
+          <span>Sections</span>
+        </div>
+        <div class="cover-stat">
+          <strong data-template="profile.id">profile</strong>
+          <span data-template="profile.name">Profile</span>
+        </div>
+      </div>
+    </header>
+    <div class="content">
+      <section id="executive-summary" class="section">
+        <div class="section-header">
+          <div>
+            <p class="section-kicker" data-template="document.language">en</p>
+            <h2 data-template="executiveSummary.title">Executive Summary</h2>
+          </div>
+          <span data-template="document.generatedAt">generated</span>
+        </div>
+        <div class="summary-grid">
+          <div class="panel">
+            <h3 data-template="executiveSummary.purposeTitle">Purpose</h3>
+            <p data-template="executiveSummary.purpose">Purpose</p>
+            <h3 data-template="executiveSummary.scopeTitle">Scope</h3>
+            <p data-template="executiveSummary.scope">Scope</p>
+          </div>
+          <div class="panel">
+            <h3 data-template="executiveSummary.audienceTitle">Audience</h3>
+            <p data-template="executiveSummary.audience">Audience</p>
+            <p data-template="profile.description">Profile description</p>
+          </div>
+        </div>
+      </section>
+      <section id="toc" class="section">
+        <h2 data-template="document.title">Contents</h2>
+        <p data-template="document.formatVersion">openlag.freeze.v1</p>
+        <div data-slot="openlag.tableOfContents"></div>
+      </section>
+      <section class="section">
+        <h2>Traceability Register</h2>
+        <div data-slot="openlag.relations"></div>
+      </section>
+      <div data-slot="openlag.sections"></div>
+      <section class="section">
+        <h2>Technical metadata</h2>
+        <div data-slot="openlag.technicalMetadata"></div>
+      </section>
+      <template data-slot="openlag.artifacts"></template>
+    </div>
+    <footer class="footer">
+      <span data-template="footer.left">Generated</span>
+      <span data-template="footer.right">Template</span>
+    </footer>
+  </main>
+</body>
+</html>

@@ -1,8 +1,10 @@
-import { Artifact, ArtifactType, Relation, RelationType, Change, ChangeType, SystemVersion, Version } from "../../../src/types.js";
+import { Artifact, Relation, Change, SystemVersion, Version } from "../../../src/types.js";
 
 export interface ParsedArtifact extends Artifact {
   file: string;
   status?: 'draft' | 'in_progress' | 'ready' | 'closed' | 'deprecated';
+  markdownBody?: string;
+  raw?: Record<string, unknown>;
 }
 
 export interface ParsedRelation extends Relation {

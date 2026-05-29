@@ -1,0 +1,150 @@
+[
+  {
+    "id": "codeWithoutRequirement",
+    "description": "Code entity has no requirement associated.",
+    "severity": "error",
+    "matchNode": {
+      "type": "CODE_ENTITY"
+    },
+    "conditions": {
+      "requiredRelations": [
+        {
+          "type": "IMPLEMENTS",
+          "toType": [
+            "REQUIREMENT",
+            "FEATURE",
+            "BUG",
+            "API"
+          ],
+          "message": "Code entity has no requirement associated."
+        }
+      ]
+    }
+  },
+  {
+    "id": "controller-db-isolation",
+    "description": "Controllers should not depend directly on database entities.",
+    "matchNode": {
+      "type": [
+        "CONTROLLER"
+      ]
+    },
+    "conditions": {
+      "forbiddenRelations": [
+        {
+          "type": "DEPENDS_ON",
+          "toType": [
+            "DATABASE_ENTITY"
+          ]
+        }
+      ]
+    },
+    "severity": "error"
+  },
+  {
+    "id": "domain-isolation",
+    "description": "Domain logic must not depend on infrastructure or external adapters.",
+    "matchNode": {
+      "type": [
+        "DOMAIN_ENTITY"
+      ]
+    },
+    "conditions": {
+      "forbiddenRelations": [
+        {
+          "type": "DEPENDS_ON",
+          "toType": [
+            "ADAPTER",
+            "INFRASTRUCTURE"
+          ]
+        }
+      ]
+    },
+    "severity": "error"
+  },
+  {
+    "id": "invalidLayerRelation",
+    "description": "Business layer artifact should not have OPERATIONAL relations.",
+    "severity": "error",
+    "matchNode": {
+      "layer": "BUSINESS"
+    },
+    "conditions": {
+      "forbiddenRelations": [
+        {
+          "type": "DEPLOYS",
+          "message": "Business layer artifact should not have OPERATIONAL relations."
+        },
+        {
+          "type": "MONITORS",
+          "message": "Business layer artifact should not have OPERATIONAL relations."
+        }
+      ]
+    }
+  },
+  {
+    "id": "orphanArtifact",
+    "description": "Test without associated requirement.",
+    "severity": "error",
+    "matchNode": {
+      "type": "TEST_CASE"
+    },
+    "conditions": {
+      "requiredRelations": [
+        {
+          "type": "TESTS",
+          "toType": [
+            "CODE_ENTITY",
+            "REQUIREMENT",
+            "FEATURE",
+            "BUG",
+            "USE_CASE"
+          ],
+          "message": "Test without associated requirement."
+        }
+      ]
+    }
+  },
+  {
+    "id": "requirementWithoutImplementation",
+    "description": "Requirement lacks implementation.",
+    "severity": "error",
+    "matchNode": {
+      "type": [
+        "REQUIREMENT",
+        "FEATURE",
+        "USE_CASE"
+      ]
+    },
+    "conditions": {
+      "requiredRelations": [
+        {
+          "type": "IMPLEMENTS",
+          "direction": "incoming",
+          "message": "Requirement lacks implementation."
+        }
+      ]
+    }
+  },
+  {
+    "id": "requirementWithoutTest",
+    "description": "Requirement has no tests linked.",
+    "severity": "error",
+    "matchNode": {
+      "type": [
+        "REQUIREMENT",
+        "FEATURE",
+        "USE_CASE"
+      ]
+    },
+    "conditions": {
+      "requiredRelations": [
+        {
+          "type": "TESTS",
+          "direction": "incoming",
+          "message": "Requirement has no tests linked."
+        }
+      ]
+    }
+  }
+]

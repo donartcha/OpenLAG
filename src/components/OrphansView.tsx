@@ -1,8 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useStore } from '../store';
-import { ArtifactType } from '../types';
 import { getArtifactLayer, getArtifactOwner, getArtifactTeam } from '../utils/artifactUtils';
-import { AlertCircle, Search, Trash2, ChevronRight, FileText, ExternalLink, ShieldAlert, AlertTriangle, Info, Download } from 'lucide-react';
+import { AlertCircle, Search, Trash2, ChevronRight, ExternalLink, ShieldAlert, AlertTriangle, Info, Download } from 'lucide-react';
 import { generateGapsReport, downloadTextFile } from '../lib/reportUtils';
 import Markdown from 'react-markdown';
 

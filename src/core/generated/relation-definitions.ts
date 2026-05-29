@@ -53,7 +53,7 @@ export const GENERATED_RELATIONS: RelationContract[] = [
       "directions": [
         "forward"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -86,7 +86,7 @@ export const GENERATED_RELATIONS: RelationContract[] = [
       "directions": [
         "forward"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -109,11 +109,11 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     },
     "strength": "MEDIUM",
     "impact": {
-      "propagates": false,
+      "propagates": true,
       "directions": [
-        "forward"
+        "reverse"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -144,11 +144,11 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     },
     "strength": "WEAK",
     "impact": {
-      "propagates": false,
+      "propagates": true,
       "directions": [
-        "forward"
+        "reverse"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -182,11 +182,11 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     },
     "strength": "MEDIUM",
     "impact": {
-      "propagates": false,
+      "propagates": true,
       "directions": [
-        "forward"
+        "reverse"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -217,7 +217,7 @@ export const GENERATED_RELATIONS: RelationContract[] = [
       "directions": [
         "forward"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -249,11 +249,11 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     },
     "strength": "WEAK",
     "impact": {
-      "propagates": false,
+      "propagates": true,
       "directions": [
-        "forward"
+        "reverse"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -261,7 +261,8 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "description": "Conecta documentación con el artefacto descrito.",
     "category": "SEMANTIC",
     "allowedFrom": [
-      "DOCUMENTATION"
+      "DOCUMENTATION",
+      "CHANGE"
     ],
     "allowedTo": [
       "PROJECT",
@@ -304,11 +305,11 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     },
     "strength": "WEAK",
     "impact": {
-      "propagates": false,
+      "propagates": true,
       "directions": [
-        "forward"
+        "reverse"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -337,7 +338,7 @@ export const GENERATED_RELATIONS: RelationContract[] = [
       "directions": [
         "forward"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -372,11 +373,11 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     },
     "strength": "MEDIUM",
     "impact": {
-      "propagates": false,
+      "propagates": true,
       "directions": [
         "forward"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -401,11 +402,11 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     },
     "strength": "STRONG",
     "impact": {
-      "propagates": false,
+      "propagates": true,
       "directions": [
-        "forward"
+        "reverse"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -428,11 +429,11 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     },
     "strength": "MEDIUM",
     "impact": {
-      "propagates": false,
+      "propagates": true,
       "directions": [
-        "forward"
+        "reverse"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -458,11 +459,11 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     },
     "strength": "MEDIUM",
     "impact": {
-      "propagates": false,
+      "propagates": true,
       "directions": [
-        "forward"
+        "reverse"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -493,7 +494,7 @@ export const GENERATED_RELATIONS: RelationContract[] = [
       "directions": [
         "forward"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -508,7 +509,8 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     "allowedTo": [
       "EPIC",
       "FEATURE",
-      "REQUIREMENT"
+      "REQUIREMENT",
+      "CHANGE"
     ],
     "multiplicity": {
       "from": "many",
@@ -519,11 +521,11 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     },
     "strength": "MEDIUM",
     "impact": {
-      "propagates": false,
+      "propagates": true,
       "directions": [
-        "forward"
+        "reverse"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -603,9 +605,9 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     },
     "strength": "MEDIUM",
     "impact": {
-      "propagates": false,
+      "propagates": true,
       "directions": [
-        "forward"
+        "both"
       ],
       "weight": 0.5
     }
@@ -643,11 +645,11 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     },
     "strength": "WEAK",
     "impact": {
-      "propagates": false,
+      "propagates": true,
       "directions": [
         "forward"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -673,11 +675,11 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     },
     "strength": "STRONG",
     "impact": {
-      "propagates": false,
+      "propagates": true,
       "directions": [
-        "forward"
+        "reverse"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -706,11 +708,11 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     },
     "strength": "MEDIUM",
     "impact": {
-      "propagates": false,
+      "propagates": true,
       "directions": [
-        "forward"
+        "reverse"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   },
   {
@@ -726,7 +728,8 @@ export const GENERATED_RELATIONS: RelationContract[] = [
       "REQUIREMENT",
       "FEATURE",
       "USE_CASE",
-      "DEPLOYMENT"
+      "DEPLOYMENT",
+      "VERSION"
     ],
     "multiplicity": {
       "from": "many",
@@ -737,11 +740,11 @@ export const GENERATED_RELATIONS: RelationContract[] = [
     },
     "strength": "WEAK",
     "impact": {
-      "propagates": false,
+      "propagates": true,
       "directions": [
-        "forward"
+        "reverse"
       ],
-      "weight": 0.5
+      "weight": 1
     }
   }
 ];

@@ -1,0 +1,8 @@
+type: DTO
+extends: CODE_ENTITY
+layer: IMPLEMENTATION
+description: "Data transfer object implementation."
+requiredFields:
+  - id
+  - type
+  - title

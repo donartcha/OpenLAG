@@ -1,4 +1,4 @@
-export type LintSeverity = 'error' | 'warning' | 'info' | 'off';
+export type LintSeverity = 'error' | 'warn' | 'warning' | 'info' | 'off';
 
 export interface LintIssue {
   severity: LintSeverity;
@@ -35,6 +35,7 @@ export interface LintProfile {
   invalidLayer: LintSeverity;
   invalidLayerRelation?: LintSeverity;
   missingOwnership?: LintSeverity;
+  [key: string]: LintSeverity | undefined;
 }
 
 export interface LintConfig {

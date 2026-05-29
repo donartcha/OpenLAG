@@ -1,0 +1,14 @@
+relation: BREAKS
+description: "Averías o rupturas confirmadas."
+category: OPERATIONAL
+allowedFrom: [CHANGE, CODE_ENTITY, COMPONENT, SYSTEM_VERSION]
+allowedTo: [TEST_CASE, API, COMPONENT, REQUIREMENT, FEATURE]
+multiplicity:
+  from: many
+  to: many
+validation:
+  severity: error
+impact:
+  propagates: false
+  directions: [forward]
+  weight: 1

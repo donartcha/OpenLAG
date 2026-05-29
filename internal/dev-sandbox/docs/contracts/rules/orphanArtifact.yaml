@@ -1,0 +1,10 @@
+﻿id: orphanArtifact
+description: "Test without associated requirement."
+severity: error
+matchNode:
+  type: TEST_CASE
+conditions:
+  requiredRelations:
+    - type: TESTS
+      toType: [CODE_ENTITY, REQUIREMENT, FEATURE, BUG, USE_CASE]
+      message: "Test without associated requirement."

@@ -3,7 +3,7 @@ import { useStore } from '../store';
 import { Artifact } from '../types';
 import { getArtifactLayer, getArtifactOwner, getArtifactTeam } from '../utils/artifactUtils';
 import { strategyRegistry } from '../core/strategies';
-import { Layers, FileText, FileCode2, ShieldCheck, ChevronRight, Search, GitPullRequest, Repeat, Box, Rocket, Activity, Wrench, Trash2, AlertCircle, Printer, Milestone, Bookmark, BookOpen } from 'lucide-react';
+import { ChevronRight, Search, Activity, Trash2, AlertCircle, Printer, Bookmark } from 'lucide-react';
 import { MarkdownRenderer } from './MarkdownRenderer';
 
 const OwnershipBadge = ({ artifact }: { artifact: Artifact }) => {
@@ -484,7 +484,22 @@ export const DocumentationView: React.FC = () => {
                                           )}
                                         </h3>
                                         <OwnershipBadge artifact={artifact} />
-                                        <MarkdownRenderer content={artifact.description} />
+                                        {artifact.description && (
+                                          <div className="mb-4">
+                                            <div className="text-[10px] uppercase tracking-widest text-white/40 mb-2 font-mono">
+                                              Summary
+                                            </div>
+                                            <MarkdownRenderer content={artifact.description} />
+                                          </div>
+                                        )}
+                                        {artifact.markdownBody && artifact.markdownBody.trim().length > 0 && (
+                                          <div className="pt-4 border-t border-white/10">
+                                            <div className="text-[10px] uppercase tracking-widest text-white/40 mb-3 font-mono">
+                                              Document Body
+                                            </div>
+                                            <MarkdownRenderer content={artifact.markdownBody} />
+                                          </div>
+                                        )}
                                       </div>
                                     ))}
                                 </div>

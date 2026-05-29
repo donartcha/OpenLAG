@@ -1,0 +1,7 @@
+type: INCIDENT
+layer: OPERATIONS
+description: "Standard INCIDENT artifact."
+requiredFields:
+  - id
+  - type
+  - title

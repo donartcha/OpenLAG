@@ -21,6 +21,19 @@ export default defineConfig({
   build: {
     outDir: path.join(projectRoot, 'dist'),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return undefined;
+          if (id.includes('cytoscape')) return 'vendor-cytoscape';
+          if (id.includes('@xyflow') || id.includes('dagre')) return 'vendor-flow';
+          if (id.includes('react-markdown') || id.includes('marked') || id.includes('katex')) return 'vendor-docs';
+          if (id.includes('react') || id.includes('react-dom') || id.includes('zustand')) return 'vendor-ui';
+          if (id.includes('lucide-react')) return 'vendor-icons';
+          return undefined;
+        },
+      },
+    },
   },
   server: {
     port: 3000,

@@ -85,8 +85,8 @@ const CustomNode = ({ data, selected }: any) => {
     >
       <Handle type="target" position={Position.Top} id="t-top" className={`w-2 h-2 rounded-none ${isDimmed ? 'opacity-0' : 'bg-emerald-500/50 border-0'}`} style={{ left: '30%' }} />
       <Handle type="source" position={Position.Top} id="s-top" className={`w-2 h-2 rounded-none ${isDimmed ? 'opacity-0' : 'bg-blue-500/50 border-0'}`} style={{ left: '70%' }} />
-      <div className={`flex justify-between items-start mb-3 ${colorClass}`}>
-        <div className="flex flex-col gap-0.5">
+      <div className={`flex justify-between items-start gap-2 mb-3 min-w-0 ${colorClass}`}>
+        <div className="flex flex-col gap-0.5 min-w-0">
           <div className="flex items-center gap-1.5">
             <span className="text-[9px] font-bold uppercase tracking-widest">{data.type}</span>
             {isOrphan && (
@@ -98,7 +98,12 @@ const CustomNode = ({ data, selected }: any) => {
 
           {data.layer && <span className="text-[7px] font-mono tracking-wider opacity-40">{data.layer}</span>}
         </div>
-        <span className="text-[10px] font-mono opacity-60 shrink-0 ml-2 border border-white/10 px-1">{data.id}</span>
+        <span
+          className="text-[10px] font-mono opacity-60 shrink max-w-[118px] min-w-0 border border-white/10 px-1 truncate"
+          title={data.id}
+        >
+          {data.id}
+        </span>
       </div>
       <div className="font-serif text-[#e0e0e0] text-sm mb-2 leading-tight">{data.title}</div>
       <div className="flex flex-col gap-1">

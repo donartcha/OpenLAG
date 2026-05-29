@@ -1,0 +1,14 @@
+relation: REPLACES
+description: "Evolución e histórico, deprecando versiones anteriores."
+category: EVOLUTIONARY
+allowedFrom: [COMPONENT, API, SYSTEM_VERSION, VERSION, REQUIREMENT, FEATURE, DESIGN, DECISION]
+allowedTo: [COMPONENT, API, SYSTEM_VERSION, VERSION, REQUIREMENT, FEATURE, DESIGN, DECISION]
+multiplicity:
+  from: many
+  to: one
+validation:
+  severity: info
+impact:
+  propagates: true
+  directions: [forward]
+  weight: 1

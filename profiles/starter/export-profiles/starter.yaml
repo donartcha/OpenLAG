@@ -1,0 +1,42 @@
+id: starter
+name: OpenLAG Lite Export
+description: Minimal export profile for onboarding and quick team reviews.
+defaultFormat: markdown
+
+includeArtifactTypes:
+  - REQUIREMENT
+  - FEATURE
+  - CODE_ENTITY
+  - TEST_CASE
+
+includeRelations:
+  - REFINES
+  - IMPLEMENTS
+  - TESTS
+  - DEPENDS_ON
+
+sections:
+  - id: scope
+    title: Scope
+    artifactTypes:
+      - REQUIREMENT
+      - FEATURE
+
+  - id: implementation
+    title: Implementation
+    artifactTypes:
+      - CODE_ENTITY
+
+  - id: validation
+    title: Validation
+    artifactTypes:
+      - TEST_CASE
+
+ordering:
+  strategy: lifecycle
+  fallback: title
+
+rendering:
+  includeTableOfContents: true
+  includeRelationTables: true
+  includeSourceMetadata: true

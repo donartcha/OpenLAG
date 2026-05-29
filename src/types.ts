@@ -35,11 +35,11 @@ export interface Artifact {
   id: string;
   type: ArtifactType;
   title: string;
-  description: string;
-  version: string;
+  description?: string;
+  markdownBody?: string;
+  version?: string;
   component?: string;
   releaseDate?: string;
-  systemVersionId?: string;
   layer?: string;
   ownership?: Ownership;
   status?: string;

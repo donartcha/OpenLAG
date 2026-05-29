@@ -1,5 +1,6 @@
 import fs from "fs";
 import path from "path";
+import yaml from "js-yaml";
 import { parseOpenLagDocs } from "../core/parser.js";
 import { loadArtifactContracts } from "../core/artifact-contracts.js";
 import { loadRelationContracts } from "../core/relation-contracts.js";
@@ -36,8 +37,18 @@ function isDescendant(currentVersionId: string, artifactVersionId: string, versi
 export function generateData(docsDir: string, outputDir: string, silent = false) {
   if (!silent) console.log(chalk.blue("🚀 Generating OpenLAG Static Data..."));
 
-  const artifactContracts = loadArtifactContracts(path.join(docsDir, 'artifacts'));
-  const relationContracts = loadRelationContracts(path.join(docsDir, 'relations'));
+  const artifactContracts = loadArtifactContracts(path.join(docsDir, 'contracts', 'artifacts'));
+  const relationContracts = loadRelationContracts(path.join(docsDir, 'contracts', 'relations'));
+  const rulesDir = path.join(docsDir, 'contracts', 'rules');
+  const ruleContracts: any[] = [];
+  if (fs.existsSync(rulesDir)) {
+    for (const file of fs.readdirSync(rulesDir)) {
+      if (!file.endsWith('.yaml')) continue;
+      const raw = fs.readFileSync(path.join(rulesDir, file), 'utf-8');
+      const parsed = yaml.load(raw);
+      if (parsed) ruleContracts.push(parsed);
+    }
+  }
   const parsedData = parseOpenLagDocs(docsDir);
 
   let metadata = { name: "OpenLAG Project", description: "Architecture documentation." };
@@ -45,7 +56,7 @@ export function generateData(docsDir: string, outputDir: string, silent = false)
   if (fs.existsSync(metadataPath)) {
     try {
       metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
-    } catch (e) {
+    } catch {
       if (!silent) console.warn(chalk.yellow("⚠️  Could not parse metadata.json"));
     }
   }
@@ -82,18 +93,55 @@ export function generateData(docsDir: string, outputDir: string, silent = false)
 
   if (!fs.existsSync(outputDir)) fs.mkdirSync(outputDir, { recursive: true });
 
+  const artifactDefinitionsPath = path.join(outputDir, 'artifact-definitions.json');
+  const relationDefinitionsPath = path.join(outputDir, 'relation-definitions.json');
+  const ruleDefinitionsPath = path.join(outputDir, 'rule-definitions.json');
+
+  const logContractFallbackStatus = (kind: string, filePath: string) => {
+    if (fs.existsSync(filePath)) {
+      if (!silent) {
+        console.warn(
+          chalk.yellow(
+            `Warning: No ${kind} contracts found in docs/contracts/${kind}; keeping existing fallback file ${path.basename(filePath)}.`
+          )
+        );
+      }
+      return;
+    }
+    if (!silent) {
+      console.warn(
+        chalk.red(
+          `Warning: No ${kind} contracts found in docs/contracts/${kind} and no fallback file exists at ${filePath}.`
+        )
+      );
+    }
+  };
+
   if (artifactContracts.length > 0) {
     fs.writeFileSync(
-      path.join(outputDir, 'artifact-definitions.json'),
+      artifactDefinitionsPath,
       JSON.stringify(artifactContracts, null, 2)
     );
+  } else {
+    logContractFallbackStatus('artifacts', artifactDefinitionsPath);
   }
 
   if (relationContracts.length > 0) {
     fs.writeFileSync(
-      path.join(outputDir, 'relation-definitions.json'),
+      relationDefinitionsPath,
       JSON.stringify(relationContracts, null, 2)
     );
+  } else {
+    logContractFallbackStatus('relations', relationDefinitionsPath);
+  }
+
+  if (ruleContracts.length > 0) {
+    fs.writeFileSync(
+      ruleDefinitionsPath,
+      JSON.stringify(ruleContracts, null, 2)
+    );
+  } else {
+    logContractFallbackStatus('rules', ruleDefinitionsPath);
   }
 
   fs.writeFileSync(
@@ -128,7 +176,7 @@ export function watchData(docsDir: string, outputDir: string) {
     timeout = setTimeout(runCleanly, 300);
   };
 
-  watcher.on('all', (event, path) => {
+  watcher.on('all', () => {
     debouncedRun();
   });
 }

@@ -5,7 +5,7 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: ['app/**', 'dist/**', 'node_modules/**', 'public/**', '.tmp-*/**', 'openlag-lifecycle/dist/**', 'openlag-lifecycle/public/**'],
+    ignores: ['app/**', 'dist/**', '**/dist/**', 'node_modules/**', '**/node_modules/**', 'public/**', '**/public/**', '.tmp-*/**'],
   },
   eslint.configs.recommended,
   {

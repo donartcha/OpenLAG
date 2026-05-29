@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import { parseOpenLagDocs } from "../core/parser.js";
 import { runLintRules } from "./lint-rules.js";
 import { defaultProfiles } from "./lint-profiles.js";
-import { LintConfig, LintReport, LintIssue, LintSummary } from "./lint-types.js";
+import { LintConfig, LintReport, LintSummary } from "./lint-types.js";
 
 export function loadConfig(configPath: string): LintConfig {
   const defaultConfig: LintConfig = {
@@ -24,7 +24,7 @@ export function loadConfig(configPath: string): LintConfig {
           ...parsed.lint
         };
       }
-    } catch (e) {
+    } catch {
       console.warn("⚠️  Could not parse openlag.config.yml, using defaults.");
     }
   }
@@ -84,3 +84,4 @@ export function printHumanReport(report: LintReport) {
   console.log(chalk.yellow(`Warnings: ${report.summary.warnings}`));
   console.log(chalk.cyan(`Info:     ${report.summary.info}\n`));
 }
+

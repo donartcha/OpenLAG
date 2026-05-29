@@ -1,0 +1,10 @@
+type: VERSION
+layer: DOCUMENTATION
+description: "Standard VERSION artifact."
+requiredFields:
+  - id
+  - type
+  - title
+  - name
+  - timestamp
+  - parentVersion

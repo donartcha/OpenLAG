@@ -1,0 +1,5 @@
+type: DEBT
+extends: GOVERNANCE_ARTIFACT
+layer: GOVERNANCE
+description: "Accepted technical or architectural debt."
+requiredFields: [id, type, title, description]

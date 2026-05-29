@@ -1,0 +1,22 @@
+id: compliance
+name: Compliance & Security Report
+description: Documentation tailored for compliance audits.
+defaultFormat: pdf
+includeArtifactTypes:
+  - PROJECT
+  - REQUIREMENT
+  - COMPONENT
+  - DATABASE_ENTITY
+  - API
+  - TEST_CASE
+  - RISK
+sections:
+  - id: summary
+    title: System Overview
+    artifactTypes: [PROJECT, REQUIREMENT]
+  - id: data
+    title: Data & Boundaries
+    artifactTypes: [DATABASE_ENTITY, API, COMPONENT]
+  - id: validation
+    title: Security & Validation
+    artifactTypes: [RISK, TEST_CASE]

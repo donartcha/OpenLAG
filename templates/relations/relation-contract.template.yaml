@@ -1,0 +1,4 @@
+type: RELATES_TO
+category: SEMANTIC
+allowedFrom: [PROJECT]
+allowedTo: [PROJECT]

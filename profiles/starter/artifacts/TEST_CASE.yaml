@@ -1,0 +1,7 @@
+type: TEST_CASE
+layer: IMPLEMENTATION
+description: "Automated or manual test case."
+requiredFields:
+  - id
+  - type
+  - title

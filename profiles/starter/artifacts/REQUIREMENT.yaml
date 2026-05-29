@@ -1,0 +1,7 @@
+type: REQUIREMENT
+layer: BUSINESS
+description: "Business requirement."
+requiredFields:
+  - id
+  - type
+  - title

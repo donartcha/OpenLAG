@@ -1,0 +1,14 @@
+type: AFFECTS
+description: "A governance artifact or change affects a target component."
+category: GOVERNANCE
+strength: STRONG
+allowedFrom:
+  - GOVERNANCE_ARTIFACT
+  - CHANGE
+allowedTo:
+  - PROJECT
+
+impact:
+  propagates: true
+  directions: [forward]
+  weight: 1

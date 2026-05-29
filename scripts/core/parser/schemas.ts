@@ -4,9 +4,8 @@ export const ArtifactSchema = z.object({
   id: z.string(),
   type: z.string(),
   title: z.string(),
-  version: z.string(),
-  description: z.string(),
-  systemVersionId: z.string().optional(),
+  version: z.string().optional(),
+  description: z.string().optional(),
   status: z.enum(['draft', 'in_progress', 'ready', 'closed', 'deprecated']).optional(),
   layer: z.string().optional(),
   ownership: z.object({
@@ -18,5 +17,4 @@ export const ArtifactSchema = z.object({
     steward: z.string().optional(),
   }).optional(),
   file: z.string(),
-  schemaVersion: z.string().optional(),
 });

@@ -1,0 +1,23 @@
+id: executive
+name: Executive Summary
+description: High-level overview of the architecture and business requirements.
+defaultFormat: pdf
+template:
+  id: executive-brief
+  path: templates/freeze/executive-brief.html
+includeArtifactTypes:
+  - PROJECT
+  - EPIC
+  - REQUIREMENT
+  - USE_CASE
+  - DECISION
+sections:
+  - id: summary
+    title: Executive Summary
+    artifactTypes: [PROJECT]
+  - id: capabilities
+    title: Business Capabilities
+    artifactTypes: [EPIC, REQUIREMENT, USE_CASE]
+  - id: strategy
+    title: Strategic Decisions
+    artifactTypes: [DECISION]

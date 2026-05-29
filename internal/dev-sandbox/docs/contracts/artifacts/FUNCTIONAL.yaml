@@ -1,0 +1,8 @@
+type: FUNCTIONAL
+extends: REQUIREMENT
+layer: BUSINESS
+description: "Functional requirement."
+requiredFields:
+  - id
+  - type
+  - title

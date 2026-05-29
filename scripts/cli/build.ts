@@ -14,12 +14,15 @@ export function buildPortal() {
   const docsDir = path.join(process.cwd(), 'docs');
   const outputDir = path.join(process.cwd(), 'public');
 
-  console.log(chalk.blue('Generating contracts (artifacts & relations)...'));
+  console.log(chalk.blue('Generating contracts (artifacts, relations & rules)...'));
   try {
     execFileSync('tsx', [path.join(packageRoot, 'scripts/generate-artifacts.ts')], { stdio: 'inherit', cwd: process.cwd() });
     execFileSync('tsx', [path.join(packageRoot, 'scripts/generate-relations.ts')], { stdio: 'inherit', cwd: process.cwd() });
+    execFileSync('tsx', [path.join(packageRoot, 'scripts/generate-rules.ts')], { stdio: 'inherit', cwd: process.cwd() });
   } catch (error) {
-    console.error(chalk.yellow('Warning: Could not regenerate contracts.'));
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(chalk.yellow(`Warning: Could not regenerate contracts. Reason: ${message}`));
+    console.error(chalk.yellow('OpenLAG will continue using project public/*.json contract files when present, or bundled generated defaults as fallback.'));
   }
 
   generateData(docsDir, outputDir);
