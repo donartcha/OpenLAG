@@ -55,9 +55,13 @@ let cachedData: {
   metadata?: { name: string; description: string; [key: string]: any };
 } | null = null;
 
+function publicUrl(fileName: string): string {
+  return new URL(fileName, window.location.href).toString();
+}
+
 async function loadProjectArtifactContracts(): Promise<void> {
   try {
-    const response = await fetch('/artifact-definitions.json');
+    const response = await fetch(publicUrl('artifact-definitions.json'));
     if (!response.ok) return;
 
     const text = await response.text();
@@ -74,7 +78,7 @@ async function loadProjectArtifactContracts(): Promise<void> {
 
 async function loadProjectRelationContracts(): Promise<void> {
   try {
-    const response = await fetch('/relation-definitions.json');
+    const response = await fetch(publicUrl('relation-definitions.json'));
     if (!response.ok) return;
 
     const text = await response.text();
@@ -151,7 +155,7 @@ export const useStore = create<StoreState>((set, get) => ({
     
     set({ isLoading: true });
     try {
-      const response = await fetch('/graph-data.json');
+      const response = await fetch(publicUrl('graph-data.json'));
       if (!response.ok) throw new Error("Failed to load graph data");
       
       cachedData = await response.json();

@@ -11,6 +11,7 @@ const projectPublicDir = process.env.OPENLAG_PROJECT_ROOT ? path.join(projectRoo
 
 export default defineConfig({
   root: packageRoot,
+  base: './',
   publicDir: projectPublicDir,
   plugins: [react(), tailwindcss()],
   resolve: {
