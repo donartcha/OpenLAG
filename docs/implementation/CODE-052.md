@@ -10,9 +10,7 @@ ownership:
   team: openlag
 relations:
   - type: IMPLEMENTS
-    to: FEAT-053
-  - type: DEPENDS_ON
-    to: CODE-053
+    to: FEAT-052
   - type: IMPLEMENTS
     to: REQ-052
 ---

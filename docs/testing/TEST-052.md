@@ -12,6 +12,8 @@ relations:
   - type: TESTS
     to: CODE-054
   - type: TESTS
+    to: FEAT-051
+  - type: TESTS
     to: REQ-051
 ---
 

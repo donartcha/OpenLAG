@@ -13,6 +13,10 @@ relations:
     to: FEAT-053
   - type: IMPLEMENTS
     to: FEAT-055
+  - type: IMPLEMENTS
+    to: FEAT-052
+  - type: IMPLEMENTS
+    to: FEAT-054
   - type: DEPENDS_ON
     to: CODE-052
   - type: IMPLEMENTS
