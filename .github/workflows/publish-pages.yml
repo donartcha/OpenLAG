@@ -30,10 +30,10 @@ jobs:
         run: npm run check
 
       - name: Generate graph
-        run: npx @donartcha/openlag generate
+        run: npm run generate
 
       - name: Build portal
-        run: npx @donartcha/openlag build
+        run: npm run build
 
       - name: Replace generated index with landing page
         run: |
