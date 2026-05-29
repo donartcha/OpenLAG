@@ -677,6 +677,10 @@
                 "to": "FEAT-052"
               },
               {
+                "type": "IMPLEMENTS",
+                "to": "FEAT-054"
+              },
+              {
                 "type": "DEPENDS_ON",
                 "to": "CODE-052"
               },
@@ -1058,7 +1062,7 @@
             "team": "openlag"
           },
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md",
-          "markdownBody": "# OpenLAG 0.5.0 CLI Orchestration Validation\n\n## Validation Intent\n\nThis test case verifies that the CLI correctly orchestrates command execution.\n\n## Command-Level Coverage\n\nThis validation path covers:\n- `node bin/openlag.js --version`\n- `npm.cmd pack --dry-run`\n\n## What These Checks Prove\n\n- Runtime packaging: published artifact composition is inspectable before release.\n- CLI Entrypoints: The binary executes correctly and orchestration logic functions as intended.",
+          "markdownBody": "# OpenLAG 0.5.0 CLI Orchestration Validation\n\n## Validation Intent\n\nThis test case verifies that the OpenLAG CLI command entrypoints (`scripts/cli/*`, `CODE-051`) correctly orchestrate lifecycle commands while enforcing the repository root boundary (`REQ-050`) and generating valid portal preview assets (`FEAT-055`).\n\n## Command-Level Coverage\n\nThis validation path covers:\n- `node bin/openlag.js --version` (CLI registration check)\n- `npm.cmd run generate` (Preview payload generation)\n- `npm.cmd run dev` (Interactive portal dev server workflow)\n- `npm.cmd run build` (Static portal production compilation)\n- `npm.cmd run check` (Complete package and workflow verification)\n- `npm.cmd pack --dry-run` (Release package boundary checks)\n\n## Validation Scenarios\n\n### 1. CLI Lifecycle Orchestration & Workflow Behavior\nEnsures that commander-based entrypoints properly compile options, execute subcommands sequentially, and return clean process exit codes. Specifically, it tests that `generate`, `check`, `dev`, and `build` commands parse inputs consistently without throwing unhandled exceptions.\n\n### 2. Self-Documenting Lifecycle Boundary (REQ-050)\nAsserts that all CLI operations evaluate the root directory as the authoritative source of record for lifecycle compliance. The tests verify that:\n- Contracts are loaded strictly from `docs/contracts/` at the root.\n- Document artifacts are parsed from `docs/` at the root.\n- Running checks outside the workspace root or attempting to inject unregistered external scopes results in immediate, controlled command failures.\n\n### 3. Preview Workflow & Payload Generation (FEAT-055)\nValidates that the CLI successfully compiles the static portal assets and builds the runtime graph. The test verifies that:\n- `public/graph-data.json`, `public/artifact-definitions.json`, `public/relation-definitions.json`, and `public/rule-definitions.json` are fully and correctly populated.\n- JSON schemas are generated without formatting drift, enabling downstream consumption by the react portal components.\n\n## What These Checks Prove\n\n- **Runtime Packaging**: Confirms that published NPM tarballs contain only the authoritative release assets, preventing leakages of testing/sandbox directories.\n- **Boundary Authenticity**: Proves that the compliance report reflects solely the root workspace's state.\n- **Preview Readiness**: Ensures that the interactive graph and documentation views load cleanly in the browser from the compiled JSON payloads.",
           "raw": {
             "id": "TEST-050",
             "type": "TEST_CASE",
@@ -1074,6 +1078,10 @@
               {
                 "type": "TESTS",
                 "to": "CODE-051"
+              },
+              {
+                "type": "TESTS",
+                "to": "FEAT-055"
               },
               {
                 "type": "TESTS",
@@ -1159,6 +1167,10 @@
               },
               {
                 "type": "TESTS",
+                "to": "FEAT-051"
+              },
+              {
+                "type": "TESTS",
                 "to": "REQ-051"
               }
             ]
@@ -1177,7 +1189,7 @@
             "team": "openlag"
           },
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-053.md",
-          "markdownBody": "# OpenLAG 0.5.0 Governance And Rule Profile Validation\n\n## Validation Intent\n\nThis test case ensures that governance rules are strictly enforced according to the active profile (develop vs release).\n\n## Command-Level Coverage\n\nThis validation path covers:\n- `npm.cmd run check`\n- `node --import tsx scripts/cli/openlag.ts check --profile develop`\n- `node --import tsx scripts/cli/openlag.ts check --profile release --strict`\n\n## What These Checks Prove\n\n- Governance: profile-specific rule gates behave consistently across develop and release strictness.",
+          "markdownBody": "# OpenLAG 0.5.0 Governance And Rule Profile Validation\n\n## Validation Intent\n\nThis test case ensures that governance rules and metadata checks are enforced according to the active profile configuration, validating the progressive adoption pathway (`REQ-053`) from lightweight onboarding (`FEAT-054`) to modular, strict release compliance (`FEAT-053`).\n\n## Command-Level Coverage\n\nThis validation path covers:\n- `node scripts/cli/openlag.js init --profile starter` (Starter onboarding check)\n- `node scripts/cli/openlag.js check --profile develop` (Development validation flow)\n- `node scripts/cli/openlag.js check --profile release --strict` (Strict release-gate compliance check)\n\n## Validation Scenarios\n\n### 1. Starter Mode Behavior (FEAT-054)\nVerifies that projects bootstrapping with the starter profile can document core modules with a relaxed validation footprint:\n- Scopes required frontmatter down to minimal identifiers (ID, type, title).\n- Tolerates missing cross-layer relations (e.g., features lacking direct test cases), allowing teams to model architecture without immediate lint failures.\n\n### 2. Profile Pack Resolution & Modular Loading (FEAT-053)\nAsserts that the CLI and parser correctly resolve imported profile packages (`profiles/core/**`, `profiles/starter/**`, etc.). The test verifies that:\n- Core vocabulary, relation limits, and rules are parsed and merged into a single runtime definition.\n- Mismatched or conflicting profile files are caught and handled gracefully during the merge step.\n\n### 3. Progressive Governance & Validation Transitions (REQ-053)\nValidates the gradual promotion flow of a project:\n- **Develop Profile**: Enforces intermediate relation checks (e.g., warning on undocumented semantic links).\n- **Release Profile (Strict)**: Imposes hard release gates, mandating that all features have both direct implementations (`CODE_ENTITY`) and test cases (`TEST_CASE`).\n- The test proves that a project can step up from starter mode to strict validation without requiring changes to baseline node IDs.\n\n## What These Checks Prove\n\n- **Adoption Safety**: Demonstrates that early-stage workspaces can compile successfully under starter rules.\n- **Rule Coherence**: Confirms that profile boundaries prevent metadata contamination and that strict validation rules are only enforced when explicitly configured.\n- **Continuous Compliance**: Proves that profile transitions are deterministic, allowing teams to scale governance incrementally.",
           "raw": {
             "id": "TEST-053",
             "type": "TEST_CASE",
@@ -1192,11 +1204,15 @@
             "relations": [
               {
                 "type": "TESTS",
-                "to": "CHK-050"
+                "to": "REQ-053"
               },
               {
                 "type": "TESTS",
-                "to": "REQ-053"
+                "to": "FEAT-053"
+              },
+              {
+                "type": "TESTS",
+                "to": "FEAT-054"
               }
             ]
           }
@@ -1602,6 +1618,15 @@
         {
           "id": "rel-CODE-053-3",
           "from": "CODE-053",
+          "to": "FEAT-054",
+          "type": "IMPLEMENTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-053.md"
+        },
+        {
+          "id": "rel-CODE-053-4",
+          "from": "CODE-053",
           "to": "CODE-052",
           "type": "DEPENDS_ON",
           "category": "STRUCTURAL",
@@ -1609,7 +1634,7 @@
           "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\implementation\\CODE-053.md"
         },
         {
-          "id": "rel-CODE-053-4",
+          "id": "rel-CODE-053-5",
           "from": "CODE-053",
           "to": "REQ-053",
           "type": "IMPLEMENTS",
@@ -1791,6 +1816,15 @@
         {
           "id": "rel-TEST-050-1",
           "from": "TEST-050",
+          "to": "FEAT-055",
+          "type": "TESTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-050.md"
+        },
+        {
+          "id": "rel-TEST-050-2",
+          "from": "TEST-050",
           "to": "REQ-050",
           "type": "TESTS",
           "category": "TRACEABILITY",
@@ -1845,6 +1879,15 @@
         {
           "id": "rel-TEST-052-1",
           "from": "TEST-052",
+          "to": "FEAT-051",
+          "type": "TESTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-052.md"
+        },
+        {
+          "id": "rel-TEST-052-2",
+          "from": "TEST-052",
           "to": "REQ-051",
           "type": "TESTS",
           "category": "TRACEABILITY",
@@ -1854,7 +1897,7 @@
         {
           "id": "rel-TEST-053-0",
           "from": "TEST-053",
-          "to": "CHK-050",
+          "to": "REQ-053",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
@@ -1863,7 +1906,16 @@
         {
           "id": "rel-TEST-053-1",
           "from": "TEST-053",
-          "to": "REQ-053",
+          "to": "FEAT-053",
+          "type": "TESTS",
+          "category": "TRACEABILITY",
+          "strength": "STRONG",
+          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-053.md"
+        },
+        {
+          "id": "rel-TEST-053-2",
+          "from": "TEST-053",
+          "to": "FEAT-054",
           "type": "TESTS",
           "category": "TRACEABILITY",
           "strength": "STRONG",
@@ -1894,188 +1946,16 @@
   ],
   "lintReports": {
     "draft": {
-      "issues": [
-        {
-          "severity": "warning",
-          "rule": "invalidRelationType",
-          "message": "Relation `TESTS` targeting `CHECK` is NOT ALLOWED.\n\nAllowed targets for `TESTS` are: `CODE_ENTITY, REQUIREMENT, FEATURE, BUG, USE_CASE`.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-053.md",
-          "artifactId": "TEST-053"
-        },
-        {
-          "severity": "info",
-          "rule": "requirementWithoutTest",
-          "message": "Requirement has no tests linked.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-051.md",
-          "artifactId": "FEAT-051"
-        },
-        {
-          "severity": "info",
-          "rule": "requirementWithoutTest",
-          "message": "Requirement has no tests linked.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-053.md",
-          "artifactId": "FEAT-053"
-        },
-        {
-          "severity": "info",
-          "rule": "requirementWithoutImplementation",
-          "message": "Requirement lacks implementation.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
-          "artifactId": "FEAT-054"
-        },
-        {
-          "severity": "info",
-          "rule": "requirementWithoutTest",
-          "message": "Requirement has no tests linked.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
-          "artifactId": "FEAT-054"
-        },
-        {
-          "severity": "info",
-          "rule": "requirementWithoutTest",
-          "message": "Requirement has no tests linked.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-055.md",
-          "artifactId": "FEAT-055"
-        }
-      ]
+      "issues": []
     },
     "develop": {
-      "issues": [
-        {
-          "severity": "error",
-          "rule": "invalidRelationType",
-          "message": "Relation `TESTS` targeting `CHECK` is NOT ALLOWED.\n\nAllowed targets for `TESTS` are: `CODE_ENTITY, REQUIREMENT, FEATURE, BUG, USE_CASE`.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-053.md",
-          "artifactId": "TEST-053"
-        },
-        {
-          "severity": "warning",
-          "rule": "requirementWithoutTest",
-          "message": "Requirement has no tests linked.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-051.md",
-          "artifactId": "FEAT-051"
-        },
-        {
-          "severity": "warning",
-          "rule": "requirementWithoutTest",
-          "message": "Requirement has no tests linked.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-053.md",
-          "artifactId": "FEAT-053"
-        },
-        {
-          "severity": "warning",
-          "rule": "requirementWithoutImplementation",
-          "message": "Requirement lacks implementation.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
-          "artifactId": "FEAT-054"
-        },
-        {
-          "severity": "warning",
-          "rule": "requirementWithoutTest",
-          "message": "Requirement has no tests linked.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
-          "artifactId": "FEAT-054"
-        },
-        {
-          "severity": "warning",
-          "rule": "requirementWithoutTest",
-          "message": "Requirement has no tests linked.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-055.md",
-          "artifactId": "FEAT-055"
-        }
-      ]
+      "issues": []
     },
     "feature": {
-      "issues": [
-        {
-          "severity": "error",
-          "rule": "invalidRelationType",
-          "message": "Relation `TESTS` targeting `CHECK` is NOT ALLOWED.\n\nAllowed targets for `TESTS` are: `CODE_ENTITY, REQUIREMENT, FEATURE, BUG, USE_CASE`.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-053.md",
-          "artifactId": "TEST-053"
-        },
-        {
-          "severity": "info",
-          "rule": "requirementWithoutTest",
-          "message": "Requirement has no tests linked.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-051.md",
-          "artifactId": "FEAT-051"
-        },
-        {
-          "severity": "info",
-          "rule": "requirementWithoutTest",
-          "message": "Requirement has no tests linked.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-053.md",
-          "artifactId": "FEAT-053"
-        },
-        {
-          "severity": "info",
-          "rule": "requirementWithoutImplementation",
-          "message": "Requirement lacks implementation.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
-          "artifactId": "FEAT-054"
-        },
-        {
-          "severity": "info",
-          "rule": "requirementWithoutTest",
-          "message": "Requirement has no tests linked.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
-          "artifactId": "FEAT-054"
-        },
-        {
-          "severity": "info",
-          "rule": "requirementWithoutTest",
-          "message": "Requirement has no tests linked.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-055.md",
-          "artifactId": "FEAT-055"
-        }
-      ]
+      "issues": []
     },
     "release": {
-      "issues": [
-        {
-          "severity": "error",
-          "rule": "invalidRelationType",
-          "message": "Relation `TESTS` targeting `CHECK` is NOT ALLOWED.\n\nAllowed targets for `TESTS` are: `CODE_ENTITY, REQUIREMENT, FEATURE, BUG, USE_CASE`.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\testing\\TEST-053.md",
-          "artifactId": "TEST-053"
-        },
-        {
-          "severity": "error",
-          "rule": "requirementWithoutTest",
-          "message": "Requirement has no tests linked.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-051.md",
-          "artifactId": "FEAT-051"
-        },
-        {
-          "severity": "error",
-          "rule": "requirementWithoutTest",
-          "message": "Requirement has no tests linked.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-053.md",
-          "artifactId": "FEAT-053"
-        },
-        {
-          "severity": "error",
-          "rule": "requirementWithoutImplementation",
-          "message": "Requirement lacks implementation.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
-          "artifactId": "FEAT-054"
-        },
-        {
-          "severity": "error",
-          "rule": "requirementWithoutTest",
-          "message": "Requirement has no tests linked.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-054.md",
-          "artifactId": "FEAT-054"
-        },
-        {
-          "severity": "error",
-          "rule": "requirementWithoutTest",
-          "message": "Requirement has no tests linked.",
-          "file": "D:\\dev\\antigravity-workspace\\OpenLAG\\docs\\features\\FEAT-055.md",
-          "artifactId": "FEAT-055"
-        }
-      ]
+      "issues": []
     }
   },
   "metadata": {

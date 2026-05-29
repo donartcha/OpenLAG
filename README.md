@@ -12,6 +12,24 @@ The NPM package is published as `@donartcha/openlag`. The global CLI binary inst
 
 OpenLAG is in active early development. The current release focuses on a clean CLI workflow, static portal generation, relation contracts, lint profiles, graph exploration, and semantic governance.
 
+## 📘 Architecture Freeze Documentation
+
+OpenLAG can generate deterministic architecture and lifecycle documentation snapshots directly from the Architecture-as-Code graph.
+
+Latest architecture freeze dossier:
+
+- [openlag-architecture.pdf](./openlag-architecture.pdf)
+
+This document includes:
+- lifecycle traceability
+- requirements and architecture decisions
+- implementation boundaries
+- verification and governance evidence
+- deterministic freeze/export documentation
+- version-scoped architecture snapshots
+
+Generated from the OpenLAG lifecycle graph using the freeze workflow.
+
 The tool is designed to be static-first: documentation stays in your repository, OpenLAG generates `public/graph-data.json`, and the portal can be built as static assets.
 
 ## 0.5.0 Scope

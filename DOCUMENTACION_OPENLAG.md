@@ -403,6 +403,18 @@ Con `--version`, OpenLAG conserva los artefactos cuyo frontmatter `version` coin
 
 Durante la exportacion HTML/PDF, OpenLAG inyecta Marked y Mermaid en memoria en los archivos generados. Las plantillas fuente deben conservar placeholders y no deben incluir bundles vendor comprometidos.
 
+#### Dossier de Congelación Arquitectónica (`openlag-architecture.pdf`)
+
+El archivo `openlag-architecture.pdf` es el dossier oficial de congelación documental generado directamente a partir del grafo de Architecture-as-Code de OpenLAG.
+
+Este documento consolidado actúa como evidencia de entrega determinista y contiene:
+- Requerimientos y decisiones de arquitectura detallados.
+- Límites de implementación y diseño del sistema.
+- Casos de prueba y evidencia de cumplimiento de gobernanza.
+- Trazabilidad de extremo a extremo entre todas las capas del ciclo de vida.
+
+Actúa como un artefacto inmutable y auditable para cada release. Se debe regenerar siempre que se actualicen los artefactos Markdown de `docs/` o la estructura de contratos de `docs/contracts/` para asegurar que no exista desalineación (drift) entre el diseño documentado y el estado real del repositorio. El archivo `README.md` incluye un enlace directo al último dossier generado para su consulta rápida.
+
 ### Scripts NPM del repositorio
 ### Generacion de datos
 
