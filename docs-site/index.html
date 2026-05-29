@@ -78,6 +78,9 @@
     .portal-frame{width:100%;height:100%;border:0;background:white}
     .split{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
     .code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#020617;border:1px solid var(--line);border-radius:18px;padding:18px;color:#bfdbfe;overflow:auto;line-height:1.65;font-size:14px}
+    .resource-card{padding:24px;min-height:210px;display:flex;flex-direction:column;align-items:flex-start}
+    .resource-card p{color:var(--muted);line-height:1.55;margin:12px 0 22px}
+    .resource-card .btn{margin-top:auto}
     footer{padding:42px 0 64px;color:var(--muted);border-top:1px solid var(--line)}
     @media (max-width:900px){.hero,.split{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.flow-step:after{display:none}.links{display:none}.portal-frame-wrap{height:620px}}
   </style>
@@ -89,6 +92,7 @@
       <nav class="links" aria-label="Main navigation">
         <a href="#why">Why</a>
         <a href="#how">How it works</a>
+        <a href="#project">Project</a>
         <a href="#portal">Graph portal</a>
         <a href="./portal.html">Open full portal</a>
       </nav>
@@ -147,6 +151,31 @@
       <div class="code">npx @donartcha/openlag init --starter<br/>openlag check --profile develop<br/>openlag freeze --profile starter --format markdown</div>
     </section>
 
+    <section id="project" class="shell">
+      <h2 class="section-title">Project and package</h2>
+      <p class="section-sub">Inspect the source on GitHub or install the published npm package to run OpenLAG in your own repository.</p>
+      <div class="grid">
+        <div class="card resource-card">
+          <span class="tag">GitHub</span>
+          <b>Browse the main branch</b>
+          <p>Review the source code, documentation, workflows and current project history directly from the canonical repository.</p>
+          <a class="btn" href="https://github.com/donartcha/OpenLAG/tree/main" rel="noopener noreferrer">Open GitHub main</a>
+        </div>
+        <div class="card resource-card">
+          <span class="tag">npm</span>
+          <b>Install the CLI package</b>
+          <p>Use the published <code>@donartcha/openlag</code> package to initialize projects, generate graphs, validate docs and build portals.</p>
+          <a class="btn primary" href="https://www.npmjs.com/package/@donartcha/openlag" rel="noopener noreferrer">Open npm package</a>
+        </div>
+        <div class="card resource-card">
+          <span class="tag">CLI</span>
+          <b>Start from the terminal</b>
+          <p>Install globally or run with npx when you want the current published CLI without cloning the repository.</p>
+          <div class="code">npm install -g @donartcha/openlag<br/>openlag --version</div>
+        </div>
+      </div>
+    </section>
+
     <section id="portal" class="shell">
       <div class="portal-card card">
         <h2 class="section-title">Canonical OpenLAG graph portal</h2>
@@ -160,7 +189,10 @@
   </main>
 
   <footer>
-    <div class="shell">OpenLAG · Open Living Architecture Graph · Published as a static GitHub Pages site.</div>
+    <div class="shell">
+      OpenLAG · Open Living Architecture Graph · Published as a static GitHub Pages site.
+      <a class="btn" href="https://www.linkedin.com/in/donartcha/" rel="noopener noreferrer">LinkedIn</a>
+    </div>
   </footer>
 </body>
 </html>
