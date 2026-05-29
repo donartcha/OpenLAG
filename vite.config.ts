@@ -7,7 +7,7 @@ const packageRoot = __dirname;
 const projectRoot = process.env.OPENLAG_PROJECT_ROOT
   ? path.resolve(process.env.OPENLAG_PROJECT_ROOT)
   : packageRoot;
-const projectPublicDir = process.env.OPENLAG_PROJECT_ROOT ? path.join(projectRoot, 'public') : false;
+const projectPublicDir = path.join(projectRoot, 'public');
 
 export default defineConfig({
   root: packageRoot,
