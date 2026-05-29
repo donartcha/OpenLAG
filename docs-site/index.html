@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>OpenLAG — Living Architecture Graph</title>
+  <meta name="description" content="OpenLAG is a static-first Architecture-as-Code and Semantic Governance platform for evolving software systems." />
+  <meta property="og:title" content="OpenLAG — Living Architecture Graph" />
+  <meta property="og:description" content="Architecture-as-Code, semantic traceability, impact analysis, governance, and deterministic freeze documentation." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="./assets/favicon-32-Cq3x7QTa.png" />
+  <style>
+    :root {
+      --bg:#020617;
+      --panel:#0f172a;
+      --panel2:#111827;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+      --line:rgba(148,163,184,.22);
+      --blue:#38bdf8;
+      --blue2:#2563eb;
+      --green:#22c55e;
+      --amber:#f59e0b;
+      --shadow:0 28px 80px rgba(0,0,0,.45);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(56,189,248,.2), transparent 34rem),
+        radial-gradient(circle at 75% 10%, rgba(37,99,235,.22), transparent 34rem),
+        linear-gradient(180deg,#020617,#020617 38%,#050816);
+      min-height:100vh;
+    }
+    a{color:inherit;text-decoration:none}
+    .shell{width:min(1160px,calc(100% - 40px));margin:0 auto}
+    header{position:sticky;top:0;z-index:10;background:rgba(2,6,23,.72);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+    .nav{height:72px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:-.03em}
+    .brand img{width:38px;height:38px;object-fit:contain;border-radius:10px}
+    .links{display:flex;gap:18px;align-items:center;color:var(--muted);font-size:14px}
+    .links a:hover{color:var(--text)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:12px 18px;border-radius:999px;border:1px solid var(--line);background:rgba(15,23,42,.7);font-weight:700;color:var(--text);box-shadow:0 12px 30px rgba(0,0,0,.18)}
+    .btn.primary{border:0;background:linear-gradient(135deg,var(--blue),var(--blue2));color:white}
+    .btn:hover{transform:translateY(-1px)}
+    .hero{padding:86px 0 54px;display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);background:rgba(15,23,42,.62);border-radius:999px;padding:8px 12px;color:#bae6fd;font-weight:700;font-size:13px}
+    h1{font-size:clamp(46px,7vw,84px);line-height:.92;margin:24px 0 22px;letter-spacing:-.075em}
+    .lead{font-size:clamp(18px,2.2vw,23px);line-height:1.55;color:#cbd5e1;max-width:760px;margin:0 0 30px}
+    .hero-actions{display:flex;gap:14px;flex-wrap:wrap}
+    .card{border:1px solid var(--line);background:linear-gradient(180deg,rgba(15,23,42,.82),rgba(15,23,42,.48));border-radius:var(--radius);box-shadow:var(--shadow)}
+    .product-card{padding:26px;position:relative;overflow:hidden}
+    .product-card:before{content:"";position:absolute;inset:-1px;background:radial-gradient(circle at top right, rgba(56,189,248,.22), transparent 22rem);pointer-events:none}
+    .logo-mark{width:100%;height:220px;object-fit:contain;filter:drop-shadow(0 25px 50px rgba(56,189,248,.22));position:relative}
+    .stat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px;position:relative}
+    .stat{padding:16px;border:1px solid var(--line);border-radius:18px;background:rgba(2,6,23,.42)}
+    .stat strong{display:block;font-size:28px;letter-spacing:-.04em}
+    .stat span{display:block;color:var(--muted);font-size:13px;margin-top:4px}
+    section{padding:54px 0}
+    .section-title{font-size:38px;line-height:1;letter-spacing:-.055em;margin:0 0 16px}
+    .section-sub{color:var(--muted);font-size:18px;line-height:1.6;max-width:760px;margin:0 0 30px}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .feature{padding:24px;min-height:190px}
+    .feature b{font-size:20px;letter-spacing:-.03em}
+    .feature p{color:var(--muted);line-height:1.55}
+    .tag{display:inline-flex;font-size:12px;color:#bfdbfe;background:rgba(37,99,235,.18);border:1px solid rgba(56,189,248,.28);border-radius:999px;padding:5px 9px;margin-bottom:16px;font-weight:800}
+    .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;align-items:stretch}
+    .flow-step{padding:18px;border-radius:18px;border:1px solid var(--line);background:rgba(15,23,42,.68);position:relative;min-height:126px}
+    .flow-step:not(:last-child):after{content:"→";position:absolute;right:-14px;top:45%;color:var(--blue);font-size:22px;font-weight:900;z-index:2}
+    .flow-step strong{display:block;font-size:16px;margin-bottom:8px}
+    .flow-step span{color:var(--muted);font-size:13px;line-height:1.4}
+    .portal-card{padding:24px}
+    .portal-frame-wrap{border:1px solid var(--line);border-radius:22px;overflow:hidden;background:#020617;box-shadow:var(--shadow);height:720px}
+    .portal-frame{width:100%;height:100%;border:0;background:white}
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start}
+    .code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:#020617;border:1px solid var(--line);border-radius:18px;padding:18px;color:#bfdbfe;overflow:auto;line-height:1.65;font-size:14px}
+    footer{padding:42px 0 64px;color:var(--muted);border-top:1px solid var(--line)}
+    @media (max-width:900px){.hero,.split{grid-template-columns:1fr}.grid{grid-template-columns:1fr}.flow{grid-template-columns:1fr}.flow-step:after{display:none}.links{display:none}.portal-frame-wrap{height:620px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="shell nav">
+      <a class="brand" href="#top"><img src="./assets/OpenLAG-logo-t-Bq3t22eu.png" alt="OpenLAG logo"/> <span>OpenLAG</span></a>
+      <nav class="links" aria-label="Main navigation">
+        <a href="#why">Why</a>
+        <a href="#how">How it works</a>
+        <a href="#portal">Graph portal</a>
+        <a href="./portal.html">Open full portal</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <div class="shell hero">
+      <div>
+        <span class="eyebrow">Architecture-as-Code · Static-first · Semantic governance</span>
+        <h1>Living architecture for evolving software.</h1>
+        <p class="lead">OpenLAG transforms Markdown artifacts and YAML contracts into a traceable architecture graph with validation, impact analysis, governance evidence and deterministic freeze documentation.</p>
+        <div class="hero-actions">
+          <a class="btn primary" href="./portal.html">Open the live OpenLAG graph</a>
+          <a class="btn" href="#portal">Preview inside this page</a>
+        </div>
+      </div>
+      <aside class="card product-card" aria-label="OpenLAG summary">
+        <img class="logo-mark" src="./assets/OpenLAG-logo-t-Bq3t22eu.png" alt="OpenLAG" />
+        <div class="stat-grid">
+          <div class="stat"><strong>31</strong><span>canonical artifacts</span></div>
+          <div class="stat"><strong>73</strong><span>graph relations</span></div>
+          <div class="stat"><strong>2</strong><span>version snapshots</span></div>
+          <div class="stat"><strong>v0.5</strong><span>specification version</span></div>
+        </div>
+      </aside>
+    </div>
+
+    <section id="why" class="shell">
+      <h2 class="section-title">Why OpenLAG exists</h2>
+      <p class="section-sub">Software changes continuously. The knowledge explaining why it exists, what it implements and what validates it usually decays. OpenLAG makes that lifecycle observable.</p>
+      <div class="grid">
+        <div class="card feature"><span class="tag">Traceability</span><b>Connect intent to implementation</b><p>Requirements, features, code entities and tests become linked artifacts instead of disconnected documentation.</p></div>
+        <div class="card feature"><span class="tag">Governance</span><b>Make gaps visible</b><p>Rules, checks, risks and evidence become part of the same architecture graph instead of separate audit notes.</p></div>
+        <div class="card feature"><span class="tag">Freeze</span><b>Generate deterministic dossiers</b><p>Export Markdown, HTML, JSON and PDF snapshots directly from the graph for reviews, releases and audit evidence.</p></div>
+      </div>
+    </section>
+
+    <section id="how" class="shell">
+      <h2 class="section-title">The OpenLAG lifecycle</h2>
+      <p class="section-sub">A repository-native workflow: human-readable Markdown, explicit YAML contracts, generated runtime payloads and a static portal.</p>
+      <div class="flow">
+        <div class="flow-step"><strong>Markdown + YAML</strong><span>Architecture artifacts and contract definitions live in Git.</span></div>
+        <div class="flow-step"><strong>Graph generation</strong><span>OpenLAG creates graph-data and runtime contract payloads.</span></div>
+        <div class="flow-step"><strong>Validation</strong><span>Lint profiles reveal broken relations and traceability gaps.</span></div>
+        <div class="flow-step"><strong>Impact analysis</strong><span>Contract-defined propagation explains what a change may affect.</span></div>
+        <div class="flow-step"><strong>Freeze export</strong><span>Generate deterministic architecture documentation snapshots.</span></div>
+      </div>
+    </section>
+
+    <section class="shell split">
+      <div>
+        <h2 class="section-title">OpenLAG Lite</h2>
+        <p class="section-sub">A low-friction starter path for teams that want to learn the core loop before adopting broader governance.</p>
+      </div>
+      <div class="code">npx @donartcha/openlag init --starter<br/>openlag check --profile develop<br/>openlag freeze --profile starter --format markdown</div>
+    </section>
+
+    <section id="portal" class="shell">
+      <div class="portal-card card">
+        <h2 class="section-title">Canonical OpenLAG graph portal</h2>
+        <p class="section-sub">The generated OpenLAG portal is bundled under <code>portal.html</code>. You can open it full-screen or inspect it embedded below.</p>
+        <p><a class="btn primary" href="./portal.html">Open OpenLAG portal full-screen</a></p>
+        <div class="portal-frame-wrap" title="Embedded OpenLAG portal">
+          <iframe class="portal-frame" src="./portal.html" loading="lazy"></iframe>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell">OpenLAG · Open Living Architecture Graph · Published as a static GitHub Pages site.</div>
+  </footer>
+</body>
+</html>

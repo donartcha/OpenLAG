@@ -1,0 +1,51 @@
+name: Publish GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-publish-pages:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate OpenLAG project
+        run: npm run check
+
+      - name: Generate graph
+        run: npx @donartcha/openlag generate
+
+      - name: Build portal
+        run: npx @donartcha/openlag build
+
+      - name: Replace generated index with landing page
+        run: |
+          mv dist/index.html dist/portal.html
+          cp docs-site/index.html dist/index.html
+          cp docs-site/index.html dist/404.html
+          touch dist/.nojekyll
+
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: ./dist
+          force_orphan: true
