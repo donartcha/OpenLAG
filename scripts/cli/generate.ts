@@ -135,14 +135,10 @@ export function generateData(docsDir: string, outputDir: string, silent = false)
     logContractFallbackStatus('relations', relationDefinitionsPath);
   }
 
-  if (ruleContracts.length > 0) {
-    fs.writeFileSync(
-      ruleDefinitionsPath,
-      JSON.stringify(ruleContracts, null, 2)
-    );
-  } else {
-    logContractFallbackStatus('rules', ruleDefinitionsPath);
-  }
+  fs.writeFileSync(
+    ruleDefinitionsPath,
+    JSON.stringify(ruleContracts, null, 2)
+  );
 
   fs.writeFileSync(
     path.join(outputDir, 'graph-data.json'),

@@ -63,11 +63,11 @@ OpenLAG implements a contract-driven artifact engine introduced to enhance obser
 - True custom types via schemas: Standard artifacts or extensions defined through YAML schemas replacing loose free-text attributes.
 - Native propagation rules: Graph traversal powered bidirectional relation parsing explicitly designed to perform CI/CD impact analysis via `openlag impact`.
 
-### 0.5.0 Runtime Boundary
+### 0.5.1 Runtime Boundary
 
-OpenLAG 0.5.0 follows a hybrid architecture: a lightweight contract-driven core with optional governance, impact, authoring, and official freeze/export subsystems. The broader `0.5.x` line is reserved for compatible patches and follow-up stabilization.
+OpenLAG 0.5.1 is a compatible stabilization release of the hybrid architecture: a lightweight contract-driven core with optional governance, impact, authoring, and official freeze/export subsystems.
 
-### 0.5.0 Governance Boundary
+### 0.5.1 Governance Boundary
 
 Governance-related artifact contracts already implemented in the repository include:
 
@@ -89,6 +89,8 @@ OBSERVATION
 ```
 
 Rule contracts live in `docs/contracts/rules/*.yaml`. They are executable MVP behavior, but they only affect runtime validation when the active lint profile enables the rule id. This keeps custom governance packs extensible without making every discovered rule automatically blocking.
+
+The rule contract family is optional. When a project has no rule contracts, generation MUST emit `public/rule-definitions.json` as an empty JSON array and MUST NOT diagnose the missing optional family as an invalid fallback state.
 
 Any future governance evolution must preserve compatibility with existing contract folders (`docs/contracts/artifacts/*.yaml`, `docs/contracts/relations/*.yaml`, `docs/contracts/rules/*.yaml`) and current lint profile semantics.
 

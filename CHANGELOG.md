@@ -2,6 +2,15 @@
 
 All notable changes to OpenLAG are documented in this file.
 
+## 0.5.1 - 2026-08-08
+
+### Changed
+- Updated package and documentation version metadata to `0.5.1`.
+
+### Fixed
+- Fixed `openlag generate` for valid projects without optional rule contracts. It now writes `public/rule-definitions.json` as an empty array instead of reporting a missing rules fallback.
+- Added regression coverage for generation without `docs/contracts/rules/*.yaml`.
+
 ## 0.5.0 - 2026-05-28 (stabilization updates)
 
 ### Added

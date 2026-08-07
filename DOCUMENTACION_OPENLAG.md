@@ -1,6 +1,6 @@
 # Documentacion tecnica validada - OpenLAG
 
-Documento validado contra el repositorio del proyecto y el paquete `@donartcha/openlag@0.5.0`.
+Documento validado contra el repositorio del proyecto y el paquete `@donartcha/openlag@0.5.1`.
 
 Fecha de validacion: 2026-05-19.
 
@@ -26,7 +26,7 @@ La premisa central es mantener la arquitectura cerca del codigo, dentro del repo
 ### Version y paquete
 
 - Paquete NPM: `@donartcha/openlag`
-- Version local: `0.5.0`
+- Version local: `0.5.1`
 - Binario publicado: `openlag`
 - Licencia: `MPL-2.0`
 - Runtime soportado: Node.js `>=18`
@@ -47,8 +47,8 @@ npm pack --dry-run
 Resultado actual:
 
 - `npm run check` pasa correctamente.
-- `node bin/openlag.js --version` devuelve `0.5.0`.
-- `npm pack --dry-run` genera la tarball `donartcha-openlag-0.5.0.tgz` e incluye la documentacion publica esperada.
+- `node bin/openlag.js --version` devuelve `0.5.1`.
+- `npm pack --dry-run` genera la tarball `donartcha-openlag-0.5.1.tgz` e incluye la documentacion publica esperada.
 - `DOCUMENTACION_OPENLAG.md` permanece excluido del paquete NPM.
 
 Observaciones actuales:
@@ -57,13 +57,13 @@ Observaciones actuales:
 - ESLint sigue mostrando warnings por imports o variables sin uso, pero no errores.
 - Vite advierte que algunos chunks superan 500 kB tras minificacion; no bloquea la release, pero queda como mejora futura.
 
-Conclusion: el paquete queda preparado para una release NPM `0.5.0` con documentacion publica coherente y validaciones principales en verde.
+Conclusion: el paquete queda preparado para una release NPM `0.5.1` con documentacion publica coherente y validaciones principales en verde.
 
-## 2.1 Baseline canonica 0.5.0
+## 2.1 Baseline canonica 0.5.1
 
-OpenLAG 0.5.0 sigue un modelo hibrido: nucleo ligero, governance opcional, impact engine opcional, tooling de autoria opcional y subsistema oficial de freeze/export. La linea `0.5.x` queda reservada para patches compatibles y estabilizacion posterior.
+OpenLAG 0.5.1 mantiene el modelo hibrido de la linea `0.5.x`: nucleo ligero, governance opcional, impact engine opcional, tooling de autoria opcional y subsistema oficial de freeze/export.
 
-### Limite de governance 0.5.0
+### Limite de governance 0.5.1
 
 Familias de governance implementadas hoy mediante contratos YAML:
 
@@ -876,7 +876,9 @@ Orden de resolucion/fallback:
    - `rule-definitions.json`
 3. Definiciones generadas empaquetadas en el paquete (`src/core/generated/*`) como ultima red de seguridad.
 
-Si falta una familia de contratos y tampoco existe su fallback local en `public/`, OpenLAG emite un warning explicito para facilitar diagnostico.
+Los contratos de reglas son opcionales. Si `docs/contracts/rules` no contiene contratos, `openlag generate` escribe `public/rule-definitions.json` como un array vacio valido y no emite un warning por ausencia de reglas.
+
+Si falta la familia obligatoria de artefactos o relaciones y tampoco existe su fallback local en `public/`, OpenLAG emite un warning explicito para facilitar diagnostico.
 
 ### Personalización Visual (Paleta de Colores)
 

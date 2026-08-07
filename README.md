@@ -32,9 +32,9 @@ Generated from the OpenLAG lifecycle graph using the freeze workflow.
 
 The tool is designed to be static-first: documentation stays in your repository, OpenLAG generates `public/graph-data.json`, and the portal can be built as static assets.
 
-## 0.5.0 Scope
+## 0.5.1 Scope
 
-OpenLAG 0.5.0 uses a lightweight contract-driven core with optional governance, impact, authoring, and official freeze/export subsystems. The broader `0.5.x` line remains available for compatible stabilization patches.
+OpenLAG 0.5.1 is a compatible stabilization release of the lightweight contract-driven core, optional governance, impact, authoring, and official freeze/export subsystems.
 
 ## Install
 
@@ -271,6 +271,8 @@ public/rule-definitions.json     Project rule contracts for lint/governance runt
 dist/                            Static portal build output
 ```
 
+Rule contracts are optional. When a project does not define any files under `docs/contracts/rules`, `openlag generate` writes an empty `public/rule-definitions.json` array. This is a valid registry and does not produce a missing-contract warning.
+
 The generated portal is static. Protect it appropriately if the source Markdown contains internal architecture, system names, incidents, vulnerabilities, or operational details.
 
 If contract regeneration fails during `openlag generate`, `openlag dev`, or `openlag build`, OpenLAG logs a warning and continues. Runtime resolution order is:
@@ -279,7 +281,7 @@ If contract regeneration fails during `openlag generate`, `openlag dev`, or `ope
 2. Existing project fallback files in `public/artifact-definitions.json`, `public/relation-definitions.json`, `public/rule-definitions.json`
 3. Bundled generated defaults from the package
 
-When neither project contracts nor local fallback files are available for a contract family, OpenLAG now emits an explicit warning for that missing fallback.
+When neither project contracts nor local fallback files are available for the required artifact or relation contract families, OpenLAG emits an explicit warning for that missing fallback.
 
 ## Static Dist Serving
 
