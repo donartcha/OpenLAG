@@ -36,6 +36,8 @@ The tool is designed to be static-first: documentation stays in your repository,
 
 OpenLAG 0.5.1 is a compatible stabilization release of the lightweight contract-driven core, optional governance, impact, authoring, and official freeze/export subsystems.
 
+The 0.5.1 dependency baseline includes patched releases of `js-yaml`, `mermaid`, `vite`, `sharp`, `tsx`, and `esbuild`. The packaged dependency tree is validated with `npm audit` and reports no known vulnerabilities at release preparation time.
+
 ## Install
 
 Install the CLI globally:

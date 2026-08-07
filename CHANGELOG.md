@@ -6,10 +6,15 @@ All notable changes to OpenLAG are documented in this file.
 
 ### Changed
 - Updated package and documentation version metadata to `0.5.1`.
+- Updated the dependency lockfile and security-sensitive toolchain packages, including `js-yaml`, `mermaid`, `vite`, `sharp`, `tsx`, and `esbuild`.
+- Added an `esbuild` override for `tsup 8.5.1` so the build toolchain resolves the patched `0.28.x` line.
 
 ### Fixed
 - Fixed `openlag generate` for valid projects without optional rule contracts. It now writes `public/rule-definitions.json` as an empty array instead of reporting a missing rules fallback.
 - Added regression coverage for generation without `docs/contracts/rules/*.yaml`.
+
+### Security
+- Resolved all 10 dependency vulnerabilities reported before the `0.5.1` update (6 high, 2 moderate, and 2 low). `npm audit` now reports zero known vulnerabilities.
 
 ## 0.5.0 - 2026-05-28 (stabilization updates)
 

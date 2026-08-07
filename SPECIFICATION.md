@@ -67,6 +67,8 @@ OpenLAG implements a contract-driven artifact engine introduced to enhance obser
 
 OpenLAG 0.5.1 is a compatible stabilization release of the hybrid architecture: a lightweight contract-driven core with optional governance, impact, authoring, and official freeze/export subsystems.
 
+The 0.5.1 release dependency baseline MUST resolve known security advisories in runtime and build dependencies. The validated baseline uses `js-yaml 4.3.1`, `mermaid 11.16.1`, `vite 6.4.3`, `sharp 0.35.3`, `tsx 4.23.11`, and `esbuild 0.28.1`; `tsup 8.5.1` resolves `esbuild` through the package override declared in `package.json`.
+
 ### 0.5.1 Governance Boundary
 
 Governance-related artifact contracts already implemented in the repository include:
