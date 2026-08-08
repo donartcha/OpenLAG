@@ -1,8 +1,8 @@
 # Documentacion tecnica validada - OpenLAG
 
-Documento validado contra el repositorio del proyecto y el paquete `@donartcha/openlag@0.5.1`.
+Documento validado contra el repositorio del proyecto y el paquete `@donartcha/openlag@0.5.2`.
 
-Fecha de validacion: 2026-05-19.
+Fecha de validacion: 2026-08-08.
 
 ## 1. Resumen ejecutivo
 
@@ -17,7 +17,7 @@ El sistema lee los artefactos de `docs/`, extrae frontmatter y bloques YAML, gen
 - relaciones de trazabilidad,
 - huecos de cobertura,
 - impacto de cambios,
-- documentacion renderizada en Markdown y Mermaid.
+- documentacion renderizada en Markdown, tablas GFM y Mermaid.
 
 La premisa central es mantener la arquitectura cerca del codigo, dentro del repositorio, con IDs estables y relaciones explicitas.
 
@@ -26,7 +26,7 @@ La premisa central es mantener la arquitectura cerca del codigo, dentro del repo
 ### Version y paquete
 
 - Paquete NPM: `@donartcha/openlag`
-- Version local: `0.5.1`
+- Version local: `0.5.2`
 - Binario publicado: `openlag`
 - Licencia: `MPL-2.0`
 - Runtime soportado: Node.js `>=18`
@@ -48,8 +48,8 @@ npm audit
 Resultado actual:
 
 - `npm run check` pasa correctamente.
-- `node bin/openlag.js --version` devuelve `0.5.1`.
-- `npm pack --dry-run` genera la tarball `donartcha-openlag-0.5.1.tgz` e incluye la documentacion publica esperada.
+- `node bin/openlag.js --version` devuelve `0.5.2`.
+- `npm pack --dry-run` genera la tarball `donartcha-openlag-0.5.2.tgz` e incluye la documentacion publica esperada.
 - `npm audit` informa `0 vulnerabilities` con el lockfile de la release.
 - `DOCUMENTACION_OPENLAG.md` permanece excluido del paquete NPM.
 
@@ -59,15 +59,15 @@ Observaciones actuales:
 - ESLint sigue mostrando warnings por imports o variables sin uso, pero no errores.
 - Vite advierte que algunos chunks superan 500 kB tras minificacion; no bloquea la release, pero queda como mejora futura.
 
-Conclusion: el paquete queda preparado para una release NPM `0.5.1` con documentacion publica coherente y validaciones principales en verde.
+Conclusion: el paquete queda preparado para una release NPM `0.5.2` con documentacion publica coherente y validaciones principales en verde.
 
-## 2.1 Baseline canonica 0.5.1
+## 2.1 Baseline canonica 0.5.2
 
-OpenLAG 0.5.1 mantiene el modelo hibrido de la linea `0.5.x`: nucleo ligero, governance opcional, impact engine opcional, tooling de autoria opcional y subsistema oficial de freeze/export.
+OpenLAG 0.5.2 mantiene el modelo hibrido de la linea `0.5.x` y añade renderizado de tablas GitHub Flavored Markdown en el portal React.
 
-La baseline de dependencias de `0.5.1` actualiza `js-yaml` a `4.3.1`, `mermaid` a `11.16.1`, `vite` a `6.4.3`, `sharp` a `0.35.3`, `tsx` a `4.23.11` y `esbuild` a `0.28.1`. `tsup 8.5.1` conserva compatibilidad mediante un override de `esbuild` a la linea corregida `0.28.x`.
+El renderer usa `remark-gfm` para interpretar tablas y las presenta con cabeceras, celdas delimitadas y desplazamiento horizontal cuando exceden el ancho disponible.
 
-### Limite de governance 0.5.1
+### Limite de governance 0.5.2
 
 Familias de governance implementadas hoy mediante contratos YAML:
 

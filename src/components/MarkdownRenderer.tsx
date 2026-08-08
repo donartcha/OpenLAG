@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import Markdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { useStore } from '../store';
 
 type MermaidModule = typeof import('mermaid');
@@ -68,6 +69,7 @@ export const MarkdownRenderer = ({ content }: { content: string }) => {
   return (
     <div className="markdown-body prose prose-invert prose-sm max-w-none text-[#e0e0e0]/80">
       <Markdown
+        remarkPlugins={[remarkGfm]}
         components={{
           code({className, children, ...props}: any) {
             const match = /language-(\w+)/.exec(className || '');
@@ -93,6 +95,22 @@ export const MarkdownRenderer = ({ content }: { content: string }) => {
           },
           ol({children, ...props}: any) {
             return <ol className="list-decimal pl-5 mb-3 space-y-1" {...props}>{children}</ol>;
+          },
+          table({children, ...props}: any) {
+            return (
+              <div className="my-4 w-full overflow-x-auto rounded-md border border-white/10">
+                <table className="w-full border-collapse text-left text-sm" {...props}>{children}</table>
+              </div>
+            );
+          },
+          thead({children, ...props}: any) {
+            return <thead className="bg-white/10 text-white" {...props}>{children}</thead>;
+          },
+          th({children, ...props}: any) {
+            return <th className="border-b border-white/15 px-3 py-2 font-semibold" {...props}>{children}</th>;
+          },
+          td({children, ...props}: any) {
+            return <td className="border-b border-white/5 px-3 py-2 align-top last:border-r-0" {...props}>{children}</td>;
           },
           h1({children, ...props}: any) {
             return <h1 className="text-xl font-serif text-white mt-6 mb-3" {...props}>{children}</h1>;
