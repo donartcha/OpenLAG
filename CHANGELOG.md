@@ -2,6 +2,16 @@
 
 All notable changes to OpenLAG are documented in this file.
 
+## 0.5.2 - 2026-08-08
+
+### Added
+- Added GitHub Flavored Markdown support to the React documentation renderer through `remark-gfm`.
+- Added responsive, styled rendering for Markdown tables in artifact bodies.
+- Added regression coverage proving that GFM table syntax produces semantic HTML table elements.
+
+### Fixed
+- Fixed Markdown tables being displayed as raw pipe-delimited text in documentation cards.
+
 ## 0.5.1 - 2026-08-08
 
 ### Changed
