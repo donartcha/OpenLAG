@@ -32,11 +32,11 @@ Generated from the OpenLAG lifecycle graph using the freeze workflow.
 
 The tool is designed to be static-first: documentation stays in your repository, OpenLAG generates `public/graph-data.json`, and the portal can be built as static assets.
 
-## 0.5.1 Scope
+## 0.5.2 Scope
 
-OpenLAG 0.5.1 is a compatible stabilization release of the lightweight contract-driven core, optional governance, impact, authoring, and official freeze/export subsystems.
+OpenLAG 0.5.2 is a compatible patch release of the lightweight contract-driven core, optional governance, impact, authoring, and official freeze/export subsystems.
 
-The 0.5.1 dependency baseline includes patched releases of `js-yaml`, `mermaid`, `vite`, `sharp`, `tsx`, and `esbuild`. The packaged dependency tree is validated with `npm audit` and reports no known vulnerabilities at release preparation time.
+The documentation portal now renders GitHub Flavored Markdown tables, including responsive overflow and styled headers and cells. The packaged dependency tree is validated with `npm audit` and reports no known vulnerabilities at release preparation time.
 
 ## Install
 
